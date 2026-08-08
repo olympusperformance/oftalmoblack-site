@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#07060A">
+<title>Área do Mentorado — Club OftalmoBlack</title>
+<link rel="icon" href="/assets/favicon.png">
+<style>
+@font-face{font-family:'Playfair';src:url(/assets/fonts/playfair-600.woff) format('woff');font-weight:600;font-display:swap}
+@font-face{font-family:'Playfair';src:url(/assets/fonts/playfair-700.woff) format('woff');font-weight:700;font-display:swap}
+@font-face{font-family:'InterOB';src:url(/assets/fonts/inter-400.woff) format('woff');font-weight:400;font-display:swap}
+@font-face{font-family:'InterOB';src:url(/assets/fonts/inter-500.woff) format('woff');font-weight:500;font-display:swap}
+@font-face{font-family:'InterOB';src:url(/assets/fonts/inter-600.woff) format('woff');font-weight:600;font-display:swap}
+
+:root{
+  --bg:#07060A; --bg-elevated:#0E0C14;
+  --surface:rgba(255,255,255,.035); --surface-strong:rgba(255,255,255,.06);
+  --border:rgba(232,192,122,.14); --border-soft:rgba(255,255,255,.07);
+  --gold:#E8C07A; --gold-bright:#F7E3B4; --gold-deep:#A9803B;
+  --text:#F4F1EA; --text-muted:#9A94A6; --text-faint:#6B6577;
+  --success:#5BD68A; --warning:#F0B34A; --danger:#F06C6C; --purple:#7B5CFF; --blue:#4A9EF0;
+  --r-sm:10px; --r-md:16px; --r-lg:22px;
+  --display:'Playfair',Georgia,serif; --body:'InterOB',system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;height:100%}
+body{background:#000;color:var(--text);font-family:var(--body);font-size:16px;
+  -webkit-font-smoothing:antialiased;display:flex;justify-content:center}
+
+.app{position:relative;width:100%;max-width:440px;min-height:100dvh;background:var(--bg);
+  overflow:hidden;display:flex;flex-direction:column}
+@media(min-width:520px){
+  body{background:#050408;align-items:center;padding:24px 0}
+  .app{min-height:0;height:min(880px,calc(100dvh - 48px));border-radius:32px;
+    border:1px solid rgba(255,255,255,.06);box-shadow:0 40px 120px -40px rgba(0,0,0,.9)}
+}
+.bgwash{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,#1A1226 0%,#0C0912 35%,var(--bg) 100%)}
+.halo{position:absolute;top:-150px;right:-110px;width:320px;height:320px;border-radius:50%;
+  background:rgba(232,192,122,.10);filter:blur(4px);pointer-events:none}
+
+.scroll{position:relative;flex:1;overflow-y:auto;overflow-x:hidden;
+  padding:calc(env(safe-area-inset-top) + 14px) 0 108px;scrollbar-width:none}
+.scroll::-webkit-scrollbar{display:none}
+.view[hidden]{display:none}
+
+.ic{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;display:block}
+
+/* ---------- Header ---------- */
+.hdr{padding:8px 20px 24px}
+.hdr-row{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.logo-ring{width:42px;height:42px;border-radius:21px;display:grid;place-items:center;flex-shrink:0;
+  background:linear-gradient(150deg,var(--gold-bright),var(--gold-deep))}
+.logo-inner{width:38px;height:38px;border-radius:19px;background:#0B0910;display:grid;place-items:center;
+  color:var(--gold);font-size:19px}
+.brand{font-weight:600;font-size:13px;letter-spacing:3px;color:var(--text);line-height:1.2}
+.cohort{font-size:10.5px;letter-spacing:.6px;color:var(--text-faint);margin-top:2px}
+.hdr-grow{flex:1;min-width:0}
+.icon-btn{position:relative;width:38px;height:38px;border-radius:19px;flex-shrink:0;
+  border:1px solid var(--border-soft);background:var(--surface);color:var(--text-muted);
+  display:grid;place-items:center;font-size:17px;cursor:pointer;padding:0}
+.icon-btn .badge{position:absolute;top:9px;right:10px;width:6px;height:6px;border-radius:3px;background:var(--gold)}
+.greeting{font-family:var(--display);font-weight:600;font-size:30px;letter-spacing:.2px;margin:0;line-height:1.15}
+.greeting b{font-weight:600;color:var(--gold)}
+.hdr-sub{font-size:13px;color:var(--text-muted);margin:6px 0 0}
+
+/* ---------- WeekCard ---------- */
+.week{margin:0 20px 34px;border-radius:var(--r-lg);border:1px solid var(--border);padding:20px;
+  background:linear-gradient(135deg,rgba(232,192,122,.14),rgba(123,92,255,.07) 50%,rgba(255,255,255,.02))}
+.week-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px}
+.week-label{font-weight:500;font-size:9.5px;letter-spacing:1.8px;color:var(--gold)}
+.week-pct{display:flex;align-items:flex-end;margin-top:6px}
+.week-pct .n{font-family:var(--display);font-weight:700;font-size:42px;line-height:46px;
+  font-variant-numeric:tabular-nums}
+.week-pct .s{font-family:var(--display);font-size:20px;color:var(--text-muted);margin:0 0 6px 2px}
+.tier{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;
+  border:1px solid var(--border);background:rgba(232,192,122,.10);color:var(--gold);
+  font-size:9.5px;font-weight:600;letter-spacing:1.4px;white-space:nowrap}
+.tier .ic{font-size:12px}
+.track{height:5px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden}
+.track .fill{height:5px;border-radius:3px;background:linear-gradient(90deg,var(--gold-deep),var(--gold-bright));
+  transition:width .45s cubic-bezier(.22,.61,.36,1)}
+.week-stats{display:flex;align-items:center;margin-top:18px}
+.stat{flex:1;min-width:0}
+.stat .v{font-weight:600;font-size:14px;font-variant-numeric:tabular-nums}
+.stat .l{font-size:10px;color:var(--text-faint);margin-top:3px}
+.stat-div{width:1px;height:26px;background:var(--border-soft);margin:0 12px;flex-shrink:0}
+
+/* ---------- SectionHeader ---------- */
+.section{padding:0 20px;margin-bottom:34px}
+.sec{display:flex;align-items:flex-end;margin-bottom:16px;gap:12px}
+.sec-grow{flex:1;min-width:0}
+.sec-eyebrow{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.sec-dash{width:18px;height:1px;background:var(--gold-deep)}
+.sec-eyebrow span{font-weight:500;font-size:10px;letter-spacing:2.2px;color:var(--gold)}
+.sec-title{font-family:var(--display);font-weight:600;font-size:24px;letter-spacing:.2px;margin:0}
+.sec-action{display:flex;align-items:center;gap:2px;padding-bottom:4px;color:var(--gold);
+  font-size:12px;font-weight:500;background:none;border:0;cursor:pointer;font-family:inherit}
+.sec-action .ic{font-size:14px}
+
+/* ---------- TaskCard ---------- */
+.task{width:100%;text-align:left;border:0;padding:0;background:none;font-family:inherit;color:inherit;
+  border-radius:var(--r-lg);margin-bottom:12px;cursor:pointer;display:block;transition:opacity .18s,transform .18s}
+.task:active{opacity:.85;transform:scale(.995)}
+.task-in{border-radius:var(--r-lg);border:1px solid var(--border-soft);padding:16px;
+  background:linear-gradient(135deg,rgba(255,255,255,.055),rgba(255,255,255,.015));
+  display:flex;gap:14px;transition:border-color .25s}
+.task.done .task-in{border-color:rgba(91,214,138,.22);
+  background:linear-gradient(135deg,rgba(91,214,138,.06),rgba(255,255,255,.02))}
+.check{width:22px;height:22px;border-radius:7px;border:1.5px solid rgba(232,192,122,.35);
+  display:grid;place-items:center;margin-top:2px;flex-shrink:0;color:#07060A;font-size:13px;
+  transition:background .2s,border-color .2s}
+.check .ic{opacity:0;transition:opacity .2s}
+.task.done .check{background:var(--success);border-color:var(--success)}
+.task.done .check .ic{opacity:1}
+.task-body{flex:1;min-width:0}
+.tagrow{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.tag{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:999px;border:1px solid;
+  font-size:10px;font-weight:500;letter-spacing:.4px}
+.tag .dot{width:4px;height:4px;border-radius:2px;background:currentColor}
+.cadence{font-size:10px;color:var(--text-faint);letter-spacing:.6px}
+.task-title{font-weight:600;font-size:15px;line-height:21px;margin:0}
+.task.done .task-title{color:var(--text-muted);text-decoration:line-through}
+.task-desc{font-size:12.5px;color:var(--text-muted);line-height:18px;margin:4px 0 0;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.task-prog{display:flex;align-items:center;gap:10px;margin-top:12px}
+.task-prog .track{flex:1;height:4px}
+.task-prog .fill{height:4px}
+.task-prog .n{font-size:11px;font-weight:500;color:var(--gold);font-variant-numeric:tabular-nums}
+.task.done .task-prog{display:none}
+.task-foot{display:flex;align-items:center;gap:6px;margin-top:12px;font-size:11px;color:var(--text-faint)}
+.task-foot .ic{font-size:12px}
+.task.done .task-foot{color:var(--success)}
+.task .foot-done{display:none}
+.task.done .foot-done{display:flex;align-items:center;gap:6px}
+.task.done .foot-open{display:none}
+.foot-open{display:flex;align-items:center;gap:6px}
+
+/* ---------- ArtifactCard ---------- */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.art{border-radius:var(--r-lg);border:1px solid var(--border);padding:16px;min-height:168px;
+  display:flex;flex-direction:column;cursor:pointer;transition:opacity .18s;
+  background:linear-gradient(140deg,rgba(232,192,122,.09),rgba(255,255,255,.02))}
+.art:active{opacity:.85}
+.art.locked{border-color:var(--border-soft);
+  background:linear-gradient(140deg,rgba(255,255,255,.02),rgba(255,255,255,.01))}
+.art-icon{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:18px;
+  background:rgba(232,192,122,.10);border:1px solid rgba(232,192,122,.22);color:var(--gold);margin-bottom:14px}
+.art.locked .art-icon{background:rgba(255,255,255,.03);border-color:var(--border-soft);color:var(--text-faint)}
+.art-name{font-weight:600;font-size:14.5px;margin:0 0 3px}
+.art.locked .art-name{color:var(--text-muted)}
+.art-sub{font-size:11.5px;color:var(--text-muted);line-height:16px;margin:0}
+.art-status{display:flex;align-items:center;gap:5px;margin-top:auto;padding-top:14px;
+  font-size:10.5px;font-weight:500;letter-spacing:.3px}
+.art-status .ic{font-size:11px}
+.art-meta{font-size:10px;color:var(--text-faint);margin:3px 0 0}
+
+/* ---------- LessonCard ---------- */
+.lesson{display:flex;align-items:center;gap:14px;border-radius:var(--r-lg);border:1px solid var(--border-soft);
+  padding:16px;margin-bottom:12px;cursor:pointer;transition:opacity .18s;
+  background:linear-gradient(135deg,rgba(255,255,255,.045),rgba(255,255,255,.015))}
+.lesson:active{opacity:.85}
+.lesson.live{border-color:var(--border);
+  background:linear-gradient(135deg,rgba(232,192,122,.10),rgba(255,255,255,.02))}
+.les-date{width:42px;text-align:center;flex-shrink:0}
+.les-day{font-family:var(--display);font-weight:600;font-size:26px;line-height:30px;color:var(--gold);
+  font-variant-numeric:tabular-nums}
+.les-month{font-weight:500;font-size:9.5px;letter-spacing:1.6px;color:var(--text-faint)}
+.les-div{width:1px;height:46px;background:var(--border-soft);flex-shrink:0}
+.les-body{flex:1;min-width:0}
+.live-badge{display:flex;align-items:center;gap:5px;margin-bottom:6px}
+.live-dot{width:5px;height:5px;border-radius:3px;background:var(--gold)}
+.live-badge span{font-weight:600;font-size:9px;letter-spacing:1.6px;color:var(--gold)}
+.les-title{font-weight:600;font-size:14.5px;line-height:20px;margin:0;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.les-mentor{font-size:11.5px;color:var(--text-muted);margin:2px 0 0}
+.les-meta{display:flex;align-items:center;gap:5px;margin-top:8px;font-size:11px;color:var(--text-faint);flex-wrap:wrap}
+.les-meta .ic{font-size:11px}
+.les-sep{width:1px;height:9px;background:var(--border-soft);margin:0 4px}
+.les-chev{color:var(--text-faint);font-size:18px;align-self:center;flex-shrink:0}
+
+.footer-mark{text-align:center;font-size:9px;letter-spacing:1.6px;color:var(--text-faint);margin:4px 0 0}
+
+/* ---------- Placeholder ---------- */
+.placeholder{min-height:60vh;display:grid;place-content:center;text-align:center;padding:0 32px;gap:8px}
+.placeholder h2{font-family:var(--display);font-weight:600;font-size:28px;margin:0}
+.placeholder p{font-size:13px;color:var(--text-muted);margin:0}
+
+/* ---------- TabBar ---------- */
+.tabbar{position:absolute;left:0;right:0;bottom:0;border-top:1px solid var(--border-soft);
+  background:rgba(10,8,14,.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  padding:12px 0 max(env(safe-area-inset-bottom),10px);display:flex}
+.tab{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;
+  background:none;border:0;cursor:pointer;color:var(--text-faint);font-family:inherit;padding:0}
+.tab .ic{font-size:19px}
+.tab .lb{font-size:9.5px;letter-spacing:.3px}
+.tab[aria-selected="true"]{color:var(--gold)}
+.tab[aria-selected="true"] .lb{font-weight:500}
+.tab .glow{position:absolute;top:-12px;width:34px;height:2px;border-radius:1px;background:var(--gold);opacity:0}
+.tab[aria-selected="true"] .glow{opacity:1}
+.tab:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:8px}
+
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<svg style="display:none" aria-hidden="true">
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></symbol>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
+<symbol id="i-check-square" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></symbol>
+<symbol id="i-box" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></symbol>
+<symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+<symbol id="i-check-circle" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></symbol>
+<symbol id="i-unlock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></symbol>
+<symbol id="i-loader" viewBox="0 0 24 24"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></symbol>
+<symbol id="i-play-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></symbol>
+<symbol id="i-layout" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></symbol>
+<symbol id="i-zap" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+<symbol id="i-chevron-right" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></symbol>
+<symbol id="i-award" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></symbol>
+<symbol id="i-video" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></symbol>
+</svg>
+
+<main class="app">
+  <div class="bgwash"></div>
+  <div class="halo"></div>
+
+  <div class="scroll" id="scroll">
+
+    <!-- ===== INÍCIO ===== -->
+    <div class="view" data-view="home">
+      <header class="hdr">
+        <div class="hdr-row">
+          <div class="logo-ring"><div class="logo-inner"><svg class="ic"><use href="#i-eye"/></svg></div></div>
+          <div class="hdr-grow">
+            <div class="brand">OFTALMO BLACK</div>
+            <div class="cohort">Turma 03 · Fase 1</div>
+          </div>
+          <button class="icon-btn" aria-label="Notificações">
+            <svg class="ic"><use href="#i-bell"/></svg><span class="badge"></span>
+          </button>
+        </div>
+        <h1 class="greeting" id="greeting">Boa noite, <b>Ítalo</b></h1>
+        <p class="hdr-sub">Suas entregas da semana estão abaixo.</p>
+      </header>
+
+      <div class="week">
+        <div class="week-top">
+          <div class="hdr-grow">
+            <div class="week-label">SEU PROGRESSO NA SEMANA</div>
+            <div class="week-pct"><span class="n" id="pct">0</span><span class="s">%</span></div>
+          </div>
+          <span class="tier"><svg class="ic"><use href="#i-award"/></svg>BLACK</span>
+        </div>
+        <div class="track"><div class="fill" id="weekFill" style="width:3%"></div></div>
+        <div class="week-stats">
+          <div class="stat"><div class="v" id="statTasks">0/4</div><div class="l">Tarefas</div></div>
+          <div class="stat-div"></div>
+          <div class="stat"><div class="v">2</div><div class="l">Artefatos liberados</div></div>
+          <div class="stat-div"></div>
+          <div class="stat"><div class="v">07 AGO</div><div class="l">Próxima aula</div></div>
+        </div>
+      </div>
+
+      <section class="section">
+        <div class="sec">
+          <div class="sec-grow">
+            <div class="sec-eyebrow"><span class="sec-dash"></span><span>EXECUÇÃO</span></div>
+            <h2 class="sec-title">Tarefas</h2>
+          </div>
+          <button class="sec-action">Ver todas <svg class="ic"><use href="#i-chevron-right"/></svg></button>
+        </div>
+        <div id="taskList"></div>
+      </section>
+
+      <section class="section">
+        <div class="sec">
+          <div class="sec-grow">
+            <div class="sec-eyebrow"><span class="sec-dash"></span><span>O QUE VOCÊ RECEBE</span></div>
+            <h2 class="sec-title">Artefatos</h2>
+          </div>
+          <button class="sec-action">Ver todos <svg class="ic"><use href="#i-chevron-right"/></svg></button>
+        </div>
+        <div class="grid2" id="artList"></div>
+      </section>
+
+      <section class="section">
+        <div class="sec">
+          <div class="sec-grow">
+            <div class="sec-eyebrow"><span class="sec-dash"></span><span>MENTORIA AO VIVO</span></div>
+            <h2 class="sec-title">Agenda de aulas</h2>
+          </div>
+          <button class="sec-action">Calendário <svg class="ic"><use href="#i-chevron-right"/></svg></button>
+        </div>
+        <div id="lessonList"></div>
+        <p class="footer-mark">OFTALMO BLACK · MASTERMIND PARA OFTALMOLOGISTAS PREMIUM</p>
+      </section>
+    </div>
+
+    <div class="view" data-view="tasks" hidden><div class="placeholder"><h2>Tarefas</h2><p>Em breve no protótipo.</p></div></div>
+    <div class="view" data-view="artifacts" hidden><div class="placeholder"><h2>Artefatos</h2><p>Em breve no protótipo.</p></div></div>
+    <div class="view" data-view="agenda" hidden><div class="placeholder"><h2>Agenda</h2><p>Em breve no protótipo.</p></div></div>
+    <div class="view" data-view="profile" hidden><div class="placeholder"><h2>Perfil</h2><p>Em breve no protótipo.</p></div></div>
+  </div>
+
+  <nav class="tabbar" role="tablist" aria-label="Navegação principal" id="tabbar"></nav>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  var tasks = [
+    { id:'t1', title:'Gravar 1 vídeo para o Instagram', description:'Um vídeo por semana no feed, formato educativo, até 90 segundos.', category:'Conteúdo', cadence:'Semanal', due:'Vence domingo', progress:{current:2,total:4}, status:'pending' },
+    { id:'t2', title:'Gravar o vídeo da página de VSL', description:'Seguir o roteiro Black de 7 blocos entregue na aula 04.', category:'Vendas', cadence:'Entrega única', due:'5 dias restantes', status:'pending' },
+    { id:'t3', title:'Ajustar o formulário do link da bio', description:'Qualificação por convênio, cidade e urgência antes do WhatsApp.', category:'Estrutura', cadence:'Entrega única', due:'Vence quinta', status:'done' },
+    { id:'t4', title:'Subir campanha de captação — R$ 50/dia', description:'Público frio, criativo aprovado na mesa de pares.', category:'Tráfego', cadence:'Mensal', due:'Vence dia 12', status:'pending' }
+  ];
+
+  var artifacts = [
+    { id:'a1', name:'Sistema Black', subtitle:'CRM próprio da mentoria', icon:'grid', status:'Disponível', meta:'Acesso liberado' },
+    { id:'a2', name:'Landing Page VSL', subtitle:'Página de vídeo de vendas', icon:'play-circle', status:'Em produção', meta:'Entrega em 6 dias' },
+    { id:'a3', name:'Landing Page Simples', subtitle:'Captação direta', icon:'layout', status:'Disponível', meta:'Publicada' },
+    { id:'a4', name:'Automação ManyChat', subtitle:'Fluxos de Instagram', icon:'zap', status:'Bloqueado', meta:'Libera na fase 2' }
+  ];
+
+  var lessons = [
+    { id:'l1', title:'Mesa de pares — diagnóstico de funil', mentor:'Ítalo Monte', day:'07', month:'AGO', weekday:'Quinta', time:'20h00', format:'Ao vivo', live:true },
+    { id:'l2', title:'Treinamento de vendas para a secretária', mentor:'Equipe Black', day:'12', month:'AGO', weekday:'Terça', time:'19h30', format:'Ao vivo' },
+    { id:'l3', title:'Precificação premium na oftalmologia', mentor:'Dr. Alex Sá', day:'19', month:'AGO', weekday:'Terça', time:'19h30', format:'Gravada' }
+  ];
+
+  var TINT = { 'Conteúdo':'#7B5CFF', 'Tráfego':'#4A9EF0', 'Vendas':'#E8C07A', 'Estrutura':'#5BD68A' };
+  var ART_STATUS = {
+    'Disponível':  { color:'#5BD68A', icon:'unlock' },
+    'Em produção': { color:'#F0B34A', icon:'loader' },
+    'Bloqueado':   { color:'#6B6577', icon:'lock' }
+  };
+  var TABS = [
+    { key:'home', label:'Início', icon:'home' },
+    { key:'tasks', label:'Tarefas', icon:'check-square' },
+    { key:'artifacts', label:'Artefatos', icon:'box' },
+    { key:'agenda', label:'Agenda', icon:'calendar' },
+    { key:'profile', label:'Perfil', icon:'user' }
+  ];
+
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) {
+    return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]; }); };
+  var ico = function (n) { return '<svg class="ic"><use href="#i-' + n + '"/></svg>'; };
+
+  /* Saudação conforme a hora, igual ao app */
+  var h = new Date().getHours();
+  var greet = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
+  document.getElementById('greeting').innerHTML = greet + ', <b>Ítalo</b>';
+
+  function renderTasks() {
+    document.getElementById('taskList').innerHTML = tasks.map(function (t) {
+      var done = t.status === 'done';
+      var tint = TINT[t.category];
+      var prog = '';
+      if (t.progress) {
+        var w = (t.progress.current / t.progress.total) * 100;
+        prog = '<div class="task-prog"><div class="track"><div class="fill" style="width:' + w + '%"></div></div>' +
+               '<span class="n">' + t.progress.current + '/' + t.progress.total + '</span></div>';
+      }
+      return '<button class="task' + (done ? ' done' : '') + '" data-id="' + t.id + '" aria-pressed="' + done + '">' +
+        '<div class="task-in">' +
+          '<span class="check">' + ico('check') + '</span>' +
+          '<div class="task-body">' +
+            '<div class="tagrow">' +
+              '<span class="tag" style="color:' + tint + ';border-color:' + tint + '55;background:' + tint + '14">' +
+                '<span class="dot"></span>' + esc(t.category) + '</span>' +
+              '<span class="cadence">' + esc(t.cadence) + '</span>' +
+            '</div>' +
+            '<p class="task-title">' + esc(t.title) + '</p>' +
+            '<p class="task-desc">' + esc(t.description) + '</p>' +
+            prog +
+            '<div class="task-foot">' +
+              '<span class="foot-open">' + ico('clock') + esc(t.due) + '</span>' +
+              '<span class="foot-done">' + ico('check-circle') + 'Concluída</span>' +
+            '</div>' +
+          '</div>' +
+        '</div></button>';
+    }).join('');
+  }
+
+  function renderArtifacts() {
+    document.getElementById('artList').innerHTML = artifacts.map(function (a) {
+      var s = ART_STATUS[a.status];
+      var locked = a.status === 'Bloqueado';
+      return '<div class="art' + (locked ? ' locked' : '') + '">' +
+        '<div class="art-icon">' + ico(a.icon) + '</div>' +
+        '<p class="art-name">' + esc(a.name) + '</p>' +
+        '<p class="art-sub">' + esc(a.subtitle) + '</p>' +
+        '<div class="art-status" style="color:' + s.color + '">' + ico(s.icon) + esc(a.status) + '</div>' +
+        '<p class="art-meta">' + esc(a.meta) + '</p>' +
+      '</div>';
+    }).join('');
+  }
+
+  function renderLessons() {
+    document.getElementById('lessonList').innerHTML = lessons.map(function (l) {
+      return '<div class="lesson' + (l.live ? ' live' : '') + '">' +
+        '<div class="les-date"><div class="les-day">' + esc(l.day) + '</div>' +
+          '<div class="les-month">' + esc(l.month) + '</div></div>' +
+        '<div class="les-div"></div>' +
+        '<div class="les-body">' +
+          (l.live ? '<div class="live-badge"><span class="live-dot"></span><span>PRÓXIMA</span></div>' : '') +
+          '<p class="les-title">' + esc(l.title) + '</p>' +
+          '<p class="les-mentor">com ' + esc(l.mentor) + '</p>' +
+          '<div class="les-meta">' + ico('calendar') + esc(l.weekday) + ', ' + esc(l.time) +
+            '<span class="les-sep"></span>' + ico(l.format === 'Gravada' ? 'play' : 'video') + esc(l.format) +
+          '</div>' +
+        '</div>' +
+        '<span class="les-chev">' + ico('chevron-right') + '</span>' +
+      '</div>';
+    }).join('');
+  }
+
+  function renderStats() {
+    var done = tasks.filter(function (t) { return t.status === 'done'; }).length;
+    var pct = tasks.length === 0 ? 0 : Math.round((done / tasks.length) * 100);
+    document.getElementById('pct').textContent = pct;
+    document.getElementById('weekFill').style.width = Math.max(pct, 3) + '%';
+    document.getElementById('statTasks').textContent = done + '/' + tasks.length;
+  }
+
+  function renderTabs(active) {
+    document.getElementById('tabbar').innerHTML = TABS.map(function (t) {
+      var on = t.key === active;
+      return '<button class="tab" role="tab" data-tab="' + t.key + '" aria-selected="' + on + '">' +
+        '<span class="glow"></span>' + ico(t.icon) + '<span class="lb">' + t.label + '</span></button>';
+    }).join('');
+  }
+
+  document.getElementById('taskList').addEventListener('click', function (e) {
+    var btn = e.target.closest('.task');
+    if (!btn) return;
+    var t = tasks.find(function (x) { return x.id === btn.dataset.id; });
+    if (!t) return;
+    t.status = t.status === 'done' ? 'pending' : 'done';
+    renderTasks();
+    renderStats();
+  });
+
+  document.getElementById('tabbar').addEventListener('click', function (e) {
+    var btn = e.target.closest('.tab');
+    if (!btn) return;
+    var key = btn.dataset.tab;
+    Array.prototype.forEach.call(document.querySelectorAll('.view'), function (v) {
+      v.hidden = v.dataset.view !== key;
+    });
+    renderTabs(key);
+    document.getElementById('scroll').scrollTop = 0;
+  });
+
+  renderTasks();
+  renderArtifacts();
+  renderLessons();
+  renderStats();
+  renderTabs('home');
+})();
+</script>
+</body>
+</html>
