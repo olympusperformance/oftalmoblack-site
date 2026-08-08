@@ -1,0 +1,102 @@
+
+/* Cinzel local — substitui a chamada ao Google Fonts do arquivo original */
+@font-face{font-family:'Cinzel';font-style:normal;font-weight:400;font-display:swap;src:url("assets/fonts/cinzel-latin-ext.woff2") format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Cinzel';font-style:normal;font-weight:400;font-display:swap;src:url("assets/fonts/cinzel-latin.woff2") format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Cinzel';font-style:normal;font-weight:500;font-display:swap;src:url("assets/fonts/cinzel-latin-ext.woff2") format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Cinzel';font-style:normal;font-weight:500;font-display:swap;src:url("assets/fonts/cinzel-latin.woff2") format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Cinzel';font-style:normal;font-weight:600;font-display:swap;src:url("assets/fonts/cinzel-latin-ext.woff2") format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Cinzel';font-style:normal;font-weight:600;font-display:swap;src:url("assets/fonts/cinzel-latin.woff2") format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:88px;-webkit-text-size-adjust:100%}
+  input,textarea,select,button{font-family:inherit}
+  body{margin:0;background:#000000;color:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue','Segoe UI',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;--gold:#d89d4d;--gold-lt:#fdf3b5;--gold-bright:#e6bd74;--champagne:#fdf3b5;--gold-deep:#8a5210;--cream:#ffffff;--text:#ffffff;--surface:#101014;--surface-glass:rgba(20,18,12,.55);--bg-soft:#0A0A0C;--line:rgba(216,157,77,.18);--muted:rgba(245,240,230,.64)}
+  a{color:var(--gold);text-decoration:none}
+  a:hover{color:var(--gold-lt)}
+  ::selection{background:rgba(216,157,77,.32);color:#fff}
+  ::-webkit-scrollbar{width:10px}::-webkit-scrollbar-track{background:#000000}::-webkit-scrollbar-thumb{background:rgba(216,157,77,.28);border-radius:5px}
+  @keyframes obDrift1{0%,100%{transform:translate(0,0)}50%{transform:translate(6%,8%)}}
+  @keyframes obDrift2{0%,100%{transform:translate(0,0)}50%{transform:translate(-7%,-6%)}}
+  @keyframes obMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  .grifo{color:#e6bd74;background:linear-gradient(120deg,#8a5210 0%,#c78039 18%,#e6bd74 32%,#fdf3b5 42%,#d89d4d 55%,#c78039 72%,#8a5210 100%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:foilShift 8s ease-in-out infinite;font-style:italic}
+  @keyframes foilShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+  @keyframes obSwipe{0%,55%{transform:translateX(-130%) skewX(-18deg)}85%,100%{transform:translateX(230%) skewX(-18deg)}}
+  @keyframes obSpinY{from{transform:rotateY(0deg)}to{transform:rotateY(360deg)}}
+  @keyframes obSpinYRev{from{transform:rotateY(360deg)}to{transform:rotateY(0deg)}}
+  @keyframes gzSpin{to{transform:rotate(360deg)}}
+  @media (max-width:1180px){.ob-navlinks{display:none !important}}
+  @media (min-width:861px){.ob-prodfeat{transform:scale(1.045);z-index:2}}
+  @media (max-width:860px){.ob-prodgrid{grid-template-columns:1fr;max-width:440px;margin-left:auto;margin-right:auto}.ob-prodfeat{order:-1}}
+  @supports not ((-webkit-background-clip:text) or (background-clip:text)){.grifo{background:none;-webkit-text-fill-color:#e6bd74;color:#e6bd74}}
+  .obf-step{display:none}
+  .obf-step.is-active{display:block;animation:obfFade .5s ease}
+  @keyframes obfFade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  .obf-input{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(216,157,77,.18);border-radius:12px;padding:15px 17px;color:#f5f0e6;font-family:inherit;font-size:16px;outline:none;transition:border-color .3s ease,background .3s ease;-webkit-appearance:none;appearance:none}
+  @media (max-width:640px){
+    .ob-navlogo{height:32px !important}
+    .ob-navcta{padding:10px 14px !important;letter-spacing:.16em !important;font-size:10px !important}
+    .ob-goldcta{padding:16px 22px !important;letter-spacing:.16em !important;font-size:11px !important}
+    .ob-pill{padding:16px 26px !important;letter-spacing:.14em !important;font-size:12px !important;white-space:normal !important;text-align:center}
+    #btnNext,#btnSubmit{padding:16px 20px !important;letter-spacing:.16em !important}
+  }
+  .obf-input:focus{border-color:#d89d4d;background:rgba(216,157,77,.05)}
+  .obf-input::placeholder{color:rgba(245,240,230,.38)}
+  textarea.obf-input{min-height:120px;resize:vertical;line-height:1.65}
+  select.obf-input{background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%23d89d4d' stroke-width='1.5'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:38px}
+  select.obf-input option{background:#0a0a0a;color:#f5f0e6}
+  .obf-choices{display:flex;flex-wrap:wrap;gap:10px}
+  .obf-stack{flex-direction:column;align-items:stretch}
+  .obf-choice{display:inline-flex;align-items:center;gap:8px;padding:13px 20px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.03);border-radius:100px;font-size:13.5px;color:rgba(245,240,230,.72);cursor:pointer;transition:all .25s ease;user-select:none;line-height:1.35}
+  .obf-stack .obf-choice{border-radius:14px;justify-content:flex-start;text-align:left}
+  .obf-choice input{display:none}
+  .obf-choice:hover{border-color:rgba(216,157,77,.5);color:#f5f0e6}
+  .obf-choice.is-selected{border-color:#d89d4d;background:rgba(216,157,77,.1);color:#fdf3b5}
+  .obf-err{display:none;font-size:12.5px;color:#d97a7a}
+  .obf-field.has-error .obf-err{display:block}
+  .obf-field.has-error .obf-input{border-color:#d97a7a}
+  .obf-hiddenf{display:none !important}
+  .obf-pstep{flex:1;min-width:0;display:flex;align-items:center;gap:10px;position:relative}
+  .obf-pstep:not(:last-child)::after{content:"";position:absolute;left:44px;right:-4px;top:50%;height:1px;background:rgba(255,255,255,.12)}
+  .obf-pstep.is-done:not(:last-child)::after{background:#d89d4d}
+  .obf-pnum{width:34px;height:34px;border-radius:50%;background:#000;border:1px solid rgba(255,255,255,.16);display:grid;place-items:center;font-size:12px;font-weight:600;color:rgba(245,240,230,.45);flex:none;transition:all .4s ease;z-index:1}
+  .obf-pstep.is-active .obf-pnum{background:linear-gradient(120deg,#d89d4d,#fdf3b5);color:#000;border-color:#d89d4d;box-shadow:0 0 0 4px rgba(216,157,77,.12)}
+  .obf-pstep.is-done .obf-pnum{background:#121110;color:#d89d4d;border-color:#d89d4d}
+  .obf-plabel{font-size:9.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:rgba(245,240,230,.4);white-space:nowrap}
+  .obf-pstep.is-active .obf-plabel{color:#d89d4d}
+  .obf-pstep.is-done .obf-plabel{color:rgba(245,240,230,.7)}
+  @media (max-width:1120px){.obf-plabel{display:none}.obf-pstep:not(:last-child)::after{left:38px}}
+  #obf-thanks{display:none}
+  #obf-thanks.is-active{display:block;animation:obfFade .6s ease}
+  @keyframes obStreak{0%{transform:translate(-8%,-4%) rotate(-22deg)}50%{transform:translate(8%,4%) rotate(-22deg)}100%{transform:translate(-8%,-4%) rotate(-22deg)}}
+  @keyframes obSpin{to{transform:rotate(360deg)}}
+  @keyframes obDrape{from{background-position:0 0}to{background-position:14px 0}}
+  @keyframes obFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+
+/* FAQ — era controlado pelo estado do React, agora por classe */
+.ob-faq-q{width:100%}
+.ob-faq-a{max-height:0;opacity:0;overflow:hidden;transition:max-height .4s ease,opacity .3s ease}
+.ob-faq-a.is-open{max-height:220px;opacity:1}
+
+/* style-hover do export, virado CSS */
+[data-obh="0"]:hover{color:var(--gold) !important}
+[data-obh="1"]:hover{animation:foilShift 2.2s ease-in-out infinite !important;transform:translateY(-4px) !important;box-shadow:0 18px 38px -14px rgba(212,166,83,.75),0 0 20px rgba(216,157,77,.35),inset 0 1px 0 rgba(255,255,255,.4) !important}
+[data-obh="2"]:hover{animation:foilShift 2.2s ease-in-out infinite !important;transform:translateY(-5px) !important;box-shadow:0 28px 56px -18px rgba(212,166,83,.75),0 0 26px rgba(216,157,77,.35),inset 0 1px 0 rgba(255,255,255,.4) !important}
+[data-obh="3"]:hover{transform:translateY(-6px) !important;border-color:rgba(216,157,77,.4) !important;box-shadow:inset 0 1px 0 rgba(253,243,181,.22),0 30px 60px rgba(0,0,0,.5),0 0 30px rgba(216,157,77,.12) !important}
+[data-obh="4"]:hover{transform:translateY(-4px) !important;background:linear-gradient(120deg,var(--gold),var(--gold-lt)) !important;border-color:transparent !important;color:#000 !important;box-shadow:0 16px 34px -14px rgba(212,166,83,.75),0 0 22px rgba(216,157,77,.3) !important}
+[data-obh="5"]:hover{transform:translateY(-10px) !important;box-shadow:inset 0 1px 0 rgba(253,243,181,.45),0 40px 80px rgba(0,0,0,.6),0 0 64px rgba(216,157,77,.35) !important}
+[data-obh="6"]:hover{animation:foilShift 2.2s ease-in-out infinite !important;transform:translateY(-4px) !important;box-shadow:0 26px 52px -18px rgba(212,166,83,.8),0 0 30px rgba(216,157,77,.4),inset 0 1px 0 rgba(255,255,255,.4) !important}
+[data-obh="7"]:hover{color:#f5f0e6 !important}
+[data-obh="8"]:hover{transform:translateY(-2px) !important;border-color:rgba(216,157,77,.85) !important;box-shadow:0 16px 40px rgba(0,0,0,.5) !important}
+
+/* ---------------------------------------------------------------------------
+   Correção de um defeito do export (confirmado também no arquivo original):
+   o .ob-prodgrid traz grid-template-columns:repeat(3,1fr) no style inline, que
+   vence a media query de <=860px. Resultado no celular: 626px de colunas dentro
+   de um container de 335px — o terceiro cartão fica recortado, e sem barra de
+   rolagem porque o body tem overflow-x:hidden. As outras duas declarações da
+   mesma regra (max-width:440px e order:-1 no cartão destaque) já aplicavam, ou
+   seja: a intenção era empilhar. Só faltava vencer o inline.
+   --------------------------------------------------------------------------- */
+@media (max-width:860px){
+  .ob-prodgrid{grid-template-columns:1fr !important}
+}
