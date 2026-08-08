@@ -100,3 +100,16 @@
 @media (max-width:860px){
   .ob-prodgrid{grid-template-columns:1fr !important}
 }
+
+/* ---------------------------------------------------------------------------
+   Botão "Área de membros" na barra de navegação.
+   Fundo branco em vez de dourado. O hover herdado de [data-obh="1"] traz um
+   brilho âmbar com !important, então é preciso vencer por especificidade
+   maior — classe + atributo + pseudo — para o brilho acompanhar o branco.
+   A animação foilShift continua funcionando: o gradiente pérola desliza.
+   --------------------------------------------------------------------------- */
+.ob-navcta[data-obh="1"]:hover{
+  box-shadow:0 18px 38px -14px rgba(255,255,255,.55),
+             0 0 20px rgba(255,255,255,.26),
+             inset 0 1px 0 rgba(255,255,255,.9) !important;
+}
