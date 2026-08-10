@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Onboarding de Growth · Dra. Luciana da Hora · Club OftalmoBlack</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:rgba(210,172,103,.25)}
+  body{font-family:'Hanken Grotesk','Segoe UI',-apple-system,BlinkMacSystemFont,Arial,sans-serif;background:#0B1116;color:#EDEAE2;font-size:16px;line-height:1.6;padding-bottom:48px;-webkit-text-size-adjust:100%}
+  .wrap{max-width:760px;margin:0 auto;padding:0 18px}
+  header{padding:34px 0 22px;border-bottom:3px solid #D2AC67;margin-bottom:26px}
+  .eyebrow{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#D2AC67;font-weight:700}
+  h1{font-family:'Marcellus',Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;margin-top:10px;line-height:1.22;color:#F7F4EE}
+  .sub{color:#B7B1A4;font-size:14px;margin-top:12px}
+  .sub a{color:#D2AC67;text-decoration:none;font-weight:600}
+  h2{font-family:'Marcellus',Georgia,serif;font-size:20px;font-weight:400;color:#F7F4EE;margin:38px 0 12px;padding-left:12px;border-left:3px solid #D2AC67;line-height:1.3}
+  h3{font-family:'Marcellus',Georgia,serif;font-size:15px;font-weight:400;letter-spacing:.4px;text-transform:uppercase;color:#D2AC67;margin:24px 0 8px}
+  p{margin:0 0 14px;color:#D6D1C6}
+  p.lead{font-size:17px;color:#C9C4B8}
+  strong{color:#F7F4EE;font-weight:600}
+  em{color:#D2AC67;font-style:normal;font-weight:600}
+  ul,ol{margin:0 0 16px 0;padding-left:20px;color:#D6D1C6}
+  li{margin-bottom:9px}
+  .caixa{background:#151B22;border:1px solid #2B3440;border-left:3px solid #D2AC67;border-radius:8px;padding:18px 20px;margin:20px 0}
+  .caixa h3{margin-top:0}
+  .caixa p:last-child,.caixa ul:last-child,.caixa ol:last-child{margin-bottom:0}
+  .quote{background:#11161C;border:1px solid #262E36;border-radius:8px;padding:18px 20px;margin:20px 0;font-family:'Marcellus',Georgia,serif;font-size:17px;line-height:1.5;color:#F0EBDF}
+  .quote span{display:block;margin-top:10px;font-family:'Hanken Grotesk',sans-serif;font-size:12.5px;letter-spacing:1.5px;text-transform:uppercase;color:#8A8579}
+  table{width:100%;border-collapse:collapse;margin:18px 0;font-size:14.5px}
+  th{text-align:left;font-family:'Marcellus',Georgia,serif;font-weight:400;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#D2AC67;padding:9px 10px;border-bottom:1px solid #2B3440}
+  td{padding:11px 10px;border-bottom:1px solid #1C232B;color:#D6D1C6;vertical-align:top}
+  tr.on td{background:#171E26;color:#F7F4EE}
+  tr.on td:first-child{box-shadow:inset 3px 0 0 #D2AC67}
+  .trilhas .n{display:inline-block;width:24px;height:24px;line-height:24px;text-align:center;border-radius:50%;background:#D2AC67;color:#0B1116;font-weight:800;font-size:13px;margin-right:8px}
+  .passo{display:flex;gap:16px;margin-bottom:22px}
+  .passo .num{flex:0 0 38px;height:38px;border-radius:50%;background:#D2AC67;color:#0B1116;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;font-family:'Marcellus',Georgia,serif}
+  .passo .txt{padding-top:5px}
+  .passo .t{font-size:16.5px;font-weight:600;color:#F7F4EE;margin-bottom:3px}
+  .passo .d{font-size:14.5px;color:#B7B1A4}
+  .prazo{display:inline-block;background:#1E1A12;border:1px solid #3A2F1C;color:#D2AC67;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:20px;padding:2px 10px;margin-left:6px;vertical-align:middle}
+  .check{list-style:none;padding-left:0}
+  .check li{padding-left:26px;position:relative}
+  .check li::before{content:'○';position:absolute;left:4px;color:#D2AC67;font-size:15px}
+  .check li.ok::before{content:'●'}
+  .nao{list-style:none;padding-left:0}
+  .nao li{padding-left:26px;position:relative}
+  .nao li::before{content:'×';position:absolute;left:6px;color:#C4614E;font-weight:700}
+  a.area{display:flex;align-items:center;gap:14px;background:#151B22;border:1px solid #2B3440;border-radius:12px;padding:18px 16px;text-decoration:none;color:inherit;margin-bottom:10px}
+  a.area:active{background:#1B222B;border-color:#D2AC67}
+  .ico{flex:0 0 44px;height:44px;border-radius:10px;background:#1E1A12;border:1px solid #3A2F1C;color:#D2AC67;font-size:20px;display:flex;align-items:center;justify-content:center}
+  .txt2{flex:1 1 auto;min-width:0}
+  .tit{display:block;font-family:'Marcellus',Georgia,serif;font-size:17.5px;color:#F7F4EE;line-height:1.25}
+  .meta{display:block;font-size:12.5px;color:#8A8579;margin-top:4px}
+  .badge{display:inline-block;background:#1E1A12;border:1px solid #3A2F1C;color:#D2AC67;font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:20px;padding:2px 9px;margin-top:6px}
+  .seta{flex:0 0 auto;color:#D2AC67;font-size:22px;line-height:1}
+  footer{margin-top:44px;padding-top:16px;border-top:1px solid #262E36;color:#77726B;font-size:12px}
+  @media (max-width:560px){h1{font-size:24px}h2{font-size:18px}body{font-size:15.5px}table{font-size:13.5px}th,td{padding:8px 7px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Club OftalmoBlack · Growth</div>
+  <h1>Onboarding de Growth<br>Dra. Luciana da Hora</h1>
+  <div class="sub">07/08/2026 · Trilha 2 · feito junto · <a href="../">voltar para a central</a></div>
+</header>
+
+<p class="lead">Dra. Luciana, esta página é a leitura completa da sua conta, com dado puxado hoje, e o que ela pede pra render mais do que já rende.</p>
+<p>Começando pelo que precisa ficar registrado: <strong>a sua conta funciona.</strong> Ela roda desde 1º de julho, já investiu R$2.157, e entrega conversa dentro da régua do método. Isso não é ponto de partida zero, é operação em curso com ajuste fino a fazer.</p>
+
+
+<h2>As três trilhas de tráfego</h2>
+<p>O Dr. Alex separou as clínicas em três estágios. Não é ranking, é sequência: cada trilha existe pra te levar à próxima.</p>
+<table class="trilhas">
+<tr><th>Trilha</th><th>Como funciona</th><th>O que destrava a próxima</th></tr>
+<tr><td><span class="n">1</span><strong>Feito para você</strong></td><td>O time monta a campanha do zero. Você entrega três coisas: <em>verba, cidade e liberação</em>.</td><td>Ter campanha rodando e querer entender o que está acontecendo.</td></tr>
+<tr class="on"><td><span class="n">2</span><strong>Feito junto</strong></td><td>A gente senta na sessão e abre a conta <em>com você</em>. Você pilota, eu mostro o que estou vendo e por quê.</td><td>Você conseguir ler a própria conta sozinho.</td></tr>
+<tr><td><span class="n">3</span><strong>Feito com IA</strong></td><td>Você opera com IA, e ela passa a fazer o trabalho pesado.</td><td>É o destino da escada.</td></tr>
+</table>
+<div class="quote">"Minha intenção com o Black é te dar autonomia, pra você não ficar dependendo do Black."<span>Dr. Alex, aula de 06/08</span></div>
+<p>A trilha 2 existe por um motivo prático: <strong>não dá pra confiar num resultado que você não sabe ler</strong>. Se a conta cai, você precisa saber se é a campanha, o criativo ou o time comercial. É isso que a sessão constrói.</p>
+
+
+<h2>O que a conta entrega hoje</h2>
+<table>
+<tr><th>Indicador</th><th>30 dias</th><th>7 dias</th><th>Régua</th></tr>
+<tr class="on"><td><strong>Custo por conversa</strong></td><td>R$7,06</td><td><strong>R$5,24</strong></td><td>abaixo de R$7 é ótimo</td></tr>
+<tr><td>Conversas iniciadas</td><td>206</td><td>61</td><td></td></tr>
+<tr class="on"><td><strong>CTR de link</strong></td><td>0,544%</td><td><strong>0,609%</strong></td><td>~0,5% no fundo</td></tr>
+<tr><td>Frequência</td><td>2,66</td><td>1,59</td><td>até 2</td></tr>
+<tr><td>Investido</td><td>R$1.956</td><td>R$425</td><td></td></tr>
+</table>
+<div class="caixa">
+<h3>Dois indicadores merecem destaque</h3>
+<p><strong>Custo por conversa e CTR estão dentro do padrão do método</strong>, e melhorando. Nos últimos sete dias o custo caiu 26% e a frequência voltou pro lugar.</p>
+<p style="margin-top:12px">E tem uma coisa que a sua conta faz melhor que qualquer outra da base: <em>renovação de criativo</em>. Os lotes que subiram entre 23 e 25 de julho derrubaram o custo por conversa de R$8,54 para R$4,72 e a frequência de 2,00 para 1,71. Isso está provado em número, e é o argumento que eu uso com os outros mentorados.</p>
+</div>
+
+<h3>Onde está o dinheiro que não precisa ser gasto</h3>
+<p>Três coisas concentram quase toda a perda, e nenhuma delas é de esforço:</p>
+<div class="passo"><div class="num">1</div><div class="txt"><div class="t">Um criativo comeu 39% da verba a 2,6× o preço</div><div class="d">O VIDEO 01 gastou R$758 a R$11,67 por conversa, enquanto o VIDEO 02 entregava 114 conversas a R$4,54. Nos últimos sete dias o algoritmo corrigiu sozinho, mas o desvio já tinha acontecido. Regra do método: matar o que passa de duas vezes o custo do vencedor.</div></div></div>
+<div class="passo"><div class="num">2</div><div class="txt"><div class="t">O orçamento por campanha estrangula a catarata</div><div class="d">Com orçamento no nível da campanha, o conjunto de catarata nasceu dentro de uma verba já dominada pelo histórico da refrativa e nunca aprendeu. Resultado: <strong>93% da verba na refrativa e 7% na catarata</strong>, e nos últimos sete dias piorou para 95 e 5. O método pede o inverso: dois terços na catarata.</div></div></div>
+<div class="passo"><div class="num">3</div><div class="txt"><div class="t">27% da verba nas duas piores faixas de idade</div><div class="d">Os três conjuntos ativos estão em 25 a 65 anos, iguais. A faixa 25-34 custa R$13,84 por conversa e a 65+ custa R$20,71, enquanto 45-64 entrega a R$7,32. Separar idade por procedimento não é só pra performar: é o que permite medir o custo por cirurgia de cada uma.</div></div></div>
+
+<h3>A campanha de Reconhecimento</h3>
+<div class="caixa">
+<p>Ela gastou R$217 e alcançou 78 mil pessoas com um CPM de R$1,38, que é baratíssimo. Só que o <strong>vídeo dela não está publicado no seu Instagram</strong>: é um vídeo carregado direto na conta de anúncio. Conferi de três formas diferentes, e cruzei com as suas últimas 40 publicações. Ele não está no seu feed.</p>
+<p style="margin-top:12px">O efeito prático: as <strong>82 reações e 4 comentários que o anúncio gerou morreram num post oculto</strong>. Não viraram prova social no seu perfil, ninguém que gostou virou seguidor, e o CTR de link ficou em 0,00%.</p>
+<p style="margin-top:12px">E o conjunto tem <strong>um anúncio só</strong>, rodando desde 23 de julho. Sem alternativa, não existe o que o algoritmo escolher.</p>
+</div>
+<p>A correção é a que o Dr. Alex deu na aula: <strong>usar publicação existente do Instagram</strong>, e colocar dentro do conjunto os vídeos que você já posta pra crescer seguidor.</p>
+
+<h3>Sobre o crescimento de seguidores</h3>
+<p>Ele está em torno de 220 por mês, contra a meta de 500 do seu placar. Isso tem duas causas concretas, e nenhuma é falta de conteúdo:</p>
+<ul>
+<li><strong>O topo está pausado desde 23 de julho.</strong> A campanha que rodava publicação existente é justamente a que foi parada, e ela foi substituída por uma de alcance que não gera clique nem engajamento no perfil.</li>
+<li><strong>A verba passou a ser dividida</strong> entre reconhecimento e campanha de clientes. Dividiu a verba, cai o ritmo de seguidor. É esperado.</li>
+</ul>
+<p>Mesmo assim você ganhou 65 seguidores em oito dias <strong>sem nenhuma verba de topo</strong>, o que diz bastante sobre o orgânico.</p>
+
+<h3>Uma coisa que ninguém tinha olhado</h3>
+<div class="caixa">
+<h3>Reels do Instagram é o seu melhor canal</h3>
+<table>
+<tr><th>Posicionamento</th><th>Custo por conversa</th></tr>
+<tr class="on"><td><strong>Instagram, Reels</strong></td><td><strong>R$4,64</strong> (R$3,52 nos últimos 7 dias)</td></tr>
+<tr><td>Facebook, stories</td><td>R$6,20</td></tr>
+<tr><td>Facebook, feed</td><td>R$6,97</td></tr>
+<tr><td>Instagram, stories</td><td>R$7,03</td></tr>
+<tr><td>Instagram, feed</td><td>R$8,95</td></tr>
+<tr><td>Facebook, Reels</td><td>R$10,65</td></tr>
+</table>
+<p style="margin-top:12px">O Reels do Instagram entrega quase o dobro de eficiência do feed. Isso muda o que vale a pena produzir.</p>
+</div>
+
+
+<h2>O que fazer, na ordem</h2>
+<p>Nada aqui pede verba nova. Tudo é ajuste no que já existe.</p>
+<div class="passo"><div class="num">1</div><div class="txt"><div class="t">Tirar o orçamento do nível da campanha</div><div class="d">Passar para orçamento por conjunto e fixar a divisão na mão, mantendo os mesmos R$50 por dia. É o que destrava a catarata. Sem isso, todo o resto é enxugar gelo.</div></div></div>
+<div class="passo"><div class="num">2</div><div class="txt"><div class="t">Consertar o Reconhecimento</div><div class="d">Trocar o vídeo carregado por publicação existente do Instagram, e subir mais anúncios no conjunto. É o que transforma verba de alcance em seguidor e prova social.</div></div></div>
+<div class="passo"><div class="num">3</div><div class="txt"><div class="t">Alimentar a catarata com criativo</div><div class="d">Hoje são três anúncios, e dois quase sem entrega. Verba sem criativo não resolve. Os ângulos que funcionam na refrativa dão o molde da estrutura, mas o conteúdo de catarata é produção sua.</div></div></div>
+<div class="passo"><div class="num">4</div><div class="txt"><div class="t">Separar as idades por procedimento</div><div class="d">Refrativa mais nova, catarata a partir de 45. Não é pra melhorar o custo: é pra conseguir medir o custo por cirurgia de cada procedimento separado.</div></div></div>
+<div class="passo"><div class="num">5</div><div class="txt"><div class="t">Ligar a medição</div><div class="d">Existe um dataset na sua BM, mas ele está sem receber evento desde junho e não está ligado à conta de anúncio. Enquanto isso não for resolvido, dá pra medir conversa, mas não dá pra medir cirurgia.</div></div></div>
+
+<div class="caixa">
+<h3>O que NÃO fazer agora</h3>
+<ul>
+<li><strong>Não aumentar verba.</strong> Com a divisão invertida, aumentar verba escala o desvio. Primeiro corrige, depois escala.</li>
+<li><strong>Não mexer no VIDEO 02.</strong> É ele que sustenta a conta.</li>
+<li><strong>Não abrir a geografia.</strong> A frequência não pede. Quando a praça saturar de novo, a resposta é criativo novo, não área maior.</li>
+<li><strong>Não criar campanha nova.</strong> Já são três onde o método pede duas.</li>
+</ul>
+</div>
+
+<h3>O número que ainda não dá pra calcular</h3>
+<p>A métrica-rei do método é o <strong>custo por cirurgia contra o seu ticket</strong>, com alvo abaixo de 15%. Hoje ele é impossível de medir: a conta mede conversa, mas nada devolve a cirurgia realizada. Fechar esse circuito é o que transforma a conta de "está barato" em "está dando lucro", e é o objetivo dos próximos ciclos.</p>
+
+<h2>As prioridades, na ordem</h2>
+<div class="passo"><div class="num">1</div><div class="txt"><div class="t">Destravar a catarata</div><div class="d">Orçamento por conjunto, com a divisão fixada na mão. É o ajuste de maior impacto e o mais barato de fazer.</div></div></div>
+<div class="passo"><div class="num">2</div><div class="txt"><div class="t">Devolver o Reconhecimento ao seu perfil</div><div class="d">Publicação existente e mais anúncios no conjunto, pra a verba de topo virar seguidor e prova social.</div></div></div>
+<div class="passo"><div class="num">3</div><div class="txt"><div class="t">Produzir criativo de catarata</div><div class="d">Quatro a seis peças. É a única coisa da lista que depende de gravação sua.</div></div></div>
+<div class="passo"><div class="num">4</div><div class="txt"><div class="t">Ligar a medição</div><div class="d">Dataset vivo e ligado à conta, e o retorno da cirurgia para o Gerenciador.</div></div></div>
+<div class="passo"><div class="num">5</div><div class="txt"><div class="t">Só então escalar</div><div class="d">Com a divisão certa e a medição funcionando, aumentar verba passa a fazer sentido. Antes disso, não.</div></div></div>
+
+
+<h2>A praça, e por que começa perto</h2>
+<p>A regra é dominar do mais próximo pro mais distante, e só abrir a frente seguinte quando a anterior estiver funcionando.</p>
+<div class="passo"><div class="num">1</div><div class="txt"><div class="t">São Paulo capital</div><div class="d">É onde está a maior concentração de renda do país. A ideia é pegar as maçãs mais baixas da árvore antes de subir na escada.</div></div></div>
+<div class="passo"><div class="num">2</div><div class="txt"><div class="t">Estado de São Paulo</div><div class="d">Interiores com maior concentração de população, depois que a capital estiver validada.</div></div></div>
+<div class="passo"><div class="num">3</div><div class="txt"><div class="t">Praças de voo curto</div><div class="d">Florianópolis, Belo Horizonte, Rio. Só depois de cerca de seis meses, com o processo comercial rodando.</div></div></div>
+<div class="caixa">
+<h3>Por que não abrir tudo de uma vez</h3>
+<p>Não é questão de verba. É que <strong>o seu time comercial precisa aprender a quebrar as objeções fáceis antes das difíceis</strong>. Quem mora perto tem menos objeção que quem precisa pegar um avião. Abrir tudo junto obriga o comercial a resolver muita coisa ao mesmo tempo, e aí você não valida nada.</p>
+</div>
+<p>E o caminho até o seu WhatsApp precisa <strong>eliminar quem está fora do perfil geográfico</strong>. Pessoa de outro estado clicando no link da bio é lead que não vira cirurgia, e ainda ocupa o tempo do comercial.</p>
+
+
+<h2>O que o padrão Black aponta</h2>
+
+<h3>Os três funis</h3>
+<table>
+<tr><th>Funil</th><th>Público</th><th>Caminho</th></tr>
+<tr><td><strong>Olimpos</strong><br><span style="color:#8A8579;font-size:13px">autoridade</span></td><td>Frio, prazo longo</td><td>Visitas ao perfil, cresce seguidor, story e live esquentam, depois campanha de cliente. Constrói base, mas demora.</td></tr>
+<tr><td><strong>Expresso</strong><br><span style="color:#8A8579;font-size:13px">o novo</span></td><td>Frio</td><td>Anúncio, landing page com vídeo travado, WhatsApp, agendamento. Qualifica antes de chegar no seu WhatsApp.</td></tr>
+<tr><td><strong>Google</strong></td><td>Quente para consulta</td><td>Busca, SEO ou Ads. Enche agenda rápido, mas converte pouco em cirurgia.</td></tr>
+</table>
+
+<h3>A regra que organiza tudo</h3>
+<div class="quote">"Tráfego compra atenção, qualificação cobra o pedágio. Cada pedágio que você adiciona deixa o lead mais caro, e a cirurgia mais barata."<span>Dr. Alex, aula de 06/08</span></div>
+<p>Pedágio é toda fricção colocada de propósito antes do WhatsApp: a duração do vídeo, a porcentagem que trava a página, dizer no próprio criativo que o atendimento é particular, uma página de perguntas antes do contato, botão no Direct no lugar de textão. <strong>Eles se empilham.</strong></p>
+<p>E tem uma regra que quase ninguém ensina: <em>o pedágio depende da fonte</em>. No Instagram a pessoa está rolando a barra, então o vídeo precisa ser curto. No YouTube ela está parada assistindo, e o vídeo pode ser longo.</p>
+
+<h3>Os números que a gente persegue</h3>
+<table>
+<tr><th>Indicador</th><th>Referência do método</th></tr>
+<tr><td>Custo por cirurgia (CPV)</td><td>Abaixo de <strong>15% do ticket</strong>. É a métrica-rei.</td></tr>
+<tr><td>Custo por seguidor</td><td><strong>R$1 a R$2</strong> na campanha de reconhecimento</td></tr>
+<tr><td>Divisão da verba</td><td><strong>50% reconhecimento, 50% clientes</strong></td></tr>
+<tr><td>Vídeo da landing page</td><td>5, 10 ou 15 minutos. <strong>Teto de 15</strong> pra tráfego de Instagram</td></tr>
+<tr><td>Trava da página</td><td>Libera o resto em torno de <strong>50%</strong> do vídeo assistido</td></tr>
+<tr><td>Criativo novo</td><td>Em <strong>lote, a cada 15 dias</strong>. Mexer todo dia reseta o aprendizado</td></tr>
+<tr><td>Escala de verba</td><td><strong>+20% a cada 2 ou 3 dias.</strong> Salto derruba a entrega</td></tr>
+</table>
+<div class="caixa">
+<h3>Volume não é o objetivo</h3>
+<p>Um caso real do Club: a operação fazia <strong>400 leads, 80 consultas e 40 cirurgias</strong>. Mudou a estratégia, foi pra <strong>1.000 leads, 80 consultas e 25 cirurgias</strong>. Mais que dobrou o lead e perdeu quase metade das cirurgias.</p>
+<p style="margin-top:12px"><em>Nem sempre te encher de lead é o que importa.</em></p>
+</div>
+
+<h3>O que não fazemos</h3>
+<ul class="nao">
+<li>Objetivo "Vendas" na campanha.</li>
+<li>Mandar público frio direto pro WhatsApp.</li>
+<li>Rodar reconhecimento como dark post. Se o vídeo não está no seu Instagram, ele está escondido: ninguém curte, ninguém comenta, e não existe reconhecimento nenhum.</li>
+<li>Poucos anúncios dentro do conjunto. Todo vídeo que foi bem no orgânico tem que estar lá dentro.</li>
+<li>Falar preço pra lead frio. Ele pode até poder pagar, mas se o preço chega antes da confiança, ele some.</li>
+<li>Ofertar cirurgia. A oferta é sempre <strong>a avaliação</strong>. O vídeo vende o próximo passo pequeno e seguro: agendar uma consulta.</li>
+</ul>
+
+<h2>O que fica comigo</h2>
+<p>O que eu assumi nesta sessão, com o prazo de cada coisa.</p>
+<table>
+<tr><th>Entrega</th><th>O que é</th><th>Quando</th></tr>
+<tr><td><strong>Leitura completa da conta</strong></td><td>Este documento, com dado puxado hoje via API.</td><td>entregue</td></tr>
+<tr><td><strong>Plano de correção detalhado</strong></td><td>Passo a passo de cada ajuste, pra quem for executar seguir sem margem de dúvida.</td><td>esta semana</td></tr>
+<tr><td><strong>Molde de criativo pra catarata</strong></td><td>A estrutura dos ângulos que já funcionam, pra você adaptar ao conteúdo de catarata.</td><td>esta semana</td></tr>
+<tr><td><strong>Especificação do dataset</strong></td><td>O que precisa existir pra medir cirurgia, e em que ordem.</td><td>a definir</td></tr>
+<tr><td><strong>Acompanhamento semanal</strong></td><td>Leitura da conta e ajuste de rota, na frequência que você quiser marcar.</td><td>sob demanda</td></tr>
+</table>
+
+<h2>O que fica com você</h2>
+<p>Curto o bastante pra acontecer. É o formato de toda sessão.</p>
+<div class="passo"><div class="num">1</div><div class="txt"><div class="t">Definir quem opera a conta daqui pra frente<span class="prazo">esta semana</span></div><div class="d">A Michele te procurou sobre isso. Enquanto não estiver definido, eu oriento e diagnostico, mas não mexo na conta.</div></div></div>
+<div class="passo"><div class="num">2</div><div class="txt"><div class="t">Gravar de 4 a 6 peças de catarata<span class="prazo">até 20/08</span></div><div class="d">É o gargalo que nenhum ajuste técnico resolve. Verba sem criativo não aprende.</div></div></div>
+<div class="passo"><div class="num">3</div><div class="txt"><div class="t">Levar o vídeo do Reconhecimento pro feed<span class="prazo">esta semana</span></div><div class="d">Publicar no Instagram o que hoje só existe dentro do anúncio, pra a verba virar seguidor.</div></div></div>
+
+<h2>Situação dos acessos</h2>
+<ul class="check">
+<li class="ok">Conta de anúncio com leitura liberada <span style="color:#8A8579">· resolvido</span></li>
+<li class="ok">Instagram vinculado à página <span style="color:#8A8579">· resolvido</span></li>
+<li class="ok">Conta sem restrição e sem risco de apagão <span style="color:#8A8579">· resolvido</span></li>
+<li class="">Dataset vivo e ligado à conta de anúncio <span style="color:#8A8579">· pendente</span></li>
+<li class="">Retorno de cirurgia para o Gerenciador <span style="color:#8A8579">· pendente</span></li>
+<li class="">Business Manager verificada <span style="color:#8A8579">· pendente</span></li>
+<li class="">Definição de quem opera a conta <span style="color:#8A8579">· pendente</span></li>
+</ul>
+
+
+<h2>Como me acionar a partir de agora</h2>
+<p>A reunião fixa acabou. No lugar dela entraram <strong>três agendas abertas</strong>, e você marca quantas quiser.</p>
+<table>
+<tr><th>Agenda</th><th>Para quê</th><th>Situação</th></tr>
+<tr class="on"><td><strong>Growth</strong></td><td>Tráfego, SEO, Google, campanha</td><td>Aberta. Link no grupo da sua clínica</td></tr>
+<tr><td>Comercial</td><td>Treinar SDR, treinar closer</td><td>Abre a partir de 12/08</td></tr>
+<tr><td>Suporte e Sistema</td><td>Sistema Black, implantação, migração</td><td>Aberta, com o Ítalo</td></tr>
+</table>
+<p>Você pode marcar <strong>só você, só o seu time, ou os dois juntos</strong>. Sem limite de reuniões.</p>
+<div class="caixa">
+<h3>Como a sessão funciona</h3>
+<ul>
+<li>De 30 a 40 minutos, <strong>um tema por sessão</strong>. Tema espalhado rende conversa, não resultado.</li>
+<li>Painel aberto na tela, com você pilotando.</li>
+<li>Sai com <strong>três compromissos registrados</strong>, com prazo.</li>
+<li>Gravada. A ata vai pro grupo da sua clínica, pra ninguém depender de memória.</li>
+</ul>
+</div>
+<p>O canal do dia a dia continua sendo o <strong>grupo da sua clínica</strong>. É lá que o time todo enxerga e responde.</p>
+
+
+<h2>O que o Club constrói pra você</h2>
+<div class="caixa">
+<h3>Landing page e vídeo de vendas</h3>
+<p>O time monta a página e a estrutura do vídeo. <strong>Você entrega o roteiro gravado.</strong> Uma página por procedimento, no endereço do seu próprio site, sem preço, com o botão indo pro WhatsApp.</p>
+</div>
+<ul>
+<li><strong>Sessões de Growth</strong> sob demanda, quantas você precisar.</li>
+<li><strong>Tatame do Mês</strong>, com a leitura do seu ciclo e as condutas do período.</li>
+<li><strong>Acompanhamento da sua conta</strong> pelo time, com toda otimização comunicada antes.</li>
+<li><strong>Esta central</strong>, onde cada análise e cada material seu fica guardado por data. Sem login e sem senha: é um link direto, que fica também na descrição do seu grupo.</li>
+</ul>
+<div class="caixa">
+<h3>Como as decisões passam por você</h3>
+<p>Ajuste técnico pequeno a gente faz direto, senão toma tempo demais. <strong>Criativo novo e mudança de público ou de praça vão pro grupo com um resumo, pra sua aprovação antes de subir.</strong></p>
+</div>
+
+<h2>Próximo passo</h2>
+<div class="caixa">
+<p>Marque a sua próxima sessão de Growth pelo link que está na descrição do grupo da sua clínica. <strong>Um tema por sessão</strong>, e me avise antes qual é que eu chego preparado.</p>
+<p style="margin-top:12px">Você gosta de olhar número, então vale dizer: dá pra marcar sessão recorrente só pra ler a conta junto, toda semana ou a cada quinze dias. A frequência é sua escolha.</p>
+</div>
+<footer>Club OftalmoBlack · material exclusivo do mentorado · não compartilhar fora do Club</footer>
+</div>
+</body>
+</html>

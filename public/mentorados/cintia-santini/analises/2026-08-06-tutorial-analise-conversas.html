@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Como fazer a análise das suas conversas com o Claude Code</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:'Hanken Grotesk','Segoe UI',-apple-system,BlinkMacSystemFont,Arial,sans-serif;
+    background:#0B1116;
+    color:#EDEAE2;
+    font-size:15px;
+    line-height:1.6;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:0 24px 60px}
+  header{padding:48px 0 28px;border-bottom:3px solid #D2AC67;margin-bottom:32px}
+  .eyebrow{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#D2AC67;font-weight:700}
+  h1{
+    font-family:'Marcellus',Georgia,'Times New Roman',serif;
+    font-size:30px;
+    font-weight:400;
+    margin-top:10px;
+    line-height:1.25;
+    color:#F7F4EE;
+  }
+  .sub{color:#B7B1A4;font-size:15px;margin-top:14px;max-width:700px}
+  .sub strong{color:#D2AC67;font-weight:600}
+
+  section.passo{margin:0 0 44px}
+  .passo-cabecalho{display:flex;align-items:flex-start;gap:16px;margin-bottom:14px}
+  .n{
+    flex:0 0 40px;height:40px;border-radius:50%;
+    background:#D2AC67;color:#0B1116;font-weight:800;font-size:16px;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Marcellus',Georgia,serif;
+  }
+  .passo-texto{padding-top:4px}
+  .passo-titulo{font-size:17px;font-weight:600;color:#F7F4EE;margin-bottom:4px}
+  .passo-desc{font-size:14.5px;color:#B7B1A4;max-width:680px}
+  .passo-desc strong{color:#EDEAE2;font-weight:600}
+  .passo-desc em{color:#8FC3D9;font-style:normal}
+
+  .caixa{
+    background:#151B22;
+    border:1px solid #2B3440;
+    border-left:3px solid #D2AC67;
+    border-radius:8px;
+    padding:18px 20px;
+    margin:18px 0 0 56px;
+  }
+  .caixa.solta{margin-left:0}
+  .caixa h3{
+    font-family:'Marcellus',Georgia,serif;
+    font-weight:400;
+    font-size:14px;
+    color:#D2AC67;
+    margin-bottom:10px;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+  }
+  .caixa p{color:#C7C2B6;font-size:14px;margin-bottom:8px}
+  .caixa p:last-child{margin-bottom:0}
+  .caixa ul{margin:4px 0 8px 18px;color:#C7C2B6;font-size:14px}
+  .caixa li{margin-bottom:4px}
+  .caixa li strong{color:#EDEAE2}
+
+  .prompt{
+    background:#0E1318;
+    border:1px solid #2B3440;
+    border-radius:8px;
+    padding:16px 18px;
+    margin:14px 0 0 56px;
+    font-family:Consolas,'Courier New',monospace;
+    font-size:12.5px;
+    line-height:1.65;
+    color:#A9C8D8;
+    white-space:pre-wrap;
+  }
+  .prompt-legenda{font-size:12px;color:#8A8579;margin:8px 0 0 56px}
+
+  footer{margin-top:48px;padding-top:18px;border-top:1px solid #262E36;color:#6E695E;font-size:12px}
+  footer .club{color:#8A8579;letter-spacing:2px;text-transform:uppercase;font-size:10.5px;font-weight:700}
+
+  @media print{
+    body{background:#0B1116;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .wrap{max-width:none}
+    section.passo{page-break-inside:avoid}
+    .caixa.solta{page-break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Club OftalmoBlack · Análise de conversas</div>
+    <h1>Como fazer a análise das suas conversas com o Claude Code</h1>
+    <p class="sub">A análise apresentada na reunião de 05/08 <strong>não foi feita pela IA de dentro do Sistema Black</strong>: ela foi feita fora do sistema, lendo as conversas exportadas, uma a uma, com critério definido antes da leitura. Por isso a IA do sistema não encontra esses números quando você pergunta. Este passo a passo mostra como repetir o mesmo processo com o seu Claude Code.</p>
+  </header>
+
+  <section class="passo">
+    <div class="passo-cabecalho">
+      <div class="n">1</div>
+      <div class="passo-texto">
+        <div class="passo-titulo">Peça o export das conversas ao suporte Black</div>
+        <div class="passo-desc">A matéria-prima é o arquivo com as conversas completas do período. Peça no número do suporte: <strong>"export das conversas do último mês"</strong>. O arquivo precisa trazer, para cada lead: nome, telefone, origem (anúncio, link da bio, direto) e as mensagens com data, hora e quem falou (clínica ou paciente).</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="passo">
+    <div class="passo-cabecalho">
+      <div class="n">2</div>
+      <div class="passo-texto">
+        <div class="passo-titulo">Crie uma pasta e coloque o export dentro</div>
+        <div class="passo-desc">No seu computador, dentro da pasta que você já usa com o Claude Code, crie uma subpasta pelo período (ex.: <em>analise-conversas-agosto</em>) e salve ali os arquivos do export. Uma pasta por mês: no mês seguinte você cria outra, cola o export novo e repete o mesmo processo.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="passo">
+    <div class="passo-cabecalho">
+      <div class="n">3</div>
+      <div class="passo-texto">
+        <div class="passo-titulo">Defina as categorias ANTES de mandar ler</div>
+        <div class="passo-desc">Esse é o segredo do método. Sem critério fechado, a IA inventa categorias diferentes a cada rodada e os números não fecham. Use as mesmas 8 categorias do relatório: cada conversa recebe <strong>um único desfecho</strong>.</div>
+      </div>
+    </div>
+    <div class="caixa">
+      <h3>As 8 categorias de desfecho</h3>
+      <ul>
+        <li><strong>Agendou consulta</strong> · data combinada no texto da conversa</li>
+        <li><strong>Aceitou agendar e não fechou data</strong> · disse sim, mas o horário nunca foi fechado</li>
+        <li><strong>Lead parou de responder</strong> · sumiu sem dar motivo</li>
+        <li><strong>Perdeu após receber preço</strong> · sumiu ou recusou depois que o valor apareceu</li>
+        <li><strong>Perdeu por distância</strong> · declarou que mora longe e travou nisso</li>
+        <li><strong>Convênio ou triagem</strong> · buscava convênio ou foi encaminhado para triagem</li>
+        <li><strong>Já era paciente ou pós-operatório</strong> · não é aquisição nova</li>
+        <li><strong>Outro</strong> · não se encaixa em nenhuma das anteriores</li>
+      </ul>
+      <p>Além do desfecho, duas marcações que podem coexistir com qualquer categoria: <strong>ofereceu agenda?</strong> (a clínica propôs dia/horário em algum ponto) e <strong>preço informado?</strong> (o valor apareceu em algum ponto).</p>
+    </div>
+  </section>
+
+  <section class="passo">
+    <div class="passo-cabecalho">
+      <div class="n">4</div>
+      <div class="passo-texto">
+        <div class="passo-titulo">Abra o Claude Code na pasta e cole o prompt</div>
+        <div class="passo-desc">Abra o Claude Code na pasta que você criou (no VS Code: Arquivo → Abrir Pasta, e abra o Claude Code ali). Copie o texto abaixo e cole. O Claude Code lê os arquivos sozinho, direto da pasta: não precisa anexar nada. Se forem centenas de conversas, ele mesmo se organiza em partes.</div>
+      </div>
+    </div>
+    <div class="prompt">Nesta pasta estão as conversas de WhatsApp da minha clínica, exportadas do CRM. Leia cada conversa NA ÍNTEGRA, uma a uma. Se forem muitas, processe em lotes e junte tudo no final.
+
+Classifique cada conversa com UM único desfecho desta lista fechada, sem criar categoria nova:
+
+1. Agendou consulta (data combinada no texto)
+2. Aceitou agendar e não fechou data
+3. Lead parou de responder
+4. Perdeu após receber preço
+5. Perdeu por distância
+6. Convênio ou triagem
+7. Já era paciente ou pós-operatório
+8. Outro
+
+Marque também, para cada conversa: ofereceu_agenda (sim/não) e preco_informado (sim/não).
+
+Ao terminar, salve na pasta um arquivo chamado resumo.md com: a contagem de conversas por desfecho, e depois, para cada categoria, a lista completa com nome, telefone e uma observação de 1 linha explicando o que aconteceu.</div>
+    <div class="prompt-legenda">Prompt pronto para copiar e colar no Claude Code.</div>
+  </section>
+
+  <section class="passo">
+    <div class="passo-cabecalho">
+      <div class="n">5</div>
+      <div class="passo-texto">
+        <div class="passo-titulo">Peça as listas nominais das categorias que quer atacar</div>
+        <div class="passo-desc">O resumo.md já traz as listas por categoria. Quer uma separada pra passar pra equipe? Peça: <em>"salve num arquivo só a lista de quem aceitou agendar e não fechou data, com nome e telefone"</em>. Foi exatamente assim que saiu a lista dos 45 publicada na sua central. Vale para qualquer categoria: os que sumiram após o preço, os travados por distância, etc.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="passo">
+    <div class="passo-cabecalho">
+      <div class="n">6</div>
+      <div class="passo-texto">
+        <div class="passo-titulo">Confira uma amostra antes de confiar</div>
+        <div class="passo-desc">Abra 5 conversas de uma categoria no seu WhatsApp e confira se o rótulo bate com o que aconteceu de verdade. Se 1 ou mais estiverem erradas, o critério ficou ambíguo: ajuste a definição da categoria no prompt e rode de novo. IA lendo conversa erra igual estagiário lendo conversa — a diferença é que ela relê mil conversas em minutos depois que o critério fica bom.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="passo">
+    <div class="passo-cabecalho">
+      <div class="n">7</div>
+      <div class="passo-texto">
+        <div class="passo-titulo">Transforme cada lista em ação</div>
+        <div class="passo-desc">Lista sem cadência é planilha morta. Cada categoria pede um movimento diferente: quem <strong>aceitou e não fechou data</strong> recebe mensagem com duas opções concretas de horário. Quem <strong>travou no preço ou na distância</strong> é candidato à chamada de vídeo. Quem <strong>sumiu sem motivo</strong> entra na cadência de resgate ("amanhã manda de novo").</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="caixa solta">
+    <h3>Por que a IA de dentro do sistema não responde isso</h3>
+    <p>A IA do Sistema Black responde sobre os campos estruturados do CRM (status, etapa, datas). Ela não tem, hoje, ferramenta para ler o texto completo das mil conversas de uma vez, e foi honesta ao dizer isso.</p>
+    <p>A análise do relatório contornou esse limite trabalhando fora do sistema, sobre o export bruto. É o mesmo caminho deste tutorial: export → pasta → Claude Code → critério fechado → listas.</p>
+    <p><strong>Na próxima sessão fazemos a primeira rodada juntos</strong>, com o export do seu período mais recente.</p>
+  </div>
+
+  <footer><span class="club">Club OftalmoBlack</span> · Dra. Cintia Santini · 06/08/2026</footer>
+
+</div>
+</body>
+</html>

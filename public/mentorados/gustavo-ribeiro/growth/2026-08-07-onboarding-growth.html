@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Onboarding de Growth · Dr. Gustavo Ribeiro · Club OftalmoBlack</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:rgba(210,172,103,.25)}
+  body{font-family:'Hanken Grotesk','Segoe UI',-apple-system,BlinkMacSystemFont,Arial,sans-serif;background:#0B1116;color:#EDEAE2;font-size:16px;line-height:1.6;padding-bottom:48px;-webkit-text-size-adjust:100%}
+  .wrap{max-width:760px;margin:0 auto;padding:0 18px}
+  header{padding:34px 0 22px;border-bottom:3px solid #D2AC67;margin-bottom:26px}
+  .eyebrow{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#D2AC67;font-weight:700}
+  h1{font-family:'Marcellus',Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;margin-top:10px;line-height:1.22;color:#F7F4EE}
+  .sub{color:#B7B1A4;font-size:14px;margin-top:12px}
+  .sub a{color:#D2AC67;text-decoration:none;font-weight:600}
+  h2{font-family:'Marcellus',Georgia,serif;font-size:20px;font-weight:400;color:#F7F4EE;margin:38px 0 12px;padding-left:12px;border-left:3px solid #D2AC67;line-height:1.3}
+  h3{font-family:'Marcellus',Georgia,serif;font-size:15px;font-weight:400;letter-spacing:.4px;text-transform:uppercase;color:#D2AC67;margin:24px 0 8px}
+  p{margin:0 0 14px;color:#D6D1C6}
+  p.lead{font-size:17px;color:#C9C4B8}
+  strong{color:#F7F4EE;font-weight:600}
+  em{color:#D2AC67;font-style:normal;font-weight:600}
+  ul,ol{margin:0 0 16px 0;padding-left:20px;color:#D6D1C6}
+  li{margin-bottom:9px}
+  .caixa{background:#151B22;border:1px solid #2B3440;border-left:3px solid #D2AC67;border-radius:8px;padding:18px 20px;margin:20px 0}
+  .caixa h3{margin-top:0}
+  .caixa p:last-child,.caixa ul:last-child,.caixa ol:last-child{margin-bottom:0}
+  .quote{background:#11161C;border:1px solid #262E36;border-radius:8px;padding:18px 20px;margin:20px 0;font-family:'Marcellus',Georgia,serif;font-size:17px;line-height:1.5;color:#F0EBDF}
+  .quote span{display:block;margin-top:10px;font-family:'Hanken Grotesk',sans-serif;font-size:12.5px;letter-spacing:1.5px;text-transform:uppercase;color:#8A8579}
+  table{width:100%;border-collapse:collapse;margin:18px 0;font-size:14.5px}
+  th{text-align:left;font-family:'Marcellus',Georgia,serif;font-weight:400;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#D2AC67;padding:9px 10px;border-bottom:1px solid #2B3440}
+  td{padding:11px 10px;border-bottom:1px solid #1C232B;color:#D6D1C6;vertical-align:top}
+  tr.on td{background:#171E26;color:#F7F4EE}
+  tr.on td:first-child{box-shadow:inset 3px 0 0 #D2AC67}
+  .trilhas .n{display:inline-block;width:24px;height:24px;line-height:24px;text-align:center;border-radius:50%;background:#D2AC67;color:#0B1116;font-weight:800;font-size:13px;margin-right:8px}
+  .passo{display:flex;gap:16px;margin-bottom:22px}
+  .passo .num{flex:0 0 38px;height:38px;border-radius:50%;background:#D2AC67;color:#0B1116;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;font-family:'Marcellus',Georgia,serif}
+  .passo .txt{padding-top:5px}
+  .passo .t{font-size:16.5px;font-weight:600;color:#F7F4EE;margin-bottom:3px}
+  .passo .d{font-size:14.5px;color:#B7B1A4}
+  .prazo{display:inline-block;background:#1E1A12;border:1px solid #3A2F1C;color:#D2AC67;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:20px;padding:2px 10px;margin-left:6px;vertical-align:middle}
+  .check{list-style:none;padding-left:0}
+  .check li{padding-left:26px;position:relative}
+  .check li::before{content:'○';position:absolute;left:4px;color:#D2AC67;font-size:15px}
+  .check li.ok::before{content:'●'}
+  .nao{list-style:none;padding-left:0}
+  .nao li{padding-left:26px;position:relative}
+  .nao li::before{content:'×';position:absolute;left:6px;color:#C4614E;font-weight:700}
+  a.area{display:flex;align-items:center;gap:14px;background:#151B22;border:1px solid #2B3440;border-radius:12px;padding:18px 16px;text-decoration:none;color:inherit;margin-bottom:10px}
+  a.area:active{background:#1B222B;border-color:#D2AC67}
+  .ico{flex:0 0 44px;height:44px;border-radius:10px;background:#1E1A12;border:1px solid #3A2F1C;color:#D2AC67;font-size:20px;display:flex;align-items:center;justify-content:center}
+  .txt2{flex:1 1 auto;min-width:0}
+  .tit{display:block;font-family:'Marcellus',Georgia,serif;font-size:17.5px;color:#F7F4EE;line-height:1.25}
+  .meta{display:block;font-size:12.5px;color:#8A8579;margin-top:4px}
+  .badge{display:inline-block;background:#1E1A12;border:1px solid #3A2F1C;color:#D2AC67;font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:20px;padding:2px 9px;margin-top:6px}
+  .seta{flex:0 0 auto;color:#D2AC67;font-size:22px;line-height:1}
+  footer{margin-top:44px;padding-top:16px;border-top:1px solid #262E36;color:#77726B;font-size:12px}
+  @media (max-width:560px){h1{font-size:24px}h2{font-size:18px}body{font-size:15.5px}table{font-size:13.5px}th,td{padding:8px 7px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Club OftalmoBlack · Growth</div>
+  <h1>Onboarding de Growth<br>Dr. Gustavo Ribeiro</h1>
+  <div class="sub">07/08/2026 · Trilha 2 · feito junto · <a href="../">voltar para a central</a></div>
+</header>
+
+<p class="lead">Dr. Gustavo, esta página fecha o que combinamos no nosso onboarding de Growth: onde a sua operação está hoje, o que a gente vai atacar primeiro e o que fica com cada um.</p>
+<p>Você já tem operação rodando, tem time e tem histórico de conta. Por isso você entra direto na <strong>trilha 2</strong>: a gente não vai montar campanha por cima de você, vai sentar e abrir a conta junto.</p>
+
+
+<h2>As três trilhas de tráfego</h2>
+<p>O Dr. Alex separou as clínicas em três estágios. Não é ranking, é sequência: cada trilha existe pra te levar à próxima.</p>
+<table class="trilhas">
+<tr><th>Trilha</th><th>Como funciona</th><th>O que destrava a próxima</th></tr>
+<tr><td><span class="n">1</span><strong>Feito para você</strong></td><td>O time monta a campanha do zero. Você entrega três coisas: <em>verba, cidade e liberação</em>.</td><td>Ter campanha rodando e querer entender o que está acontecendo.</td></tr>
+<tr class="on"><td><span class="n">2</span><strong>Feito junto</strong></td><td>A gente senta na sessão e abre a conta <em>com você</em>. Você pilota, eu mostro o que estou vendo e por quê.</td><td>Você conseguir ler a própria conta sozinho.</td></tr>
+<tr><td><span class="n">3</span><strong>Feito com IA</strong></td><td>Você opera com IA, e ela passa a fazer o trabalho pesado.</td><td>É o destino da escada.</td></tr>
+</table>
+<div class="quote">"Minha intenção com o Black é te dar autonomia, pra você não ficar dependendo do Black."<span>Dr. Alex, aula de 06/08</span></div>
+<p>A trilha 2 existe por um motivo prático: <strong>não dá pra confiar num resultado que você não sabe ler</strong>. Se a conta cai, você precisa saber se é a campanha, o criativo ou o time comercial. É isso que a sessão constrói.</p>
+
+
+<h2>O ponto de partida, sem rodeio</h2>
+<p>O que a campanha entregou entre maio e julho:</p>
+<table>
+<tr><th>Item</th><th>Número</th></tr>
+<tr><td>Investimento no Meta</td><td>R$4.000 por mês, sem variação desde o começo</td></tr>
+<tr><td>Investimento no Google</td><td>Subiu de R$1.000 para R$2.000 sem mudar nada no resultado. Hoje em cerca de R$300 a R$400 por mês</td></tr>
+<tr><td>Período rodando</td><td>3 meses, de maio a julho</td></tr>
+<tr><td>Consultas atendidas</td><td>cerca de 5</td></tr>
+<tr class="on"><td><strong>Consultas particulares</strong></td><td><strong>zero</strong></td></tr>
+<tr class="on"><td><strong>Cirurgias</strong></td><td><strong>zero</strong></td></tr>
+<tr><td>Custo por consulta</td><td><strong>R$3.000</strong></td></tr>
+<tr><td>Total investido no período</td><td>R$14.000 a R$15.000</td></tr>
+</table>
+<p>E no Google Ads a conta marca <strong>125 conversões</strong> que, na prática, não são consultas. O tagueamento está medindo a coisa errada, o que significa que a campanha vem sendo otimizada em cima de um sinal falso.</p>
+<div class="caixa">
+<h3>A leitura</h3>
+<p>Não é um problema de comercial. <strong>Com esse volume de lead, não existe SDR no mundo que consiga mostrar resultado.</strong> O gargalo está antes: no que está sendo comprado e em como está sendo medido.</p>
+<p style="margin-top:12px">A boa notícia é que agora existe acesso completo. Até esta call, ninguém do time conseguia abrir a conta e olhar. Essa é a primeira coisa que muda.</p>
+</div>
+
+<h3>O que já roda hoje, e não veio do tráfego</h3>
+<ul>
+<li><strong>25 a 30 consultas particulares por mês</strong> na clínica, chegando de forma espontânea. Isso é demanda orgânica, não campanha.</li>
+<li><strong>Cirurgias em queda:</strong> a média era de 5 a 10 por mês e caiu bastante no ano. Julho fechou em zero.</li>
+<li>Indicações existem, mas <strong>esbarram no valor</strong> e o paciente adia.</li>
+<li>A clínica atual é majoritariamente convênio, em bairro empresarial de classe B, e <strong>sem posicionamento definido</strong>. Existe Google e Instagram, mas não existe uma posição sendo construída.</li>
+</ul>
+
+<h3>Para onde isso está indo</h3>
+<div class="caixa">
+<p>A clínica nova, no Itaim, abre em <strong>novembro</strong>, e é <strong>100% particular</strong>. São dois meses e meio de janela, e a meta é entrar no dia 1 já com <strong>10 a 15 pacientes por mês</strong>.</p>
+<p style="margin-top:12px"><em>É esse o alvo de tudo que a gente vai construir agora.</em> Não é consertar a campanha antiga: é ter demanda pronta quando a porta abrir.</p>
+</div>
+
+<h3>O seu comercial hoje</h3>
+<p>Você tem <strong>uma SDR exclusiva</strong>, que começou em 15 de maio. Ela está ociosa, porque chega pouco lead. Pelo método, esse é o cenário em que a gente mede primeiro e solta volume depois.</p>
+<p><strong>Meta financeira agora não faz sentido</strong>, porque não existe histórico. Não dá pra sair do zero e colocar vinte. O que existe desde já é meta de comportamento:</p>
+<ul>
+<li><strong>Tempo até a primeira resposta</strong> ao lead.</li>
+<li><strong>Tempo de continuidade</strong> da conversa, entre uma mensagem e outra.</li>
+</ul>
+<p>Tem SDR que responde rápido a primeira e demora nas seguintes, e tem o contrário. As duas coisas se medem separado. <strong>Agosto é o mês de implementar e colocar pra funcionar. A partir de setembro a gente monta as metas com histórico na mão.</strong></p>
+<p>Quem sustenta essa medição é o CRM. Se a implantação do Sistema Black passar de dez dias, a gente monta um monitoramento manual pelo WhatsApp Business enquanto isso. Não é o ideal, mas funciona.</p>
+
+
+<h2>A estratégia, na ordem</h2>
+<p>Dois funis rodando ao mesmo tempo, cada um com uma função. Não é troca, é sobreposição.</p>
+<div class="passo"><div class="num">1</div><div class="txt"><div class="t">Olympus continua, agora auditado</div><div class="d">É o funil que você já conhece e que já está no ar. Ele traz volume, e isso é proposital: comercial bem treinado converte volume. Agora que existe acesso, dá pra validar se ele está rodando do jeito certo, o que já melhora o volume por si só. Eu preparo os scripts pra alimentar ele.</div></div></div>
+<div class="passo"><div class="num">2</div><div class="txt"><div class="t">Expresso entra em paralelo</div><div class="d">Volume alto com comercial em formação tem uma falha conhecida: o lead chega e ninguém dá conta de qualificar. Para o seu momento, uma estratégia de menos volume e mais qualificação faz mais sentido. Por isso o Expresso sobe junto.</div></div></div>
+<div class="passo"><div class="num">3</div><div class="txt"><div class="t">Google fica em análise</div><div class="d">Hoje está no mínimo e medindo conversão que não existe. Antes de decidir verba, preciso auditar a conta e a landing page que já está no ar.</div></div></div>
+
+<h3>A VSL, com especificação fechada</h3>
+<table>
+<tr><th>Item</th><th>Definição</th></tr>
+<tr class="on"><td>Duração</td><td><strong>4 a 6 minutos.</strong> Não 10, não 15</td></tr>
+<tr><td>Trava</td><td>Libera o botão do WhatsApp depois de <strong>~50% assistido</strong></td></tr>
+<tr><td>Por quê</td><td>Em 6 minutos, metade já são 3 minutos de informação. Quem chega até ali não é curioso</td></tr>
+<tr><td>Gravação</td><td>Pode ser picotada: grava um pedaço, para, grava outro, e encaixa depois</td></tr>
+<tr><td>Oferta</td><td>Sempre <strong>a avaliação</strong>, nunca a cirurgia</td></tr>
+</table>
+<p>É a peça que destrava o resto. Por isso ela vem primeiro: é a mais trabalhosa, e com ela pronta os outros roteiros ficam fáceis.</p>
+
+<h3>O número que manda em tudo</h3>
+<div class="caixa">
+<p>A métrica-mestre não é custo por lead, nem custo por clique, nem custo por seguidor. É <strong>quanto custa a cirurgia contra o seu ticket</strong>. O padrão do método é <strong>até 15%</strong>.</p>
+<p style="margin-top:12px">Hoje uma consulta está custando R$3.000. A pergunta que a gente vai responder com dado é simples: <em>quanto faz sentido pagar por uma cirurgia, dado o seu ticket?</em> Se as métricas do meio estão bonitas mas essa está fora, alguma coisa está errada.</p>
+<p style="margin-top:12px">E vale pra qualquer funil: <strong>se não fecha essa conta, a gente melhora. Se não dá pra melhorar, vai pro próximo.</strong></p>
+</div>
+
+<h3>Conteúdo</h3>
+<p>Você vinha em 3 a 4 vídeos por semana e parou nas últimas duas semanas. <strong>A produção volta esta semana</strong>, em cima do documento de scripts que eu vou mandar.</p>
+<p>Os scripts vêm <strong>palavra a palavra</strong>, e em volume: você não precisa gravar tudo de uma vez, vai puxando conforme consegue. Se algum não ficar com a sua cara, muda. A calibragem usa todo o conteúdo que você já publicou, mais o seu arquétipo: <strong>Amante</strong>, que ficou perto de Sábio e Herói e serve bem.</p>
+
+<h2>As prioridades, na ordem</h2>
+<div class="passo"><div class="num">1</div><div class="txt"><div class="t">Auditar as duas contas com acesso na mão</div><div class="d">Meta e Google em detalhe, mais a landing page que já existe. É a primeira vez que dá pra fazer isso de verdade, e é o que define as decisões seguintes.</div></div></div>
+<div class="passo"><div class="num">2</div><div class="txt"><div class="t">Destravar a produção de conteúdo</div><div class="d">Lote de scripts palavra a palavra, calibrados pelo seu conteúdo e pelo seu arquétipo, pra você voltar ao ritmo de 3 a 4 vídeos por semana.</div></div></div>
+<div class="passo"><div class="num">3</div><div class="txt"><div class="t">Subir o funil Expresso</div><div class="d">Script da VSL, gravação e landing page no ar. É o funil que qualifica antes de chegar no seu WhatsApp.</div></div></div>
+<div class="passo"><div class="num">4</div><div class="txt"><div class="t">Instalar o CRM e ligar a medição</div><div class="d">Sem CRM não existe leitura de funil nem auditoria de SLA da SDR. É o que transforma agosto em base pras metas de setembro.</div></div></div>
+<div class="passo"><div class="num">5</div><div class="txt"><div class="t">Construir demanda pra novembro</div><div class="d">Tudo acima existe pra você abrir a clínica nova já com 10 a 15 pacientes por mês, e não começando do zero.</div></div></div>
+
+
+<h2>A praça, e por que começa perto</h2>
+<p>A regra é dominar do mais próximo pro mais distante, e só abrir a frente seguinte quando a anterior estiver funcionando.</p>
+<div class="passo"><div class="num">1</div><div class="txt"><div class="t">São Paulo capital</div><div class="d">É onde está a maior concentração de renda do país. A ideia é pegar as maçãs mais baixas da árvore antes de subir na escada.</div></div></div>
+<div class="passo"><div class="num">2</div><div class="txt"><div class="t">Estado de São Paulo</div><div class="d">Interiores com maior concentração de população, depois que a capital estiver validada.</div></div></div>
+<div class="passo"><div class="num">3</div><div class="txt"><div class="t">Praças de voo curto</div><div class="d">Florianópolis, Belo Horizonte, Rio. Só depois de cerca de seis meses, com o processo comercial rodando.</div></div></div>
+<div class="caixa">
+<h3>Por que não abrir tudo de uma vez</h3>
+<p>Não é questão de verba. É que <strong>o seu time comercial precisa aprender a quebrar as objeções fáceis antes das difíceis</strong>. Quem mora perto tem menos objeção que quem precisa pegar um avião. Abrir tudo junto obriga o comercial a resolver muita coisa ao mesmo tempo, e aí você não valida nada.</p>
+</div>
+<p>E o caminho até o seu WhatsApp precisa <strong>eliminar quem está fora do perfil geográfico</strong>. Pessoa de outro estado clicando no link da bio é lead que não vira cirurgia, e ainda ocupa o tempo do comercial.</p>
+
+
+<h2>O que o padrão Black aponta</h2>
+
+<h3>Os três funis</h3>
+<table>
+<tr><th>Funil</th><th>Público</th><th>Caminho</th></tr>
+<tr><td><strong>Olimpos</strong><br><span style="color:#8A8579;font-size:13px">autoridade</span></td><td>Frio, prazo longo</td><td>Visitas ao perfil, cresce seguidor, story e live esquentam, depois campanha de cliente. Constrói base, mas demora.</td></tr>
+<tr><td><strong>Expresso</strong><br><span style="color:#8A8579;font-size:13px">o novo</span></td><td>Frio</td><td>Anúncio, landing page com vídeo travado, WhatsApp, agendamento. Qualifica antes de chegar no seu WhatsApp.</td></tr>
+<tr><td><strong>Google</strong></td><td>Quente para consulta</td><td>Busca, SEO ou Ads. Enche agenda rápido, mas converte pouco em cirurgia.</td></tr>
+</table>
+
+<h3>A regra que organiza tudo</h3>
+<div class="quote">"Tráfego compra atenção, qualificação cobra o pedágio. Cada pedágio que você adiciona deixa o lead mais caro, e a cirurgia mais barata."<span>Dr. Alex, aula de 06/08</span></div>
+<p>Pedágio é toda fricção colocada de propósito antes do WhatsApp: a duração do vídeo, a porcentagem que trava a página, dizer no próprio criativo que o atendimento é particular, uma página de perguntas antes do contato, botão no Direct no lugar de textão. <strong>Eles se empilham.</strong></p>
+<p>E tem uma regra que quase ninguém ensina: <em>o pedágio depende da fonte</em>. No Instagram a pessoa está rolando a barra, então o vídeo precisa ser curto. No YouTube ela está parada assistindo, e o vídeo pode ser longo.</p>
+
+<h3>Os números que a gente persegue</h3>
+<table>
+<tr><th>Indicador</th><th>Referência do método</th></tr>
+<tr><td>Custo por cirurgia (CPV)</td><td>Abaixo de <strong>15% do ticket</strong>. É a métrica-rei.</td></tr>
+<tr><td>Custo por seguidor</td><td><strong>R$1 a R$2</strong> na campanha de reconhecimento</td></tr>
+<tr><td>Divisão da verba</td><td><strong>50% reconhecimento, 50% clientes</strong></td></tr>
+<tr><td>Vídeo da landing page</td><td>5, 10 ou 15 minutos. <strong>Teto de 15</strong> pra tráfego de Instagram</td></tr>
+<tr><td>Trava da página</td><td>Libera o resto em torno de <strong>50%</strong> do vídeo assistido</td></tr>
+<tr><td>Criativo novo</td><td>Em <strong>lote, a cada 15 dias</strong>. Mexer todo dia reseta o aprendizado</td></tr>
+<tr><td>Escala de verba</td><td><strong>+20% a cada 2 ou 3 dias.</strong> Salto derruba a entrega</td></tr>
+</table>
+<div class="caixa">
+<h3>Volume não é o objetivo</h3>
+<p>Um caso real do Club: a operação fazia <strong>400 leads, 80 consultas e 40 cirurgias</strong>. Mudou a estratégia, foi pra <strong>1.000 leads, 80 consultas e 25 cirurgias</strong>. Mais que dobrou o lead e perdeu quase metade das cirurgias.</p>
+<p style="margin-top:12px"><em>Nem sempre te encher de lead é o que importa.</em></p>
+</div>
+
+<h3>O que não fazemos</h3>
+<ul class="nao">
+<li>Objetivo "Vendas" na campanha.</li>
+<li>Mandar público frio direto pro WhatsApp.</li>
+<li>Rodar reconhecimento como dark post. Se o vídeo não está no seu Instagram, ele está escondido: ninguém curte, ninguém comenta, e não existe reconhecimento nenhum.</li>
+<li>Poucos anúncios dentro do conjunto. Todo vídeo que foi bem no orgânico tem que estar lá dentro.</li>
+<li>Falar preço pra lead frio. Ele pode até poder pagar, mas se o preço chega antes da confiança, ele some.</li>
+<li>Ofertar cirurgia. A oferta é sempre <strong>a avaliação</strong>. O vídeo vende o próximo passo pequeno e seguro: agendar uma consulta.</li>
+</ul>
+
+<h2>O que fica comigo</h2>
+<p>O que eu assumi nesta sessão, com o prazo de cada coisa.</p>
+<table>
+<tr><th>Entrega</th><th>O que é</th><th>Quando</th></tr>
+<tr><td><strong>Análise da conta Meta Ads</strong></td><td>Diagnóstico completo da estrutura, agora com acesso total.</td><td>antes de segunda</td></tr>
+<tr><td><strong>Análise da conta Google Ads</strong></td><td>Incluindo o tagueamento das 125 conversões e a landing page que já está no ar.</td><td>antes de segunda</td></tr>
+<tr><td><strong>Análise do seu conteúdo</strong></td><td>Leitura de tudo que você já publicou, pra calibrar a voz dos scripts.</td><td>antes de segunda</td></tr>
+<tr><td><strong>Lote de scripts</strong></td><td>Palavra a palavra, em volume, pra alimentar o Olympus.</td><td>segunda 10/08</td></tr>
+<tr><td><strong>Script da VSL</strong></td><td>Prioridade. Tento antecipar e aviso antes se conseguir.</td><td>segunda 10/08</td></tr>
+<tr><td><strong>Landing page da VSL</strong></td><td>Construída pelo time, com a trava de 50%, e colocada no ar.</td><td>semana de 11/08</td></tr>
+<tr><td><strong>Calendário de conteúdo</strong></td><td>Depois de validar o caminho com os primeiros scripts.</td><td>a definir</td></tr>
+<tr><td><strong>Google Meu Negócio</strong></td><td>Hoje não existe. A gente resolve.</td><td>a definir</td></tr>
+<tr><td><strong>Revisão da bio e do link</strong></td><td>A estrutura está boa. O que falta é filtrar quem está fora da praça.</td><td>a definir</td></tr>
+<tr><td><strong>Vídeo de referência e links</strong></td><td>O arquivo da VSL de referência vai pelo WhatsApp, pra você conseguir assistir sem travar.</td><td>antecipado</td></tr>
+</table>
+
+<h2>O que fica com você</h2>
+<p>Curto o bastante pra acontecer. É o formato de toda sessão.</p>
+<div class="passo"><div class="num">1</div><div class="txt"><div class="t">Instalar o CRM do Sistema Black<span class="prazo">esta semana</span></div><div class="d">Os dados já foram pedidos. É o que liga a medição do funil e do SLA da SDR.</div></div></div>
+<div class="passo"><div class="num">2</div><div class="txt"><div class="t">Gravar a VSL<span class="prazo">até quarta 12/08</span></div><div class="d">Assim que o script chegar. Pode gravar picotado, em pedaços, e encaixar depois.</div></div></div>
+<div class="passo"><div class="num">3</div><div class="txt"><div class="t">Voltar a produzir conteúdo<span class="prazo">esta semana</span></div><div class="d">Em cima do documento de scripts, retomando o ritmo de 3 a 4 vídeos por semana.</div></div></div>
+
+<h2>Situação dos acessos</h2>
+<ul class="check">
+<li class="ok">Meta Business Manager com acesso total, incluindo pagamentos <span style="color:#8A8579">· resolvido</span></li>
+<li class="ok">Conta de anúncio do Meta <span style="color:#8A8579">· resolvido</span></li>
+<li class="ok">Conta do Instagram <span style="color:#8A8579">· resolvido</span></li>
+<li class="ok">Google Ads como administrador <span style="color:#8A8579">· resolvido</span></li>
+<li class="">CRM do Sistema Black instalado <span style="color:#8A8579">· pendente</span></li>
+<li class="">Google Meu Negócio criado <span style="color:#8A8579">· pendente</span></li>
+</ul>
+
+
+<h2>Como me acionar a partir de agora</h2>
+<p>A reunião fixa acabou. No lugar dela entraram <strong>três agendas abertas</strong>, e você marca quantas quiser.</p>
+<table>
+<tr><th>Agenda</th><th>Para quê</th><th>Situação</th></tr>
+<tr class="on"><td><strong>Growth</strong></td><td>Tráfego, SEO, Google, campanha</td><td>Aberta. Link no grupo da sua clínica</td></tr>
+<tr><td>Comercial</td><td>Treinar SDR, treinar closer</td><td>Abre a partir de 12/08</td></tr>
+<tr><td>Suporte e Sistema</td><td>Sistema Black, implantação, migração</td><td>Aberta, com o Ítalo</td></tr>
+</table>
+<p>Você pode marcar <strong>só você, só o seu time, ou os dois juntos</strong>. Sem limite de reuniões.</p>
+<div class="caixa">
+<h3>Como a sessão funciona</h3>
+<ul>
+<li>De 30 a 40 minutos, <strong>um tema por sessão</strong>. Tema espalhado rende conversa, não resultado.</li>
+<li>Painel aberto na tela, com você pilotando.</li>
+<li>Sai com <strong>três compromissos registrados</strong>, com prazo.</li>
+<li>Gravada. A ata vai pro grupo da sua clínica, pra ninguém depender de memória.</li>
+</ul>
+</div>
+<p>O canal do dia a dia continua sendo o <strong>grupo da sua clínica</strong>. É lá que o time todo enxerga e responde.</p>
+
+
+<h2>O que o Club constrói pra você</h2>
+<div class="caixa">
+<h3>Landing page e vídeo de vendas</h3>
+<p>O time monta a página e a estrutura do vídeo. <strong>Você entrega o roteiro gravado.</strong> Uma página por procedimento, no endereço do seu próprio site, sem preço, com o botão indo pro WhatsApp.</p>
+</div>
+<ul>
+<li><strong>Sessões de Growth</strong> sob demanda, quantas você precisar.</li>
+<li><strong>Tatame do Mês</strong>, com a leitura do seu ciclo e as condutas do período.</li>
+<li><strong>Acompanhamento da sua conta</strong> pelo time, com toda otimização comunicada antes.</li>
+<li><strong>Esta central</strong>, onde cada análise e cada material seu fica guardado por data. Sem login e sem senha: é um link direto, que fica também na descrição do seu grupo.</li>
+</ul>
+<div class="caixa">
+<h3>Como as decisões passam por você</h3>
+<p>Ajuste técnico pequeno a gente faz direto, senão toma tempo demais. <strong>Criativo novo e mudança de público ou de praça vão pro grupo com um resumo, pra sua aprovação antes de subir.</strong></p>
+</div>
+
+<h2>Próximo passo</h2>
+<div class="caixa">
+<p>Marque a sua próxima sessão de Growth pelo link que está na descrição do grupo da sua clínica. <strong>Um tema por sessão</strong>, e me avise antes qual é que eu chego preparado.</p>
+<p style="margin-top:12px">Se quiser sessão recorrente pra aprender a ler o gerenciador, pode marcar <strong>toda semana ou a cada quinze dias</strong>, meia hora. Está na sua mão: eu abro a agenda, você decide a frequência.</p>
+</div>
+<footer>Club OftalmoBlack · material exclusivo do mentorado · não compartilhar fora do Club</footer>
+</div>
+</body>
+</html>
