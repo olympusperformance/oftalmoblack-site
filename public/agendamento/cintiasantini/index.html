@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Agendamento | Dra. Cintia Santini</title>
+<meta name="description" content="Descubra em poucos passos se você é candidato a se livrar dos óculos e agende sua consulta com a Dra. Cintia Santini, em Umuarama.">
+<style>
+  html, body { margin: 0; padding: 0; background: #EFE6E4; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", "Helvetica Neue", Helvetica, sans-serif; color: #2B1017; }
+  .tt { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Helvetica Neue", Helvetica, sans-serif; font-weight: 600; letter-spacing: -1.2px; }
+  a { color: #8A1730; text-decoration: none; }
+  a:hover { color: #6E1023; }
+  @keyframes glassReveal { from { opacity: 0; transform: translateY(20px) scale(0.985); filter: blur(9px); } to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } }
+  @keyframes iconReveal { 0% { opacity: 0; transform: scale(0.6); filter: blur(12px); } 100% { opacity: 1; transform: scale(1); filter: blur(0); } }
+  @keyframes riseIn { from { opacity: 0; transform: translateY(22px); filter: blur(6px); } to { opacity: 1; transform: translateY(0); filter: blur(0); } }
+  @keyframes sheen { 0% { transform: translateX(-160%) skewX(-18deg); } 100% { transform: translateX(340%) skewX(-18deg); } }
+  @keyframes revealRule { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes floatOrb { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(14px,-16px) scale(1.06); } }
+  @keyframes floatEye { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+</style>
+</helmet>
+<div style="min-height: 100vh; display: flex; justify-content: center; background: radial-gradient(130% 90% at 50% -10%, #FDFAF8 0%, #F2E7E5 58%, #EADCDA 100%);">
+  <div style="position: relative; width: 100%; max-width: 470px; min-height: 100vh; background: linear-gradient(180deg, #FEFCFB, #FBF6F4); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 40px 100px -30px rgba(70,10,25,0.24), 0 0 0 1px rgba(0,0,0,0.02);">
+
+    <div style="position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0;">
+      <div style="position: absolute; top: -70px; right: -50px; width: 260px; height: 260px; border-radius: 50%; background: radial-gradient(circle, rgba(138,23,48,0.26), transparent 68%); filter: blur(36px); animation: floatOrb 14s ease-in-out infinite;"></div>
+      <div style="position: absolute; bottom: 60px; left: -70px; width: 280px; height: 280px; border-radius: 50%; background: radial-gradient(circle, rgba(224,193,115,0.32), transparent 68%); filter: blur(44px); animation: floatOrb 18s ease-in-out infinite reverse;"></div>
+      <div style="position: absolute; top: 44%; left: 34%; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, rgba(110,16,35,0.13), transparent 68%); filter: blur(54px); animation: floatOrb 22s ease-in-out infinite;"></div>
+    </div>
+
+    <div style="position: sticky; top: 0; z-index: 10; background: rgba(254,252,251,0.72); backdrop-filter: saturate(180%) blur(26px); -webkit-backdrop-filter: saturate(180%) blur(26px); border-bottom: 1px solid rgba(255,255,255,0.6); box-shadow: 0 1px 0 rgba(138,23,48,0.05);">
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 11px; padding: 20px 24px 15px;">
+        <div style="width: 54px; height: 54px; border-radius: 50%; padding: 2px; background: linear-gradient(160deg, #E0C173, #B8860B); box-shadow: 0 6px 18px -6px rgba(110,16,35,0.4), inset 0 1px 0 rgba(255,255,255,0.6);">
+          <img src="assets/dra-cintia-retrato.png" alt="Dra. Cintia Santini" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; border: 1.5px solid #FEFCFB;">
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; line-height: 1;">
+          <span class="tt" style="font-size: 21px; font-weight: 600; color: #2B1017; letter-spacing: -0.6px;">Dra. Cintia Santini</span>
+          <div style="display: flex; align-items: center; gap: 8px; margin-top: 7px;">
+            <span style="width: 14px; height: 1px; background: #D8C58A;"></span>
+            <span style="font-size: 10px; font-weight: 600; color: #B8860B; letter-spacing: 2.4px; text-transform: uppercase;">Protocolo Novo Olhar</span>
+            <span style="width: 14px; height: 1px; background: #D8C58A;"></span>
+          </div>
+          <span style="font-size: 10px; font-weight: 500; color: #9C8A8E; letter-spacing: 1.2px; margin-top: 7px;">CRM-PR 22733 · RQE 16097</span>
+        </div>
+      </div>
+      <sc-if value="{{ showProgress }}" hint-placeholder-val="{{ false }}">
+        <div style="height: 2px; background: rgba(240,232,230,0.9); overflow: hidden;">
+          <div style="height: 100%; background: linear-gradient(90deg, #B8860B, #E0C173); width: {{ progressPct }}; transition: width 0.7s cubic-bezier(0.16,1,0.3,1); box-shadow: 0 0 8px rgba(201,162,75,0.6);"></div>
+        </div>
+      </sc-if>
+    </div>
+
+    <div style="position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; padding: 22px 30px 42px;">
+
+      <sc-if value="{{ showBack }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ back }}" style="align-self: flex-start; background: none; border: none; color: #9C8A8E; font-size: 15px; font-weight: 500; padding: 6px 4px; margin-bottom: 6px; cursor: pointer; display: flex; align-items: center; gap: 5px; letter-spacing: 0.2px;" style-hover="color: #8A1730;">
+          <span style="font-size: 19px; line-height: 1;">‹</span> Voltar
+        </button>
+      </sc-if>
+
+      <!-- TELA 0 — ABERTURA -->
+      <sc-if value="{{ isOpening }}" hint-placeholder-val="{{ true }}">
+        <div style="animation: glassReveal 0.7s cubic-bezier(0.16,1,0.3,1) both; flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 20px 0;">
+          <div style="width: 104px; height: 104px; border-radius: 50%; padding: 3px; background: linear-gradient(160deg, #E7CE8C, #B8860B); margin-bottom: 30px; box-shadow: 0 18px 40px -14px rgba(110,16,35,0.42), inset 0 1px 0 rgba(255,255,255,0.6); animation: iconReveal 0.9s cubic-bezier(0.16,1,0.3,1) both, floatEye 5.5s ease-in-out 0.9s infinite;">
+            <img src="assets/dra-cintia-retrato.png" alt="Dra. Cintia Santini" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; border: 2px solid #FEFCFB;">
+          </div>
+          <span style="font-size: 11px; font-weight: 600; color: #B8860B; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 18px; animation: riseIn 0.6s cubic-bezier(0.16,1,0.3,1) 0.1s both;">Clínica Novo Olhar</span>
+          <h1 class="tt" style="font-size: 46px; line-height: 1.04; font-weight: 600; color: #2B1017; letter-spacing: -1.8px; margin: 0 0 22px; animation: riseIn 0.7s cubic-bezier(0.16,1,0.3,1) 0.18s both;">Liberte-se<br>dos óculos.</h1>
+          <div style="width: 46px; height: 2px; background: linear-gradient(90deg, #8A1730, #E0C173); margin-bottom: 24px; transform-origin: left; animation: revealRule 0.9s 0.3s cubic-bezier(0.16,1,0.3,1) both;"></div>
+          <p style="font-size: 20px; line-height: 1.55; color: #5A4A4E; margin: 0 0 44px; text-wrap: pretty; animation: riseIn 0.7s cubic-bezier(0.16,1,0.3,1) 0.34s both;">Saiba se você é um possível candidato a se livrar dos óculos. Descubra em poucos passos o melhor caminho para a sua liberdade visual com a Dra. Cintia Santini.</p>
+          <button onClick="{{ start }}" style="position: relative; overflow: hidden; background: linear-gradient(150deg, rgba(138,23,48,0.97), rgba(92,14,31,0.97)); backdrop-filter: blur(10px) saturate(160%); -webkit-backdrop-filter: blur(10px) saturate(160%); color: #fff; border: 1px solid rgba(224,193,115,0.5); border-radius: 100px; padding: 22px; font-size: 19px; font-weight: 600; width: 100%; cursor: pointer; letter-spacing: 0.3px; box-shadow: 0 16px 36px -10px rgba(110,16,35,0.5), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 1px rgba(50,5,14,0.28); animation: riseIn 0.7s cubic-bezier(0.16,1,0.3,1) 0.46s both;" style-before="content: ''; position: absolute; top: 0; left: 0; width: 45%; height: 100%; background: linear-gradient(100deg, transparent, rgba(255,255,255,0.42), transparent); animation: sheen 1.7s ease-out 0.7s both; pointer-events: none;" style-hover="filter: brightness(1.08);" style-active="transform: scale(0.98);">Começar</button>
+        </div>
+      </sc-if>
+
+      <!-- TELA 0.5 — ATENDIMENTO PARTICULAR -->
+      <sc-if value="{{ isParticular }}" hint-placeholder-val="{{ false }}">
+        <div style="animation: glassReveal 0.6s cubic-bezier(0.16,1,0.3,1) both; flex: 1; display: flex; flex-direction: column;">
+          <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 12px 0;">
+            <span style="font-size: 11px; font-weight: 600; color: #B8860B; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 18px;">Antes de começar</span>
+            <div style="position: relative; overflow: hidden; background: rgba(255,252,251,0.6); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border: 1px solid rgba(255,255,255,0.72); border-radius: 26px; padding: 38px 30px; box-shadow: 0 22px 46px -20px rgba(110,16,35,0.38), inset 0 1px 0 rgba(255,255,255,0.9); animation: iconReveal 0.85s cubic-bezier(0.16,1,0.3,1) 0.1s both;" style-before="content: ''; position: absolute; top: 0; left: 0; width: 55%; height: 100%; background: linear-gradient(100deg, transparent, rgba(255,255,255,0.5), transparent); animation: sheen 2s ease-out 0.5s both; pointer-events: none;">
+              <h2 class="tt" style="font-size: 32px; line-height: 1.14; font-weight: 600; color: #2B1017; letter-spacing: -1.2px; margin: 0 0 14px;">Atendimento Particular.</h2>
+              <div style="width: 40px; height: 1px; background: #E0C173; margin: 0 0 16px;"></div>
+              <p style="font-size: 20px; line-height: 1.5; font-weight: 600; color: #8A1730; margin: 0;">Não atendemos Unimed.</p>
+            </div>
+          </div>
+          <button onClick="{{ particularNext }}" style="position: relative; overflow: hidden; background: linear-gradient(150deg, rgba(138,23,48,0.97), rgba(92,14,31,0.97)); backdrop-filter: blur(10px) saturate(160%); -webkit-backdrop-filter: blur(10px) saturate(160%); color: #fff; border: 1px solid rgba(224,193,115,0.5); border-radius: 100px; padding: 22px; font-size: 19px; font-weight: 600; width: 100%; cursor: pointer; letter-spacing: 0.3px; box-shadow: 0 16px 36px -10px rgba(110,16,35,0.5), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 1px rgba(50,5,14,0.28);" style-before="content: ''; position: absolute; top: 0; left: 0; width: 45%; height: 100%; background: linear-gradient(100deg, transparent, rgba(255,255,255,0.42), transparent); animation: sheen 1.7s ease-out 0.5s both; pointer-events: none;" style-hover="filter: brightness(1.08);" style-active="transform: scale(0.98);">Entendi, continuar</button>
+        </div>
+      </sc-if>
+
+      <!-- TELA 1 — LOCALIZAÇÃO -->
+      <sc-if value="{{ isLocation }}" hint-placeholder-val="{{ false }}">
+        <div style="animation: glassReveal 0.6s cubic-bezier(0.16,1,0.3,1) both; flex: 1; display: flex; flex-direction: column; padding-top: 14px;">
+          <span style="font-size: 11px; font-weight: 600; color: #B8860B; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 16px;">Passo 01 · Localização</span>
+          <h2 class="tt" style="font-size: 36px; line-height: 1.12; font-weight: 600; color: #2B1017; letter-spacing: -1.3px; margin: 0 0 14px;">Onde você mora?</h2>
+          <p style="font-size: 19px; line-height: 1.5; color: #5A4A4E; margin: 0 0 38px;">Para seguir com o seu atendimento, você mora em Umuarama, região ou em outra cidade?</p>
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <button onClick="{{ chooseCidade }}" style="position: relative; overflow: hidden; background: rgba(255,255,255,0.55); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border: 1px solid rgba(255,255,255,0.8); border-radius: 20px; padding: 24px 26px; font-size: 20px; font-weight: 600; color: #2B1017; width: 100%; cursor: pointer; text-align: left; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 12px 32px -14px rgba(70,10,25,0.28), inset 0 1px 0 rgba(255,255,255,0.9); animation: riseIn 0.6s cubic-bezier(0.16,1,0.3,1) 0.1s both;" style-hover="border-color: rgba(216,197,138,0.9); box-shadow: 0 16px 36px -12px rgba(138,23,48,0.3), inset 0 1px 0 rgba(255,255,255,0.95);" style-active="transform: scale(0.99);">Moro em Umuarama ou região <span style="color:#B8860B; font-size: 22px;">›</span></button>
+            <button onClick="{{ chooseOutra }}" style="position: relative; overflow: hidden; background: rgba(255,255,255,0.55); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border: 1px solid rgba(255,255,255,0.8); border-radius: 20px; padding: 24px 26px; font-size: 20px; font-weight: 600; color: #2B1017; width: 100%; cursor: pointer; text-align: left; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 12px 32px -14px rgba(70,10,25,0.28), inset 0 1px 0 rgba(255,255,255,0.9); animation: riseIn 0.6s cubic-bezier(0.16,1,0.3,1) 0.2s both;" style-hover="border-color: rgba(216,197,138,0.9); box-shadow: 0 16px 36px -12px rgba(138,23,48,0.3), inset 0 1px 0 rgba(255,255,255,0.95);" style-active="transform: scale(0.99);">Moro em outra cidade <span style="color:#B8860B; font-size: 22px;">›</span></button>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- RAMO A1 -->
+      <sc-if value="{{ isA1 }}" hint-placeholder-val="{{ false }}">
+        <div style="animation: glassReveal 0.6s cubic-bezier(0.16,1,0.3,1) both; flex: 1; display: flex; flex-direction: column;">
+          <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 12px 0;">
+            <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(255,255,255,0.55); backdrop-filter: blur(18px) saturate(180%); -webkit-backdrop-filter: blur(18px) saturate(180%); border: 1px solid rgba(255,255,255,0.8); display: flex; align-items: center; justify-content: center; margin-bottom: 30px; box-shadow: 0 10px 28px -10px rgba(110,16,35,0.3), inset 0 1px 0 rgba(255,255,255,0.9); animation: iconReveal 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s both;"><span style="color: #8A1730; font-size: 26px;">✓</span></div>
+            <h2 class="tt" style="font-size: 40px; line-height: 1.08; font-weight: 600; color: #2B1017; letter-spacing: -1.6px; margin: 0 0 18px; animation: riseIn 0.6s cubic-bezier(0.16,1,0.3,1) 0.2s both;">Perfeito!</h2>
+            <p style="font-size: 20px; line-height: 1.55; color: #5A4A4E; margin: 0; text-wrap: pretty; animation: riseIn 0.6s cubic-bezier(0.16,1,0.3,1) 0.3s both;">A Dra. Cintia realizará uma avaliação detalhada e indicará a técnica mais adequada para o seu caso.</p>
+          </div>
+          <button onClick="{{ a1next }}" style="position: relative; overflow: hidden; background: linear-gradient(150deg, rgba(138,23,48,0.97), rgba(92,14,31,0.97)); backdrop-filter: blur(10px) saturate(160%); -webkit-backdrop-filter: blur(10px) saturate(160%); color: #fff; border: 1px solid rgba(224,193,115,0.5); border-radius: 100px; padding: 22px; font-size: 19px; font-weight: 600; width: 100%; cursor: pointer; letter-spacing: 0.3px; box-shadow: 0 16px 36px -10px rgba(110,16,35,0.5), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 1px rgba(50,5,14,0.28);" style-before="content: ''; position: absolute; top: 0; left: 0; width: 45%; height: 100%; background: linear-gradient(100deg, transparent, rgba(255,255,255,0.42), transparent); animation: sheen 1.7s ease-out 0.5s both; pointer-events: none;" style-hover="filter: brightness(1.08);" style-active="transform: scale(0.98);">Continuar</button>
+        </div>
+      </sc-if>
+
+      <!-- RAMO A3 — EXAMES -->
+      <sc-if value="{{ isA3 }}" hint-placeholder-val="{{ false }}">
+        <div style="animation: glassReveal 0.6s cubic-bezier(0.16,1,0.3,1) both; flex: 1; display: flex; flex-direction: column; padding-top: 10px;">
+          <span style="font-size: 11px; font-weight: 600; color: #B8860B; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 16px;">O que está incluso</span>
+          <h2 class="tt" style="font-size: 32px; line-height: 1.14; font-weight: 600; color: #2B1017; letter-spacing: -1.2px; margin: 0 0 10px;">Uma avaliação completa</h2>
+          <p style="font-size: 18px; line-height: 1.5; color: #5A4A4E; margin: 0 0 24px;">Exames importantíssimos para a sua saúde ocular:</p>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; gap: 15px; align-items: flex-start; background: rgba(255,255,255,0.5); backdrop-filter: blur(16px) saturate(170%); -webkit-backdrop-filter: blur(16px) saturate(170%); border: 1px solid rgba(255,255,255,0.72); border-radius: 16px; padding: 16px 18px; box-shadow: 0 8px 22px -14px rgba(70,10,25,0.25), inset 0 1px 0 rgba(255,255,255,0.85); animation: riseIn 0.55s cubic-bezier(0.16,1,0.3,1) 0.08s both;"><span style="color: #B8860B; font-size: 10px; margin-top: 6px;">◆</span><div><div style="font-size: 18px; font-weight: 600; color: #2B1017;">Refração</div><div style="font-size: 16px; color: #5A4A4E;">Avaliação do grau dos óculos</div></div></div>
+            <div style="display: flex; gap: 15px; align-items: flex-start; background: rgba(255,255,255,0.5); backdrop-filter: blur(16px) saturate(170%); -webkit-backdrop-filter: blur(16px) saturate(170%); border: 1px solid rgba(255,255,255,0.72); border-radius: 16px; padding: 16px 18px; box-shadow: 0 8px 22px -14px rgba(70,10,25,0.25), inset 0 1px 0 rgba(255,255,255,0.85); animation: riseIn 0.55s cubic-bezier(0.16,1,0.3,1) 0.16s both;"><span style="color: #B8860B; font-size: 10px; margin-top: 6px;">◆</span><div><div style="font-size: 18px; font-weight: 600; color: #2B1017;">Ceratometria</div><div style="font-size: 16px; color: #5A4A4E;">Medida da curvatura da córnea</div></div></div>
+            <div style="display: flex; gap: 15px; align-items: flex-start; background: rgba(255,255,255,0.5); backdrop-filter: blur(16px) saturate(170%); -webkit-backdrop-filter: blur(16px) saturate(170%); border: 1px solid rgba(255,255,255,0.72); border-radius: 16px; padding: 16px 18px; box-shadow: 0 8px 22px -14px rgba(70,10,25,0.25), inset 0 1px 0 rgba(255,255,255,0.85); animation: riseIn 0.55s cubic-bezier(0.16,1,0.3,1) 0.24s both;"><span style="color: #B8860B; font-size: 10px; margin-top: 6px;">◆</span><div><div style="font-size: 18px; font-weight: 600; color: #2B1017;">Tonometria</div><div style="font-size: 16px; color: #5A4A4E;">Pressão intraocular</div></div></div>
+            <div style="display: flex; gap: 15px; align-items: flex-start; background: rgba(255,255,255,0.5); backdrop-filter: blur(16px) saturate(170%); -webkit-backdrop-filter: blur(16px) saturate(170%); border: 1px solid rgba(255,255,255,0.72); border-radius: 16px; padding: 16px 18px; box-shadow: 0 8px 22px -14px rgba(70,10,25,0.25), inset 0 1px 0 rgba(255,255,255,0.85); animation: riseIn 0.55s cubic-bezier(0.16,1,0.3,1) 0.32s both;"><span style="color: #B8860B; font-size: 10px; margin-top: 6px;">◆</span><div><div style="font-size: 18px; font-weight: 600; color: #2B1017;">Mapeamento de retina</div><div style="font-size: 16px; color: #5A4A4E;">Avaliação do fundo de olho</div></div></div>
+          </div>
+          <p style="font-size: 17px; line-height: 1.55; color: #5A4A4E; margin: 22px 0 28px; animation: riseIn 0.55s cubic-bezier(0.16,1,0.3,1) 0.5s both;">Tudo incluso no valor, com <strong style="color:#2B1017; font-weight:600;">hora marcada</strong>, e você tem direito a <strong style="color:#2B1017; font-weight:600;">retorno em até 30 dias</strong>.</p>
+          <button onClick="{{ a3next }}" style="position: relative; overflow: hidden; background: linear-gradient(150deg, rgba(138,23,48,0.97), rgba(92,14,31,0.97)); backdrop-filter: blur(10px) saturate(160%); -webkit-backdrop-filter: blur(10px) saturate(160%); color: #fff; border: 1px solid rgba(224,193,115,0.5); border-radius: 100px; padding: 22px; font-size: 19px; font-weight: 600; width: 100%; cursor: pointer; letter-spacing: 0.3px; box-shadow: 0 16px 36px -10px rgba(110,16,35,0.5), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 1px rgba(50,5,14,0.28);" style-before="content: ''; position: absolute; top: 0; left: 0; width: 45%; height: 100%; background: linear-gradient(100deg, transparent, rgba(255,255,255,0.42), transparent); animation: sheen 1.7s ease-out 0.7s both; pointer-events: none;" style-hover="filter: brightness(1.08);" style-active="transform: scale(0.98);">Continuar</button>
+        </div>
+      </sc-if>
+
+      <!-- RAMO A2 — VALOR + AGENDAR -->
+      <sc-if value="{{ isA2 }}" hint-placeholder-val="{{ false }}">
+        <div style="animation: glassReveal 0.6s cubic-bezier(0.16,1,0.3,1) both; flex: 1; display: flex; flex-direction: column;">
+          <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 12px 0;">
+            <span style="font-size: 11px; font-weight: 600; color: #B8860B; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 18px;">Investimento</span>
+            <p style="font-size: 20px; line-height: 1.55; color: #5A4A4E; margin: 0 0 26px;">Nossa consulta oftalmológica completa está no valor de:</p>
+            <div style="position: relative; overflow: hidden; background: rgba(255,252,251,0.6); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border: 1px solid rgba(255,255,255,0.72); border-radius: 26px; padding: 38px 30px; text-align: center; box-shadow: 0 22px 46px -20px rgba(110,16,35,0.38), inset 0 1px 0 rgba(255,255,255,0.9); animation: iconReveal 0.85s cubic-bezier(0.16,1,0.3,1) 0.12s both;" style-before="content: ''; position: absolute; top: 0; left: 0; width: 55%; height: 100%; background: linear-gradient(100deg, transparent, rgba(255,255,255,0.5), transparent); animation: sheen 2s ease-out 0.5s both; pointer-events: none;">
+              <div class="tt" style="font-size: 60px; font-weight: 600; color: #2B1017; letter-spacing: -2px; line-height: 1;">R$ 480</div>
+              <div style="width: 40px; height: 1px; background: #E0C173; margin: 20px auto;"></div>
+              <div style="font-size: 18px; font-weight: 600; color: #8A1730;">em até 2× sem juros</div>
+              <div style="font-size: 17px; font-weight: 600; color: #8A1730; letter-spacing: 0.2px; margin-top: 16px;">Atendimento particular · não atendemos convênio</div>
+            </div>
+          </div>
+          <button onClick="{{ whatsCidade }}" style="position: relative; overflow: hidden; background: linear-gradient(150deg, rgba(138,23,48,0.97), rgba(92,14,31,0.97)); backdrop-filter: blur(10px) saturate(160%); -webkit-backdrop-filter: blur(10px) saturate(160%); color: #fff; border: 1px solid rgba(224,193,115,0.5); border-radius: 100px; padding: 22px; font-size: 19px; font-weight: 600; width: 100%; cursor: pointer; letter-spacing: 0.3px; box-shadow: 0 16px 36px -10px rgba(110,16,35,0.5), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 1px rgba(50,5,14,0.28);" style-before="content: ''; position: absolute; top: 0; left: 0; width: 45%; height: 100%; background: linear-gradient(100deg, transparent, rgba(255,255,255,0.42), transparent); animation: sheen 1.7s ease-out 0.6s both; pointer-events: none;" style-hover="filter: brightness(1.08);" style-active="transform: scale(0.98);">Agendar consulta</button>
+        </div>
+      </sc-if>
+
+      <!-- RAMO B — QUALIFICAÇÃO -->
+      <sc-if value="{{ isBQ }}" hint-placeholder-val="{{ false }}">
+        <div style="animation: glassReveal 0.6s cubic-bezier(0.16,1,0.3,1) both; flex: 1; display: flex; flex-direction: column; padding-top: 14px;">
+          <span style="font-size: 11px; font-weight: 600; color: #B8860B; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 16px;">Uma pergunta importante</span>
+          <h2 class="tt" style="font-size: 33px; line-height: 1.14; font-weight: 600; color: #2B1017; letter-spacing: -1.2px; margin: 0 0 16px;">Você viria a Umuarama?</h2>
+          <p style="font-size: 19px; line-height: 1.55; color: #5A4A4E; margin: 0 0 34px; text-wrap: pretty;">Nossa clínica fica em Umuarama, e é aqui que a Dra. Cintia realiza as cirurgias. Você viria até aqui para realizar o seu sonho de ter a liberdade visual?</p>
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <button onClick="{{ chooseSim }}" style="position: relative; overflow: hidden; background: linear-gradient(150deg, rgba(138,23,48,0.97), rgba(92,14,31,0.97)); backdrop-filter: blur(10px) saturate(160%); -webkit-backdrop-filter: blur(10px) saturate(160%); border: 1px solid rgba(224,193,115,0.5); border-radius: 100px; padding: 23px; font-size: 19px; font-weight: 600; color: #fff; width: 100%; cursor: pointer; letter-spacing: 0.3px; box-shadow: 0 16px 36px -10px rgba(110,16,35,0.5), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 1px rgba(50,5,14,0.28); animation: riseIn 0.6s cubic-bezier(0.16,1,0.3,1) 0.1s both;" style-before="content: ''; position: absolute; top: 0; left: 0; width: 45%; height: 100%; background: linear-gradient(100deg, transparent, rgba(255,255,255,0.42), transparent); animation: sheen 1.7s ease-out 0.6s both; pointer-events: none;" style-hover="filter: brightness(1.08);" style-active="transform: scale(0.99);">Sim, eu iria a Umuarama</button>
+            <button onClick="{{ chooseNao }}" style="background: rgba(255,255,255,0.5); backdrop-filter: blur(18px) saturate(170%); -webkit-backdrop-filter: blur(18px) saturate(170%); border: 1px solid rgba(255,255,255,0.78); border-radius: 100px; padding: 23px; font-size: 19px; font-weight: 600; color: #5A4A4E; width: 100%; cursor: pointer; box-shadow: 0 10px 26px -14px rgba(70,10,25,0.22), inset 0 1px 0 rgba(255,255,255,0.85); animation: riseIn 0.6s cubic-bezier(0.16,1,0.3,1) 0.2s both;" style-hover="border-color: rgba(216,197,138,0.9); color: #2B1017;" style-active="transform: scale(0.99);">Não</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- B1 — ENCERRAMENTO CORDIAL -->
+      <sc-if value="{{ isBNo }}" hint-placeholder-val="{{ false }}">
+        <div style="animation: glassReveal 0.7s cubic-bezier(0.16,1,0.3,1) both; flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 24px 0; text-align: center; align-items: center;">
+          <div style="width: 66px; height: 66px; border-radius: 50%; background: rgba(255,255,255,0.55); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border: 1px solid rgba(255,255,255,0.82); display: flex; align-items: center; justify-content: center; margin-bottom: 30px; box-shadow: 0 12px 32px -12px rgba(110,16,35,0.3), inset 0 1px 0 rgba(255,255,255,0.95); animation: iconReveal 0.9s cubic-bezier(0.16,1,0.3,1) 0.1s both;"><span style="color: #8A1730; font-size: 28px;">♡</span></div>
+          <h2 class="tt" style="font-size: 34px; line-height: 1.14; font-weight: 600; color: #2B1017; letter-spacing: -1.4px; margin: 0 0 20px; animation: riseIn 0.6s cubic-bezier(0.16,1,0.3,1) 0.22s both;">Entendemos<br>perfeitamente</h2>
+          <p style="font-size: 19px; line-height: 1.6; color: #5A4A4E; margin: 0; text-wrap: pretty; animation: riseIn 0.6s cubic-bezier(0.16,1,0.3,1) 0.32s both;">Agradecemos muito o seu contato e o interesse no trabalho da Dra. Cintia Santini. Se um dia você decidir dar esse passo em direção à sua liberdade visual, estaremos de portas abertas para te receber aqui em Umuarama.</p>
+          <div style="width: 40px; height: 1px; background: #E0C173; margin: 26px 0; transform-origin: center; animation: revealRule 0.8s 0.42s cubic-bezier(0.16,1,0.3,1) both;"></div>
+          <p class="tt" style="font-size: 24px; font-style: italic; line-height: 1.4; color: #8A1730; font-weight: 500; margin: 0; letter-spacing: -0.4px; animation: riseIn 0.6s cubic-bezier(0.16,1,0.3,1) 0.5s both;">Cuide bem da sua visão.</p>
+        </div>
+      </sc-if>
+
+      <!-- B2_1 -->
+      <sc-if value="{{ isB1 }}" hint-placeholder-val="{{ false }}">
+        <div style="animation: glassReveal 0.6s cubic-bezier(0.16,1,0.3,1) both; flex: 1; display: flex; flex-direction: column;">
+          <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 12px 0;">
+            <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(255,255,255,0.55); backdrop-filter: blur(18px) saturate(180%); -webkit-backdrop-filter: blur(18px) saturate(180%); border: 1px solid rgba(255,255,255,0.8); display: flex; align-items: center; justify-content: center; margin-bottom: 30px; box-shadow: 0 10px 28px -10px rgba(110,16,35,0.3), inset 0 1px 0 rgba(255,255,255,0.9); animation: iconReveal 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s both;"><span style="color: #8A1730; font-size: 24px;">★</span></div>
+            <h2 class="tt" style="font-size: 40px; line-height: 1.08; font-weight: 600; color: #2B1017; letter-spacing: -1.6px; margin: 0 0 18px; animation: riseIn 0.6s cubic-bezier(0.16,1,0.3,1) 0.2s both;">Que ótimo!</h2>
+            <p style="font-size: 20px; line-height: 1.55; color: #5A4A4E; margin: 0; animation: riseIn 0.6s cubic-bezier(0.16,1,0.3,1) 0.3s both;">Ficamos muito felizes com a sua decisão de cuidar da sua visão.</p>
+          </div>
+          <button onClick="{{ b1next }}" style="position: relative; overflow: hidden; background: linear-gradient(150deg, rgba(138,23,48,0.97), rgba(92,14,31,0.97)); backdrop-filter: blur(10px) saturate(160%); -webkit-backdrop-filter: blur(10px) saturate(160%); color: #fff; border: 1px solid rgba(224,193,115,0.5); border-radius: 100px; padding: 22px; font-size: 19px; font-weight: 600; width: 100%; cursor: pointer; letter-spacing: 0.3px; box-shadow: 0 16px 36px -10px rgba(110,16,35,0.5), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 1px rgba(50,5,14,0.28);" style-before="content: ''; position: absolute; top: 0; left: 0; width: 45%; height: 100%; background: linear-gradient(100deg, transparent, rgba(255,255,255,0.42), transparent); animation: sheen 1.7s ease-out 0.5s both; pointer-events: none;" style-hover="filter: brightness(1.08);" style-active="transform: scale(0.98);">Continuar</button>
+        </div>
+      </sc-if>
+
+      <!-- B2_2 — TELECONSULTA VALOR -->
+      <sc-if value="{{ isB2 }}" hint-placeholder-val="{{ false }}">
+        <div style="animation: glassReveal 0.6s cubic-bezier(0.16,1,0.3,1) both; flex: 1; display: flex; flex-direction: column;">
+          <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 12px 0;">
+            <span style="font-size: 11px; font-weight: 600; color: #B8860B; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 18px;">Primeiro passo</span>
+            <p style="font-size: 20px; line-height: 1.55; color: #5A4A4E; margin: 0 0 26px;">O primeiro passo é uma <strong style="color:#2B1017; font-weight:600;">teleconsulta</strong> com a Dra. Cintia, no valor de:</p>
+            <div style="position: relative; overflow: hidden; background: rgba(255,252,251,0.6); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border: 1px solid rgba(255,255,255,0.72); border-radius: 26px; padding: 38px 30px; text-align: center; box-shadow: 0 22px 46px -20px rgba(110,16,35,0.38), inset 0 1px 0 rgba(255,255,255,0.9); animation: iconReveal 0.85s cubic-bezier(0.16,1,0.3,1) 0.12s both;" style-before="content: ''; position: absolute; top: 0; left: 0; width: 55%; height: 100%; background: linear-gradient(100deg, transparent, rgba(255,255,255,0.5), transparent); animation: sheen 2s ease-out 0.5s both; pointer-events: none;">
+              <div class="tt" style="font-size: 60px; font-weight: 600; color: #2B1017; letter-spacing: -2px; line-height: 1;">R$ 480</div>
+              <div style="width: 40px; height: 1px; background: #E0C173; margin: 20px auto;"></div>
+              <div style="font-size: 18px; font-weight: 600; color: #8A1730;">Atendimento on-line com a Dra. Cintia</div>
+            </div>
+          </div>
+          <button onClick="{{ b2next }}" style="position: relative; overflow: hidden; background: linear-gradient(150deg, rgba(138,23,48,0.97), rgba(92,14,31,0.97)); backdrop-filter: blur(10px) saturate(160%); -webkit-backdrop-filter: blur(10px) saturate(160%); color: #fff; border: 1px solid rgba(224,193,115,0.5); border-radius: 100px; padding: 22px; font-size: 19px; font-weight: 600; width: 100%; cursor: pointer; letter-spacing: 0.3px; box-shadow: 0 16px 36px -10px rgba(110,16,35,0.5), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 1px rgba(50,5,14,0.28);" style-before="content: ''; position: absolute; top: 0; left: 0; width: 45%; height: 100%; background: linear-gradient(100deg, transparent, rgba(255,255,255,0.42), transparent); animation: sheen 1.7s ease-out 0.6s both; pointer-events: none;" style-hover="filter: brightness(1.08);" style-active="transform: scale(0.98);">Continuar</button>
+        </div>
+      </sc-if>
+
+      <!-- B2_3 -->
+      <sc-if value="{{ isB3 }}" hint-placeholder-val="{{ false }}">
+        <div style="animation: glassReveal 0.6s cubic-bezier(0.16,1,0.3,1) both; flex: 1; display: flex; flex-direction: column;">
+          <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 12px 0;">
+            <span style="font-size: 11px; font-weight: 600; color: #B8860B; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 16px;">Na teleconsulta</span>
+            <h2 class="tt" style="font-size: 32px; line-height: 1.14; font-weight: 600; color: #2B1017; letter-spacing: -1.2px; margin: 0 0 18px; animation: riseIn 0.6s cubic-bezier(0.16,1,0.3,1) 0.08s both;">A Dra. Cintia avalia o seu caso</h2>
+            <p style="font-size: 19px; line-height: 1.55; color: #5A4A4E; margin: 0 0 26px; text-wrap: pretty; animation: riseIn 0.6s cubic-bezier(0.16,1,0.3,1) 0.16s both;">Ela analisará seus exames, esclarecerá todas as suas dúvidas e avaliará se o seu caso é indicado para cirurgia:</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+              <span style="background: rgba(255,252,251,0.6); backdrop-filter: blur(14px) saturate(170%); -webkit-backdrop-filter: blur(14px) saturate(170%); border: 1px solid rgba(224,193,115,0.55); color: #8A1730; font-size: 16px; font-weight: 600; padding: 11px 20px; border-radius: 999px; box-shadow: 0 6px 16px -10px rgba(110,16,35,0.35), inset 0 1px 0 rgba(255,255,255,0.9); animation: iconReveal 0.6s cubic-bezier(0.16,1,0.3,1) 0.24s both;">Troca do cristalino</span>
+              <span style="background: rgba(255,252,251,0.6); backdrop-filter: blur(14px) saturate(170%); -webkit-backdrop-filter: blur(14px) saturate(170%); border: 1px solid rgba(224,193,115,0.55); color: #8A1730; font-size: 16px; font-weight: 600; padding: 11px 20px; border-radius: 999px; box-shadow: 0 6px 16px -10px rgba(110,16,35,0.35), inset 0 1px 0 rgba(255,255,255,0.9); animation: iconReveal 0.6s cubic-bezier(0.16,1,0.3,1) 0.36s both;">Refrativa a laser</span>
+              <span style="background: rgba(255,252,251,0.6); backdrop-filter: blur(14px) saturate(170%); -webkit-backdrop-filter: blur(14px) saturate(170%); border: 1px solid rgba(224,193,115,0.55); color: #8A1730; font-size: 16px; font-weight: 600; padding: 11px 20px; border-radius: 999px; box-shadow: 0 6px 16px -10px rgba(110,16,35,0.35), inset 0 1px 0 rgba(255,255,255,0.9); animation: iconReveal 0.6s cubic-bezier(0.16,1,0.3,1) 0.48s both;">Catarata</span>
+            </div>
+          </div>
+          <button onClick="{{ b3next }}" style="position: relative; overflow: hidden; background: linear-gradient(150deg, rgba(138,23,48,0.97), rgba(92,14,31,0.97)); backdrop-filter: blur(10px) saturate(160%); -webkit-backdrop-filter: blur(10px) saturate(160%); color: #fff; border: 1px solid rgba(224,193,115,0.5); border-radius: 100px; padding: 22px; font-size: 19px; font-weight: 600; width: 100%; cursor: pointer; letter-spacing: 0.3px; box-shadow: 0 16px 36px -10px rgba(110,16,35,0.5), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 1px rgba(50,5,14,0.28);" style-before="content: ''; position: absolute; top: 0; left: 0; width: 45%; height: 100%; background: linear-gradient(100deg, transparent, rgba(255,255,255,0.42), transparent); animation: sheen 1.7s ease-out 0.7s both; pointer-events: none;" style-hover="filter: brightness(1.08);" style-active="transform: scale(0.98);">Continuar</button>
+        </div>
+      </sc-if>
+
+      <!-- B2_4 — PROTOCOLO + AGENDAR -->
+      <sc-if value="{{ isB4 }}" hint-placeholder-val="{{ false }}">
+        <div style="animation: glassReveal 0.6s cubic-bezier(0.16,1,0.3,1) both; flex: 1; display: flex; flex-direction: column;">
+          <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 12px 0;">
+            <div style="display: inline-flex; align-self: flex-start; align-items: center; gap: 9px; background: linear-gradient(150deg, rgba(110,16,35,0.94), rgba(62,8,20,0.94)); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(224,193,115,0.4); color: #E7CE8C; font-size: 12px; font-weight: 600; letter-spacing: 1.6px; text-transform: uppercase; padding: 10px 18px; border-radius: 999px; margin-bottom: 26px; box-shadow: 0 10px 26px -12px rgba(60,8,18,0.55), inset 0 1px 0 rgba(255,255,255,0.14); animation: iconReveal 0.7s cubic-bezier(0.16,1,0.3,1) 0.1s both;"><span style="width:5px;height:5px;background:#E7CE8C;border-radius:50%;"></span>Protocolo Novo Olhar</div>
+            <p style="font-size: 20px; line-height: 1.55; color: #5A4A4E; margin: 0; text-wrap: pretty; animation: riseIn 0.6s cubic-bezier(0.16,1,0.3,1) 0.24s both;">Se o seu caso for indicado, orientaremos você sobre como realizar a cirurgia com a Dra. Cintia aqui em Umuarama, com todo o suporte da nossa equipe.</p>
+          </div>
+          <button onClick="{{ whatsTele }}" style="position: relative; overflow: hidden; background: linear-gradient(150deg, rgba(138,23,48,0.97), rgba(92,14,31,0.97)); backdrop-filter: blur(10px) saturate(160%); -webkit-backdrop-filter: blur(10px) saturate(160%); color: #fff; border: 1px solid rgba(224,193,115,0.5); border-radius: 100px; padding: 22px; font-size: 19px; font-weight: 600; width: 100%; cursor: pointer; letter-spacing: 0.3px; box-shadow: 0 16px 36px -10px rgba(110,16,35,0.5), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 1px rgba(50,5,14,0.28);" style-before="content: ''; position: absolute; top: 0; left: 0; width: 45%; height: 100%; background: linear-gradient(100deg, transparent, rgba(255,255,255,0.42), transparent); animation: sheen 1.7s ease-out 0.6s both; pointer-events: none;" style-hover="filter: brightness(1.08);" style-active="transform: scale(0.98);">Agendar teleconsulta</button>
+        </div>
+      </sc-if>
+
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  /* ==========================================================================
+     >>> VARIÁVEIS FÁCEIS DE EDITAR <<<
+     ========================================================================== */
+
+  // WhatsApp da clínica (somente dígitos: 55 + DDD + número)
+  static WHATSAPP = "5544991359872"; // +55 44 99135-9872
+
+  // Mensagem — paciente de UMUARAMA (Ramo A)
+  static MSG_CIDADE = "Olá! Vim pelo link da bio da Dra. Cintia Santini. Sou de Umuarama e gostaria de agendar minha consulta presencial.";
+
+  // Mensagem — paciente de OUTRA CIDADE que pode vir a Umuarama (Ramo B)
+  static MSG_TELECONSULTA = "Olá! Vim pelo link da bio da Dra. Cintia Santini. Sou de outra cidade, tenho interesse em cirurgia e posso ir a Umuarama. Gostaria de agendar a teleconsulta.";
+
+  /* Valores das consultas — editar aqui:
+     Consulta presencial: R$ 480  →  tela "Investimento" (isA2), no markup: >R$ 480<
+     Teleconsulta:        R$ 480  →  tela "Primeiro passo" (isB2), no markup: >R$ 480<   */
+  /* ========================================================================== */
+
+  state = { screen: "opening", history: [] };
+
+  go(to) {
+    this.setState(s => ({ screen: to, history: [...s.history, s.screen] }));
+    window.scrollTo(0, 0);
+  }
+
+  back() {
+    this.setState(s => {
+      const h = [...s.history];
+      const prev = h.pop();
+      return { screen: prev || "opening", history: h };
+    });
+    window.scrollTo(0, 0);
+  }
+
+  openWhats(msg) {
+    window.open("https://wa.me/" + Component.WHATSAPP + "?text=" + encodeURIComponent(msg), "_blank");
+  }
+
+  renderVals() {
+    const s = this.state.screen;
+    const progressMap = {
+      particular: "10%", location: "22%",
+      a1: "45%", a3: "70%", a2: "92%",
+      bq: "30%", b2_1: "45%", b2_2: "60%", b2_3: "78%", b2_4: "92%"
+    };
+    return {
+      isOpening: s === "opening",
+      isParticular: s === "particular",
+      isLocation: s === "location",
+      isA1: s === "a1", isA2: s === "a2", isA3: s === "a3",
+      isBQ: s === "bq", isBNo: s === "bno",
+      isB1: s === "b2_1", isB2: s === "b2_2", isB3: s === "b2_3", isB4: s === "b2_4",
+      showBack: s !== "opening",
+      showProgress: !!progressMap[s],
+      progressPct: progressMap[s] || "0%",
+
+      start: () => this.go("particular"),
+      particularNext: () => this.go("location"),
+      chooseCidade: () => this.go("a1"),
+      chooseOutra: () => this.go("bq"),
+      a1next: () => this.go("a3"),
+      a3next: () => this.go("a2"),
+      chooseSim: () => this.go("b2_1"),
+      chooseNao: () => this.go("bno"),
+      b1next: () => this.go("b2_2"),
+      b2next: () => this.go("b2_3"),
+      b3next: () => this.go("b2_4"),
+      back: () => this.back(),
+      whatsCidade: () => this.openWhats(Component.MSG_CIDADE),
+      whatsTele: () => this.openWhats(Component.MSG_TELECONSULTA),
+    };
+  }
+}
+</script>
+</body>
+</html>
