@@ -26,12 +26,14 @@
     tasks:     ['member_id', 'titulo', 'descricao', 'categoria', 'cadencia', 'vence_em',
                 'progresso_atual', 'progresso_total', 'status'],
     events:    ['member_id', 'titulo', 'mentor', 'inicia_em', 'formato', 'link'],
-    artifacts: ['member_id', 'nome', 'subtitulo', 'icone', 'status', 'meta', 'url']
+    artifacts: ['member_id', 'nome', 'subtitulo', 'icone', 'status', 'meta', 'url'],
+    materials: ['titulo', 'descricao', 'categoria', 'visivel_para', 'arquivo_path',
+                'arquivo_nome', 'arquivo_tipo', 'arquivo_bytes', 'publicado_em']
   };
 
   /* Campo de data ou de chave estrangeira vazio precisa virar null; string
      vazia o Postgres recusa. */
-  var NULAVEIS = ['vence_em', 'inicia_em', 'member_id'];
+  var NULAVEIS = ['vence_em', 'inicia_em', 'member_id', 'publicado_em'];
 
   function limpa(tabela, obj) {
     var out = {};
@@ -39,6 +41,9 @@
       if (!(k in obj)) return;
       var v = obj[k];
       if (NULAVEIS.indexOf(k) !== -1 && (v === '' || v === undefined)) v = null;
+      /* Lista de destinatários vazia quer dizer "turma inteira", que no banco
+         é nulo — um array vazio não casaria com ninguém. */
+      if (Array.isArray(v) && v.length === 0) v = null;
       out[k] = v;
     });
     return out;
@@ -141,6 +146,115 @@
       },
       save: function (a) { return grava('artifacts', a); },
       remove: function (id) { return apaga('artifacts', id); }
+    },
+
+    /* Acervo: cresce sem parar e cada item carrega um arquivo de verdade. */
+    materials: {
+      list: function (o) {
+        return sb().from('materials').select('*').then(function (res) {
+          /* Enquanto supabase/materiais.sql não tiver sido rodado a tabela não
+             existe. Derrubar a área inteira por causa de uma aba seria pior do
+             que mostrar o acervo vazio com o aviso. */
+          if (res.error && /does not exist|schema cache/i.test(res.error.message || '')) {
+            C.acervoIndisponivel = 'O acervo ainda não foi criado no banco. ' +
+              'Rode supabase/materiais.sql no SQL Editor do Supabase.';
+            return [];
+          }
+          return lista(res);
+        }).then(function (rows) {
+          var m = opt(o, 'memberId');
+          /* visivel_para é um array, então o filtro do PostgREST não serve
+             para "nulo OU contém"; sai mais simples e legível aqui. O RLS já
+             fez o corte de verdade — isto é só a pré-visualização do admin. */
+          if (m !== undefined) {
+            rows = rows.filter(function (r) {
+              return !r.visivel_para || r.visivel_para.indexOf(m) !== -1;
+            });
+          }
+          return rows.sort(byPublicado);
+        });
+      },
+
+      save: function (m) { return grava('materials', m); },
+
+      remove: function (id) {
+        /* Apagar só a linha deixaria o arquivo ocupando espaço para sempre. */
+        return sb().from('materials').select('arquivo_path').eq('id', id).maybeSingle()
+          .then(ok)
+          .then(function (row) {
+            return apaga('materials', id).then(function () {
+              if (row && row.arquivo_path) return removerArquivo(row.arquivo_path);
+            });
+          });
+      },
+
+      /* Manda o arquivo para o bucket e devolve o caminho gravado. */
+      upload: function (file) {
+        var path = caminhoDe(file.name);
+        return sb().storage.from(BUCKET).upload(path, file, {
+          cacheControl: '3600',
+          upsert: false,
+          contentType: file.type || 'application/octet-stream'
+        }).then(function (res) {
+          if (res.error) throw new Error(traduzUpload(res.error));
+          return path;
+        });
+      },
+
+      removerArquivo: removerArquivo,
+
+      /* URL assinada de vida curta. O bucket é privado: sem isto o arquivo não
+         sai de lá, e o link não sobrevive para ser repassado adiante. */
+      link: function (path, nomeParaBaixar) {
+        var opcoes = nomeParaBaixar ? { download: nomeParaBaixar } : {};
+        return sb().storage.from(BUCKET).createSignedUrl(path, 120, opcoes)
+          .then(function (res) {
+            if (res.error) throw new Error(res.error.message || 'Arquivo indisponível.');
+            return res.data.signedUrl;
+          });
+      }
     }
   };
+
+  /* ── arquivo ──────────────────────────────────────────────────────────── */
+
+  var BUCKET = 'materiais';
+
+  function byPublicado(a, b) {
+    return String(b.publicado_em || '').localeCompare(String(a.publicado_em || ''));
+  }
+
+  /* Pasta aleatória por arquivo: dois uploads com o mesmo nome não colidem e
+     o caminho não é adivinhável. O nome original fica guardado na linha. */
+  function caminhoDe(nome) {
+    var limpo = String(nome || 'arquivo')
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9._-]+/g, '-')
+      .replace(/-+/g, '-')
+      .slice(-80);
+    var id = (window.crypto && window.crypto.randomUUID)
+      ? window.crypto.randomUUID()
+      : String(Date.now()) + Math.random().toString(36).slice(2);
+    return id + '/' + limpo;
+  }
+
+  function removerArquivo(path) {
+    return sb().storage.from(BUCKET).remove([path]).then(function (res) {
+      if (res.error) throw new Error(res.error.message || 'Não foi possível apagar o arquivo.');
+    });
+  }
+
+  function traduzUpload(err) {
+    var m = String(err.message || '');
+    if (/exceeded the maximum allowed size|payload too large/i.test(m)) {
+      return 'Arquivo grande demais. O limite é 50 MB.';
+    }
+    if (/bucket not found/i.test(m)) {
+      return 'O acervo ainda não foi criado no Supabase. Rode supabase/materiais.sql.';
+    }
+    if (/new row violates row-level security|unauthorized/i.test(m)) {
+      return 'Sem permissão para subir arquivo.';
+    }
+    return m || 'Não foi possível enviar o arquivo.';
+  }
 })();

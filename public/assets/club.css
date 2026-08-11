@@ -377,3 +377,12 @@ select[multiple].inp option:checked{background:var(--gold) linear-gradient(0deg,
    A serifada (Playfair) ficou reservada à saudação. Todo o resto usa a Inter,
    que aguenta melhor texto pequeno, número e leitura em tela. */
 #greeting, #saudacao{font-family:var(--display);font-weight:600;letter-spacing:0}
+
+/* Campo de arquivo: o controle nativo não aceita muito estilo, então o que dá
+   para fazer é alinhar a moldura ao resto do formulário. */
+input[type="file"].inp{padding:10px 12px;font-size:13px;color:var(--muted);cursor:pointer}
+input[type="file"].inp::file-selector-button{
+  font-family:inherit;font-size:12.5px;font-weight:500;margin-right:12px;cursor:pointer;
+  background:var(--surface-hi);color:var(--gold);border:1px solid var(--border);
+  border-radius:8px;padding:7px 13px}
+input[type="file"].inp::file-selector-button:hover{background:var(--surface);border-color:var(--gold-deep)}

@@ -9,14 +9,16 @@
 
   var sessao = null;
 
-  var st = { members: [], tasks: [], events: [], artifacts: [],
-             view: 'overview', membro: '', status: 'all' };
+  var st = { members: [], tasks: [], events: [], artifacts: [], materials: [],
+             view: 'overview', membro: '', status: 'all',
+             matCategoria: '', matMembro: '' };
 
   var NAV = [
     { key:'overview',  label:'Visão geral', icon:'home' },
     { key:'members',   label:'Membros',     icon:'users' },
     { key:'tasks',     label:'Tarefas',     icon:'check-square' },
     { key:'agenda',    label:'Agenda',      icon:'calendar' },
+    { key:'materials', label:'Materiais',   icon:'folder' },
     { key:'artifacts', label:'Artefatos',   icon:'box' }
   ];
 
@@ -41,9 +43,11 @@
       Club.data.members.list(),
       Club.data.tasks.list(),
       Club.data.events.list(),
-      Club.data.artifacts.list()
+      Club.data.artifacts.list(),
+      Club.data.materials.list()
     ]).then(function (r) {
-      st.members = r[0]; st.tasks = r[1]; st.events = r[2]; st.artifacts = r[3];
+      st.members = r[0]; st.tasks = r[1]; st.events = r[2];
+      st.artifacts = r[3]; st.materials = r[4];
     });
   }
 
@@ -449,6 +453,188 @@
     });
   }
 
+  /* ── materiais ────────────────────────────────────────────────────────── */
+
+  function materiaisVisiveis() {
+    return st.materials.filter(function (m) {
+      if (st.matCategoria && m.categoria !== st.matCategoria) return false;
+      if (st.matMembro) {
+        return !m.visivel_para || m.visivel_para.indexOf(st.matMembro) !== -1;
+      }
+      return true;
+    });
+  }
+
+  function alcance(m) {
+    if (!m.visivel_para || !m.visivel_para.length) return 'Turma inteira';
+    if (m.visivel_para.length === 1) return membro(m.visivel_para[0]) || 'Membro removido';
+    return m.visivel_para.length + ' mentorados';
+  }
+
+  function renderMaterials() {
+    $('filtroCategoriaMat').innerHTML =
+      '<option value="">Todas as categorias</option>' +
+      Club.MAT_CATEGORIAS.map(function (c) {
+        return '<option value="' + esc(c) + '"' + (c === st.matCategoria ? ' selected' : '') +
+          '>' + esc(c) + '</option>';
+      }).join('');
+
+    $('filtroMembroMat').innerHTML =
+      '<option value="">Todos os mentorados</option>' +
+      st.members.map(function (m) {
+        return '<option value="' + esc(m.id) + '"' + (m.id === st.matMembro ? ' selected' : '') +
+          '>' + esc(m.nome) + '</option>';
+      }).join('');
+
+    if (Club.acervoIndisponivel) {
+      $('listaMateriais').innerHTML = '<div class="notice">' + ico('alert') +
+        '<div>' + esc(Club.acervoIndisponivel) + '</div></div>';
+      return;
+    }
+
+    var rows = materiaisVisiveis();
+    $('listaMateriais').innerHTML = rows.length
+      ? rows.map(function (m) {
+          return '<div class="row">' +
+            '<div class="art-i" style="flex-shrink:0;margin:0">' +
+              ico(Club.MAT_ICONE[m.categoria] || 'file-text') + '</div>' +
+            '<div class="row-b">' +
+              '<div class="row-t">' + esc(m.titulo) + '</div>' +
+              (m.descricao ? '<div class="row-s">' + esc(m.descricao) + '</div>' : '') +
+              '<div class="row-meta">' +
+                '<span class="pill">' + esc(m.categoria) + '</span>' +
+                '<span>' + esc(Club.fmtExt(m.arquivo_nome)) + ' · ' +
+                  esc(Club.fmtBytes(m.arquivo_bytes)) + '</span>' +
+                '<span>' + ico('calendar') + esc(Club.fmtDataCurta(m.publicado_em)) + '</span>' +
+                '<span class="pill">' + esc(alcance(m)) + '</span>' +
+              '</div>' +
+            '</div>' +
+            '<div class="row-acts">' +
+              '<button class="btn btn-sm btn-ghost" data-baixar="' + m.id +
+                '" aria-label="Baixar">' + ico('download') + '</button>' +
+              '<button class="btn btn-sm btn-ghost" data-edit="material" data-id="' + m.id +
+                '" aria-label="Editar">' + ico('edit') + '</button>' +
+              '<button class="btn btn-sm btn-ghost" data-del="material" data-id="' + m.id +
+                '" aria-label="Remover">' + ico('trash') + '</button>' +
+            '</div>' +
+          '</div>';
+        }).join('')
+      : Club.empty('folder', st.matCategoria || st.matMembro
+          ? 'Nenhum material com este filtro.'
+          : 'O acervo está vazio. Suba o primeiro arquivo.');
+  }
+
+  /* O arquivo só é escolhido na criação: trocar o arquivo de um material que já
+     foi divulgado confunde mais do que ajuda — melhor subir um novo. */
+  function modalMaterial(m) {
+    var novo = !m;
+    m = m || { titulo:'', descricao:'', categoria:'Análises', visivel_para:null,
+               publicado_em: new Date().toISOString().slice(0, 10) };
+
+    var campoArquivo = novo
+      ? '<div class="fld"><label for="arquivo">Arquivo</label>' +
+        '<input type="file" name="arquivo" id="arquivo" class="inp" required>' +
+        '<span class="hint">Até 50 MB. PDF, imagem, planilha, apresentação.</span></div>'
+      : '<div class="notice" style="margin-bottom:18px">' + ico('file-text') +
+        '<div><b>' + esc(m.arquivo_nome) + '</b><br>' +
+        esc(Club.fmtExt(m.arquivo_nome)) + ' · ' + esc(Club.fmtBytes(m.arquivo_bytes)) +
+        ' · o arquivo não muda ao editar.</div></div>';
+
+    var selecionados = m.visivel_para || [];
+    var opcoesVisibilidade = st.members.map(function (x) {
+      return { value: x.id, label: x.nome };
+    });
+
+    Club.modal.open({
+      title: novo ? 'Subir material' : 'Editar material',
+      sub: novo ? 'Fica no acervo de quem você escolher abaixo.' : m.titulo,
+      body:
+        campoArquivo +
+        Club.field('Título', 'titulo', { value:m.titulo, required:true,
+          placeholder:'Análise de tráfego — julho' }) +
+        Club.field('Descrição', 'descricao', { value:m.descricao, textarea:true,
+          placeholder:'O que a pessoa vai encontrar aqui dentro.' }) +
+        '<div class="fld-row">' +
+          Club.select('Categoria', 'categoria', Club.MAT_CATEGORIAS, m.categoria) +
+          Club.field('Publicado em', 'publicado_em', { value:m.publicado_em, type:'date' }) +
+        '</div>' +
+        Club.checkbox('Liberar para a turma inteira', 'todos', !selecionados.length) +
+        Club.select('Ou só para estes mentorados', 'visivel_para', opcoesVisibilidade,
+          selecionados[0], { multiple:true,
+            hint:'Segure Ctrl (ou Cmd) para marcar mais de um. Ignorado se a turma inteira estiver marcada.' }),
+
+      onSubmit: function (d) {
+        if (!d.titulo) { Club.toast('O material precisa de um título.', 'alert'); return; }
+
+        var alvos = d.todos ? null : (d.visivel_para || []);
+        if (alvos && !alvos.length) {
+          Club.toast('Escolha os mentorados ou marque a turma inteira.', 'alert');
+          return;
+        }
+
+        var base = {
+          titulo: d.titulo, descricao: d.descricao, categoria: d.categoria,
+          publicado_em: d.publicado_em, visivel_para: alvos
+        };
+
+        if (!novo) {
+          Club.data.materials.save(Object.assign({ id: m.id }, base)).then(function () {
+            Club.modal.close();
+            recarregar('Material atualizado.');
+          }).catch(aviso);
+          return;
+        }
+
+        var input = document.getElementById('arquivo');
+        var file = input && input.files && input.files[0];
+        if (!file) { Club.toast('Escolha o arquivo.', 'alert'); return; }
+        if (file.size > 52428800) {
+          Club.toast('Arquivo grande demais. O limite é 50 MB.', 'alert'); return;
+        }
+
+        enviando(true);
+        Club.data.materials.upload(file).then(function (path) {
+          return Club.data.materials.save(Object.assign({}, base, {
+            arquivo_path: path,
+            arquivo_nome: file.name,
+            arquivo_tipo: file.type || null,
+            arquivo_bytes: file.size
+          })).catch(function (err) {
+            /* A linha é que torna o arquivo alcançável; sem ela o upload vira
+               lixo invisível ocupando espaço. */
+            return Club.data.materials.removerArquivo(path).catch(function () {})
+              .then(function () { throw err; });
+          });
+        }).then(function () {
+          Club.modal.close();
+          recarregar('Material publicado.');
+        }).catch(function (err) {
+          enviando(false);
+          Club.toast(err.message || 'Não foi possível subir o material.', 'alert');
+        });
+      }
+    });
+  }
+
+  /* Upload demora, e um botão que não responde parece quebrado. */
+  function enviando(on) {
+    var b = document.querySelector('.modal-f .btn-primary');
+    if (!b) return;
+    b.disabled = on;
+    b.textContent = on ? 'Enviando…' : 'Salvar';
+  }
+
+  function baixar(id) {
+    var m = achar('material', id);
+    if (!m) return;
+    Club.toast('Preparando o download…', 'download');
+    Club.data.materials.link(m.arquivo_path, m.arquivo_nome).then(function (url) {
+      window.location.href = url;
+    }).catch(function (err) {
+      Club.toast(err.message || 'Não foi possível abrir o arquivo.', 'alert');
+    });
+  }
+
   /* ── remoção ──────────────────────────────────────────────────────────── */
 
   var TIPOS = {
@@ -456,7 +642,9 @@
                 aviso:'As tarefas e os artefatos que eram só dele saem junto.' },
     task:     { store:'tasks',     nome:function (r) { return r.titulo; }, aviso:'' },
     event:    { store:'events',    nome:function (r) { return r.titulo; }, aviso:'' },
-    artifact: { store:'artifacts', nome:function (r) { return r.nome; }, aviso:'' }
+    artifact: { store:'artifacts', nome:function (r) { return r.nome; }, aviso:'' },
+    material:  { store:'materials',  nome:function (r) { return r.titulo; },
+                 aviso:'O arquivo sai do servidor junto.' }
   };
 
   function achar(tipo, id) {
@@ -477,7 +665,8 @@
       });
   }
 
-  var MODAIS = { member:modalMembro, task:modalTarefa, event:modalEvento, artifact:modalArtefato };
+  var MODAIS = { member:modalMembro, task:modalTarefa, event:modalEvento,
+                 artifact:modalArtefato, material:modalMaterial };
 
   /* ── eventos ──────────────────────────────────────────────────────────── */
 
@@ -496,6 +685,19 @@
 
     var stat = e.target.closest('#filtroStatus button');
     if (stat) { st.status = stat.dataset.st; renderTasks(); return; }
+
+    var down = e.target.closest('[data-baixar]');
+    if (down) { baixar(down.dataset.baixar); return; }
+  });
+
+  $('filtroCategoriaMat').addEventListener('change', function () {
+    st.matCategoria = this.value;
+    renderMaterials();
+  });
+
+  $('filtroMembroMat').addEventListener('change', function () {
+    st.matMembro = this.value;
+    renderMaterials();
   });
 
   $('filtroMembro').addEventListener('change', function () {
@@ -512,6 +714,7 @@
     renderTasks();
     renderAgenda();
     renderArtifacts();
+    renderMaterials();
   }
 
   function falhou(err) {

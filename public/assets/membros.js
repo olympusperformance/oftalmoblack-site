@@ -13,12 +13,14 @@
   var esc = Club.esc, ico = Club.icon;
   var $ = function (id) { return document.getElementById(id); };
 
-  var st = { membro:null, tasks:[], events:[], artifacts:[], status:'pending', categoria:'' };
+  var st = { membro:null, tasks:[], events:[], artifacts:[], materials:[],
+             status:'pending', categoria:'', matCategoria:'' };
 
   var NAV = [
     { key:'home',      label:'Início',    icon:'home' },
     { key:'tasks',     label:'Tarefas',   icon:'check-square' },
     { key:'artifacts', label:'Artefatos', icon:'box' },
+    { key:'materials', label:'Materiais', icon:'folder' },
     { key:'agenda',    label:'Agenda',    icon:'calendar' },
     { key:'profile',   label:'Perfil',    icon:'user' }
   ];
@@ -50,10 +52,11 @@
       return Promise.all([
         Club.data.tasks.list({ memberId: m.id }),
         Club.data.events.list({ memberId: m.id }),
-        Club.data.artifacts.list({ memberId: m.id })
+        Club.data.artifacts.list({ memberId: m.id }),
+        Club.data.materials.list({ memberId: m.id })
       ]);
     }).then(function (r) {
-      st.tasks = r[0]; st.events = r[1]; st.artifacts = r[2];
+      st.tasks = r[0]; st.events = r[1]; st.artifacts = r[2]; st.materials = r[3];
     });
   }
 
@@ -242,6 +245,75 @@
     return futuros[0] || null;
   }
 
+  /* ── materiais ────────────────────────────────────────────────────────── */
+
+  function cartaoMaterial(m) {
+    return '<button class="row" data-baixar="' + m.id + '" ' +
+      'style="width:100%;text-align:left;border:1px solid var(--border-soft);cursor:pointer">' +
+      '<div class="art-i" style="flex-shrink:0;margin:0">' +
+        ico(Club.MAT_ICONE[m.categoria] || 'file-text') + '</div>' +
+      '<div class="row-b">' +
+        '<div class="row-t">' + esc(m.titulo) + '</div>' +
+        (m.descricao ? '<div class="row-s">' + esc(m.descricao) + '</div>' : '') +
+        '<div class="row-meta">' +
+          '<span>' + esc(Club.fmtExt(m.arquivo_nome)) + ' · ' +
+            esc(Club.fmtBytes(m.arquivo_bytes)) + '</span>' +
+          '<span>' + ico('calendar') + esc(Club.fmtDataCurta(m.publicado_em)) + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<span class="les-c" style="color:var(--gold)">' + ico('download') + '</span>' +
+    '</button>';
+  }
+
+  function renderMateriais() {
+    var cats = ['Todas as categorias'].concat(Club.MAT_CATEGORIAS);
+    $('filtroCategoriaMat').innerHTML = cats.map(function (c, i) {
+      var v = i === 0 ? '' : c;
+      return '<option value="' + esc(v) + '"' + (v === st.matCategoria ? ' selected' : '') +
+        '>' + esc(c) + '</option>';
+    }).join('');
+
+    var rows = st.matCategoria
+      ? st.materials.filter(function (m) { return m.categoria === st.matCategoria; })
+      : st.materials;
+
+    if (!rows.length) {
+      $('listaMateriais').innerHTML = Club.empty('folder', st.matCategoria
+        ? 'Nada nesta categoria por enquanto.'
+        : 'Seu acervo ainda está vazio. Os materiais aparecem aqui conforme o Club entrega.');
+      return;
+    }
+
+    /* Agrupado por categoria, mais novo primeiro dentro de cada uma — a lista
+       cresce sem parar e uma pilha única fica impossível de varrer. */
+    var grupos = {};
+    rows.forEach(function (m) {
+      (grupos[m.categoria] = grupos[m.categoria] || []).push(m);
+    });
+
+    $('listaMateriais').innerHTML = Club.MAT_CATEGORIAS
+      .filter(function (c) { return grupos[c]; })
+      .map(function (c) {
+        return '<div class="sec" style="margin-top:26px"><div class="sec-g">' +
+            '<div class="sec-eb"><span class="sec-dash"></span><span>' +
+              esc(String(grupos[c].length) + (grupos[c].length === 1 ? ' ITEM' : ' ITENS')) +
+            '</span></div>' +
+            '<h2 class="sec-t">' + esc(c) + '</h2></div></div>' +
+          grupos[c].map(cartaoMaterial).join('');
+      }).join('');
+  }
+
+  function baixar(id) {
+    var m = st.materials.filter(function (x) { return x.id === id; })[0];
+    if (!m) return;
+    Club.toast('Preparando o download…', 'download');
+    Club.data.materials.link(m.arquivo_path, m.arquivo_nome).then(function (url) {
+      window.location.href = url;
+    }).catch(function (err) {
+      Club.toast(err.message || 'Não foi possível abrir o arquivo.', 'alert');
+    });
+  }
+
   /* ── perfil ───────────────────────────────────────────────────────────── */
 
   function renderPerfil() {
@@ -319,6 +391,7 @@
     renderTasks();
     var disponiveis = renderArtifacts();
     var proxima = renderAgenda();
+    renderMateriais();
     renderPerfil();
     renderStats(disponiveis, proxima);
   }
@@ -333,6 +406,9 @@
 
     var stat = e.target.closest('#filtroStatus button');
     if (stat) { st.status = stat.dataset.st; renderTasks(); return; }
+
+    var down = e.target.closest('[data-baixar]');
+    if (down) { baixar(down.dataset.baixar); return; }
 
     var tarefa = e.target.closest('.task');
     if (tarefa) {
@@ -357,6 +433,11 @@
   $('filtroCategoria').addEventListener('change', function () {
     st.categoria = this.value;
     renderTasks();
+  });
+
+  $('filtroCategoriaMat').addEventListener('change', function () {
+    st.matCategoria = this.value;
+    renderMateriais();
   });
 
   /* ── partida ──────────────────────────────────────────────────────────── */

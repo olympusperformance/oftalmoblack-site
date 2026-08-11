@@ -13,6 +13,20 @@
   /* ── vocabulário ──────────────────────────────────────────────────────── */
 
   C.CATEGORIAS = ['Conteúdo', 'Tráfego', 'Vendas', 'Estrutura'];
+
+  /* Categorias do acervo. Lista fixa de propósito: com texto livre o mesmo
+     assunto vira "Análise", "Analises" e "análise de tráfego" em três meses. */
+  C.MAT_CATEGORIAS = ['Análises', 'Tutoriais', 'Roteiros', 'Relatórios',
+                      'Modelos', 'Aulas', 'Outros'];
+  C.MAT_ICONE = {
+    'Análises':   'grid',
+    'Tutoriais':  'award',
+    'Roteiros':   'file-text',
+    'Relatórios': 'file-text',
+    'Modelos':    'copy',
+    'Aulas':      'play-circle',
+    'Outros':     'box'
+  };
   C.CADENCIAS  = ['Semanal', 'Quinzenal', 'Mensal', 'Entrega única'];
   C.FORMATOS   = ['Ao vivo', 'Gravada'];
   C.ART_STATUS = ['Disponível', 'Em produção', 'Bloqueado'];
@@ -111,6 +125,27 @@
 
   C.isLate = function (t) {
     return t.status !== 'done' && C.diffDays(t.vence_em) !== null && C.diffDays(t.vence_em) < 0;
+  };
+
+  /* "2,4 MB" — o mentorado decide se baixa agora ou espera o wi-fi. */
+  C.fmtBytes = function (n) {
+    n = Number(n) || 0;
+    if (n < 1024) return n + ' B';
+    if (n < 1048576) return (n / 1024).toFixed(0) + ' KB';
+    return (n / 1048576).toFixed(1).replace('.', ',') + ' MB';
+  };
+
+  /* Extensão em maiúscula, para o cartão dizer o que a pessoa vai receber. */
+  C.fmtExt = function (nome) {
+    var m = String(nome || '').match(/\.([a-z0-9]{1,5})$/i);
+    return m ? m[1].toUpperCase() : 'ARQUIVO';
+  };
+
+  C.fmtDataCurta = function (iso) {
+    var d = parse(iso);
+    if (!d) return '—';
+    return String(d.getDate()).padStart(2, '0') + '/' +
+           String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear();
   };
 
   C.greeting = function () {
