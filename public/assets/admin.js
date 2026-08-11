@@ -860,10 +860,8 @@
   function baixar(id) {
     var m = achar('material', id);
     if (!m) return;
-    Club.toast('Preparando o download…', 'download');
-    Club.data.materials.link(m.arquivo_path, m.arquivo_nome).then(function (url) {
-      window.location.href = url;
-    }).catch(function (err) {
+    Club.toast('Baixando…', 'download');
+    Club.data.materials.baixar(m.arquivo_path, m.arquivo_nome).catch(function (err) {
       Club.toast(err.message || 'Não foi possível abrir o arquivo.', 'alert');
     });
   }

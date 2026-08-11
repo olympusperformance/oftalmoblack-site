@@ -218,13 +218,31 @@
 
       removerArquivo: removerArquivo,
 
-      /* URL assinada de vida curta. O bucket é privado: sem isto o arquivo não
-         sai de lá, e o link não sobrevive para ser repassado adiante. */
-      link: function (path, nomeParaBaixar) {
-        var opcoes = nomeParaBaixar ? { download: nomeParaBaixar } : {};
-        return sb().storage.from(BUCKET).createSignedUrl(path, 120, opcoes)
+      /* Baixa o conteúdo e entrega ao navegador com o nome original.
+         O parâmetro `download` da URL assinada põe o nome no cabeçalho sem
+         codificar acento como manda a RFC 6266, e o arquivo chega ao mentorado
+         como "An%C3%A1lise de tr%C3%A1fego.pdf" — em português isso seria a
+         regra, não a exceção. Trazendo o blob, o nome é decidido aqui. */
+      baixar: function (path, nome) {
+        return sb().storage.from(BUCKET).download(path).then(function (res) {
+          if (res.error) throw new Error(traduzDownload(res.error));
+          var url = URL.createObjectURL(res.data);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = nome || 'arquivo';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          /* Revogar na hora cancelaria o download que acabou de começar. */
+          setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+        });
+      },
+
+      /* URL assinada de vida curta, para abrir em outra aba em vez de baixar. */
+      link: function (path) {
+        return sb().storage.from(BUCKET).createSignedUrl(path, 120)
           .then(function (res) {
-            if (res.error) throw new Error(res.error.message || 'Arquivo indisponível.');
+            if (res.error) throw new Error(traduzDownload(res.error));
             return res.data.signedUrl;
           });
       }
@@ -290,6 +308,17 @@
     return sb().storage.from(BUCKET).remove([path]).then(function (res) {
       if (res.error) throw new Error(res.error.message || 'Não foi possível apagar o arquivo.');
     });
+  }
+
+  function traduzDownload(err) {
+    var m = String(err.message || '');
+    if (/not found|does not exist/i.test(m)) {
+      return 'O arquivo não está mais no servidor.';
+    }
+    if (/unauthorized|denied|row-level/i.test(m)) {
+      return 'Você não tem acesso a este arquivo.';
+    }
+    return m || 'Arquivo indisponível.';
   }
 
   function traduzUpload(err) {
