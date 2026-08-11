@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#07060A">
+<title>Painel do Admin — Club OftalmoBlack</title>
+<link rel="icon" href="/assets/favicon.png">
+<link rel="stylesheet" href="/assets/club.css">
+</head>
+<body>
+
+<div class="halo"></div>
+<div class="halo2"></div>
+
+<header class="topbar">
+  <a class="logo" href="/admin/">
+    <span class="logo-ring"><span class="logo-inner"><svg class="ic"><use href="#i-eye"/></svg></span></span>
+    <span class="logo-txt">
+      <span class="b">OFTALMO BLACK</span>
+      <span class="c">Painel do administrador</span>
+    </span>
+  </a>
+  <span class="topbar-sp"></span>
+  <a class="btn btn-sm" href="/membros/" title="Ver a área como membro">
+    <svg class="ic"><use href="#i-eye"/></svg><span class="hide-sm">Ver como membro</span></a>
+  <div class="who">
+    <span class="avatar" id="avatar">--</span>
+    <span class="who-txt"><span class="n" id="quemNome">—</span><span class="t">ADMINISTRADOR</span></span>
+  </div>
+  <button class="icon-btn" id="sair" aria-label="Sair"><svg class="ic"><use href="#i-log-out"/></svg></button>
+</header>
+
+<nav class="navbar-m" role="tablist" aria-label="Seções" id="navm"></nav>
+
+<div class="shell">
+  <aside class="rail" role="tablist" aria-label="Seções" id="rail"></aside>
+
+  <main class="main">
+
+    <div class="view" data-view="overview">
+      <div class="hello">
+        <h1 id="saudacao">Painel</h1>
+        <p>Tudo que os mentorados enxergam é cadastrado aqui.</p>
+      </div>
+      <div class="statgrid" id="stats"></div>
+      <section>
+        <div class="sec">
+          <div class="sec-g">
+            <div class="sec-eb"><span class="sec-dash"></span><span>ATENÇÃO</span></div>
+            <h2 class="sec-t">Tarefas atrasadas</h2>
+          </div>
+        </div>
+        <div id="atrasadas"></div>
+      </section>
+    </div>
+
+    <div class="view" data-view="members" hidden>
+      <div class="hello"><h1>Membros</h1><p>Quem tem acesso à área e como aparece por lá.</p></div>
+      <div class="toolbar">
+        <span class="sp"></span>
+        <button class="btn btn-primary" data-new="member">
+          <svg class="ic"><use href="#i-plus"/></svg>Novo membro</button>
+      </div>
+      <div id="listaMembros"></div>
+    </div>
+
+    <div class="view" data-view="tasks" hidden>
+      <div class="hello"><h1>Tarefas</h1><p>O que cada mentorado precisa executar.</p></div>
+      <div class="toolbar">
+        <select class="inp" id="filtroMembro" style="max-width:280px"></select>
+        <div class="seg" id="filtroStatus">
+          <button data-st="all" aria-selected="true">Todas</button>
+          <button data-st="pending" aria-selected="false">Em aberto</button>
+          <button data-st="done" aria-selected="false">Concluídas</button>
+        </div>
+        <span class="sp"></span>
+        <button class="btn btn-primary" data-new="task">
+          <svg class="ic"><use href="#i-plus"/></svg>Nova tarefa</button>
+      </div>
+      <div id="listaTarefas"></div>
+    </div>
+
+    <div class="view" data-view="agenda" hidden>
+      <div class="hello"><h1>Agenda</h1><p>Encontros ao vivo e aulas gravadas.</p></div>
+      <div class="toolbar">
+        <span class="sp"></span>
+        <button class="btn btn-primary" data-new="event">
+          <svg class="ic"><use href="#i-plus"/></svg>Novo evento</button>
+      </div>
+      <div id="listaAgenda"></div>
+    </div>
+
+    <div class="view" data-view="artifacts" hidden>
+      <div class="hello"><h1>Artefatos</h1><p>O que o Club entrega — e o que ainda está em produção.</p></div>
+      <div class="toolbar">
+        <span class="sp"></span>
+        <button class="btn btn-primary" data-new="artifact">
+          <svg class="ic"><use href="#i-plus"/></svg>Novo artefato</button>
+      </div>
+      <div id="listaArtefatos"></div>
+    </div>
+
+  </main>
+</div>
+
+<script src="/assets/vendor/supabase.js"></script>
+<script src="/config.js"></script>
+<script src="/assets/club-icons.js"></script>
+<script src="/assets/club-ui.js"></script>
+<script src="/assets/club-supabase.js"></script>
+<script src="/assets/club-auth.js"></script>
+<script src="/assets/club-data.js"></script>
+<script src="/assets/admin.js"></script>
+</body>
+</html>

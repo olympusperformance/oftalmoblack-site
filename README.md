@@ -1,17 +1,25 @@
 # Club OftalmoBlack — site
 
-Landing page do Club OftalmoBlack. HTML estático, sem build step e sem backend.
+Landing page e área de membros do Club OftalmoBlack. HTML estático, sem build
+step e sem backend — o nginx só entrega arquivos.
 
 ## Estrutura
 
 ```
-public/           # tudo que vai pro ar
-  index.html
-  assets/         # css, js, fontes e imagens
+public/                # tudo que vai pro ar
+  index.html           # landing page
+  entrar/              # login da área de membros
+  admin/               # painel do administrador
+  membros/             # área do mentorado
+  mentorados/          # centrais artesanais antigas (ainda no ar)
+  config.js            # regerado no boot a partir das variáveis de ambiente
+  assets/              # css, js, fontes e imagens
   robots.txt
   sitemap.xml
-Dockerfile        # nginx alpine servindo public/
-nginx.conf        # gzip, cache de assets, headers de segurança
+docker-entrypoint.d/   # scripts que a imagem nginx roda no boot
+supabase/              # SQL do banco: tabelas, RLS e primeiro acesso
+Dockerfile             # nginx alpine servindo public/
+nginx.conf             # gzip, cache de assets, headers de segurança
 ```
 
 ## Rodar local
@@ -39,6 +47,72 @@ O EasyPanel termina o TLS no Traefik e fala HTTP com o container — por isso o
 `nginx.conf` não força HTTPS internamente (forçar causa loop de redirect).
 
 Push na `main` dispara redeploy se o auto-deploy estiver ligado.
+
+### Variáveis de ambiente
+
+Configuradas no serviço do EasyPanel. `docker-entrypoint.d/10-config.sh` lê essas
+variáveis no boot e escreve `/config.js`, que o navegador carrega.
+
+| Variável | Para quê |
+|---|---|
+| `SUPABASE_URL` | URL do projeto. Sem ela, vale o `config.js` versionado |
+| `SUPABASE_ANON_KEY` | Chave publishable (anon). Pública por definição — quem protege os dados é o RLS |
+
+Para conferir o script sem subir container:
+
+```bash
+CLUB_CONFIG_PATH=/tmp/config.js SUPABASE_URL=https://... SUPABASE_ANON_KEY=sb_publishable_... \
+  sh docker-entrypoint.d/10-config.sh
+```
+
+## Área de membros
+
+Três telas, todas no mesmo visual (`assets/club.css`, extraído do protótipo):
+
+| Rota | O quê |
+|---|---|
+| `/entrar/` | Login por e-mail e senha (Supabase Auth) |
+| `/admin/` | Cadastro de membros, tarefas, agenda e artefatos |
+| `/membros/` | O que o mentorado enxerga; o admin pode espiar com `?membro=<id>` |
+
+O site continua sendo HTML estático: o navegador fala direto com o Supabase, sem
+servidor nosso no meio. Quem decide o que cada pessoa alcança é o Row Level
+Security do Postgres — a `anon key` que vai no `config.js` é pública por
+definição e, sozinha, não abre nada.
+
+### Como o acesso é decidido
+
+| Quem | Enxerga | Escreve |
+|---|---|---|
+| Sem login | nada | nada |
+| Mentorado | o próprio cadastro, as próprias tarefas, e os eventos e artefatos dele mais os de `member_id` nulo (turma inteira) | só marcar a própria tarefa como concluída, pela função `toggle_task` |
+| Admin | tudo | tudo |
+
+Ser admin não é algo que o navegador afirma: vem da tabela `app_admins`, lida
+pela função `is_admin()` no banco.
+
+`members.user_id` liga o cadastro ao login. O gatilho `on_auth_user_created`
+costura os dois pelo e-mail, em qualquer ordem — dá para cadastrar o mentorado
+no painel antes ou depois de criar o login dele no Auth.
+
+### Montar o banco (uma vez)
+
+1. No **SQL Editor** do Supabase, rodar `supabase/schema.sql` inteiro
+2. Em **Authentication → Users**, criar o login do administrador
+3. Em `supabase/primeiro-acesso.sql`, trocar `SEU-EMAIL-DE-ADMIN@AQUI` pelo
+   e-mail do passo 2 e rodar o arquivo
+4. Criar em **Authentication → Users** o login de cada mentorado, com o mesmo
+   e-mail que está no cadastro dele
+
+### Chaves
+
+`public/config.js` carrega a URL do projeto e a `anon key` (publishable). Em
+produção o `docker-entrypoint.d/10-config.sh` regera esse arquivo a partir de
+`SUPABASE_URL` e `SUPABASE_ANON_KEY`.
+
+A chave **secret** (service_role) ignora o RLS e dá controle total do banco.
+Ela não entra no repositório, não entra no `config.js` e não é necessária em
+lugar nenhum deste projeto.
 
 ## Integrações externas
 

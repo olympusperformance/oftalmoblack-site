@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#07060A">
+<title>Entrar — Club OftalmoBlack</title>
+<link rel="icon" href="/assets/favicon.png">
+<link rel="stylesheet" href="/assets/club.css">
+</head>
+<body>
+
+<div class="halo"></div>
+<div class="halo2"></div>
+
+<div class="auth">
+  <div class="auth-card">
+
+    <div class="auth-mark">
+      <span class="logo-ring"><span class="logo-inner"><svg class="ic"><use href="#i-eye"/></svg></span></span>
+      <div>
+        <div class="auth-eb">CLUB OFTALMO BLACK</div>
+        <h1>Área do Mentorado</h1>
+        <p class="sub">Entre com o e-mail cadastrado na sua matrícula.</p>
+      </div>
+    </div>
+
+    <form id="loginForm" novalidate>
+      <div class="fld">
+        <label for="email">E-mail</label>
+        <input class="inp" type="email" id="email" name="email" autocomplete="username"
+               placeholder="voce@clinica.com.br" required autofocus>
+      </div>
+      <div class="fld">
+        <label for="senha">Senha</label>
+        <input class="inp" type="password" id="senha" name="senha"
+               autocomplete="current-password" placeholder="••••••••" required>
+      </div>
+      <p class="err" id="erro" hidden></p>
+      <button class="btn btn-primary btn-block" type="submit" id="submit">Entrar</button>
+    </form>
+
+    <div class="auth-foot" id="rodape">
+      Acesso exclusivo dos mentorados do Club.<br>
+      Perdeu o acesso? Fale com a equipe no seu grupo de operação.
+    </div>
+
+  </div>
+</div>
+
+<script src="/assets/vendor/supabase.js"></script>
+<script src="/config.js"></script>
+<script src="/assets/club-icons.js"></script>
+<script src="/assets/club-ui.js"></script>
+<script src="/assets/club-supabase.js"></script>
+<script src="/assets/club-auth.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var form = document.getElementById('loginForm');
+  var erro = document.getElementById('erro');
+  var botao = document.getElementById('submit');
+
+  if (Club.configError) { mostrarErro(Club.configError); botao.disabled = true; return; }
+
+  /* Quem já está logado não precisa ver esta tela de novo. */
+  Club.auth.ready().then(function (atual) {
+    if (atual) location.replace(Club.auth.homeFor(atual));
+  }).catch(function () { /* sem sessão válida: fica no login mesmo */ });
+
+  /* De onde o visitante veio antes de ser barrado pela guarda de rota. */
+  function destino(sessao) {
+    var de = new URLSearchParams(location.search).get('de');
+    /* Só caminho interno — 'de' vem da URL e não pode virar redirect aberto. */
+    if (de && /^\/[a-z0-9\-\/]*$/i.test(de)) {
+      var admin = de.indexOf('/admin') === 0;
+      if (admin === (sessao.role === 'admin')) return de;
+    }
+    return Club.auth.homeFor(sessao);
+  }
+
+  function mostrarErro(msg) {
+    erro.innerHTML = Club.icon('alert') + '<span>' + Club.esc(msg) + '</span>';
+    erro.hidden = false;
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    erro.hidden = true;
+
+    var email = document.getElementById('email').value.trim();
+    var senha = document.getElementById('senha').value;
+
+    if (!email || !senha) { mostrarErro('Preencha o e-mail e a senha.'); return; }
+
+    botao.disabled = true;
+    botao.textContent = 'Entrando…';
+
+    Club.auth.login(email, senha).then(function (sessao) {
+      location.href = destino(sessao);
+    }).catch(function (err) {
+      mostrarErro(err.message);
+      botao.disabled = false;
+      botao.textContent = 'Entrar';
+      document.getElementById('senha').select();
+    });
+  });
+})();
+</script>
+</body>
+</html>

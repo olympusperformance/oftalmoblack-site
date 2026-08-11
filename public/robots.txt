@@ -1,5 +1,8 @@
 User-agent: *
 Allow: /
 Disallow: /membros/
+Disallow: /admin/
+Disallow: /entrar/
+Disallow: /mentorados/
 
 Sitemap: https://oftalmoblack.com.br/sitemap.xml
