@@ -33,6 +33,24 @@
   C.ART_ICONES = ['grid', 'play-circle', 'layout', 'zap', 'file-text', 'video',
                   'box', 'award', 'settings', 'link'];
 
+  /* Vocabulário do quadro de demandas — mesmo do ClickUp da operação. */
+  C.DEM_STATUS = ['A fazer', 'Planejando', 'Em andamento', 'Em risco',
+                  'Aguardando retorno', 'Em pausa', 'Concluída', 'Cancelada'];
+  C.DEM_ABERTOS = ['A fazer', 'Planejando', 'Em andamento', 'Em risco',
+                   'Aguardando retorno', 'Em pausa'];
+  C.DEM_COR = {
+    'A fazer':            '#9A94A6',
+    'Planejando':         '#7B5CFF',
+    'Em andamento':       '#4A9EF0',
+    'Em risco':           '#F0803A',
+    'Aguardando retorno': '#F0B34A',
+    'Em pausa':           '#8D8291',
+    'Concluída':          '#5BD68A',
+    'Cancelada':          '#6B6577'
+  };
+  C.DEM_PRIORIDADES = ['Alta', 'Média', 'Baixa'];
+  C.DEM_PRIO_COR = { 'Alta':'#F08A8A', 'Média':'#E8C07A', 'Baixa':'#6B6577' };
+
   C.TINT = {
     'Conteúdo':'#7B5CFF', 'Tráfego':'#4A9EF0', 'Vendas':'#E8C07A', 'Estrutura':'#5BD68A'
   };

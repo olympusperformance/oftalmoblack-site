@@ -92,6 +92,24 @@
       <div id="listaAgenda"></div>
     </div>
 
+    <div class="view" data-view="demands" hidden>
+      <div class="hello"><h1>Demandas</h1><p>A operação do Club — o que está em pé, com quem e desde quando.</p></div>
+      <div class="statgrid" id="statsDemandas"></div>
+      <div class="toolbar">
+        <select class="inp" id="filtroResponsavel" style="max-width:230px"></select>
+        <select class="inp" id="filtroMembroDem" style="max-width:230px"></select>
+        <div class="seg" id="filtroAbertas">
+          <button data-ab="open" aria-selected="true">Em aberto</button>
+          <button data-ab="all" aria-selected="false">Todas</button>
+        </div>
+        <span class="sp"></span>
+        <button class="btn" data-equipe="1"><svg class="ic"><use href="#i-users"/></svg><span class="hide-sm">Equipe</span></button>
+        <button class="btn btn-primary" data-new="demand">
+          <svg class="ic"><use href="#i-plus"/></svg>Nova demanda</button>
+      </div>
+      <div id="listaDemandas"></div>
+    </div>
+
     <div class="view" data-view="materials" hidden>
       <div class="hello"><h1>Materiais</h1><p>O acervo do Club — análises, tutoriais e tudo que se acumula.</p></div>
       <div class="toolbar">

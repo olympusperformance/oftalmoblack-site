@@ -10,11 +10,14 @@
   var sessao = null;
 
   var st = { members: [], tasks: [], events: [], artifacts: [], materials: [],
+             demands: [], staff: [],
              view: 'overview', membro: '', status: 'all',
-             matCategoria: '', matMembro: '' };
+             matCategoria: '', matMembro: '',
+             demResp: '', demMembro: '', demAbertas: 'open' };
 
   var NAV = [
     { key:'overview',  label:'Visão geral', icon:'home' },
+    { key:'demands',   label:'Demandas',    icon:'check-circle' },
     { key:'members',   label:'Membros',     icon:'users' },
     { key:'tasks',     label:'Tarefas',     icon:'check-square' },
     { key:'agenda',    label:'Agenda',      icon:'calendar' },
@@ -44,10 +47,13 @@
       Club.data.tasks.list(),
       Club.data.events.list(),
       Club.data.artifacts.list(),
-      Club.data.materials.list()
+      Club.data.materials.list(),
+      Club.data.demands.list(),
+      Club.data.staff.list()
     ]).then(function (r) {
       st.members = r[0]; st.tasks = r[1]; st.events = r[2];
       st.artifacts = r[3]; st.materials = r[4];
+      st.demands = r[5]; st.staff = r[6];
     });
   }
 
@@ -453,6 +459,233 @@
     });
   }
 
+  /* ── demandas ─────────────────────────────────────────────────────────── */
+
+  function pessoa(id) {
+    var p = st.staff.filter(function (x) { return x.id === id; })[0];
+    return p ? p.nome : null;
+  }
+
+  function responsaveisDe(d) {
+    if (!d.responsaveis || !d.responsaveis.length) return 'Sem responsável';
+    return d.responsaveis.map(function (id) { return pessoa(id) || '—'; }).join(', ');
+  }
+
+  function demandasVisiveis() {
+    return st.demands.filter(function (d) {
+      if (st.demAbertas === 'open' && Club.DEM_ABERTOS.indexOf(d.status) === -1) return false;
+      if (st.demResp && (!d.responsaveis || d.responsaveis.indexOf(st.demResp) === -1)) return false;
+      if (st.demMembro && d.member_id !== st.demMembro) return false;
+      return true;
+    });
+  }
+
+  function renderDemandas() {
+    if (Club.faltaMigracao) {
+      $('statsDemandas').innerHTML = '';
+      $('listaDemandas').innerHTML = '<div class="notice">' + ico('alert') +
+        '<div>' + esc(Club.faltaMigracao) + '</div></div>';
+      return;
+    }
+
+    $('filtroResponsavel').innerHTML = '<option value="">Todos os responsáveis</option>' +
+      st.staff.map(function (p) {
+        return '<option value="' + esc(p.id) + '"' + (p.id === st.demResp ? ' selected' : '') +
+          '>' + esc(p.nome) + '</option>';
+      }).join('');
+
+    $('filtroMembroDem').innerHTML = '<option value="">Qualquer mentorado</option>' +
+      st.members.map(function (m) {
+        return '<option value="' + esc(m.id) + '"' + (m.id === st.demMembro ? ' selected' : '') +
+          '>' + esc(m.nome) + '</option>';
+      }).join('');
+
+    Array.prototype.forEach.call($('filtroAbertas').children, function (b) {
+      b.setAttribute('aria-selected', String(b.dataset.ab === st.demAbertas));
+    });
+
+    var abertas = st.demands.filter(function (d) {
+      return Club.DEM_ABERTOS.indexOf(d.status) !== -1;
+    });
+    var atrasadas = abertas.filter(function (d) {
+      var n = Club.diffDays(d.vence_em);
+      return n !== null && n < 0;
+    });
+    var risco = st.demands.filter(function (d) {
+      return d.status === 'Em risco' || d.status === 'Aguardando retorno';
+    });
+    var semDono = abertas.filter(function (d) {
+      return !d.responsaveis || !d.responsaveis.length;
+    });
+
+    $('statsDemandas').innerHTML =
+      cardStat('EM ABERTO', abertas.length, st.demands.length + ' no total') +
+      cardStat('ATRASADAS', atrasadas.length, atrasadas.length ? 'passaram do prazo' : 'tudo dentro do prazo') +
+      cardStat('PEDINDO ATENÇÃO', risco.length, 'em risco ou aguardando retorno') +
+      cardStat('SEM RESPONSÁVEL', semDono.length, semDono.length ? 'ninguém tocando' : 'todas com dono');
+
+    var rows = demandasVisiveis();
+    if (!rows.length) {
+      $('listaDemandas').innerHTML = Club.empty('check-circle',
+        st.demResp || st.demMembro ? 'Nenhuma demanda com este filtro.'
+                                   : 'Nenhuma demanda em aberto. Aproveite.');
+      return;
+    }
+
+    var grupos = {};
+    rows.forEach(function (d) { (grupos[d.status] = grupos[d.status] || []).push(d); });
+
+    $('listaDemandas').innerHTML = Club.DEM_STATUS
+      .filter(function (k) { return grupos[k]; })
+      .map(function (k) {
+        var cor = Club.DEM_COR[k];
+        return '<div class="sec" style="margin-top:26px"><div class="sec-g">' +
+            '<div class="sec-eb"><span class="sec-dash" style="background:' + cor + '"></span>' +
+            '<span style="color:' + cor + '">' + esc(k.toUpperCase()) + '</span></div>' +
+            '<h2 class="sec-t">' + grupos[k].length +
+              (grupos[k].length === 1 ? ' demanda' : ' demandas') + '</h2></div></div>' +
+          grupos[k].map(linhaDemanda).join('');
+      }).join('');
+  }
+
+  function linhaDemanda(d) {
+    var prio = Club.DEM_PRIO_COR[d.prioridade] || 'var(--muted)';
+    var cor = Club.DEM_COR[d.status];
+    var n = Club.diffDays(d.vence_em);
+    var atrasada = n !== null && n < 0 && Club.DEM_ABERTOS.indexOf(d.status) !== -1;
+    var fechada = d.status === 'Concluída' || d.status === 'Cancelada';
+
+    return '<div class="row' + (fechada ? ' off' : '') + '"' +
+      ' style="border-left:3px solid ' + cor + '">' +
+      '<div class="row-b">' +
+        '<div class="row-meta" style="margin:0 0 7px">' +
+          '<span class="pill" style="color:' + prio + ';border-color:' + prio + '55;background:' +
+            prio + '14"><span class="dot"></span>' + esc(d.prioridade) + '</span>' +
+          (d.origem ? '<span>' + esc(d.origem) + '</span>' : '') +
+          (d.member_id ? '<span class="pill">' + esc(membro(d.member_id) || '—') + '</span>' : '') +
+        '</div>' +
+        '<div class="row-t">' + esc(d.titulo) + '</div>' +
+        (d.descricao ? '<div class="row-s">' + esc(d.descricao) + '</div>' : '') +
+        '<div class="row-meta">' +
+          '<span>' + ico('user') + esc(responsaveisDe(d)) + '</span>' +
+          (d.vence_em
+            ? '<span style="color:' + (atrasada ? '#F08A8A' : 'inherit') + '">' +
+              ico('clock') + esc(Club.fmtDue(d.vence_em)) + '</span>'
+            : '') +
+        '</div>' +
+      '</div>' +
+      '<div class="row-acts">' +
+        (fechada
+          ? '<button class="btn btn-sm btn-ghost" data-reabrir="' + d.id +
+            '" aria-label="Reabrir">' + ico('refresh') + '</button>'
+          : '<button class="btn btn-sm btn-ghost" data-concluir="' + d.id +
+            '" aria-label="Concluir">' + ico('check') + '</button>') +
+        '<button class="btn btn-sm btn-ghost" data-edit="demand" data-id="' + d.id +
+          '" aria-label="Editar">' + ico('edit') + '</button>' +
+        '<button class="btn btn-sm btn-ghost" data-del="demand" data-id="' + d.id +
+          '" aria-label="Remover">' + ico('trash') + '</button>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function modalDemanda(d) {
+    var novo = !d;
+    d = d || { titulo:'', descricao:'', status:'A fazer', prioridade:'Média',
+               responsaveis:[], member_id:null, origem:'', vence_em:'' };
+
+    var opcoesEquipe = st.staff.filter(function (p) { return p.ativo; })
+      .map(function (p) { return { value:p.id, label:p.nome }; });
+
+    Club.modal.open({
+      title: novo ? 'Nova demanda' : 'Editar demanda',
+      sub: novo ? 'Operação interna — o mentorado não enxerga isto.' : d.titulo,
+      body:
+        Club.field('O que precisa ser feito', 'titulo', { value:d.titulo, required:true,
+          placeholder:'Conectar o WhatsApp da clínica do Arthur' }) +
+        Club.field('Detalhe', 'descricao', { value:d.descricao, textarea:true,
+          placeholder:'Contexto, links, o que já foi tentado.' }) +
+        '<div class="fld-row">' +
+          Club.select('Situação', 'status', Club.DEM_STATUS, d.status) +
+          Club.select('Prioridade', 'prioridade', Club.DEM_PRIORIDADES, d.prioridade) +
+        '</div>' +
+        '<div class="fld-row">' +
+          Club.field('Origem', 'origem', { value:d.origem,
+            placeholder:'Reunião 30/07', hint:'De onde a demanda nasceu.' }) +
+          Club.field('Prazo', 'vence_em', { value:d.vence_em, type:'date' }) +
+        '</div>' +
+        (opcoesEquipe.length
+          ? Club.select('Responsáveis', 'responsaveis', opcoesEquipe,
+              (d.responsaveis || [])[0], { multiple:true,
+                hint:'Segure Ctrl (ou Cmd) para escolher mais de um.' })
+          : '<div class="notice">' + ico('alert') +
+            '<div>Nenhuma pessoa na equipe ainda. Use o botão Equipe para cadastrar.</div></div>') +
+        Club.select('Sobre qual mentorado', 'member_id',
+          [{ value:'', label:'Nenhum — demanda interna' }].concat(
+            st.members.map(function (m) { return { value:m.id, label:m.nome }; })),
+          d.member_id || ''),
+
+      onSubmit: function (dados) {
+        if (!dados.titulo) { Club.toast('A demanda precisa de um título.', 'alert'); return; }
+        dados.id = d.id;
+        dados.member_id = dados.member_id || null;
+        dados.responsaveis = dados.responsaveis || [];
+        Club.data.demands.save(dados).then(function () {
+          Club.modal.close();
+          recarregar(novo ? 'Demanda criada.' : 'Demanda atualizada.');
+        }).catch(aviso);
+      }
+    });
+
+    /* O select múltiplo só reflete o array inteiro depois de estar no DOM. */
+    if ((d.responsaveis || []).length > 1) {
+      var campo = document.querySelector('#modalForm [name="responsaveis"]');
+      if (campo) {
+        Array.prototype.forEach.call(campo.options, function (o) {
+          o.selected = d.responsaveis.indexOf(o.value) !== -1;
+        });
+      }
+    }
+  }
+
+  function mudarStatus(id, status) {
+    Club.data.demands.save({ id: id, status: status })
+      .then(function () { recarregar(status === 'Concluída' ? 'Demanda concluída.' : 'Demanda reaberta.'); })
+      .catch(aviso);
+  }
+
+  /* ── equipe ───────────────────────────────────────────────────────────── */
+
+  function modalEquipe() {
+    var linhas = st.staff.length
+      ? st.staff.map(function (p) {
+          return '<div class="row" style="margin-bottom:8px">' +
+            '<span class="avatar">' + esc(p.apelido || Club.initials(p.nome)) + '</span>' +
+            '<div class="row-b"><div class="row-t">' + esc(p.nome) + '</div>' +
+            (p.ativo ? '' : '<div class="row-meta"><span class="pill">inativo</span></div>') +
+            '</div>' +
+            '<div class="row-acts"><button type="button" class="btn btn-sm btn-ghost" ' +
+              'data-del="staff" data-id="' + p.id + '" aria-label="Remover">' +
+              ico('trash') + '</button></div>' +
+          '</div>';
+        }).join('')
+      : '<p style="color:var(--faint);font-size:13.5px;margin:0 0 18px">Ninguém cadastrado ainda.</p>';
+
+    Club.modal.open({
+      title: 'Equipe',
+      sub: 'Quem pode ser responsável por uma demanda.',
+      body: linhas +
+        '<div style="margin-top:20px;padding-top:18px;border-top:1px solid var(--border-soft)">' +
+        Club.field('Adicionar pessoa', 'nome', { placeholder:'Nome completo' }) + '</div>',
+      submitLabel: 'Adicionar',
+      onSubmit: function (dados) {
+        if (!dados.nome) { Club.modal.close(); return; }
+        Club.data.staff.save({ nome: dados.nome, apelido: Club.initials(dados.nome), ativo: true })
+          .then(function () { Club.modal.close(); recarregar('Pessoa adicionada.'); })
+          .catch(aviso);
+      }
+    });
+  }
+
   /* ── materiais ────────────────────────────────────────────────────────── */
 
   function materiaisVisiveis() {
@@ -644,7 +877,10 @@
     event:    { store:'events',    nome:function (r) { return r.titulo; }, aviso:'' },
     artifact: { store:'artifacts', nome:function (r) { return r.nome; }, aviso:'' },
     material:  { store:'materials',  nome:function (r) { return r.titulo; },
-                 aviso:'O arquivo sai do servidor junto.' }
+                 aviso:'O arquivo sai do servidor junto.' },
+    demand:    { store:'demands',    nome:function (r) { return r.titulo; }, aviso:'' },
+    staff:     { store:'staff',      nome:function (r) { return r.nome; },
+                 aviso:'As demandas dele continuam, sem responsável.' }
   };
 
   function achar(tipo, id) {
@@ -666,7 +902,7 @@
   }
 
   var MODAIS = { member:modalMembro, task:modalTarefa, event:modalEvento,
-                 artifact:modalArtefato, material:modalMaterial };
+                 artifact:modalArtefato, material:modalMaterial, demand:modalDemanda };
 
   /* ── eventos ──────────────────────────────────────────────────────────── */
 
@@ -688,6 +924,28 @@
 
     var down = e.target.closest('[data-baixar]');
     if (down) { baixar(down.dataset.baixar); return; }
+
+    var conc = e.target.closest('[data-concluir]');
+    if (conc) { mudarStatus(conc.dataset.concluir, 'Concluída'); return; }
+
+    var reab = e.target.closest('[data-reabrir]');
+    if (reab) { mudarStatus(reab.dataset.reabrir, 'A fazer'); return; }
+
+    var eq = e.target.closest('[data-equipe]');
+    if (eq) { modalEquipe(); return; }
+
+    var ab = e.target.closest('#filtroAbertas button');
+    if (ab) { st.demAbertas = ab.dataset.ab; renderDemandas(); return; }
+  });
+
+  $('filtroResponsavel').addEventListener('change', function () {
+    st.demResp = this.value;
+    renderDemandas();
+  });
+
+  $('filtroMembroDem').addEventListener('change', function () {
+    st.demMembro = this.value;
+    renderDemandas();
   });
 
   $('filtroCategoriaMat').addEventListener('change', function () {
@@ -715,6 +973,7 @@
     renderAgenda();
     renderArtifacts();
     renderMaterials();
+    renderDemandas();
   }
 
   function falhou(err) {

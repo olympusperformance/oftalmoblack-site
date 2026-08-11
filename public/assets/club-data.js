@@ -28,12 +28,27 @@
     events:    ['member_id', 'titulo', 'mentor', 'inicia_em', 'formato', 'link'],
     artifacts: ['member_id', 'nome', 'subtitulo', 'icone', 'status', 'meta', 'url'],
     materials: ['titulo', 'descricao', 'categoria', 'visivel_para', 'arquivo_path',
-                'arquivo_nome', 'arquivo_tipo', 'arquivo_bytes', 'publicado_em']
+                'arquivo_nome', 'arquivo_tipo', 'arquivo_bytes', 'publicado_em'],
+    demands:   ['titulo', 'descricao', 'status', 'prioridade', 'responsaveis',
+                'member_id', 'origem', 'vence_em'],
+    staff:     ['nome', 'apelido', 'ativo']
   };
 
   /* Campo de data ou de chave estrangeira vazio precisa virar null; string
      vazia o Postgres recusa. */
   var NULAVEIS = ['vence_em', 'inicia_em', 'member_id', 'publicado_em'];
+
+  /* Tabelas que só a administração enxerga. Quando ainda não foram criadas no
+     banco, a aba avisa em vez de derrubar a página inteira. */
+  function tolerante(promessa, aviso) {
+    return promessa.then(function (res) {
+      if (res.error && /does not exist|schema cache/i.test(res.error.message || '')) {
+        C.faltaMigracao = aviso;
+        return [];
+      }
+      return lista(res);
+    });
+  }
 
   function limpa(tabela, obj) {
     var out = {};
@@ -215,6 +230,39 @@
       }
     }
   };
+
+  /* Operação interna: nenhuma destas linhas chega ao mentorado — o RLS não tem
+     política de leitura para ele. */
+  var AVISO_DEM = 'O quadro de demandas ainda não foi criado no banco. ' +
+    'Rode supabase/demandas.sql no SQL Editor do Supabase.';
+
+  C.data.demands = {
+    list: function () {
+      return tolerante(sb().from('demands').select('*'), AVISO_DEM)
+        .then(function (rows) { return rows.sort(byDemanda); });
+    },
+    save: function (d) { return grava('demands', d); },
+    remove: function (id) { return apaga('demands', id); }
+  };
+
+  C.data.staff = {
+    list: function () {
+      return tolerante(sb().from('staff').select('*'), AVISO_DEM)
+        .then(function (rows) { return rows.sort(byNome); });
+    },
+    save: function (p) { return grava('staff', p); },
+    remove: function (id) { return apaga('staff', id); }
+  };
+
+  function byNome(a, b) { return String(a.nome).localeCompare(String(b.nome), 'pt-BR'); }
+
+  /* Dentro de cada status: prioridade alta primeiro, depois quem vence antes. */
+  var PESO = { 'Alta': 0, 'Média': 1, 'Baixa': 2 };
+  function byDemanda(a, b) {
+    var p = (PESO[a.prioridade] || 1) - (PESO[b.prioridade] || 1);
+    if (p !== 0) return p;
+    return String(a.vence_em || '9999').localeCompare(String(b.vence_em || '9999'));
+  }
 
   /* ── arquivo ──────────────────────────────────────────────────────────── */
 

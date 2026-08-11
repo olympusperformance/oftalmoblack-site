@@ -17,7 +17,7 @@ public/                # tudo que vai pro ar
   robots.txt
   sitemap.xml
 docker-entrypoint.d/   # scripts que a imagem nginx roda no boot
-supabase/              # SQL do banco: tabelas, RLS e primeiro acesso
+supabase/              # SQL do banco: tabelas, RLS, acervo, demandas
 Dockerfile             # nginx alpine servindo public/
 nginx.conf             # gzip, cache de assets, headers de segurança
 ```
@@ -72,7 +72,7 @@ Três telas, todas no mesmo visual (`assets/club.css`, extraído do protótipo):
 | Rota | O quê |
 |---|---|
 | `/entrar/` | Login por e-mail e senha (Supabase Auth) |
-| `/admin/` | Cadastro de membros, tarefas, agenda e artefatos |
+| `/admin/` | Demandas, membros, tarefas, agenda, materiais e artefatos |
 | `/membros/` | O que o mentorado enxerga; o admin pode espiar com `?membro=<id>` |
 
 O site continua sendo HTML estático: o navegador fala direto com o Supabase, sem
@@ -95,9 +95,26 @@ pela função `is_admin()` no banco.
 costura os dois pelo e-mail, em qualquer ordem — dá para cadastrar o mentorado
 no painel antes ou depois de criar o login dele no Auth.
 
+### Materiais e demandas
+
+**Materiais** é o acervo que só cresce — análise de tráfego, tutorial, roteiro —
+e não se confunde com artefato, que é o que o mentorado destrava (o CRM, a
+landing page). Cada material carrega um arquivo de verdade, guardado num bucket
+privado: sem URL pública, sem caminho adivinhável, download por link assinado de
+dois minutos. A visibilidade é `visivel_para`, um array de `member_id`; nulo quer
+dizer turma inteira. Um arquivo, uma linha, vários destinatários.
+
+**Demandas** é o quadro interno da operação, no vocabulário que a equipe já usa
+no ClickUp (A fazer → Planejando → Em andamento → Em risco / Aguardando retorno /
+Em pausa → Concluída / Cancelada). Só o administrador alcança: as políticas de
+`demands` e `staff` não têm regra de leitura para mentorado. A demanda pode
+apontar para um mentorado (`member_id`) quando é sobre alguém — "campanha do
+Pedro", "site da Cíntia" — e fica solta quando é interna.
+
 ### Montar o banco (uma vez)
 
-1. No **SQL Editor** do Supabase, rodar `supabase/schema.sql` inteiro
+1. No **SQL Editor** do Supabase, rodar `supabase/schema.sql` inteiro, depois
+   `supabase/materiais.sql` e `supabase/demandas.sql`
 2. Em **Authentication → Users**, criar o login do administrador
 3. Em `supabase/primeiro-acesso.sql`, trocar `SEU-EMAIL-DE-ADMIN@AQUI` pelo
    e-mail do passo 2 e rodar o arquivo
