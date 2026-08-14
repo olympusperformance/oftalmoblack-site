@@ -199,9 +199,8 @@ h1 em,h2 em{font-style:italic;color:var(--gold);letter-spacing:0}
 .band-line{max-width:33rem;font-size:clamp(1.25rem,2.4vw,1.7rem);color:var(--cream);font-weight:500;line-height:1.4;text-shadow:0 2px 18px rgba(10,10,10,.6)}
 
 /* O que você leva: lista editorial 2 col */
-.take{display:grid;grid-template-columns:1fr 1fr;gap:0 56px}
+.take{display:grid;grid-template-columns:repeat(3,1fr);gap:0 40px;border-bottom:1px solid var(--line)}
 .take-item{padding:26px 0;border-top:1px solid var(--line);display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start}
-.take-item:nth-last-child(-n+2){border-bottom:1px solid var(--line)}
 .take-item .rn{font-family:var(--cinzel);font-size:1rem;color:var(--gold);padding-top:2px;min-width:34px}
 .take-item h3{font-family:var(--sans);font-weight:700;font-size:1.02rem;color:var(--cream);margin-bottom:6px}
 .take-item p{font-size:.93rem;color:var(--muted)}
@@ -319,8 +318,6 @@ footer.site a:hover{color:var(--gold-bright)}
   .stat{padding:26px 12px;border-top:1px solid var(--line)}
   .stats .wrap .stat:nth-child(-n+2){border-top:0}
   .fit,.mov,.cities,.take,.frow{grid-template-columns:1fr}
-  .take-item{border-bottom:0}
-  .take .take-item:last-child{border-bottom:1px solid var(--line)}
   .mentor,.apply-grid{grid-template-columns:1fr;gap:40px}
   .mframe{max-width:340px;margin:0 auto}
   .sec{padding:60px 0}
@@ -410,7 +407,6 @@ footer.site a:hover{color:var(--gold-bright)}
         <h3>Faz sentido aplicar se você</h3>
         <ul>
           <li>É oftalmologista e quer acelerar sua evolução em cirurgia de catarata</li>
-          <li>Quer sair do básico e se preparar para implantar lentes premium</li>
           <li>Busca volume de casos que a rotina da sua cidade não oferece</li>
           <li>Quer operar com um mentor ao lado, não assistir de longe</li>
         </ul>
@@ -490,22 +486,9 @@ footer.site a:hover{color:var(--gold-bright)}
       </div>
       <div class="take-item" data-reveal>
         <span class="rn">III</span>
-        <div><h3>Técnicas de fixação secundária</h3><p>Yamane, Four Flanged e fixação iridiana: repertório para os casos que fogem do padrão.</p></div>
-      </div>
-      <div class="take-item" data-reveal>
-        <span class="rn">IV</span>
-        <div><h3>Preparo para lentes premium</h3><p>A base técnica e o raciocínio de indicação para você avançar em implantes de alta tecnologia.</p></div>
-      </div>
-      <div class="take-item" data-reveal>
-        <span class="rn">V</span>
         <div><h3>Sistema de alto volume</h3><p>Como um mutirão de alta performance é organizado, e o que essa lógica muda na sua rotina cirúrgica.</p></div>
       </div>
-      <div class="take-item" data-reveal>
-        <span class="rn">VI</span>
-        <div><h3>Grupo direto com o mentor</h3><p>Grupo de WhatsApp com o Dr. Alex para orientação de casos.</p></div>
-      </div>
     </div>
-    <p class="take-note" data-reveal>Ao final, você recebe <b>certificado de extensão universitária reconhecido pelo MEC</b>.</p>
   </div>
 </section>
 
