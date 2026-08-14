@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mentoria Olympus em Cirurgia de Catarata · Dr. Alex Sá</title>
+<link rel="canonical" href="https://oftalmoblack.com.br/mentoria-olympus-catarata/">
+<meta name="description" content="Imersão cirúrgica hands-on de alto volume com o Dr. Alex Sá em Juruti ou Óbidos. Duas turmas por mês, uma dupla por turma, entrada por aplicação.">
+<meta property="og:title" content="Mentoria Olympus em Cirurgia de Catarata">
+<meta property="og:description" content="Três dias de centro cirúrgico em regime de alto volume, em dupla, com o Dr. Alex Sá ao lado em cada caso.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://oftalmoblack.com.br/mentoria-olympus-catarata/">
+<meta property="og:image" content="https://oftalmoblack.com.br/mentoria-olympus-catarata/assets/og.jpg">
+<link rel="preload" as="image" href="assets/alex-0827.webp" imagesrcset="assets/alex-0827-800.webp 800w, assets/alex-0827.webp 1400w" imagesizes="(max-width:960px) 100vw, 44vw" fetchpriority="high">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='none' stroke='%23d89d4d' stroke-width='3'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23fdf3b5'/%3E%3C/svg%3E">
+
+<!-- Google tag (gtag.js) · GA4 B2B OftalmoBlack -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5NMXL3LD47"></script>
+<script>
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag('js',new Date());gtag('config','G-5NMXL3LD47');
+</script>
+
+<style>
+/* ══ Fonte display · Cinzel (kickers, numerais, wordmark) ══ */
+@font-face{
+  font-family:'Cinzel';
+  src:url('assets/cinzel-latin.woff2') format('woff2');
+  font-weight:400 600;
+  font-display:swap;
+}
+
+/* ══ Tokens canônicos OftalmoBlack (oftalmoblack.com.br/assets/styles.css) ══ */
+:root{
+  color-scheme:dark;
+  --bg:#0a0a0a;
+  --bg-soft:#0A0A0C;
+  --surface:#101014;
+  --glass-hi:rgba(255,255,255,.055);
+  --glass-lo:rgba(255,255,255,.018);
+  --gold:#d89d4d;
+  --gold-bright:#e6bd74;
+  --champagne:#fdf3b5;
+  --gold-deep:#8a5210;
+  --cream:#f5f0e6;
+  --body:rgba(245,240,230,.8);
+  --muted:rgba(245,240,230,.62);
+  --faint:rgba(245,240,230,.5);
+  --line:rgba(216,157,77,.16);
+  --line-strong:rgba(216,157,77,.34);
+  --ease:cubic-bezier(.22,1,.36,1);
+  --cinzel:'Cinzel',serif;
+  --sans:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Roboto,'Helvetica Neue',sans-serif;
+  --grad-cta:linear-gradient(115deg,#d89d4d,#fdf3b5);
+  --grad-foil:linear-gradient(120deg,#8a5210 0%,#c78039 18%,#e6bd74 32%,#fdf3b5 42%,#d89d4d 55%,#c78039 72%,#8a5210 100%);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:clip}
+body{
+  font-family:var(--sans);background:var(--bg);color:var(--body);
+  font-size:16.5px;line-height:1.68;-webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+img{max-width:100%;display:block}
+::selection{background:rgba(216,157,77,.32);color:#fff}
+.wrap{max-width:1140px;margin:0 auto;padding:0 24px}
+
+h1,h2{font-weight:500;color:var(--cream);line-height:1.16;letter-spacing:-.015em}
+h2{font-size:clamp(1.7rem,3.4vw,2.5rem)}
+h1 em,h2 em{font-style:italic;color:var(--gold);letter-spacing:0}
+.foil{
+  background:var(--grad-foil);background-size:200% 100%;
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:var(--gold-bright);
+}
+.shimmer{
+  background:linear-gradient(115deg,#d89d4d,#fdf3b5,#d89d4d);background-size:220% auto;
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:var(--gold-bright);
+}
+@media (prefers-reduced-motion: no-preference){
+  .foil{animation:foilShift 8s ease-in-out infinite}
+  .shimmer{animation:gzShimmer 7s linear infinite}
+}
+@keyframes foilShift{0%,100%{background-position:0% 0}50%{background-position:100% 0}}
+@keyframes gzShimmer{to{background-position:-220% 0}}
+
+/* ══ Kicker assinatura: numeral romano + hairline + Cinzel caps ══ */
+.kick{display:flex;align-items:center;gap:16px;margin-bottom:26px}
+.kick .rn{font-family:var(--cinzel);font-size:1.3rem;color:var(--gold)}
+.kick .ln{height:1px;width:48px;background:var(--line-strong)}
+.kick .lb{font-family:var(--cinzel);font-size:.68rem;letter-spacing:.34em;text-transform:uppercase;color:var(--muted)}
+.kick.center{justify-content:center}
+
+/* ══ Botões ══ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  border-radius:999px;padding:16px 34px;border:0;cursor:pointer;text-decoration:none;
+  font-family:var(--sans);font-size:.8rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+  transition:transform .18s var(--ease),box-shadow .25s ease,background-color .2s ease;
+  white-space:nowrap;
+}
+.btn:active{transform:scale(.97)}
+.btn-gold{background:var(--grad-cta);color:#0a0a0a}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 10px 34px rgba(216,157,77,.34)}
+.btn-ghost{border:1px solid var(--line-strong);color:var(--gold-bright);background:transparent;font-weight:600}
+.btn-ghost:hover{background:rgba(216,157,77,.08)}
+.btn-dark{background:#0a0a0a;color:var(--champagne)}
+.btn-dark:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.btn:focus-visible,a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{
+  outline:2px solid var(--gold);outline-offset:3px;
+}
+
+/* ══ Reveal (progressive enhancement: sem JS tudo fica visível) ══ */
+.js [data-reveal]{opacity:0}
+.js [data-reveal].in{animation:rvUp .8s var(--ease) both}
+@keyframes rvUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){
+  .js [data-reveal]{opacity:1}
+  .js [data-reveal].in{animation:none}
+  html{scroll-behavior:auto}
+}
+
+/* ══ Nav ══ */
+.nav{position:sticky;top:0;z-index:60;background:rgba(10,10,10,.93);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:68px}
+.mark{display:flex;flex-direction:column;line-height:1.15;text-decoration:none}
+.mark b{font-family:var(--cinzel);font-weight:500;font-size:1.02rem;letter-spacing:.3em;color:var(--cream)}
+.mark b span{color:var(--gold)}
+.mark i{font-style:normal;font-size:.6rem;letter-spacing:.38em;text-transform:uppercase;color:var(--muted)}
+.btn-nav{padding:11px 22px;font-size:.7rem;min-height:44px}
+
+/* ══ Hero ══ */
+.hero{position:relative;overflow:hidden;background:radial-gradient(1100px 560px at 76% 8%,rgba(216,157,77,.13),transparent 62%),var(--bg)}
+.hero-grid{display:grid;grid-template-columns:1.06fr .94fr;gap:44px;align-items:center;min-height:min(92svh,860px);padding-top:56px}
+.hero-kick{font-family:var(--cinzel);font-size:.72rem;letter-spacing:.34em;text-transform:uppercase;margin-bottom:24px}
+.hero h1{font-size:clamp(2rem,3.9vw,2.95rem);margin-bottom:24px;text-wrap:balance}
+.hero .sub{font-size:1.11rem;max-width:31rem;margin-bottom:34px}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap}
+.hero-note{margin-top:18px;font-size:.85rem;color:var(--muted);letter-spacing:.04em}
+.hero-note b{color:var(--gold-bright);font-weight:600}
+.hero-photo{position:relative;align-self:stretch;min-height:460px}
+@media(min-width:1189px){.hero-photo{margin-right:calc((1140px - 100vw)/2 - 24px)}}
+.hero-photo img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% 18%;
+  mask-image:linear-gradient(90deg,transparent 0%,#000 24%),linear-gradient(180deg,#000 76%,transparent 100%);
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 24%),linear-gradient(180deg,#000 76%,transparent 100%);
+  mask-composite:intersect;-webkit-mask-composite:source-in;
+  filter:saturate(.86) contrast(1.04);
+}
+.js .hero-copy{animation:rvUp .85s var(--ease) both}
+.js .hero-photo{animation:rvUp .85s var(--ease) .14s both}
+@media (prefers-reduced-motion: reduce){.js .hero-copy,.js .hero-photo{animation:none}}
+
+/* ══ Faixa de números ══ */
+.stats{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--bg-soft)}
+.stats .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+.stat{padding:34px 20px;text-align:center;position:relative}
+.stat+.stat::before{content:"";position:absolute;left:0;top:26%;height:48%;width:1px;background:var(--line)}
+.stat b{font-weight:500;font-size:clamp(1.9rem,3.4vw,2.7rem);display:block;line-height:1.1;letter-spacing:-.01em}
+.stat span{font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+/* ══ Seções ══ */
+.sec{padding:104px 0}
+.sec-tight{padding-top:0}
+.sec-head{max-width:47rem;margin-bottom:52px}
+.sec-head p{font-size:1.05rem;margin-top:14px;max-width:44rem}
+
+/* Para quem é */
+.fit{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.fit-col{border-radius:20px;padding:38px 36px;background:linear-gradient(135deg,var(--glass-hi),var(--glass-lo));border:1px solid rgba(255,255,255,.09)}
+.fit-col.yes{border-color:var(--line-strong)}
+.fit-col h3{font-family:var(--sans);font-weight:700;font-size:1.05rem;letter-spacing:.05em;margin-bottom:22px;color:var(--gold-bright)}
+.fit-col.no h3{color:var(--muted)}
+.fit-col ul{list-style:none;display:grid;gap:15px}
+.fit-col li{padding-left:28px;position:relative;font-size:.98rem}
+.fit-col.yes li::before{content:"✓";position:absolute;left:0;color:var(--gold);font-weight:700}
+.fit-col.no li{color:var(--muted)}
+.fit-col.no li::before{content:"×";position:absolute;left:0;color:var(--faint);font-weight:700}
+
+/* Formato: 3 movimentos */
+.mov{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.mcard{
+  border-radius:20px;padding:34px 30px;
+  background:linear-gradient(135deg,var(--glass-hi),var(--glass-lo));
+  border:1px solid rgba(255,255,255,.09);
+  transition:border-color .3s ease,transform .3s var(--ease);
+}
+.mcard:hover{border-color:var(--line-strong);transform:translateY(-4px)}
+.mcard b{font-family:var(--cinzel);font-weight:500;font-size:1.75rem;display:block;margin-bottom:14px}
+.mcard h3{font-family:var(--sans);font-weight:700;font-size:1.04rem;margin-bottom:10px;color:var(--cream)}
+.mcard p{font-size:.95rem;color:var(--muted)}
+
+/* Banda foto full-bleed */
+.band{position:relative;min-height:480px;overflow:hidden}
+.band img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 26%;filter:saturate(.88)}
+.band::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,var(--bg) 0%,rgba(10,10,10,.28) 34%,rgba(10,10,10,.42) 62%,var(--bg) 100%),linear-gradient(76deg,rgba(10,10,10,.82) 0%,rgba(10,10,10,.5) 34%,transparent 62%)}
+.band .wrap{position:relative;z-index:2;display:flex;align-items:flex-end;min-height:480px;padding-bottom:64px}
+.band-line{max-width:33rem;font-size:clamp(1.25rem,2.4vw,1.7rem);color:var(--cream);font-weight:500;line-height:1.4;text-shadow:0 2px 18px rgba(10,10,10,.6)}
+
+/* O que você leva: lista editorial 2 col */
+.take{display:grid;grid-template-columns:1fr 1fr;gap:0 56px}
+.take-item{padding:26px 0;border-top:1px solid var(--line);display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start}
+.take-item:nth-last-child(-n+2){border-bottom:1px solid var(--line)}
+.take-item .rn{font-family:var(--cinzel);font-size:1rem;color:var(--gold);padding-top:2px;min-width:34px}
+.take-item h3{font-family:var(--sans);font-weight:700;font-size:1.02rem;color:var(--cream);margin-bottom:6px}
+.take-item p{font-size:.93rem;color:var(--muted)}
+.take-note{margin-top:30px;font-size:.9rem;color:var(--muted)}
+.take-note b{color:var(--gold-bright);font-weight:600}
+
+/* Cidades */
+.cities{display:grid;grid-template-columns:1fr 1fr;gap:0 56px;margin-top:52px}
+.city{border-top:1px solid var(--line-strong);padding:26px 4px 0;position:relative}
+.city h3{font-weight:600;font-size:1.35rem;color:var(--cream);margin-bottom:8px;letter-spacing:.02em}
+.city h3 i{font-family:var(--cinzel);font-style:normal;font-weight:400;color:var(--gold);font-size:1rem;margin-right:12px}
+.city p{font-size:.95rem;color:var(--muted);max-width:34rem}
+.cities-note{margin-top:34px;font-size:.95rem;color:var(--muted);max-width:44rem}
+.cities-note b{color:var(--gold-bright);font-weight:600}
+
+/* Depoimento âncora */
+.quote-sec{background:radial-gradient(900px 480px at 50% 20%,rgba(216,157,77,.09),transparent 65%)}
+.quote{max-width:52rem;margin:0 auto;text-align:center}
+.quote p{font-size:clamp(1.45rem,3vw,2.1rem);font-style:italic;color:var(--cream);line-height:1.42}
+.quote p b{font-style:italic;font-weight:500;color:var(--gold-bright)}
+.quote footer{margin-top:28px;font-size:.9rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.quote footer b{color:var(--gold-bright);font-weight:600}
+
+/* Mentor */
+.mentor{display:grid;grid-template-columns:.92fr 1.08fr;gap:64px;align-items:center}
+.mframe{position:relative;border-radius:26px;padding:2px;max-width:430px;background:linear-gradient(160deg,rgba(216,157,77,.4),rgba(216,157,77,.08) 40%,rgba(216,157,77,.22))}
+.mframe img{position:relative;border-radius:24px;aspect-ratio:4/5;object-fit:cover;object-position:center 22%;width:100%;box-shadow:0 30px 70px rgba(0,0,0,.5)}
+.mentor .bio p{margin-bottom:16px}
+.mentor .bio p b{color:var(--cream);font-weight:600}
+.mstats{display:grid;grid-template-columns:1fr 1fr;gap:14px 40px;margin-top:34px}
+.mstat{border-top:1px solid var(--line);padding-top:14px}
+.mstat b{font-weight:500;font-size:1.7rem;display:block;line-height:1.2;letter-spacing:-.01em}
+.mstat span{font-size:.85rem;color:var(--muted)}
+
+/* Investimento */
+.invest{background:var(--bg-soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.invest-in{max-width:44rem;margin:0 auto;text-align:center}
+.invest .terms{margin:26px auto 36px;max-width:34rem;font-size:1.02rem;color:var(--muted)}
+.invest .terms b{color:var(--cream);font-weight:600}
+
+/* Aplicação */
+.apply{background:radial-gradient(900px 520px at 50% 0%,rgba(216,157,77,.11),transparent 65%)}
+.apply-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:64px;align-items:start}
+.apply-copy h2{max-width:12ch}
+.apply-copy>p{margin-top:18px;max-width:26rem}
+.apply-steps{margin-top:36px;display:grid;gap:0}
+.astep{display:grid;grid-template-columns:auto 1fr;gap:16px;padding:16px 0;border-top:1px solid var(--line);font-size:.94rem;color:var(--muted)}
+.astep i{font-family:var(--cinzel);font-style:normal;color:var(--gold);min-width:22px;padding-top:1px}
+.apply-photo{margin-top:40px;border-radius:22px;aspect-ratio:4/5;object-fit:cover;object-position:center 22%;width:100%;max-width:400px;border:1px solid var(--line)}
+.form-card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:44px}
+.field{margin-bottom:20px}
+.field label{display:block;font-size:.84rem;font-weight:600;letter-spacing:.05em;margin-bottom:8px;color:var(--gold-bright)}
+input,select,textarea{
+  width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(216,157,77,.2);
+  border-radius:12px;padding:15px 17px;color:var(--cream);font-size:1rem;font-family:var(--sans);
+  transition:border-color .2s ease,background-color .2s ease;
+}
+input::placeholder,textarea::placeholder{color:var(--faint)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold);background:rgba(216,157,77,.06);box-shadow:0 0 0 3px rgba(216,157,77,.14)}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23D89D4D' stroke-width='2' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center}
+select:invalid{color:var(--faint)}
+textarea{resize:vertical;min-height:96px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-card .btn{width:100%;margin-top:6px}
+.form-alt{margin-top:22px;text-align:center;font-size:.92rem;color:var(--muted)}
+.form-alt a{color:var(--gold-bright)}
+.form-ok{display:none;text-align:center;padding:26px 0 8px}
+.form-ok b{display:block;font-weight:600;font-size:1.35rem;color:var(--cream);margin-bottom:8px}
+.form-ok p{font-size:.95rem;color:var(--muted)}
+.form-ok a{color:var(--gold-bright)}
+
+/* FAQ */
+.faq{max-width:46rem;margin:0 auto}
+.faq details{border-top:1px solid var(--line)}
+.faq details:last-child{border-bottom:1px solid var(--line)}
+.faq summary{
+  list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:20px;
+  padding:24px 4px;font-weight:600;color:var(--cream);font-size:1.02rem;
+}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:var(--cinzel);font-size:1.5rem;color:var(--gold);transition:transform .3s var(--ease);flex-shrink:0}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq .ans{padding:0 4px 26px;font-size:.97rem;color:var(--muted);max-width:40rem}
+
+/* CTA final invertido */
+.final .card{
+  background:var(--grad-cta);border-radius:26px;padding:58px 56px;
+  display:flex;align-items:center;justify-content:space-between;gap:36px;flex-wrap:wrap;
+}
+.final h2{color:#0a0a0a;font-weight:600;font-size:clamp(1.6rem,3vw,2.2rem);max-width:20ch;letter-spacing:-.01em}
+.final p{color:rgba(10,10,10,.72);margin-top:10px;font-size:1rem;max-width:34rem}
+
+/* Marquee (única da página) */
+.marquee{overflow:hidden;border-top:1px solid var(--line);background:var(--bg-soft);padding:20px 0}
+.marquee .track{display:flex;gap:64px;width:max-content;font-family:var(--cinzel);font-size:.72rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold-bright);white-space:nowrap}
+@media (prefers-reduced-motion: no-preference){.marquee .track{animation:mq 34s linear infinite}}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+/* Footer */
+footer.site{padding:48px 0;font-size:.85rem;color:var(--muted)}
+footer.site a{display:inline-block;padding:10px 0}
+footer.site .wrap{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}
+footer.site a{color:var(--muted);text-decoration:none}
+footer.site a:hover{color:var(--gold-bright)}
+
+/* ══ Responsivo ══ */
+@media(max-width:960px){
+  .hero-grid{grid-template-columns:minmax(0,1fr);min-height:auto;padding-top:36px;gap:8px}
+  .hero-grid>*{min-width:0}
+  .hero-photo{min-height:380px;order:-1;margin:0 -24px}
+  .hero-photo img{mask-image:linear-gradient(180deg,#000 58%,transparent 100%);-webkit-mask-image:linear-gradient(180deg,#000 58%,transparent 100%)}
+  .hero h1{max-width:none}
+  .stats .wrap{grid-template-columns:1fr 1fr}
+  .stat+.stat::before{display:none}
+  .stat{padding:26px 12px;border-top:1px solid var(--line)}
+  .stats .wrap .stat:nth-child(-n+2){border-top:0}
+  .fit,.mov,.cities,.take,.frow{grid-template-columns:1fr}
+  .take-item{border-bottom:0}
+  .take .take-item:last-child{border-bottom:1px solid var(--line)}
+  .mentor,.apply-grid{grid-template-columns:1fr;gap:40px}
+  .mframe{max-width:340px;margin:0 auto}
+  .sec{padding:60px 0}
+  .sec-head{margin-bottom:36px}
+  .kick{margin-bottom:18px}
+  .fit-col{padding:28px 22px}
+  .mcard{padding:26px 22px}
+  .take-item{padding:20px 0}
+  .form-card{padding:34px 22px}
+  .band{min-height:400px}
+  .band .wrap{min-height:400px;padding-bottom:44px}
+  .apply-photo{display:none}
+  .invest .terms{margin-bottom:28px}
+  .final .card{padding:40px 28px}
+  .final .btn{width:100%}
+  footer.site .wrap{flex-direction:column;align-items:flex-start;gap:6px}
+}
+@media(max-width:640px){
+  .btn{white-space:normal;font-size:.74rem;letter-spacing:.12em;padding:15px 26px}
+  .hero-cta{flex-direction:column;align-items:stretch}
+  .hero-cta .btn{width:100%}
+}
+@media(max-width:480px){
+  .mark b{font-size:.88rem;letter-spacing:.22em}
+  .mark i{font-size:.52rem;letter-spacing:.3em}
+  .btn-nav{padding:9px 14px;font-size:.62rem;letter-spacing:.12em}
+  .btn{letter-spacing:.1em;white-space:normal;text-align:center}
+  .hero-photo{min-height:300px}
+  .hero h1{font-size:1.82rem}
+  .hero .sub{font-size:1.02rem}
+  h2{font-size:1.55rem}
+  .stat span{font-size:.7rem;letter-spacing:.1em}
+  .quote p{font-size:1.3rem}
+  .marquee .track{gap:40px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="mark" href="#topo" aria-label="Mentoria Olympus em Cirurgia de Catarata">
+      <b>MENTORIA <span>OLYMPUS</span></b>
+      <i>Cirurgia de Catarata</i>
+    </a>
+    <a class="btn btn-gold btn-nav" href="#aplicacao">Aplicar agora</a>
+  </div>
+</nav>
+
+<header class="hero" id="topo">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="hero-kick shimmer">Imersão cirúrgica hands-on · Dr. Alex Sá</p>
+      <h1>Anos de curva de aprendizado. <em>Três dias</em> de centro cirúrgico.</h1>
+      <p class="sub">Mentoria presencial de alto volume em Juruti ou Óbidos, no Pará: você opera em sequência, em dupla, com o Dr. Alex Sá ao lado do primeiro ao último caso.</p>
+      <div class="hero-cta">
+        <a class="btn btn-gold" href="#aplicacao">Aplicar agora</a>
+        <a class="btn btn-ghost js-wa" href="https://wa.me/5592991441889?text=Ol%C3%A1!%20Sou%20oftalmologista%20e%20quero%20saber%20mais%20sobre%20a%20Mentoria%20Olympus%20em%20Cirurgia%20de%20Catarata." target="_blank" rel="noopener">Falar com a equipe no WhatsApp</a>
+      </div>
+      <p class="hero-note">Duas turmas por mês · <b>uma dupla por turma</b> · entrada por aplicação</p>
+    </div>
+    <div class="hero-photo">
+      <img src="assets/alex-0827.webp" srcset="assets/alex-0827-800.webp 800w, assets/alex-0827.webp 1400w" sizes="(max-width:960px) 100vw, 44vw" alt="Dr. Alex Sá de jaleco, de braços cruzados, ao lado de equipamentos de diagnóstico oftalmológico" fetchpriority="high">
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="stats" aria-label="A mentoria em números">
+  <div class="wrap">
+    <div class="stat" data-reveal><b class="shimmer">3</b><span>dias de centro cirúrgico</span></div>
+    <div class="stat" data-reveal><b class="shimmer">2</b><span>turmas por mês</span></div>
+    <div class="stat" data-reveal><b class="shimmer">2</b><span>vagas por turma</span></div>
+    <div class="stat" data-reveal><b class="shimmer">1</b><span>mentor em cada caso</span></div>
+  </div>
+</section>
+
+<section class="sec" id="paraquem">
+  <div class="wrap">
+    <div class="kick" data-reveal><span class="rn">I</span><span class="ln"></span><span class="lb">Para quem é</span></div>
+    <div class="sec-head" data-reveal>
+      <h2>Feita para o cirurgião que não aceita evoluir <em>na velocidade padrão.</em></h2>
+      <p>Não é mais uma mentoria teórica. É volume cirúrgico real, com acompanhamento individual, para levar sua prática a um novo patamar de segurança e precisão.</p>
+    </div>
+    <div class="fit">
+      <div class="fit-col yes" data-reveal>
+        <h3>Faz sentido aplicar se você</h3>
+        <ul>
+          <li>É oftalmologista e quer acelerar sua evolução em cirurgia de catarata</li>
+          <li>Quer sair do básico e se preparar para implantar lentes premium</li>
+          <li>Busca volume de casos que a rotina da sua cidade não oferece</li>
+          <li>Quer operar com um mentor ao lado, não assistir de longe</li>
+        </ul>
+      </div>
+      <div class="fit-col no" data-reveal>
+        <h3>Não faz sentido se você</h3>
+        <ul>
+          <li>Procura um curso gravado para assistir no tempo livre</li>
+          <li>Não pode reservar cinco dias pra imersão presencial</li>
+          <li>Prefere teoria a entrar no centro cirúrgico</li>
+          <li>Não é médico oftalmologista</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec-tight" id="formato">
+  <div class="wrap">
+    <div class="kick" data-reveal><span class="rn">II</span><span class="ln"></span><span class="lb">O formato</span></div>
+    <div class="sec-head" data-reveal>
+      <h2>Alto volume, em regime de mutirão, com o mentor ao lado <em>em cada caso.</em></h2>
+      <p>A imersão é adaptada ao seu nível técnico e aos seus objetivos: do refinamento de quem já opera à construção de autonomia de quem está começando na faco.</p>
+    </div>
+    <div class="mov">
+      <div class="mcard" data-reveal>
+        <b class="foil">I</b>
+        <h3>Volume cirúrgico intenso</h3>
+        <p>Você opera casos reais em sequência, dia após dia, em regime de mutirão. Volume que levaria meses para acumular na rotina, concentrado em uma semana.</p>
+      </div>
+      <div class="mcard" data-reveal>
+        <b class="foil">II</b>
+        <h3>Acompanhamento individual</h3>
+        <p>O Dr. Alex acompanha cada caso ao seu lado: correção em tempo real, decisão discutida no momento em que ela acontece, evolução medida a cada dia.</p>
+      </div>
+      <div class="mcard" data-reveal>
+        <b class="foil">III</b>
+        <h3>Autonomia cirúrgica</h3>
+        <p>O objetivo da semana: você sair conduzindo os próprios casos com mais segurança, precisão e critério de decisão.</p>
+      </div>
+    </div>
+    <div class="cities">
+      <div class="city" data-reveal>
+        <h3>Juruti</h3>
+        <p>Oeste do Pará. Centro cirúrgico em regime de mutirão: alto volume de casos reais de catarata, operados em sequência.</p>
+      </div>
+      <div class="city" data-reveal>
+        <h3>Óbidos</h3>
+        <p>Baixo Amazonas. Mesma estrutura de mutirão: a segunda turma do mês, com novos perfis de caso.</p>
+      </div>
+    </div>
+    <p class="cities-note" data-reveal>Sua turma acontece em <b>uma</b> das duas cidades. Reserve cinco dias na agenda: três de centro cirúrgico e dois de deslocamento até o interior do Pará.</p>
+  </div>
+</section>
+
+<div class="band">
+  <img src="assets/alex-0770.webp" alt="Dr. Alex Sá trabalhando ao computador em seu consultório" loading="lazy">
+  <div class="wrap">
+    <p class="band-line" data-reveal>Cirurgia se aprende operando. O resto é preparo para a próxima cirurgia.</p>
+  </div>
+</div>
+
+<section class="sec" id="entrega">
+  <div class="wrap">
+    <div class="kick" data-reveal><span class="rn">III</span><span class="ln"></span><span class="lb">O que você leva</span></div>
+    <div class="sec-head" data-reveal>
+      <h2>Uma semana que reorganiza <em>a sua técnica.</em></h2>
+    </div>
+    <div class="take">
+      <div class="take-item" data-reveal>
+        <span class="rn">I</span>
+        <div><h3>Cirurgia de catarata hands-on</h3><p>Três dias operando com supervisão direta do Dr. Alex, do preparo do caso à revisão do que foi feito.</p></div>
+      </div>
+      <div class="take-item" data-reveal>
+        <span class="rn">II</span>
+        <div><h3>Refinamento técnico</h3><p>Capsulorrexe ideal, posicionamento de LIO e manejo do SIA: o polimento que separa operar de operar bem.</p></div>
+      </div>
+      <div class="take-item" data-reveal>
+        <span class="rn">III</span>
+        <div><h3>Técnicas de fixação secundária</h3><p>Yamane, Four Flanged e fixação iridiana: repertório para os casos que fogem do padrão.</p></div>
+      </div>
+      <div class="take-item" data-reveal>
+        <span class="rn">IV</span>
+        <div><h3>Preparo para lentes premium</h3><p>A base técnica e o raciocínio de indicação para você avançar em implantes de alta tecnologia.</p></div>
+      </div>
+      <div class="take-item" data-reveal>
+        <span class="rn">V</span>
+        <div><h3>Sistema de alto volume</h3><p>Como um mutirão de alta performance é organizado, e o que essa lógica muda na sua rotina cirúrgica.</p></div>
+      </div>
+      <div class="take-item" data-reveal>
+        <span class="rn">VI</span>
+        <div><h3>Grupo direto com o mentor</h3><p>Grupo de WhatsApp com o Dr. Alex para orientação de casos.</p></div>
+      </div>
+    </div>
+    <p class="take-note" data-reveal>Ao final, você recebe <b>certificado de extensão universitária reconhecido pelo MEC</b>.</p>
+  </div>
+</section>
+
+<section class="sec sec-tight quote-sec" id="depoimento">
+  <div class="wrap">
+    <div class="quote" data-reveal>
+      <p>"Um dia aqui na mentoria valeu <b>meses, anos,</b> da minha trajetória."</p>
+      <footer><b>Dra. Ana Paula</b> · mentorada</footer>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="mentor">
+  <div class="wrap mentor">
+    <div class="mframe" data-reveal>
+      <img src="assets/alex-0804.webp" srcset="assets/alex-0804-800.webp 800w, assets/alex-0804.webp 1400w" sizes="(max-width:960px) 92vw, 430px" alt="Retrato do Dr. Alex Sá de jaleco branco, sorrindo, com as mãos cruzadas sobre a mesa" loading="lazy">
+    </div>
+    <div class="bio">
+      <div class="kick" data-reveal><span class="rn">IV</span><span class="ln"></span><span class="lb">Quem conduz</span></div>
+      <h2 data-reveal>Mentoria de quem opera <em>todos os dias.</em></h2>
+      <div data-reveal>
+        <p style="margin-top:18px"><b>Dr. Alex Sá</b> (CRM-AM 7516 · RQE 3514) é cirurgião oftalmologista, especialista em catarata e cirurgia refrativa, professor por 6 anos na Universidade Federal do Amazonas e autor do livro <b>"Cirurgia de Catarata: habilitando-se para o aprendizado"</b>.</p>
+        <p>Foi preceptor de residência em oftalmologia e de fellowship em catarata, e hoje lidera a própria clínica em Manaus, além de mentorar oftalmologistas de todo o Brasil no ecossistema OftalmoBlack.</p>
+      </div>
+      <div class="mstats">
+        <div class="mstat" data-reveal><b class="shimmer">+25 mil</b><span>cirurgias realizadas</span></div>
+        <div class="mstat" data-reveal><b class="shimmer">+15 anos</b><span>de oftalmologia</span></div>
+        <div class="mstat" data-reveal><b class="shimmer">6 anos</b><span>de docência universitária</span></div>
+        <div class="mstat" data-reveal><b class="shimmer">35+</b><span>oftalmologistas mentorados</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec invest" id="investimento">
+  <div class="wrap invest-in">
+    <div class="kick center" data-reveal><span class="rn">V</span><span class="ln"></span><span class="lb">Investimento</span></div>
+    <h2 data-reveal>Uma decisão de carreira.</h2>
+    <p class="terms" data-reveal>O investimento e as condições são apresentados <b>direto pela equipe</b>, na conversa que segue a sua aplicação. Sem checkout, sem compra por impulso: entrada por análise.</p>
+    <a class="btn btn-gold" href="#aplicacao" data-reveal>Aplicar agora</a>
+  </div>
+</section>
+
+<section class="sec apply" id="aplicacao">
+  <div class="wrap apply-grid">
+    <div class="apply-copy">
+      <div class="kick" data-reveal><span class="rn">VI</span><span class="ln"></span><span class="lb">Aplicação</span></div>
+      <h2 data-reveal>Pronto para a sua <em>próxima turma?</em></h2>
+      <p data-reveal>São duas turmas por mês, com uma dupla em cada. A aplicação não é compromisso de compra: é o primeiro passo da conversa.</p>
+      <div class="apply-steps" data-reveal>
+        <div class="astep"><i>I</i><span>Você envia a aplicação com o seu momento cirúrgico.</span></div>
+        <div class="astep"><i>II</i><span>A equipe retorna no WhatsApp para entender seus objetivos.</span></div>
+        <div class="astep"><i>III</i><span>Alinhado o perfil, você reserva a vaga na turma escolhida.</span></div>
+      </div>
+      <img class="apply-photo" src="assets/alex-0820.webp" alt="Dr. Alex Sá em pé, de jaleco, na sala de equipamentos de diagnóstico da clínica" loading="lazy" data-reveal>
+    </div>
+    <div class="form-card" data-reveal>
+      <form id="form-aplicacao" novalidate>
+        <div class="field">
+          <label for="nome">Nome completo</label>
+          <input id="nome" name="nome" type="text" autocomplete="name" placeholder="Dr(a). Nome Sobrenome" required>
+        </div>
+        <div class="frow">
+          <div class="field">
+            <label for="zap">WhatsApp</label>
+            <input id="zap" name="zap" type="tel" autocomplete="tel" inputmode="tel" minlength="10" pattern="[0-9()+\-. ]{10,}" title="DDD + número, ex: (92) 90000-0000" placeholder="(00) 90000-0000" required>
+          </div>
+          <div class="field">
+            <label for="email">E-mail</label>
+            <input id="email" name="email" type="email" autocomplete="email" placeholder="voce@email.com" required>
+          </div>
+        </div>
+        <div class="frow">
+          <div class="field">
+            <label for="crm">CRM / UF</label>
+            <input id="crm" name="crm" type="text" placeholder="00000 / AM" required>
+          </div>
+          <div class="field">
+            <label for="cidade">Cidade onde atua</label>
+            <input id="cidade" name="cidade" type="text" placeholder="Manaus, AM" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="momento">Seu momento na cirurgia de catarata</label>
+          <select id="momento" name="momento" required>
+            <option value="" disabled selected>Selecione</option>
+            <option>Já tenho prática, quero aperfeiçoar</option>
+            <option>Tenho pouca prática, quero dominar</option>
+            <option>Sei a teoria, quero colocar em prática</option>
+            <option>Quero dominar a cirurgia por completo</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="obs">Qual é o seu principal objetivo na mentoria? <span style="color:var(--faint);font-weight:400">(opcional)</span></label>
+          <textarea id="obs" name="obs" placeholder="Conte em poucas linhas"></textarea>
+        </div>
+        <button class="btn btn-gold" type="submit">Enviar aplicação</button>
+      </form>
+      <div class="form-ok" id="form-ok">
+        <b>Aplicação encaminhada.</b>
+        <p>Sua aplicação foi aberta no WhatsApp da equipe. Confirme o envio da mensagem por lá e aguarde o retorno.</p>
+        <p style="margin-top:10px"><a id="wa-retry" href="https://wa.me/5592991441889" target="_blank" rel="noopener">O WhatsApp não abriu? Toque aqui.</a></p>
+      </div>
+      <p class="form-alt">Prefere conversar antes? <a class="js-wa" href="https://wa.me/5592991441889?text=Ol%C3%A1!%20Sou%20oftalmologista%20e%20quero%20saber%20mais%20sobre%20a%20Mentoria%20Olympus%20em%20Cirurgia%20de%20Catarata." target="_blank" rel="noopener">Falar com a equipe no WhatsApp</a>.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec-tight" id="faq">
+  <div class="wrap">
+    <h2 style="text-align:center;margin-bottom:44px" data-reveal>Perguntas frequentes</h2>
+    <div class="faq" data-reveal>
+      <details open>
+        <summary>Preciso já operar catarata para participar?</summary>
+        <p class="ans">Não necessariamente. A imersão é personalizada ao seu nível técnico: quem já opera refina técnica e volume; quem está começando na faco constrói base com supervisão direta. O seu momento cirúrgico é avaliado na aplicação.</p>
+      </details>
+      <details>
+        <summary>Como funciona a imersão?</summary>
+        <p class="ans">Cada turma acontece em uma das duas cidades, Juruti ou Óbidos, no interior do Pará, em regime de mutirão: casos reais de catarata operados em sequência por três dias, com o Dr. Alex acompanhando cada caso. Reserve cinco dias na agenda: três de centro cirúrgico e dois de deslocamento. A agenda detalhada da turma é apresentada na conversa com a equipe.</p>
+      </details>
+      <details>
+        <summary>Quantas vagas tem cada turma?</summary>
+        <p class="ans">Cada turma é uma dupla de mentorados, e são duas turmas por mês, uma em cada cidade. O grupo mínimo é o que garante o mentor ao lado em cada caso.</p>
+      </details>
+      <details>
+        <summary>A mentoria emite certificado?</summary>
+        <p class="ans">Sim. Você recebe certificado de extensão universitária reconhecido pelo MEC.</p>
+      </details>
+      <details>
+        <summary>Como garanto a minha vaga?</summary>
+        <p class="ans">Envie a aplicação nesta página (ou chame a equipe no WhatsApp). O time retorna, entende seu momento e apresenta as condições. A vaga é reservada após essa conversa.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="sec final">
+  <div class="wrap">
+    <div class="card" data-reveal>
+      <div>
+        <h2>Duas cadeiras por turma. Uma pode ser sua.</h2>
+        <p>Aplique agora e converse com a equipe sobre a próxima turma em Juruti ou Óbidos.</p>
+      </div>
+      <a class="btn btn-dark" href="#aplicacao">Aplicar agora</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<div class="marquee" aria-hidden="true">
+  <div class="track">
+    <span>Mentoria Olympus</span><span>Cirurgia de Catarata</span><span>Juruti · Óbidos</span><span>Alto volume</span><span>Hands-on</span>
+    <span>Mentoria Olympus</span><span>Cirurgia de Catarata</span><span>Juruti · Óbidos</span><span>Alto volume</span><span>Hands-on</span>
+  </div>
+</div>
+
+<footer class="site">
+  <div class="wrap">
+    <a class="mark" href="#topo" aria-label="Voltar ao topo">
+      <b style="font-size:.88rem">MENTORIA <span>OLYMPUS</span></b>
+      <i>Cirurgia de Catarata</i>
+    </a>
+    <div>
+      <a href="https://www.instagram.com/oftalmoblack/" target="_blank" rel="noopener">@oftalmoblack</a>
+      &nbsp;·&nbsp;
+      <a class="js-wa" href="https://wa.me/5592991441889" target="_blank" rel="noopener">Falar com a equipe no WhatsApp</a>
+    </div>
+    <div>Olympus Serviços de Treinamento · Dr. Alex Sá · CRM-AM 7516 · RQE 3514</div>
+  </div>
+</footer>
+
+<script>
+document.documentElement.classList.add('js');
+document.querySelectorAll('.kick .rn,.kick .ln').forEach(function(e){e.setAttribute('aria-hidden','true')});
+
+/* Reveal on scroll (IntersectionObserver; sem JS a página fica 100% visível) */
+(function(){
+  var els=document.querySelectorAll('[data-reveal]');
+  if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in')});return}
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target)}
+    });
+  },{threshold:.14,rootMargin:'0px 0px -6% 0px'});
+  els.forEach(function(e){io.observe(e)});
+})();
+
+/* Tracking: clique de WhatsApp (padrão GA4 B2B whatsapp_click) */
+document.querySelectorAll('.js-wa').forEach(function(a){
+  a.addEventListener('click',function(){
+    if(typeof gtag==='function')gtag('event','whatsapp_click',{link_url:a.href,page_location:location.href});
+  });
+});
+
+/* Formulário de aplicação
+   FORM_ENDPOINT: destino dos dados (definir com João Felipe). Vazio = só WhatsApp. */
+var FORM_ENDPOINT='';
+var WA_NUMERO='5592991441889';
+
+document.getElementById('form-aplicacao').addEventListener('submit',function(ev){
+  ev.preventDefault();
+  var form=ev.target;
+  if(!form.checkValidity()){form.reportValidity();return}
+  var v=function(id){return document.getElementById(id).value.trim()};
+  var dados={
+    nome:v('nome'),whatsapp:v('zap'),email:v('email'),crm:v('crm'),
+    cidade:v('cidade'),momento:v('momento'),observacao:v('obs'),
+    origem:'lp-mentoria-olympus-catarata',ts:new Date().toISOString()
+  };
+  if(FORM_ENDPOINT){
+    try{
+      fetch(FORM_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(dados),keepalive:true}).catch(function(){});
+    }catch(e){}
+  }
+  if(typeof gtag==='function')gtag('event','aplicacao_enviada',{page_location:location.href});
+  var msg='APLICACAO · MENTORIA OLYMPUS CATARATA\n'
+    +'\nNome: '+dados.nome
+    +'\nWhatsApp: '+dados.whatsapp
+    +'\nE-mail: '+dados.email
+    +'\nCRM/UF: '+dados.crm
+    +'\nCidade: '+dados.cidade
+    +'\nMomento cirurgico: '+dados.momento
+    +(dados.observacao?'\nObjetivo: '+dados.observacao:'');
+  var url='https://wa.me/'+WA_NUMERO+'?text='+encodeURIComponent(msg);
+  document.getElementById('wa-retry').href=url;
+  form.style.display='none';
+  document.getElementById('form-ok').style.display='block';
+  var w=window.open(url,'_blank');
+  if(!w){location.href=url}
+});
+</script>
+</body>
+</html>
