@@ -773,7 +773,8 @@ document.querySelectorAll('.js-wa').forEach(function(a){
 });
 
 /* Formulário de aplicação
-   FORM_ENDPOINT: destino dos dados (definir com João Felipe). Vazio = só WhatsApp. */
+   FORM_ENDPOINT: URL /exec do Apps Script da planilha "Aplicações · Mentoria Olympus Catarata"
+   (código em apps-script/Code.gs; publicar como App da Web "qualquer pessoa"). Vazio = só WhatsApp. */
 var FORM_ENDPOINT='';
 var WA_NUMERO='5592991441889';
 
@@ -789,7 +790,7 @@ document.getElementById('form-aplicacao').addEventListener('submit',function(ev)
   };
   if(FORM_ENDPOINT){
     try{
-      fetch(FORM_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(dados),keepalive:true}).catch(function(){});
+      fetch(FORM_ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(dados),keepalive:true}).catch(function(){});
     }catch(e){}
   }
   if(typeof gtag==='function')gtag('event','aplicacao_enviada',{page_location:location.href});
