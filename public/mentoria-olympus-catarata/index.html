@@ -224,6 +224,29 @@ h1 em,h2 em{font-style:italic;color:var(--gold);letter-spacing:0}
 .quote footer{margin-top:28px;font-size:.9rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
 .quote footer b{color:var(--gold-bright);font-weight:600}
 
+/* Depoimentos em vídeo */
+.deps-head{max-width:44rem;margin:72px auto 44px;text-align:center}
+.deps-head p{font-size:1.02rem;margin-top:14px}
+.deps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:20px}
+.dep{display:flex;flex-direction:column;gap:16px;min-width:0}
+.dep-frame{
+  position:relative;aspect-ratio:9/16;border-radius:20px;overflow:hidden;background:#000;
+  border:1px solid var(--line-strong);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 22px 46px rgba(0,0,0,.45);
+}
+.dep-frame video{width:100%;height:100%;object-fit:cover;display:block}
+.dep-frame .dur{
+  position:absolute;top:12px;right:12px;z-index:2;pointer-events:none;
+  font-family:var(--cinzel);font-size:.62rem;letter-spacing:.18em;color:var(--champagne);
+  background:rgba(10,10,10,.72);border:1px solid var(--line);border-radius:999px;padding:5px 11px;
+  backdrop-filter:blur(6px);transition:opacity .3s ease;
+}
+.dep-frame.playing .dur{opacity:0}
+.dep figcaption{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start}
+.dep figcaption .rn{font-family:var(--cinzel);font-size:1rem;color:var(--gold);min-width:22px;padding-top:2px}
+.dep figcaption p{font-size:.93rem;color:var(--muted)}
+.deps-note{margin-top:36px;text-align:center;font-size:.88rem;color:var(--faint)}
+
 /* Mentor */
 .mentor{display:grid;grid-template-columns:.92fr 1.08fr;gap:64px;align-items:center}
 .mframe{position:relative;border-radius:26px;padding:2px;max-width:430px;background:linear-gradient(160deg,rgba(216,157,77,.4),rgba(216,157,77,.08) 40%,rgba(216,157,77,.22))}
@@ -498,6 +521,53 @@ footer.site a:hover{color:var(--gold-bright)}
       <p>"Um dia aqui na mentoria valeu <b>meses, anos,</b> da minha trajetória."</p>
       <footer><b>Dra. Ana Paula</b> · mentorada</footer>
     </div>
+
+    <div class="deps-head">
+      <div class="kick center" data-reveal><span class="rn">IV</span><span class="ln"></span><span class="lb">Quem já passou</span></div>
+      <h2 data-reveal>O balanço de quem <em>acabou de operar.</em></h2>
+      <p data-reveal>Gravado ao fim dos dias de mutirão, com o Dr. Alex perguntando e os mentorados respondendo. Vídeos legendados.</p>
+    </div>
+
+    <div class="deps">
+      <figure class="dep" data-reveal>
+        <div class="dep-frame">
+          <span class="dur">2:24</span>
+          <video data-dep="1" src="assets/depoimento-1.mp4" poster="assets/depoimento-1-poster.webp"
+                 controls playsinline preload="none"
+                 aria-label="Depoimento em vídeo: mentorados fazem o balanço dos três dias de imersão"></video>
+        </div>
+        <figcaption>
+          <span class="rn" aria-hidden="true">I</span>
+          <p>O balanço dos três dias, dito por quem acabou de sair do centro cirúrgico.</p>
+        </figcaption>
+      </figure>
+      <figure class="dep" data-reveal>
+        <div class="dep-frame">
+          <span class="dur">4:05</span>
+          <video data-dep="2" src="assets/depoimento-2.mp4" poster="assets/depoimento-2-poster.webp"
+                 controls playsinline preload="none"
+                 aria-label="Depoimento em vídeo: a dupla da turma comenta a imersão dentro do centro cirúrgico"></video>
+        </div>
+        <figcaption>
+          <span class="rn" aria-hidden="true">II</span>
+          <p>A dupla no centro cirúrgico: dois cirurgiões em momentos diferentes da curva, na mesma turma.</p>
+        </figcaption>
+      </figure>
+      <figure class="dep" data-reveal>
+        <div class="dep-frame">
+          <span class="dur">3:18</span>
+          <video data-dep="3" src="assets/depoimento-3.mp4" poster="assets/depoimento-3-poster.webp"
+                 controls playsinline preload="none"
+                 aria-label="Depoimento em vídeo: mentorado com volume cirúrgico fala sobre refino de técnica e casos complexos"></video>
+        </div>
+        <figcaption>
+          <span class="rn" aria-hidden="true">III</span>
+          <p>Quem já tem volume cirúrgico e veio de longe para refinar técnica e encarar casos complexos.</p>
+        </figcaption>
+      </figure>
+    </div>
+
+    <p class="deps-note" data-reveal>Depoimentos gravados durante as imersões cirúrgicas conduzidas pelo Dr. Alex Sá.</p>
   </div>
 </section>
 
@@ -507,7 +577,7 @@ footer.site a:hover{color:var(--gold-bright)}
       <img src="assets/alex-0804.webp" srcset="assets/alex-0804-800.webp 800w, assets/alex-0804.webp 1400w" sizes="(max-width:960px) 92vw, 430px" alt="Retrato do Dr. Alex Sá de jaleco branco, sorrindo, com as mãos cruzadas sobre a mesa" loading="lazy">
     </div>
     <div class="bio">
-      <div class="kick" data-reveal><span class="rn">IV</span><span class="ln"></span><span class="lb">Quem conduz</span></div>
+      <div class="kick" data-reveal><span class="rn">V</span><span class="ln"></span><span class="lb">Quem conduz</span></div>
       <h2 data-reveal>Mentoria de quem opera <em>todos os dias.</em></h2>
       <div data-reveal>
         <p style="margin-top:18px"><b>Dr. Alex Sá</b> (CRM-AM 7516 · RQE 3514) é cirurgião oftalmologista, especialista em catarata e cirurgia refrativa, professor por 6 anos na Universidade Federal do Amazonas e autor do livro <b>"Cirurgia de Catarata: habilitando-se para o aprendizado"</b>.</p>
@@ -525,7 +595,7 @@ footer.site a:hover{color:var(--gold-bright)}
 
 <section class="sec invest" id="investimento">
   <div class="wrap invest-in">
-    <div class="kick center" data-reveal><span class="rn">V</span><span class="ln"></span><span class="lb">Investimento</span></div>
+    <div class="kick center" data-reveal><span class="rn">VI</span><span class="ln"></span><span class="lb">Investimento</span></div>
     <h2 data-reveal>Uma decisão de carreira.</h2>
     <p class="terms" data-reveal>O investimento e as condições são apresentados <b>direto pela equipe</b>, na conversa que segue a sua aplicação. Sem checkout, sem compra por impulso: entrada por análise.</p>
     <a class="btn btn-gold" href="#aplicacao" data-reveal>Aplicar agora</a>
@@ -535,7 +605,7 @@ footer.site a:hover{color:var(--gold-bright)}
 <section class="sec apply" id="aplicacao">
   <div class="wrap apply-grid">
     <div class="apply-copy">
-      <div class="kick" data-reveal><span class="rn">VI</span><span class="ln"></span><span class="lb">Aplicação</span></div>
+      <div class="kick" data-reveal><span class="rn">VII</span><span class="ln"></span><span class="lb">Aplicação</span></div>
       <h2 data-reveal>Pronto para a sua <em>próxima turma?</em></h2>
       <p data-reveal>São duas turmas por mês, com uma dupla em cada. A aplicação não é compromisso de compra: é o primeiro passo da conversa.</p>
       <div class="apply-steps" data-reveal>
@@ -674,6 +744,22 @@ document.querySelectorAll('.kick .rn,.kick .ln').forEach(function(e){e.setAttrib
     });
   },{threshold:.14,rootMargin:'0px 0px -6% 0px'});
   els.forEach(function(e){io.observe(e)});
+})();
+
+/* Depoimentos em vídeo: só um toca por vez + evento GA4 no primeiro play */
+(function(){
+  var vids=[].slice.call(document.querySelectorAll('.dep-frame video'));
+  vids.forEach(function(v){
+    v.addEventListener('play',function(){
+      vids.forEach(function(o){if(o!==v&&!o.paused)o.pause()});
+      v.parentNode.classList.add('playing');
+      if(!v.dataset.tracked){
+        v.dataset.tracked='1';
+        if(typeof gtag==='function')gtag('event','depoimento_play',{depoimento:v.dataset.dep,page_location:location.href});
+      }
+    });
+    v.addEventListener('pause',function(){v.parentNode.classList.remove('playing')});
+  });
 })();
 
 /* Tracking: clique de WhatsApp (padrão GA4 B2B whatsapp_click) */
