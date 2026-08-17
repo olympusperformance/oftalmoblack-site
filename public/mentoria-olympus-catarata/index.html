@@ -773,9 +773,10 @@ document.querySelectorAll('.js-wa').forEach(function(a){
 });
 
 /* Formulário de aplicação
-   FORM_ENDPOINT: URL /exec do Apps Script da planilha "Aplicações · Mentoria Olympus Catarata"
-   (código em apps-script/Code.gs; publicar como App da Web "qualquer pessoa"). Vazio = só WhatsApp. */
-var FORM_ENDPOINT='';
+   FORM_ENDPOINT: URL /exec do Apps Script "Aplicações · Mentoria Olympus Catarata" (projeto standalone na
+   conta olympusperformanceltda, código em apps-script/Code.gs, App da Web "qualquer pessoa"; publicado 17/08/2026).
+   Grava na planilha 1_hrlrBdhIy9uCcgw-tgByysfKoalWiLC6bkSqF_gPm8, aba Aplicações. Vazio = só WhatsApp. */
+var FORM_ENDPOINT='https://script.google.com/macros/s/AKfycbytTL5pQ1xgA2IFpQ0drNPc2O3g8UYaYDddtYZhb16dUBw_hNgw6gYRsRkoO-y_PtFG5A/exec';
 var WA_NUMERO='5592991441889';
 
 document.getElementById('form-aplicacao').addEventListener('submit',function(ev){
