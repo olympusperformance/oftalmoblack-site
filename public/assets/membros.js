@@ -14,6 +14,7 @@
   var $ = function (id) { return document.getElementById(id); };
 
   var st = { membro:null, tasks:[], events:[], artifacts:[], materials:[],
+             steps:[], progress:[],
              status:'pending', categoria:'', matCategoria:'' };
 
   var NAV = [
@@ -53,10 +54,13 @@
         Club.data.tasks.list({ memberId: m.id }),
         Club.data.events.list({ memberId: m.id }),
         Club.data.artifacts.list({ memberId: m.id }),
-        Club.data.materials.list({ memberId: m.id })
+        Club.data.materials.list({ memberId: m.id }),
+        Club.data.steps.list(),
+        Club.data.progress.list({ memberId: m.id })
       ]);
     }).then(function (r) {
       st.tasks = r[0]; st.events = r[1]; st.artifacts = r[2]; st.materials = r[3];
+      st.steps = r[4]; st.progress = r[5];
     });
   }
 
@@ -167,13 +171,43 @@
 
   /* ── artefatos ────────────────────────────────────────────────────────── */
 
-  function cartaoArtefato(a) {
+  /* O checklist é o mesmo que a administração acompanha no painel: as etapas
+     são do artefato, o que está marcado é deste mentorado. */
+  function etapasDe(artifactId) {
+    return st.steps.filter(function (e) { return e.artifact_id === artifactId; });
+  }
+
+  function feita(stepId) {
+    return st.progress.some(function (p) { return p.step_id === stepId && p.feito; });
+  }
+
+  function checklist(a, detalhado) {
+    var etapas = etapasDe(a.id);
+    if (!etapas.length) return '';
+    var feitas = etapas.filter(function (e) { return feita(e.id); }).length;
+    var pct = Math.round((feitas / etapas.length) * 100);
+
+    var barra = '<div class="art-ck">' +
+      '<span class="track"><span class="fill" style="width:' + pct + '%"></span></span>' +
+      '<span class="n">' + feitas + '/' + etapas.length + '</span></div>';
+
+    if (!detalhado) return barra;
+
+    return barra + '<ul class="art-st-list">' + etapas.map(function (e) {
+      var ok = feita(e.id);
+      return '<li' + (ok ? ' class="ok"' : '') + '>' +
+        ico(ok ? 'check-circle' : 'clock') + '<span>' + esc(e.titulo) + '</span></li>';
+    }).join('') + '</ul>';
+  }
+
+  function cartaoArtefato(a, detalhado) {
     var s = Club.ART_ST[a.status] || Club.ART_ST['Bloqueado'];
     var locked = a.status === 'Bloqueado';
     var corpo =
       '<div class="art-i">' + ico(a.icone || 'box') + '</div>' +
       '<p class="art-n">' + esc(a.nome) + '</p>' +
       '<p class="art-s">' + esc(a.subtitulo) + '</p>' +
+      checklist(a, detalhado) +
       '<div class="art-st" style="color:' + s.color + '">' + ico(s.icon) + esc(a.status) + '</div>' +
       '<p class="art-m">' + esc(a.meta) + '</p>';
 
@@ -185,11 +219,12 @@
   }
 
   function renderArtifacts() {
-    var html = st.artifacts.length
-      ? st.artifacts.map(cartaoArtefato).join('')
-      : '';
-    $('artList').innerHTML = html || Club.empty('box', 'Nenhum artefato liberado ainda.');
-    $('artListFull').innerHTML = html || Club.empty('box', 'Nenhum artefato liberado ainda.');
+    var vazio = Club.empty('box', 'Nenhum artefato liberado ainda.');
+    /* Na aba cheia cabe o checklist inteiro; no resumo da capa só a barra. */
+    $('artList').innerHTML = st.artifacts.length
+      ? st.artifacts.map(function (a) { return cartaoArtefato(a, false); }).join('') : vazio;
+    $('artListFull').innerHTML = st.artifacts.length
+      ? st.artifacts.map(function (a) { return cartaoArtefato(a, true); }).join('') : vazio;
     return st.artifacts.filter(function (a) { return a.status === 'Disponível'; }).length;
   }
 

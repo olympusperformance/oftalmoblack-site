@@ -281,6 +281,115 @@
     }
   };
 
+  /* ── menu suspenso ────────────────────────────────────────────────────── */
+  /* Usado para trocar o valor de uma célula sem abrir o formulário inteiro.
+     Um <select> nativo resolveria a escolha, mas não mostra o ponto colorido
+     do status nem aceita marcar vários — e é justamente por essas duas coisas
+     que a coluna se lê de relance. */
+
+  var menuEl = null, fechaFora = null;
+
+  function fecharMenu() {
+    if (!menuEl) return;
+    /* Devolve a célula ao estado normal: sem isto ela ficaria destacada como
+       se o menu ainda estivesse aberto. */
+    var dono = menuEl.dataset.dono;
+    if (dono) {
+      var alvo = document.querySelector('[data-menu-id="' + dono + '"]');
+      if (alvo) alvo.setAttribute('aria-expanded', 'false');
+    }
+    menuEl.remove();
+    menuEl = null;
+    document.removeEventListener('mousedown', fechaFora, true);
+    window.removeEventListener('scroll', fecharMenu, true);
+    window.removeEventListener('resize', fecharMenu);
+  }
+  C.fecharMenu = fecharMenu;
+
+  /* Abre para baixo, e para cima quando não há espaço embaixo. Alinha pela
+     direita se transbordaria a janela. */
+  function posicionar(el, anchor) {
+    var r = anchor.getBoundingClientRect();
+    var alt = el.offsetHeight, larg = el.offsetWidth;
+    var top = r.bottom + 6;
+    if (top + alt > window.innerHeight - 8) top = Math.max(8, r.top - alt - 6);
+    var left = r.left;
+    if (left + larg > window.innerWidth - 8) left = Math.max(8, window.innerWidth - larg - 8);
+    el.style.top = top + 'px';
+    el.style.left = left + 'px';
+  }
+
+  /* itens: [{ value, label, color, checked }]
+     opts:  { multi, titulo, onPick(value, item) } */
+  C.menu = function (anchor, itens, opts) {
+    opts = opts || {};
+    var jaAberto = menuEl && menuEl.dataset.dono === anchor.dataset.menuId;
+    fecharMenu();
+    if (jaAberto) return;          // segundo clique no mesmo alvo fecha
+
+    menuEl = document.createElement('div');
+    menuEl.className = 'menu';
+    menuEl.dataset.dono = anchor.dataset.menuId || '';
+    menuEl.setAttribute('role', 'menu');
+    menuEl.innerHTML =
+      (opts.titulo ? '<div class="menu-t">' + C.esc(opts.titulo) + '</div>' : '') +
+      itens.map(function (i, n) {
+        return '<button type="button" class="menu-i" role="menuitem" data-i="' + n + '"' +
+          (i.checked ? ' aria-checked="true"' : '') + '>' +
+          (i.color ? '<i class="menu-d" style="background:' + i.color + '"></i>' : '') +
+          '<span class="menu-l">' + C.esc(i.label) + '</span>' +
+          '<span class="menu-c">' + C.icon('check') + '</span>' +
+        '</button>';
+      }).join('');
+
+    document.body.appendChild(menuEl);
+    posicionar(menuEl, anchor);
+    anchor.setAttribute('aria-expanded', 'true');
+
+    menuEl.addEventListener('click', function (ev) {
+      var b = ev.target.closest('.menu-i');
+      if (!b) return;
+      var item = itens[+b.dataset.i];
+      if (opts.multi) {
+        /* Marcar vários é uma sequência de cliques: o menu fica de pé e só a
+           marca do item vira. */
+        item.checked = !item.checked;
+        b.setAttribute('aria-checked', String(item.checked));
+      } else {
+        fecharMenu();
+      }
+      if (opts.onPick) opts.onPick(item.value, item);
+    });
+
+    /* Compara pela chave da célula, não pelo elemento: marcar vários salva a
+       cada clique e a linha inteira é redesenhada, então o botão que abriu o
+       menu já não é o que está na tela. */
+    fechaFora = function (ev) {
+      if (!menuEl || menuEl.contains(ev.target)) return;
+      var dono = ev.target.closest && ev.target.closest('[data-menu-id]');
+      if (dono && dono.dataset.menuId === menuEl.dataset.dono) return;
+      fecharMenu();
+    };
+    document.addEventListener('mousedown', fechaFora, true);
+    /* Rolar a página deixaria o menu solto longe da célula que o abriu. */
+    window.addEventListener('scroll', fecharMenu, true);
+    window.addEventListener('resize', fecharMenu);
+    document.addEventListener('keydown', function esc(ev) {
+      if (ev.key === 'Escape') { fecharMenu(); document.removeEventListener('keydown', esc); }
+    });
+
+    var primeiro = menuEl.querySelector('.menu-i');
+    if (primeiro) primeiro.focus();
+  };
+
+  /* Depois de um redesenho, devolve o destaque à célula que abriu o menu — do
+     contrário o menu fica de pé sobre uma coluna que parece inerte. */
+  C.reancorarMenu = function () {
+    if (!menuEl || !menuEl.dataset.dono) return;
+    var alvo = document.querySelector('[data-menu-id="' + menuEl.dataset.dono + '"]');
+    if (alvo) alvo.setAttribute('aria-expanded', 'true');
+  };
+
   /* ── formulário: helpers de campo ─────────────────────────────────────── */
 
   C.field = function (label, name, opts) {

@@ -107,3 +107,94 @@ select * from (values
   ('Grupo OftalmoPremium', 'GP')
 ) as v(nome, apelido)
 where not exists (select 1 from public.staff);
+
+-- ── checklist da demanda ───────────────────────────────────────────────────
+-- Acrescentado depois: a demanda ("conectar o WhatsApp da clínica") quase
+-- nunca é um passo só, e o time precisava de onde marcar o que já saiu sem
+-- abrir uma demanda nova para cada pedaço.
+--
+-- Diferente do checklist do artefato (supabase/progresso.sql), aqui a etapa
+-- não é modelo para ninguém: ela pertence a esta demanda e o "feito" mora na
+-- própria linha. Não há um mesmo passo andando em ritmos diferentes para
+-- pessoas diferentes, que é o que obriga o artefato a separar as duas coisas.
+
+create table if not exists public.demand_steps (
+  id        uuid primary key default gen_random_uuid(),
+  demand_id uuid not null references public.demands(id) on delete cascade,
+  titulo    text not null,
+  ordem     integer not null default 0,
+  feito     boolean not null default false,
+  feito_em  timestamptz,
+  criado_em timestamptz not null default now()
+);
+
+-- A subtarefa carrega as mesmas colunas da demanda. Dividir a demanda em
+-- pedaços sem poder dizer quem toca cada pedaço e até quando só muda o problema
+-- de lugar: o pedaço vira uma pendência sem dono dentro de uma linha com dono.
+-- Colunas acrescentadas depois da tabela — daí o alter em vez do create.
+alter table public.demand_steps
+  add column if not exists status       text not null default 'A fazer',
+  add column if not exists prioridade   text not null default 'Média',
+  add column if not exists responsaveis uuid[],
+  add column if not exists member_id    uuid references public.members(id) on delete set null,
+  add column if not exists vence_em     date;
+
+-- Nomeadas, para a migração poder rodar de novo sem duplicar a regra.
+alter table public.demand_steps drop constraint if exists demand_steps_status_ck;
+alter table public.demand_steps add constraint demand_steps_status_ck
+  check (status in ('A fazer', 'Planejando', 'Em andamento', 'Em risco',
+                    'Aguardando retorno', 'Em pausa', 'Concluída', 'Cancelada'));
+
+alter table public.demand_steps drop constraint if exists demand_steps_prioridade_ck;
+alter table public.demand_steps add constraint demand_steps_prioridade_ck
+  check (prioridade in ('Alta', 'Média', 'Baixa'));
+
+-- Quem já tinha checklist marcado antes destas colunas existirem: o status
+-- precisa contar a mesma história que a marcação.
+update public.demand_steps set status = 'Concluída'
+ where feito and status = 'A fazer';
+
+create index if not exists demand_steps_demanda_idx
+  on public.demand_steps (demand_id, ordem);
+create index if not exists demand_steps_member_idx
+  on public.demand_steps (member_id);
+create index if not exists demand_steps_resp_idx
+  on public.demand_steps using gin (responsaveis);
+
+-- Uma fonte só para "está pronto?": o status. A marcação e o carimbo saem dele,
+-- senão a caixinha da linha e a coluna Situação podem discordar na mesma tela.
+-- Marcar sem carimbar a data deixaria "pronto quando?" sem resposta, e voltar
+-- atrás sem limpar deixaria uma data mentindo.
+create or replace function public.marca_etapa_demanda()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.feito := new.status in ('Concluída', 'Cancelada');
+  if new.feito then
+    -- coalesce preserva o carimbo de quem já estava pronto: reeditar o título
+    -- de uma subtarefa fechada não muda a data em que ela fechou.
+    new.feito_em := coalesce(new.feito_em, now());
+  else
+    new.feito_em := null;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists demand_steps_carimbo on public.demand_steps;
+create trigger demand_steps_carimbo
+  before insert or update on public.demand_steps
+  for each row execute function public.marca_etapa_demanda();
+
+alter table public.demand_steps enable row level security;
+
+drop policy if exists "admin manda nas etapas da demanda" on public.demand_steps;
+
+create policy "admin manda nas etapas da demanda" on public.demand_steps
+  for all to authenticated
+  using (public.is_admin())
+  with check (public.is_admin());
+
+grant select, insert, update, delete on public.demand_steps to authenticated;
+revoke all on public.demand_steps from anon;

@@ -31,7 +31,10 @@
                 'arquivo_nome', 'arquivo_tipo', 'arquivo_bytes', 'publicado_em'],
     demands:   ['titulo', 'descricao', 'status', 'prioridade', 'responsaveis',
                 'member_id', 'origem', 'vence_em'],
-    staff:     ['nome', 'apelido', 'ativo']
+    staff:     ['nome', 'apelido', 'ativo'],
+    artifact_steps: ['artifact_id', 'titulo', 'ordem'],
+    step_progress:  ['member_id', 'step_id', 'feito'],
+    demand_steps:   ['demand_id', 'titulo', 'ordem', 'feito']
   };
 
   /* Campo de data ou de chave estrangeira vazio precisa virar null; string
@@ -40,10 +43,10 @@
 
   /* Tabelas que só a administração enxerga. Quando ainda não foram criadas no
      banco, a aba avisa em vez de derrubar a página inteira. */
-  function tolerante(promessa, aviso) {
+  function tolerante(promessa, aviso, chave) {
     return promessa.then(function (res) {
       if (res.error && /does not exist|schema cache/i.test(res.error.message || '')) {
-        C.faltaMigracao = aviso;
+        C[chave || 'faltaMigracao'] = aviso;
         return [];
       }
       return lista(res);
@@ -260,8 +263,68 @@
         .then(function (rows) { return rows.sort(byDemanda); });
     },
     save: function (d) { return grava('demands', d); },
-    remove: function (id) { return apaga('demands', id); }
+    remove: function (id) { return apaga('demands', id); },
+    /* A tela troca a situação de uma demanda sem recarregar a lista inteira, e
+       precisa reordenar com a mesma regra do carregamento. */
+    ordenar: function (rows) { return rows.slice().sort(byDemanda); }
   };
+
+  /* Checklist da demanda. Aqui a etapa é da demanda e o "feito" mora nela
+     mesma — não é modelo para ninguém, ao contrário das etapas do artefato. */
+  C.data.demandSteps = {
+    list: function (o) {
+      var q = sb().from('demand_steps').select('*');
+      var d = opt(o, 'demandId');
+      if (d !== undefined) q = q.eq('demand_id', d);
+      return tolerante(q, AVISO_DEM_CK, 'faltaChecklistDemanda')
+        .then(function (rows) { return rows.sort(byOrdemDem); });
+    },
+
+    /* Sem a migração, o PostgREST responde "relation does not exist" — que não
+       diz a ninguém o que fazer. Aqui a resposta vira a instrução. */
+    save: function (e) {
+      return grava('demand_steps', e).catch(function (err) {
+        if (/does not exist|schema cache/i.test(err.message || '')) {
+          throw new Error(AVISO_DEM_CK);
+        }
+        throw err;
+      });
+    },
+    remove: function (id) { return apaga('demand_steps', id); },
+
+    /* Mesma regra do checklist do artefato: casa por posição, para renomear
+       um passo não apagar a marcação de quem já o cumpriu. */
+    sync: function (demandId, titulos, atuais) {
+      atuais = (atuais || []).slice().sort(byOrdemDem);
+      var acoes = [];
+
+      titulos.forEach(function (titulo, i) {
+        var atual = atuais[i];
+        if (!atual) {
+          acoes.push(C.data.demandSteps.save({ demand_id: demandId, titulo: titulo, ordem: i }));
+        } else if (atual.titulo !== titulo || atual.ordem !== i) {
+          acoes.push(C.data.demandSteps.save({ id: atual.id, titulo: titulo, ordem: i }));
+        }
+      });
+
+      atuais.slice(titulos.length).forEach(function (sobra) {
+        acoes.push(C.data.demandSteps.remove(sobra.id));
+      });
+
+      return Promise.all(acoes);
+    }
+  };
+
+  /* Vale para a tabela que não existe e para as colunas que a subtarefa ganhou
+     depois (situação, prioridade, responsáveis, mentorado, prazo): nos dois
+     casos o PostgREST responde "does not exist", e a saída é a mesma. */
+  var AVISO_DEM_CK = 'O checklist das demandas está desatualizado no banco. ' +
+    'Rode supabase/demandas.sql de novo no SQL Editor do Supabase — é seguro ' +
+    'rodar em cima do que já existe.';
+
+  function byOrdemDem(a, b) {
+    return (a.ordem - b.ordem) || String(a.criado_em).localeCompare(String(b.criado_em));
+  }
 
   C.data.staff = {
     list: function () {
@@ -274,13 +337,83 @@
 
   function byNome(a, b) { return String(a.nome).localeCompare(String(b.nome), 'pt-BR'); }
 
-  /* Dentro de cada status: prioridade alta primeiro, depois quem vence antes. */
+  /* A lista é uma só, então a ordem precisa dar conta sozinha do que o
+     agrupamento por situação fazia: situação na ordem do fluxo (a fazer →
+     cancelada), dentro dela prioridade alta primeiro, depois quem vence antes. */
   var PESO = { 'Alta': 0, 'Média': 1, 'Baixa': 2 };
   function byDemanda(a, b) {
+    var s = C.DEM_STATUS.indexOf(a.status) - C.DEM_STATUS.indexOf(b.status);
+    if (s !== 0) return s;
     var p = (PESO[a.prioridade] || 1) - (PESO[b.prioridade] || 1);
     if (p !== 0) return p;
     return String(a.vence_em || '9999').localeCompare(String(b.vence_em || '9999'));
   }
+
+  /* ── checklist do artefato e progresso do mentorado ───────────────────── */
+  /* As etapas são o padrão do artefato (cadastradas na aba Artefatos) e o
+     progresso é por mentorado. Ver supabase/progresso.sql. */
+
+  var AVISO_PROG = 'O acompanhamento de progresso ainda não foi criado no banco. ' +
+    'Rode supabase/progresso.sql no SQL Editor do Supabase.';
+
+  function byOrdem(a, b) {
+    return (a.ordem - b.ordem) || String(a.criado_em).localeCompare(String(b.criado_em));
+  }
+
+  C.data.steps = {
+    /* Todas as etapas de todos os artefatos: a tela monta a árvore inteira de
+       uma vez, e uma consulta por artefato seria uma dezena de viagens. */
+    list: function (o) {
+      var q = sb().from('artifact_steps').select('*');
+      var a = opt(o, 'artifactId');
+      if (a !== undefined) q = q.eq('artifact_id', a);
+      return tolerante(q, AVISO_PROG, 'faltaProgresso')
+        .then(function (rows) { return rows.sort(byOrdem); });
+    },
+
+    save: function (e) { return grava('artifact_steps', e); },
+    remove: function (id) { return apaga('artifact_steps', id); },
+
+    /* Grava o checklist inteiro de um artefato a partir da lista de títulos do
+       formulário. O casamento é por posição, não por texto: assim renomear a
+       etapa 3 preserva quem já a tinha cumprido — recriar a linha jogaria o
+       progresso de todo mundo fora por causa de um acerto de redação. */
+    sync: function (artifactId, titulos, atuais) {
+      atuais = (atuais || []).slice().sort(byOrdem);
+      var acoes = [];
+
+      titulos.forEach(function (titulo, i) {
+        var atual = atuais[i];
+        if (!atual) {
+          acoes.push(C.data.steps.save({ artifact_id: artifactId, titulo: titulo, ordem: i }));
+        } else if (atual.titulo !== titulo || atual.ordem !== i) {
+          acoes.push(C.data.steps.save({ id: atual.id, titulo: titulo, ordem: i }));
+        }
+      });
+
+      atuais.slice(titulos.length).forEach(function (sobra) {
+        acoes.push(C.data.steps.remove(sobra.id));
+      });
+
+      return Promise.all(acoes);
+    }
+  };
+
+  C.data.progress = {
+    list: function (o) {
+      var q = sb().from('step_progress').select('*');
+      var m = opt(o, 'memberId');
+      if (m !== undefined) q = q.eq('member_id', m);
+      return tolerante(q, AVISO_PROG, 'faltaProgresso');
+    },
+
+    /* Upsert no banco: ver marcar_etapa em supabase/progresso.sql. */
+    marcar: function (memberId, stepId, feito) {
+      return sb().rpc('marcar_etapa', {
+        p_member_id: memberId, p_step_id: stepId, p_feito: !!feito
+      }).then(ok);
+    }
+  };
 
   /* ── arquivo ──────────────────────────────────────────────────────────── */
 

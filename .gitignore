@@ -3,3 +3,9 @@
 .env
 .env.*
 node_modules/
+
+# Credenciais locais — nunca versionar. Sem barra, para valer tanto para o
+# arquivo solto quanto para a pasta.
+secrets
+# Estado do CLI do Supabase (qual projeto está linkado nesta máquina).
+supabase/.temp/

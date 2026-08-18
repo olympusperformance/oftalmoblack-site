@@ -17,7 +17,7 @@ public/                # tudo que vai pro ar
   robots.txt
   sitemap.xml
 docker-entrypoint.d/   # scripts que a imagem nginx roda no boot
-supabase/              # SQL do banco: tabelas, RLS, acervo, demandas
+supabase/              # SQL do banco: tabelas, RLS, acervo, demandas, progresso
 Dockerfile             # nginx alpine servindo public/
 nginx.conf             # gzip, cache de assets, headers de segurança
 ```
@@ -111,10 +111,61 @@ Em pausa → Concluída / Cancelada). Só o administrador alcança: as política
 apontar para um mentorado (`member_id`) quando é sobre alguém — "campanha do
 Pedro", "site da Cíntia" — e fica solta quando é interna.
 
+### Membros: cadastro e progresso na mesma tela
+
+A aba **Membros** é a árvore de acompanhamento. Cadastro e progresso eram a
+mesma pergunta — "como está fulano?" — feita em dois lugares:
+
+```
+Mentorado
+  └ Artefato          (os de member_id nulo valem para a turma inteira)
+      └ Etapa         (o checklist padrão do artefato)
+```
+
+Tarefa não entra na árvore: ela vive só na aba **Tarefas**. A etapa do artefato
+é entrega do Club e quem marca é a administração; a tarefa é do mentorado e é
+ele quem a conclui. São ciclos diferentes, e juntá-los na mesma coluna faria a
+mesma palavra significar duas coisas.
+
+O checklist é do artefato, cadastrado uma vez no campo **Etapas padrão** da aba
+Artefatos — uma etapa por linha — e vale para todo mentorado que recebe aquele
+artefato (`artifact_steps`). O que já saiu é por mentorado (`step_progress`), e
+quem marca é a administração: o mentorado lê o próprio progresso e não escreve
+nele. Editar o texto de uma linha do checklist mantém o que já estava marcado;
+apagar a linha apaga o progresso dela junto.
+
+Não existe tabela de "artefato atribuído ao mentorado": quem já decide isso é
+`artifacts.member_id`, a mesma regra que monta a área do mentorado.
+
+A demanda também abre em checklist (`demand_steps`), mas ali a marcação mora na
+própria etapa: ela é de uma demanda só e não é modelo para mais ninguém. O
+quadro é uma lista única com a situação em coluna, ordenada por situação (na
+ordem do fluxo), prioridade e prazo.
+
+A subtarefa carrega **as mesmas colunas da demanda** — situação, prioridade,
+responsáveis, mentorado e prazo, com as mesmas listas — porque dividir uma
+demanda em pedaços sem poder dizer quem toca cada pedaço e até quando só muda o
+problema de lugar. Quem desenha as duas alturas é o mesmo trecho de código, para
+uma coluna nova não nascer só na mãe. A única coluna vazia na subtarefa é
+Checklist: ela não abre outro nível. O `feito` da subtarefa não é um segundo
+lugar onde o "pronto" mora — um gatilho o deriva do status (`Concluída` ou
+`Cancelada`), e a caixinha da linha é atalho para essa coluna.
+
+No quadro de demandas a coluna é o controle: clicar na célula de situação,
+prioridade, responsáveis ou mentorado abre o menu daquela coluna e grava na hora
+— responsáveis aceita vários, então o menu fica de pé até o clique fora. O prazo
+vira o calendário do navegador na própria célula. Título e descrição continuam no
+formulário: são texto livre e texto livre pede espaço. Subtarefa nasce no `+` que
+ocupa o lugar do chevron enquanto a demanda não tem checklist e, depois que tem,
+na última linha da lista; Enter salva e mantém o campo aberto para a próxima, Esc
+fecha.
+
 ### Montar o banco (uma vez)
 
 1. No **SQL Editor** do Supabase, rodar `supabase/schema.sql` inteiro, depois
-   `supabase/materiais.sql` e `supabase/demandas.sql`
+   `supabase/materiais.sql`, `supabase/demandas.sql` e `supabase/progresso.sql`
+   (os arquivos são idempotentes: rodar de novo depois de uma atualização é
+   seguro e não apaga nada)
 2. Em **Authentication → Users**, criar o login do administrador
 3. Em `supabase/primeiro-acesso.sql`, trocar `SEU-EMAIL-DE-ADMIN@AQUI` pelo
    e-mail do passo 2 e rodar o arquivo

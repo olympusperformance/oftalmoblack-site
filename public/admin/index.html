@@ -57,9 +57,17 @@
     </div>
 
     <div class="view" data-view="members" hidden>
-      <div class="hello"><h1>Membros</h1><p>Quem tem acesso à área e como aparece por lá.</p></div>
+      <div class="hello"><h1>Membros</h1><p>Quem tem acesso à área — e como anda o que foi combinado com cada um.</p></div>
+      <div class="statgrid" id="statsMembros"></div>
       <div class="toolbar">
+        <select class="inp" id="filtroArvMembro" style="max-width:260px"></select>
+        <div class="seg" id="filtroArvSituacao">
+          <button data-sit="all" aria-selected="true">Tudo</button>
+          <button data-sit="open" aria-selected="false">Em aberto</button>
+          <button data-sit="done" aria-selected="false">Concluídos</button>
+        </div>
         <span class="sp"></span>
+        <button class="btn" data-expandir="1" id="btnExpandir">Abrir tudo</button>
         <button class="btn btn-primary" data-new="member">
           <svg class="ic"><use href="#i-plus"/></svg>Novo membro</button>
       </div>
@@ -103,6 +111,7 @@
           <button data-ab="all" aria-selected="false">Todas</button>
         </div>
         <span class="sp"></span>
+        <button class="btn" data-expandir-dem="1" id="btnExpandirDem">Abrir tudo</button>
         <button class="btn" data-equipe="1"><svg class="ic"><use href="#i-users"/></svg><span class="hide-sm">Equipe</span></button>
         <button class="btn btn-primary" data-new="demand">
           <svg class="ic"><use href="#i-plus"/></svg>Nova demanda</button>
