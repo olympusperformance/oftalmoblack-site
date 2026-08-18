@@ -1,0 +1,970 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mentoria Grau Zero · Dr. Alex Sá | OftalmoBlack</title>
+<meta name="description" content="Imersão presencial de três dias, 30 horas, dentro da clínica do Dr. Alex Sá: lentes de alta tecnologia, cirurgia hands-on e clínica premium.">
+<link rel="canonical" href="https://oftalmoblack.com.br/mentoria-grau-zero/">
+<meta property="og:title" content="Mentoria Grau Zero · Dr. Alex Sá">
+<meta property="og:description" content="Três dias e 30 horas dentro de uma clínica premium: indicação, cálculo, cirurgia hands-on e negócio. Entrada por aplicação.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:url" content="https://oftalmoblack.com.br/mentoria-grau-zero/">
+<meta property="og:image" content="https://oftalmoblack.com.br/mentoria-grau-zero/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="assets/favicon.png" type="image/png">
+<link rel="preload" as="font" type="font/woff2" href="assets/cinzel-latin.woff2" crossorigin>
+<link rel="preload" as="image" href="assets/hero-clinica.webp" imagesrcset="assets/hero-clinica-800.webp 800w, assets/hero-clinica.webp 1400w" imagesizes="100vw" fetchpriority="high">
+
+<!-- Google tag (gtag.js) · GA4 B2B OftalmoBlack -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5NMXL3LD47"></script>
+<script>
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag('js',new Date());
+gtag('config','G-5NMXL3LD47',{transport_type:'beacon'});
+</script>
+
+<!-- Meta Pixel · B2B OftalmoBlack -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;
+s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','919253591198015');fbq('track','PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=919253591198015&ev=PageView&noscript=1"></noscript>
+
+<style>
+/* ═══ Cinzel · display local (variável 400-600) ═══ */
+@font-face{
+  font-family:'Cinzel';
+  src:url('assets/cinzel-latin.woff2') format('woff2');
+  font-weight:400 600;font-style:normal;font-display:swap;
+}
+
+/* ═══ Tokens canônicos OftalmoBlack ═══ */
+:root{
+  color-scheme:dark;
+  --bg:#000;
+  --bg-soft:#0A0A0C;
+  --surface:#101014;
+  --surface-2:#121110;
+  --glass-hi:rgba(255,255,255,.055);
+  --glass-lo:rgba(255,255,255,.015);
+  --gold:#d89d4d;
+  --gold-bright:#e6bd74;
+  --champagne:#fdf3b5;
+  --gold-deep:#8a5210;
+  --cream:#f5f0e6;
+  --body:rgba(245,240,230,.72);
+  --muted:rgba(245,240,230,.6);
+  --faint:rgba(245,240,230,.44);
+  --line:rgba(216,157,77,.18);
+  --line-strong:rgba(216,157,77,.36);
+  --hair:rgba(255,255,255,.08);
+  --ease:cubic-bezier(.22,1,.36,1);
+  --cinzel:'Cinzel',Georgia,'Times New Roman',serif;
+  --sans:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  --grad-cta:linear-gradient(120deg,#d89d4d,#fdf3b5);
+  --grad-foil:linear-gradient(120deg,#8a5210 0%,#c78039 18%,#e6bd74 32%,#fdf3b5 42%,#d89d4d 55%,#c78039 72%,#8a5210 100%);
+  --sec:96px;
+  --r-panel:20px;
+  --r-input:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:92px;-webkit-text-size-adjust:100%;overflow-x:clip}
+body{
+  background:var(--bg);color:var(--body);font-family:var(--sans);
+  font-size:16.5px;line-height:1.68;-webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;display:block}
+.yt img,.hero-img img,.final img{height:100%}
+a{color:var(--gold-bright);text-decoration:none}
+::selection{background:rgba(216,157,77,.3);color:#fff}
+.wrap{max-width:1180px;margin:0 auto;padding:0 26px}
+
+/* ═══ Tipografia display ═══ */
+h1,h2,h3{color:var(--cream);font-weight:500;letter-spacing:0}
+h1,h2{font-family:var(--cinzel);line-height:1.2}
+h2{font-size:clamp(1.62rem,3.1vw,2.35rem)}
+.foil{
+  background:var(--grad-foil);background-size:220% 100%;
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:var(--gold-bright);
+}
+@supports not ((-webkit-background-clip:text) or (background-clip:text)){
+  .foil{background:none;-webkit-text-fill-color:var(--gold-bright);color:var(--gold-bright)}
+}
+@media (prefers-reduced-motion: no-preference){
+  .foil{animation:foilShift 9s ease-in-out infinite}
+}
+@keyframes foilShift{0%,100%{background-position:0 0}50%{background-position:100% 0}}
+.lede{font-size:1.06rem;color:var(--body);max-width:44rem}
+
+/* Marcador de seção (hairline + label em Cinzel). Usado 3x na página, não em toda seção. */
+.kick{display:flex;align-items:center;gap:15px;margin-bottom:20px}
+.kick::before{content:"";height:1px;width:40px;background:var(--line-strong);flex:none}
+.kick span{font-family:var(--cinzel);font-size:.68rem;letter-spacing:.32em;text-transform:uppercase;color:var(--gold-bright)}
+
+/* ═══ Botões: pill · CTA foil sólido · ghost com borda dourada ═══ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  border-radius:999px;padding:16px 34px;min-height:52px;border:0;cursor:pointer;
+  font-family:var(--sans);font-size:.78rem;font-weight:700;letter-spacing:.17em;text-transform:uppercase;
+  text-decoration:none;white-space:nowrap;
+  transition:transform .18s var(--ease),box-shadow .25s ease,background-color .2s ease,color .2s ease;
+}
+.btn:active{transform:scale(.975)}
+.btn-gold{background:var(--grad-cta);color:#000}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 12px 34px rgba(216,157,77,.3)}
+.btn-ghost{border:1px solid var(--line-strong);color:var(--gold-bright);background:rgba(0,0,0,.35);backdrop-filter:blur(6px);font-weight:600}
+.btn-ghost:hover{background:rgba(216,157,77,.1);color:var(--champagne)}
+.btn-dark{background:#000;color:var(--champagne);border:1px solid var(--line-strong)}
+.btn-dark:hover{transform:translateY(-2px);background:#0d0d0d}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{
+  outline:2px solid var(--gold);outline-offset:3px;border-radius:4px;
+}
+
+/* ═══ Reveal · subconjunto animate.css v4.1.1 (fadeIn verbatim; fadeInUp com curso reduzido a 28px) ═══ */
+.animate__animated{animation-duration:var(--animate-duration,.8s);animation-fill-mode:both;animation-timing-function:cubic-bezier(.22,1,.36,1)}
+@keyframes fadeIn{0%{opacity:0}to{opacity:1}}
+.animate__fadeIn{animation-name:fadeIn}
+@keyframes fadeInUp{0%{opacity:0;transform:translate3d(0,28px,0)}to{opacity:1;transform:translateZ(0)}}
+.animate__fadeInUp{animation-name:fadeInUp}
+.js [data-reveal]{opacity:0}
+.js [data-reveal].animate__animated{animation-delay:var(--d,0s)}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  .js [data-reveal]{opacity:1}
+  .animate__animated{animation:none!important}
+  .foil{animation:none}
+}
+
+/* ═══ Topbar ═══ */
+.nav{position:sticky;top:0;z-index:60;background:rgba(0,0,0,.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:72px}
+.brand{display:flex;align-items:center;gap:16px;min-width:0}
+.brand img{height:36px;width:auto}
+.brand em{
+  font-style:normal;font-family:var(--cinzel);font-size:.64rem;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--muted);padding-left:16px;border-left:1px solid var(--line);white-space:nowrap;
+}
+.btn-nav{padding:12px 24px;min-height:44px;font-size:.68rem}
+
+/* ═══ Hero: fotografia full bleed, texto ancorado embaixo à esquerda ═══ */
+.hero{
+  position:relative;min-height:min(92svh,880px);display:flex;align-items:flex-end;overflow:hidden;isolation:isolate;
+  background:radial-gradient(920px 640px at 76% 10%,rgba(216,157,77,.11),transparent 64%),var(--bg);
+}
+.hero-img{position:absolute;inset:0 0 0 44%;z-index:-2}
+.hero-img img{
+  width:100%;height:100%;object-fit:cover;object-position:52% 18%;filter:saturate(.92) contrast(1.03);
+  mask-image:linear-gradient(90deg,transparent 0%,#000 30%),linear-gradient(180deg,#000 74%,rgba(0,0,0,.28) 100%);
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 30%),linear-gradient(180deg,#000 74%,rgba(0,0,0,.28) 100%);
+  mask-composite:intersect;-webkit-mask-composite:source-in;
+}
+.hero::after{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:
+    linear-gradient(98deg,#000 24%,rgba(0,0,0,.6) 44%,rgba(0,0,0,.12) 66%,transparent 82%),
+    linear-gradient(0deg,rgba(0,0,0,.62) 0%,rgba(0,0,0,.16) 32%,transparent 60%);
+}
+.hero .wrap{width:100%;padding-top:120px;padding-bottom:64px}
+.hero-copy{max-width:42rem}
+.hero-kick{
+  font-family:var(--cinzel);font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;
+  margin-bottom:22px;display:flex;align-items:center;gap:14px;color:var(--gold-bright);
+}
+.hero-kick::before{content:"";height:1px;width:34px;background:var(--gold);flex:none}
+.hero h1{font-size:clamp(1.95rem,3.55vw,2.8rem);margin-bottom:22px;text-wrap:balance}
+.hero .sub{font-size:1.09rem;color:var(--cream);max-width:33rem;margin-bottom:32px;text-shadow:0 1px 14px rgba(0,0,0,.6)}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap}
+.hero-note{margin-top:20px;font-size:.83rem;letter-spacing:.05em;color:var(--muted)}
+.hero-note b{color:var(--gold-bright);font-weight:600}
+
+/* ═══ Faixa de números ═══ */
+.stats{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--bg-soft)}
+.stats .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:34px;padding-top:40px;padding-bottom:40px}
+.stat b{font-family:var(--cinzel);font-weight:500;font-size:clamp(2rem,3.6vw,2.9rem);display:block;line-height:1.05}
+.stat span{display:block;margin-top:8px;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+/* ═══ Ritmo de seção ═══ */
+.sec{padding:var(--sec) 0}
+.sec-tight{padding-top:0}
+.sec-head{max-width:46rem;margin-bottom:48px}
+.sec-head .lede{margin-top:16px}
+
+/* ═══ 1. O que é: editorial assimétrico ═══ */
+.about{display:grid;grid-template-columns:1.12fr .88fr;gap:72px;align-items:center}
+.about-copy p{margin-top:20px;max-width:36rem}
+.about-copy p:first-of-type{margin-top:26px}
+.about-copy b{color:var(--cream);font-weight:600}
+.about-fig{position:relative;max-width:430px;justify-self:end}
+.about-fig img{border-radius:var(--r-panel);width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;object-position:center 18%}
+.about-fig figcaption{
+  margin-top:16px;font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padding-top:14px;
+}
+
+/* ═══ 2. Para quem é: lista editorial + painel de exclusão ═══ */
+.fit{display:grid;grid-template-columns:1.28fr .72fr;gap:64px;align-items:start}
+.profile{padding:30px 0;border-top:1px solid var(--hair);display:grid;grid-template-columns:auto 1fr;gap:22px}
+.profile:first-child{border-top:0;padding-top:0}
+.profile .rn{font-family:var(--cinzel);font-size:1.15rem;line-height:1.5;min-width:30px;color:var(--gold)}
+.profile h3{font-family:var(--sans);font-weight:700;font-size:1.06rem;margin-bottom:8px;letter-spacing:-.005em}
+.profile p{font-size:.97rem;color:var(--muted)}
+.nofit{
+  position:sticky;top:96px;align-self:start;
+  border:1px solid var(--hair);border-radius:var(--r-panel);padding:32px 30px;
+  background:linear-gradient(150deg,var(--glass-hi),var(--glass-lo));
+}
+.nofit h3{font-family:var(--sans);font-size:.82rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:20px}
+.nofit ul{list-style:none;display:grid;gap:14px}
+.nofit li{position:relative;padding-left:24px;font-size:.95rem;color:var(--muted)}
+.nofit li::before{content:"";position:absolute;left:0;top:.72em;width:10px;height:1px;background:var(--faint)}
+
+/* ═══ 3. A vivência: índice de 8 itens em 2 colunas ═══ */
+.viv{display:grid;grid-template-columns:1fr 1fr;gap:0 64px}
+.viv-item{padding:26px 0;border-top:1px solid var(--hair);display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start}
+.viv-item .rn{font-family:var(--cinzel);font-size:.95rem;letter-spacing:.06em;padding-top:3px;min-width:38px;color:var(--gold)}
+.viv-item h3{font-family:var(--sans);font-weight:700;font-size:1.02rem;margin-bottom:6px}
+.viv-item p{font-size:.93rem;color:var(--muted)}
+.viv-item.feat{
+  background:linear-gradient(100deg,rgba(216,157,77,.11),rgba(216,157,77,.02) 62%,transparent);
+  border-top-color:var(--line-strong);
+  padding:26px 24px;margin-left:-24px;border-radius:0 var(--r-panel) var(--r-panel) 0;
+}
+.viv-item.feat h3{font-size:1.12rem;color:var(--champagne)}
+.viv-item.feat .rn{color:var(--champagne)}
+.viv-item.feat p{color:var(--body)}
+.selo{
+  margin-top:52px;display:flex;align-items:center;gap:18px;
+  border:1px solid var(--line);border-radius:var(--r-panel);padding:22px 26px;background:var(--bg-soft);
+}
+.selo svg{flex:none;width:34px;height:34px}
+.selo p{font-size:.95rem;color:var(--body)}
+.selo b{color:var(--cream);font-weight:600}
+
+/* ═══ 4. Pilares: 3 no topo + 1 destaque largo ═══ */
+.pilares{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.pilar{
+  border:1px solid var(--hair);border-radius:var(--r-panel);padding:32px 28px;
+  background:linear-gradient(155deg,var(--glass-hi),var(--glass-lo));
+  transition:border-color .3s ease,transform .3s var(--ease);
+}
+.pilar:hover{border-color:var(--line);transform:translateY(-3px)}
+.pilar h3{font-family:var(--cinzel);font-size:1.22rem;margin-bottom:12px;font-weight:500}
+.pilar p{font-size:.94rem;color:var(--muted)}
+.pilar.wide{
+  grid-column:1 / -1;padding:40px 40px;
+  border-color:var(--line-strong);
+  background:
+    radial-gradient(680px 260px at 8% 0%,rgba(216,157,77,.16),transparent 70%),
+    linear-gradient(150deg,rgba(216,157,77,.07),rgba(255,255,255,.012));
+  display:grid;grid-template-columns:auto 1fr;gap:44px;align-items:center;
+}
+.pilar.wide h3{font-size:clamp(1.5rem,2.6vw,2rem);margin-bottom:0;white-space:nowrap}
+.pilar.wide p{font-size:1rem;color:var(--body);max-width:44rem}
+
+/* ═══ 5. Depoimentos: mosaico 1 grande + 2 ═══ */
+.videos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;max-width:1000px;margin:0 auto}
+.yt{
+  position:relative;display:block;padding:0;width:100%;cursor:pointer;
+  border:1px solid var(--hair);border-radius:var(--r-panel);overflow:hidden;
+  background:linear-gradient(150deg,#141414,#0a0a0a);aspect-ratio:9/16;
+  transition:border-color .3s ease;
+}
+.yt:hover{border-color:var(--line)}
+.yt img,.yt iframe{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;border:0}
+.yt::after{
+  content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.55));
+  transition:opacity .3s ease;
+}
+.yt .play{
+  position:absolute;left:50%;top:50%;translate:-50% -50%;z-index:2;
+  width:66px;height:66px;border-radius:50%;background:rgba(0,0,0,.5);border:1px solid var(--line-strong);
+  display:grid;place-items:center;backdrop-filter:blur(4px);
+  transition:transform .3s var(--ease),background-color .3s ease;
+}
+.yt:hover .play{transform:scale(1.08);background:rgba(216,157,77,.28)}
+.yt .play svg{width:20px;height:22px;margin-left:3px}
+.yt.on::after,.yt.on .play{display:none}
+
+/* ═══ 6. Mentor ═══ */
+.mentor{display:grid;grid-template-columns:1.06fr .94fr;gap:66px;align-items:start}
+.mframe{border-radius:calc(var(--r-panel) + 4px);padding:1px;background:linear-gradient(160deg,rgba(216,157,77,.5),rgba(216,157,77,.06) 46%,rgba(216,157,77,.28))}
+.mframe img{border-radius:var(--r-panel);width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;object-position:center 20%}
+.mentor .bio p{margin-top:18px}
+.mentor .bio b{color:var(--cream);font-weight:600}
+.mstats{display:grid;grid-template-columns:1fr 1fr;gap:20px 38px;margin-top:36px}
+.mstat{border-top:1px solid var(--hair);padding-top:14px}
+.mstat b{font-family:var(--cinzel);font-weight:500;font-size:1.55rem;display:block;line-height:1.2}
+.mstat span{font-size:.84rem;color:var(--muted)}
+.manifesto{margin-top:80px;border-top:1px solid var(--line);padding-top:56px;max-width:54rem}
+.manifesto p{
+  font-family:var(--sans);font-style:italic;font-size:clamp(1.1rem,1.85vw,1.36rem);line-height:1.6;
+  color:var(--cream);letter-spacing:-.005em;
+}
+.manifesto p+p{margin-top:22px}
+.manifesto .mk{font-family:var(--cinzel);font-style:normal;font-size:2.8rem;line-height:0;color:var(--gold);vertical-align:-.3em;margin-right:8px}
+.manifesto footer{margin-top:28px;font-size:.82rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.manifesto footer b{color:var(--gold-bright);font-weight:600}
+
+/* ═══ 7. Investimento ═══ */
+.invest{background:var(--bg-soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.invest .wrap{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.invest h2{max-width:12ch}
+.invest p{font-size:1.04rem}
+.invest p b{color:var(--cream);font-weight:600}
+.invest .btn{margin-top:28px}
+
+/* ═══ 8. Aplicação ═══ */
+.apply{background:radial-gradient(940px 540px at 50% 0%,rgba(216,157,77,.1),transparent 66%)}
+.apply-head{max-width:44rem;margin:0 auto 44px;text-align:center}
+.apply-head .kick{justify-content:center}
+.apply-head .lede{margin:14px auto 0}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0 34px;margin-bottom:52px}
+.step{border-top:1px solid var(--line-strong);padding-top:20px;display:grid;grid-template-columns:auto 1fr;gap:16px}
+.step i{font-family:var(--cinzel);font-style:normal;font-size:1rem;color:var(--gold)}
+.step p{font-size:.95rem;color:var(--muted)}
+.form-card{
+  max-width:720px;margin:0 auto;background:var(--surface);border:1px solid var(--line);
+  border-radius:calc(var(--r-panel) + 4px);padding:44px 44px 38px;
+}
+.field{margin-bottom:20px}
+.field label{display:block;font-size:.83rem;font-weight:600;letter-spacing:.04em;margin-bottom:8px;color:var(--gold-bright)}
+.field label i{font-style:normal;color:var(--faint);font-weight:400}
+input,select,textarea{
+  width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(216,157,77,.2);border-radius:var(--r-input);
+  padding:15px 17px;color:var(--cream);font-size:16px;font-family:var(--sans);line-height:1.5;
+  transition:border-color .2s ease,background-color .2s ease,box-shadow .2s ease;
+}
+input::placeholder,textarea::placeholder{color:var(--faint)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold);background:rgba(216,157,77,.06);box-shadow:0 0 0 3px rgba(216,157,77,.13)}
+select{appearance:none;padding-right:40px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23d89d4d' stroke-width='1.6' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center}
+select:invalid{color:var(--faint)}
+select option{background:#0a0a0a;color:var(--cream)}
+textarea{resize:vertical;min-height:92px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-card .btn{width:100%;margin-top:8px}
+.form-alt{margin-top:20px;text-align:center;font-size:.92rem;color:var(--muted)}
+.form-ok{display:none;text-align:center;padding:20px 0 6px}
+.form-ok b{display:block;font-family:var(--cinzel);font-weight:500;font-size:1.5rem;color:var(--cream);margin-bottom:12px}
+.form-ok p{font-size:.95rem;color:var(--muted)}
+.form-ok p+p{margin-top:12px}
+
+/* ═══ 9. FAQ ═══ */
+.faq{max-width:47rem;margin:0 auto}
+.faq details{border-top:1px solid var(--hair)}
+.faq details:last-of-type{border-bottom:1px solid var(--hair)}
+.faq summary{
+  list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:22px;
+  padding:24px 2px;font-weight:600;color:var(--cream);font-size:1.01rem;
+}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:var(--cinzel);font-size:1.4rem;color:var(--gold);transition:transform .3s var(--ease);flex:none}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq .ans{padding:0 2px 26px;font-size:.96rem;color:var(--muted);max-width:42rem}
+
+/* ═══ 10. Fechamento full bleed ═══ */
+.final{position:relative;isolation:isolate;overflow:hidden;padding:132px 0}
+.final img{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;object-position:center 30%;filter:saturate(.7)}
+.final::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(92deg,#000 22%,rgba(0,0,0,.82) 52%,rgba(0,0,0,.6))}
+.final-in{max-width:36rem}
+.final h2{margin-bottom:16px}
+.final p{margin-bottom:32px;color:var(--cream)}
+
+/* ═══ Footer ═══ */
+footer.site{border-top:1px solid var(--line);padding:44px 0 52px;font-size:.85rem;color:var(--muted)}
+footer.site .wrap{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+footer.site .wordmark{font-family:var(--cinzel);font-size:.92rem;letter-spacing:.28em;color:var(--cream)}
+footer.site .wordmark b{font-weight:500;color:var(--gold)}
+footer.site .wordmark span{display:block;font-size:.58rem;letter-spacing:.34em;color:var(--muted);margin-top:5px}
+footer.site nav a{color:var(--muted);display:inline-block;padding:8px 0}
+footer.site nav a:hover{color:var(--gold-bright)}
+footer.site .legal{font-size:.8rem;color:var(--faint);text-align:right;line-height:1.7}
+
+/* ═══ Responsivo ═══ */
+@media(max-width:1000px){
+  .about,.fit,.mentor{grid-template-columns:1fr;gap:44px}
+  .nofit{position:static}
+  .about-fig{justify-self:start}
+  .viv{grid-template-columns:1fr;gap:0}
+  .invest .wrap{grid-template-columns:1fr;gap:28px}
+  .videos{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;max-width:760px}
+  .pilares{grid-template-columns:1fr 1fr}
+  .pilar.wide{grid-template-columns:1fr;gap:14px}
+  .pilar.wide h3{white-space:normal}
+  .about-fig{margin-top:0;max-width:440px}
+  .mframe{max-width:400px}
+  :root{--sec:76px}
+  .manifesto{margin-top:56px;padding-top:44px}
+  .final{padding:96px 0}
+}
+@media(max-width:760px){
+  .wrap{padding:0 20px}
+  .stats .wrap{grid-template-columns:1fr 1fr;gap:26px}
+  .steps{grid-template-columns:1fr;gap:0}
+  .step{padding:18px 0 0;margin-top:18px}
+  .step:first-child{margin-top:0}
+  .frow{grid-template-columns:1fr}
+  .pilares{grid-template-columns:1fr}
+  .form-card{padding:30px 22px 26px}
+  /* 3. Hero mobile: foto com o rosto visível no topo, texto logo abaixo */
+  .hero{min-height:auto;flex-direction:column;align-items:stretch}
+  .hero-img{position:relative;inset:auto;height:40svh;min-height:296px;max-height:390px}
+  .hero-img img{
+    object-position:56% 15%;
+    mask-image:linear-gradient(180deg,#000 58%,transparent 99%);
+    -webkit-mask-image:linear-gradient(180deg,#000 58%,transparent 99%);
+  }
+  .hero::after{background:linear-gradient(0deg,#000 34%,rgba(0,0,0,.3) 64%,transparent 84%)}
+  .hero .wrap{padding-top:6px;padding-bottom:46px}
+  /* vídeos verticais em trilho com snap */
+  .videos{
+    display:flex;gap:14px;max-width:none;overflow-x:auto;scroll-snap-type:x mandatory;
+    margin:0 -20px;padding:0 20px 8px;scrollbar-width:none;
+  }
+  .videos::-webkit-scrollbar{display:none}
+  .videos .yt{flex:0 0 70vw;scroll-snap-align:center}
+  :root{--sec:62px}
+  .sec-head{margin-bottom:34px}
+  .viv-item.feat{margin-left:-20px;padding:24px 20px}
+  .selo{padding:20px;gap:14px}
+  .final{padding:78px 0}
+  footer.site .wrap{flex-direction:column;align-items:flex-start}
+  footer.site .legal{text-align:left}
+}
+@media(max-width:520px){
+  .brand em{display:none}
+  .brand img{height:30px}
+  .btn{font-size:.7rem;letter-spacing:.12em;padding:15px 22px;white-space:normal;text-align:center}
+  .btn-nav{padding:11px 16px;font-size:.62rem}
+  .hero-cta{flex-direction:column;align-items:stretch}
+  .hero-cta .btn{width:100%}
+  .hero h1{font-size:1.72rem}
+  .hero .sub{font-size:1rem}
+  .pilar.wide{padding:28px 22px}
+  .manifesto p{font-size:1.1rem}
+  .nofit{padding:26px 22px}
+}
+</style>
+</head>
+<body>
+<!--
+  THESIS: uma clínica premium aberta por dentro, não mais uma sala de aula. Recusa o hero centrado sobre gradiente e o trio de cards iguais.
+  OWN-WORLD: preto puro, Cinzel de display em títulos e numerais, dourado em folha (gradiente) como única cor, creme no corpo, fios dourados de 1px, fotografia real da clínica em full bleed.
+  STORY: o oftalmologista entende que vai operar e gerir dentro de um consultório de referência, acredita porque vê a clínica e o mentor, e aplica.
+  FIRST VIEWPORT: fotografia da clínica ocupando a tela inteira, escurecida da esquerda, título em Cinzel ancorado embaixo à esquerda, "Aplicar agora" em dourado ao lado do WhatsApp.
+  FORM: fotografia editorial full bleed com índice tipográfico, mundo herdado da família OftalmoBlack (LP irmã Mentoria Olympus).
+  FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+-->
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="#topo" aria-label="OftalmoBlack, Mentoria Grau Zero">
+      <img src="assets/logo-oftalmoblack.webp" width="480" height="166" alt="OftalmoBlack">
+      <em>Mentoria Grau Zero</em>
+    </a>
+    <a class="btn btn-gold btn-nav" href="#aplicacao">Aplicar agora</a>
+  </div>
+</nav>
+
+<header class="hero" id="topo">
+  <div class="hero-img">
+    <img src="assets/hero-clinica.webp" srcset="assets/hero-clinica-800.webp 800w, assets/hero-clinica.webp 1400w" sizes="100vw" alt="Dr. Alex Sá de jaleco branco na sala de equipamentos de diagnóstico da própria clínica" fetchpriority="high" width="1400" height="1866">
+  </div>
+  <div class="wrap">
+    <div class="hero-copy">
+      <p class="hero-kick">Mentoria presencial hands-on</p>
+      <h1>Domine as lentes de alta tecnologia onde elas são implantadas <span class="foil">todos os dias</span>.</h1>
+      <p class="sub">Três dias e 30 horas dentro da clínica do Dr. Alex Sá, em Manaus: indicação, cálculo, cirurgia e negócio.</p>
+      <div class="hero-cta">
+        <a class="btn btn-gold" href="#aplicacao">Aplicar agora</a>
+        <a class="btn btn-ghost js-wa" href="https://wa.me/5592991441889?text=Ol%C3%A1!%20Sou%20oftalmologista%20e%20quero%20saber%20mais%20sobre%20a%20Mentoria%20Grau%20Zero." target="_blank" rel="noopener">Falar no WhatsApp</a>
+      </div>
+      <p class="hero-note">Turma reduzida · <b>entrada por aplicação</b></p>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<section class="stats" aria-label="A mentoria em números">
+  <div class="wrap">
+    <div class="stat" data-reveal><b class="foil">3</b><span>dias presenciais</span></div>
+    <div class="stat" data-reveal style="--d:.06s"><b class="foil">30</b><span>horas de imersão</span></div>
+    <div class="stat" data-reveal style="--d:.12s"><b class="foil">+25 mil</b><span>cirurgias do mentor</span></div>
+    <div class="stat" data-reveal style="--d:.18s"><b class="foil">+15</b><span>anos de oftalmologia</span></div>
+  </div>
+</section>
+
+<section class="sec" id="sobre">
+  <div class="wrap about">
+    <div class="about-copy">
+      <h2 data-reveal>Uma clínica premium, <span class="foil">aberta por dentro</span>.</h2>
+      <div data-reveal style="--d:.08s">
+        <p>Não é uma mentoria comum. São três dias ao lado do Dr. Alex Sá, dentro da clínica dele, em Manaus: você vê a estrutura, os bastidores, os processos internos e o atendimento que sustentam um consultório premium.</p>
+        <p>Aqui você não apenas aprende. Você <b>experimenta, aplica e executa</b>: indica, calcula, entra em ambiente cirúrgico e conduz o caso com o mentor ao lado.</p>
+        <p>É o passo de quem quer sair da teoria e entrar para a elite da oftalmologia premium, com a técnica e o negócio tratados na mesma imersão.</p>
+      </div>
+    </div>
+    <figure class="about-fig" data-reveal style="--d:.14s">
+      <img src="assets/consultorio.webp" srcset="assets/consultorio-800.webp 800w, assets/consultorio.webp 1200w" sizes="(max-width:1000px) 92vw, 34vw" alt="Dr. Alex Sá em sua mesa de atendimento, na clínica" loading="lazy" width="1200" height="1500">
+      <figcaption>O consultório que serve de sala de aula durante os três dias.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="sec sec-tight" id="paraquem">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <h2>Feita para três perfis de oftalmologista.</h2>
+      <p class="lede">Profissionais que querem ir além do básico e dominar todas as etapas: da escolha da lente à cirurgia, da gestão do consultório à atração de pacientes particulares.</p>
+    </div>
+    <div class="fit">
+      <div>
+        <article class="profile" data-reveal>
+          <span class="rn" aria-hidden="true">I</span>
+          <div>
+            <h3>Quem quer sair do básico e entrar no mercado premium</h3>
+            <p>Depender de convênio limita a evolução. Você aprende o caminho para captar paciente particular e oferecer procedimentos de alto valor, sem se submeter a margens adversas.</p>
+          </div>
+        </article>
+        <article class="profile" data-reveal style="--d:.06s">
+          <span class="rn" aria-hidden="true">II</span>
+          <div>
+            <h3>Quem busca previsibilidade com lentes de alta tecnologia</h3>
+            <p>Implantar não é só técnica: envolve precisão na indicação, cálculo correto, domínio dos equipamentos de diagnóstico e manejo cirúrgico seguro. Você assume o controle do processo inteiro.</p>
+          </div>
+        </article>
+        <article class="profile" data-reveal style="--d:.12s">
+          <span class="rn" aria-hidden="true">III</span>
+          <div>
+            <h3>Quem quer dominar clínica e negócio na mesma imersão</h3>
+            <p>Uma clínica oftalmológica é um negócio e exige estratégia, posicionamento e gestão. Você aprende a desenhar um fluxo previsível de novos pacientes para a sua realidade.</p>
+          </div>
+        </article>
+      </div>
+      <aside class="nofit" data-reveal style="--d:.1s">
+        <h3>Não faz sentido se você</h3>
+        <ul>
+          <li>Procura um curso gravado para assistir no tempo livre</li>
+          <li>Não pode reservar três dias presenciais</li>
+          <li>Prefere teoria a entrar em ambiente cirúrgico</li>
+          <li>Não é médico oftalmologista</li>
+        </ul>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec-tight" id="vivencia">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="kick" data-reveal><span>A vivência</span></p>
+      <h2 data-reveal>Serão 30 horas de imersão. <span class="foil">Você não será espectador</span>.</h2>
+      <p class="lede" data-reveal style="--d:.06s">A vivência acontece em ambiente clínico e cirúrgico, organizada de forma individualizada, com acompanhamento direto do mentor.</p>
+    </div>
+    <div class="viv">
+      <article class="viv-item" data-reveal>
+        <span class="rn" aria-hidden="true">I</span>
+        <div><h3>Experiência real em consultório premium</h3><p>Estrutura, bastidores e processos de uma clínica montada para alto faturamento.</p></div>
+      </article>
+      <article class="viv-item" data-reveal style="--d:.05s">
+        <span class="rn" aria-hidden="true">II</span>
+        <div><h3>Atendimento diferenciado</h3><p>Como transformar a consulta em experiência premium e fidelizar paciente de alto valor.</p></div>
+      </article>
+      <article class="viv-item" data-reveal>
+        <span class="rn" aria-hidden="true">III</span>
+        <div><h3>Gestão e processos</h3><p>Dos fluxos internos à estratégia financeira e comercial que sustenta o crescimento.</p></div>
+      </article>
+      <article class="viv-item feat" data-reveal style="--d:.05s">
+        <span class="rn" aria-hidden="true">IV</span>
+        <div><h3>Cirurgia hands-on</h3><p>Você opera e implanta lentes de alta tecnologia com o Dr. Alex Sá ao lado, conforme o protocolo e a organização do mentor.</p></div>
+      </article>
+      <article class="viv-item" data-reveal>
+        <span class="rn" aria-hidden="true">V</span>
+        <div><h3>Indicação e cálculo de lentes</h3><p>A lente ideal para cada caso, com as fórmulas biométricas mais avançadas e ferramentas próprias, como a Oftalmofix.</p></div>
+      </article>
+      <article class="viv-item" data-reveal style="--d:.05s">
+        <span class="rn" aria-hidden="true">VI</span>
+        <div><h3>Uso estratégico da tecnologia</h3><p>Os equipamentos essenciais de análise e a leitura que sustenta a decisão cirúrgica.</p></div>
+      </article>
+      <article class="viv-item" data-reveal>
+        <span class="rn" aria-hidden="true">VII</span>
+        <div><h3>Manejo de lentes tóricas</h3><p>O que fazer quando a lente roda: como corrigir o desalinhamento e recuperar o resultado.</p></div>
+      </article>
+      <article class="viv-item" data-reveal style="--d:.05s">
+        <span class="rn" aria-hidden="true">VIII</span>
+        <div><h3>Facilidade cirúrgica</h3><p>Preparo e inserção da lente no cartucho e os parâmetros premium de facoemulsificação.</p></div>
+      </article>
+    </div>
+    <div class="selo" data-reveal>
+      <svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <circle cx="20" cy="17" r="11.2" stroke="#d89d4d" stroke-width="1.2"/>
+        <circle cx="20" cy="17" r="7.6" stroke="#d89d4d" stroke-width=".7" opacity=".5"/>
+        <path d="M14.6 28.4 12.4 38l7.6-4 7.6 4-2.2-9.6" stroke="#d89d4d" stroke-width="1.2" stroke-linejoin="round"/>
+      </svg>
+      <p><b>Certificado de extensão universitária</b> reconhecido pelo MEC ao final da imersão.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec-tight" id="pilares">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <h2>Muito além da técnica.</h2>
+      <p class="lede">Quatro pilares sustentam a imersão. Três constroem o negócio, um constrói o resultado cirúrgico.</p>
+    </div>
+    <div class="pilares">
+      <article class="pilar" data-reveal>
+        <h3>Mindset</h3>
+        <p>Sua carreira como negócio estratégico e escalável, vista de dentro da rotina de um consultório premium.</p>
+      </article>
+      <article class="pilar" data-reveal style="--d:.06s">
+        <h3>Marketing</h3>
+        <p>O que atrai paciente particular: posicionamento, autoridade digital e demanda real pelas suas cirurgias de lentes de alta tecnologia.</p>
+      </article>
+      <article class="pilar" data-reveal style="--d:.12s">
+        <h3>Money</h3>
+        <p>Precificação, controle de custos e fluxo financeiro previsível. A independência dos convênios começa aqui.</p>
+      </article>
+      <article class="pilar wide" data-reveal style="--d:.16s">
+        <h3 class="foil">Protocolo Grau Zero</h3>
+        <p>O pilar técnico e clínico: escolha, indicação e implante das lentes de alta tecnologia, com a técnica cirúrgica que sustenta resultado previsível. É o método que dá nome à mentoria.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec-tight" id="depoimentos">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <h2>Quem já viveu a mentoria.</h2>
+      <p class="lede">Oftalmologistas falando sobre as mentorias do Dr. Alex Sá.</p>
+    </div>
+    <div class="videos" data-reveal>
+      <button class="yt" type="button" data-yt="Z2J00aevw0c" aria-label="Assistir depoimento de oftalmologista sobre as mentorias do Dr. Alex Sá">
+        <img src="https://i.ytimg.com/vi/Z2J00aevw0c/maxresdefault.jpg" alt="" loading="lazy" width="1280" height="720">
+        <span class="play"><svg viewBox="0 0 18 20" fill="#fdf3b5" aria-hidden="true"><path d="M0 0v20l18-10z"/></svg></span>
+      </button>
+      <button class="yt" type="button" data-yt="h3FOa_sZQjI" aria-label="Assistir segundo depoimento de oftalmologista sobre as mentorias do Dr. Alex Sá">
+        <img src="https://i.ytimg.com/vi/h3FOa_sZQjI/maxresdefault.jpg" alt="" loading="lazy" width="1280" height="720">
+        <span class="play"><svg viewBox="0 0 18 20" fill="#fdf3b5" aria-hidden="true"><path d="M0 0v20l18-10z"/></svg></span>
+      </button>
+      <button class="yt" type="button" data-yt="9p2nQbdrJZ4" aria-label="Assistir terceiro depoimento de oftalmologista sobre as mentorias do Dr. Alex Sá">
+        <img src="https://i.ytimg.com/vi/9p2nQbdrJZ4/maxresdefault.jpg" alt="" loading="lazy" width="1280" height="720">
+        <span class="play"><svg viewBox="0 0 18 20" fill="#fdf3b5" aria-hidden="true"><path d="M0 0v20l18-10z"/></svg></span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec-tight" id="mentor">
+  <div class="wrap">
+    <div class="mentor">
+      <div class="bio">
+        <p class="kick" data-reveal><span>Quem conduz</span></p>
+        <h2 data-reveal>Mentoria de quem opera <span class="foil">todos os dias</span>.</h2>
+        <div data-reveal style="--d:.06s">
+          <p><b>Dr. Alex Sá</b> (CRM-AM 7516 · RQE 3514) é cirurgião oftalmologista, especialista em catarata e cirurgia refrativa. Foi professor por 6 anos na Universidade Federal do Amazonas, preceptor de residência em oftalmologia e de fellowship em catarata, e é autor do livro "Cirurgia de Catarata: habilitando-se para o aprendizado".</p>
+          <p>Nascido no Rio de Janeiro, em uma família pobre, passou a infância no Morro do China e encontrou na educação o caminho para mudar a própria história. Hoje lidera a própria clínica em Manaus e mentora oftalmologistas de todo o Brasil no ecossistema OftalmoBlack.</p>
+          <p>É idealizador dos podcasts VitalCast 360 e Catarata Cast e inventor do Simulador Sapiens, criado para o aprendizado das cirurgias intraoculares.</p>
+        </div>
+        <div class="mstats">
+          <div class="mstat" data-reveal><b class="foil">+25 mil</b><span>cirurgias realizadas</span></div>
+          <div class="mstat" data-reveal style="--d:.06s"><b class="foil">+15 anos</b><span>de oftalmologia</span></div>
+          <div class="mstat" data-reveal style="--d:.12s"><b class="foil">6 anos</b><span>de docência universitária</span></div>
+          <div class="mstat" data-reveal style="--d:.18s"><b class="foil">35+</b><span>oftalmologistas mentorados</span></div>
+        </div>
+      </div>
+      <div class="mframe" data-reveal style="--d:.1s">
+        <img src="assets/mentor.webp" srcset="assets/mentor-800.webp 800w, assets/mentor.webp 1200w" sizes="(max-width:1000px) 92vw, 40vw" alt="Retrato do Dr. Alex Sá de jaleco branco, sentado à mesa da clínica" loading="lazy" width="1200" height="1500">
+      </div>
+    </div>
+    <blockquote class="manifesto" data-reveal>
+      <p><span class="mk" aria-hidden="true">"</span>Minha verdadeira virada de chave aconteceu quando atingi o ápice de uma clínica sólida, credenciada com praticamente todos os planos de saúde da cidade, incluindo o SUS. No entanto, apesar de todo o sucesso aparente, me encontrei exausto.</p>
+      <p>Hoje, meu faturamento não só cresceu exponencialmente, como também ganhei algo inestimável: qualidade de vida."</p>
+      <footer><b>Dr. Alex Sá</b>, do manifesto Empreendedorismo na Medicina</footer>
+    </blockquote>
+  </div>
+</section>
+
+<section class="sec invest" id="investimento">
+  <div class="wrap">
+    <h2 data-reveal>Uma decisão de carreira.</h2>
+    <div data-reveal style="--d:.08s">
+      <p>O investimento e as condições são apresentados <b>direto pela equipe</b>, na conversa que segue a sua aplicação. Sem checkout e sem compra por impulso: a entrada é por análise de perfil.</p>
+      <a class="btn btn-gold" href="#aplicacao">Aplicar agora</a>
+    </div>
+  </div>
+</section>
+
+<section class="sec apply" id="aplicacao">
+  <div class="wrap">
+    <div class="apply-head">
+      <p class="kick" data-reveal><span>Aplicação</span></p>
+      <h2 data-reveal>Aplique para a próxima turma.</h2>
+      <p class="lede" data-reveal style="--d:.06s">A aplicação não é compromisso de compra. É o primeiro passo da conversa.</p>
+    </div>
+    <div class="steps">
+      <div class="step" data-reveal><i>I</i><p>Você envia a aplicação com o seu momento em lentes de alta tecnologia.</p></div>
+      <div class="step" data-reveal style="--d:.06s"><i>II</i><p>A equipe retorna no WhatsApp para entender os seus objetivos.</p></div>
+      <div class="step" data-reveal style="--d:.12s"><i>III</i><p>Perfil alinhado, a sua vaga na próxima turma é reservada.</p></div>
+    </div>
+    <div class="form-card" data-reveal>
+      <form id="form-aplicacao" novalidate>
+        <div class="field">
+          <label for="nome">Nome completo</label>
+          <input id="nome" name="nome" type="text" autocomplete="name" placeholder="Dr(a). Nome Sobrenome" required>
+        </div>
+        <div class="frow">
+          <div class="field">
+            <label for="zap">WhatsApp</label>
+            <input id="zap" name="zap" type="tel" autocomplete="tel" inputmode="tel" minlength="10" pattern="[0-9()+\-. ]{10,}" title="DDD e número, por exemplo (92) 90000-0000" placeholder="(00) 90000-0000" required>
+          </div>
+          <div class="field">
+            <label for="email">E-mail</label>
+            <input id="email" name="email" type="email" autocomplete="email" placeholder="voce@email.com" required>
+          </div>
+        </div>
+        <div class="frow">
+          <div class="field">
+            <label for="crm">CRM / UF</label>
+            <input id="crm" name="crm" type="text" placeholder="00000 / AM" required>
+          </div>
+          <div class="field">
+            <label for="cidade">Cidade onde atua</label>
+            <input id="cidade" name="cidade" type="text" placeholder="Manaus, AM" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="momento">Seu momento com lentes de alta tecnologia</label>
+          <select id="momento" name="momento" required>
+            <option value="" disabled selected>Selecione</option>
+            <option>Já implanto lentes premium e quero previsibilidade</option>
+            <option>Opero catarata, ainda não indico lentes premium</option>
+            <option>Quero estruturar a clínica particular e premium</option>
+            <option>Quero dominar tudo: técnica e negócio</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="obs">Qual é o seu principal objetivo na mentoria? <i>(opcional)</i></label>
+          <textarea id="obs" name="obs" placeholder="Conte em poucas linhas"></textarea>
+        </div>
+        <button class="btn btn-gold" type="submit">Enviar aplicação</button>
+      </form>
+      <div class="form-ok" id="form-ok">
+        <b>Aplicação encaminhada.</b>
+        <p>A sua aplicação foi aberta no WhatsApp da equipe. Confirme o envio da mensagem por lá e aguarde o retorno.</p>
+        <p><a id="wa-retry" href="https://wa.me/5592991441889" target="_blank" rel="noopener">O WhatsApp não abriu? Toque aqui.</a></p>
+      </div>
+      <p class="form-alt">Prefere conversar antes? <a class="js-wa" href="https://wa.me/5592991441889?text=Ol%C3%A1!%20Sou%20oftalmologista%20e%20quero%20saber%20mais%20sobre%20a%20Mentoria%20Grau%20Zero." target="_blank" rel="noopener">Falar no WhatsApp</a>.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec-tight" id="faq">
+  <div class="wrap">
+    <div class="sec-head" style="text-align:center;margin-left:auto;margin-right:auto" data-reveal>
+      <h2>Perguntas frequentes.</h2>
+    </div>
+    <div class="faq" data-reveal>
+      <details open>
+        <summary>Preciso já operar catarata para participar?</summary>
+        <p class="ans">A imersão é para médicos oftalmologistas. Quem já opera refina indicação, cálculo e técnica com lentes de alta tecnologia; quem está estruturando a prática premium constrói base com acompanhamento direto do mentor. O seu momento é avaliado na aplicação.</p>
+      </details>
+      <details>
+        <summary>Como funciona a imersão?</summary>
+        <p class="ans">São três dias presenciais, 30 horas no total, dentro da clínica do Dr. Alex Sá, em Manaus. Teoria e prática no mesmo ambiente: consultório, processos, indicação e cálculo de lentes e vivência em ambiente cirúrgico, com acompanhamento direto do mentor. A agenda da turma é apresentada pela equipe.</p>
+      </details>
+      <details>
+        <summary>Quantas pessoas participam de cada turma?</summary>
+        <p class="ans">A turma é reduzida por desenho: é o que garante o mentor ao lado em cada etapa. A composição da próxima turma é informada pela equipe na conversa que segue a aplicação.</p>
+      </details>
+      <details>
+        <summary>A mentoria emite certificado?</summary>
+        <p class="ans">Sim. Ao final da imersão você recebe certificado de extensão universitária reconhecido pelo MEC.</p>
+      </details>
+      <details>
+        <summary>Como garanto a minha vaga?</summary>
+        <p class="ans">Envie a aplicação nesta página ou chame a equipe no WhatsApp. O time retorna, entende o seu momento e apresenta as condições. A vaga é reservada depois dessa conversa.</p>
+      </details>
+      <details>
+        <summary>Deslocamento e hospedagem estão incluídos?</summary>
+        <p class="ans">Não. Passagem, hospedagem e alimentação ficam a cargo do participante. A equipe orienta sobre a logística na conversa de confirmação.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="final">
+  <img src="assets/fechamento.webp" srcset="assets/fechamento-800.webp 800w, assets/fechamento.webp 1600w" sizes="100vw" alt="" loading="lazy" width="1600" height="899">
+  <div class="wrap">
+    <div class="final-in" data-reveal>
+      <h2>Poucas cadeiras por turma. <span class="foil">A próxima pode ser sua</span>.</h2>
+      <p>Envie a sua aplicação e converse com a equipe sobre a próxima turma da Mentoria Grau Zero.</p>
+      <a class="btn btn-gold" href="#aplicacao">Aplicar agora</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <a class="wordmark" href="#topo" aria-label="Voltar ao topo">OFTALMO<b>BLACK</b><span>Mentoria Grau Zero</span></a>
+    <nav aria-label="Contato">
+      <a href="https://www.instagram.com/oftalmoblack/" target="_blank" rel="noopener">@oftalmoblack</a>
+      &nbsp;·&nbsp;
+      <a class="js-wa" href="https://wa.me/5592991441889?text=Ol%C3%A1!%20Sou%20oftalmologista%20e%20quero%20saber%20mais%20sobre%20a%20Mentoria%20Grau%20Zero." target="_blank" rel="noopener">Falar no WhatsApp</a>
+    </nav>
+    <div class="legal">Olympus Serviços de Treinamento · Dr. Alex Sá<br>CRM-AM 7516 · RQE 3514</div>
+  </div>
+</footer>
+
+<script>
+document.documentElement.classList.add('js');
+
+/* ── Reveal na entrada do viewport (animate.css: fadeInUp / fadeIn) ───────── */
+(function(){
+  var els=document.querySelectorAll('[data-reveal]');
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce||!('IntersectionObserver' in window)){
+    els.forEach(function(e){e.style.opacity='1'});
+    return;
+  }
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(!en.isIntersecting)return;
+      var big=en.target.tagName==='FIGURE'||en.target.classList.contains('videos')||en.target.classList.contains('mframe');
+      en.target.classList.add('animate__animated',big?'animate__fadeIn':'animate__fadeInUp');
+      io.unobserve(en.target);
+    });
+  },{threshold:.12,rootMargin:'0px 0px -6% 0px'});
+  els.forEach(function(e){io.observe(e)});
+})();
+
+/* ── Facade do YouTube: iframe só no clique ───────────────────────────────── */
+document.querySelectorAll('.yt').forEach(function(b){
+  b.addEventListener('click',function(){
+    if(b.classList.contains('on'))return;
+    var id=b.getAttribute('data-yt');
+    var f=document.createElement('iframe');
+    f.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&rel=0';
+    f.title='Depoimento sobre as mentorias do Dr. Alex Sá';
+    f.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+    f.allowFullscreen=true;
+    b.classList.add('on');
+    b.appendChild(f);
+    if(typeof gtag==='function')gtag('event','video_play',{video_id:id,page_location:location.href});
+  });
+});
+
+/* ══ Tracking ══════════════════════════════════════════════════════════════
+   GA4 B2B G-5NMXL3LD47 · Pixel B2B 919253591198015 · atribuição em ob_trk.  */
+var WA_NUMERO='5592991441889';
+var WA_TEXTO='Olá! Sou oftalmologista e quero saber mais sobre a Mentoria Grau Zero.';
+var FB_PARAMS={content_name:'mentoria_grau_zero',content_category:'oftalmoblack_b2b'};
+
+/* UTM, fbclid e gclid guardados por 7 dias */
+var TRK=(function(){
+  var KEY='ob_trk',TTL=7*24*3600*1000;
+  var keep=['utm_source','utm_medium','utm_campaign','utm_content','utm_term','fbclid','gclid'];
+  var cur={};
+  try{cur=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){cur={}}
+  if(cur._ts&&Date.now()-cur._ts>TTL)cur={};
+  try{
+    var q=new URLSearchParams(location.search),novo=false;
+    keep.forEach(function(k){var v=q.get(k);if(v){cur[k]=v;novo=true}});
+    if(novo){cur._ts=Date.now();localStorage.setItem(KEY,JSON.stringify(cur))}
+  }catch(e){}
+  function cookie(n){
+    var m=document.cookie.match(new RegExp('(?:^|; )'+n+'=([^;]*)'));
+    return m?decodeURIComponent(m[1]):'';
+  }
+  return {
+    params:function(){
+      var p={};
+      keep.forEach(function(k){if(cur[k])p[k]=cur[k]});
+      var fbp=cookie('_fbp');if(fbp)p.fbp=fbp;
+      var fbc=cookie('_fbc');
+      if(!fbc&&cur.fbclid)fbc='fb.1.'+(cur._ts||Date.now())+'.'+cur.fbclid;
+      if(fbc)p.fbc=fbc;
+      return p;
+    },
+    ref:function(){
+      if(!cur.utm_source&&!cur.utm_campaign)return '';
+      return '\nref: '+(cur.utm_source||'')+'·'+(cur.utm_campaign||'');
+    }
+  };
+})();
+
+/* Clique de WhatsApp: monta o texto com a origem e dispara os eventos */
+document.querySelectorAll('.js-wa').forEach(function(a){
+  a.href='https://wa.me/'+WA_NUMERO+'?text='+encodeURIComponent(WA_TEXTO);
+  a.addEventListener('click',function(){
+    a.href='https://wa.me/'+WA_NUMERO+'?text='+encodeURIComponent(WA_TEXTO+TRK.ref());
+    if(typeof gtag==='function')gtag('event','whatsapp_click',{link_url:a.href,page_location:location.href});
+    if(typeof fbq==='function')fbq('track','Contact',FB_PARAMS);
+  });
+});
+
+/* Formulário de aplicação.
+   FORM_ENDPOINT: URL /exec do Apps Script (planilha de aplicações). Vazio = só WhatsApp. */
+var FORM_ENDPOINT='https://script.google.com/macros/s/AKfycbz__ZwjS3IbQrqeiB7yRSujzUV9THcfdsb8x1bv5qPGi--PTw1IBh88ozgUdod0eskN/exec';
+var form=document.getElementById('form-aplicacao');
+
+var startEnviado=false;
+form.addEventListener('focusin',function(){
+  if(startEnviado)return;
+  startEnviado=true;
+  if(typeof gtag==='function')gtag('event','form_start',{page_location:location.href});
+});
+
+form.addEventListener('submit',function(ev){
+  ev.preventDefault();
+  if(!form.checkValidity()){form.reportValidity();return}
+  var v=function(id){return document.getElementById(id).value.trim()};
+  var dados={
+    nome:v('nome'),whatsapp:v('zap'),email:v('email'),crm:v('crm'),
+    cidade:v('cidade'),momento:v('momento'),observacao:v('obs'),
+    origem:'lp-mentoria-grau-zero',ts:new Date().toISOString(),
+    referrer:document.referrer||'',page:location.href
+  };
+  var p=TRK.params();
+  Object.keys(p).forEach(function(k){dados[k]=p[k]});
+
+  if(FORM_ENDPOINT){
+    try{
+      fetch(FORM_ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(dados),keepalive:true}).catch(function(){});
+    }catch(e){}
+  }
+
+  if(typeof gtag==='function'){
+    gtag('event','aplicacao_enviada',{page_location:location.href});
+    gtag('event','generate_lead',{currency:'BRL',lead_source:'lp-mentoria-grau-zero'});
+  }
+  if(typeof fbq==='function')fbq('track','Lead',FB_PARAMS);
+
+  var msg='APLICACAO · MENTORIA GRAU ZERO'
+    +'\n\nNome: '+dados.nome
+    +'\nWhatsApp: '+dados.whatsapp
+    +'\nE-mail: '+dados.email
+    +'\nCRM/UF: '+dados.crm
+    +'\nCidade: '+dados.cidade
+    +'\nMomento: '+dados.momento
+    +(dados.observacao?'\nObjetivo: '+dados.observacao:'')
+    +TRK.ref();
+  var url='https://wa.me/'+WA_NUMERO+'?text='+encodeURIComponent(msg);
+  document.getElementById('wa-retry').href=url;
+  form.style.display='none';
+  document.getElementById('form-ok').style.display='block';
+  var w=window.open(url,'_blank');
+  if(!w)location.href=url;
+});
+</script>
+</body>
+</html>
