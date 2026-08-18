@@ -193,8 +193,9 @@ h1,h2{margin:0}
         <h2 class="tt h2">Onde você mora?</h2>
         <p class="texto texto--menor texto--gap">Para seguir com o seu atendimento, você mora em Rio Branco ou região ou em outra cidade?</p>
         <div class="opcoes">
-          <button class="opcao" type="button" data-ir="a1">Moro em Rio Branco ou região <i>&rsaquo;</i></button>
-          <button class="opcao" type="button" data-ir="bq">Moro em outra cidade <i>&rsaquo;</i></button>
+
+          <button class="opcao" type="button" data-ir="a1" data-unidade="Rio Branco" data-wa="">Moro em Rio Branco ou região <i>&rsaquo;</i></button>
+                    <button class="opcao" type="button" data-ir="bq">Moro em outra cidade <i>&rsaquo;</i></button>
         </div>
       </section>
       
@@ -205,10 +206,30 @@ h1,h2{margin:0}
           <h2 class="tt h2--g">Perfeito!</h2>
           <p class="texto">A Dra. Nauara realizará uma avaliação detalhada e indicará a técnica mais adequada para o seu caso.</p>
         </div>
-        <button class="btn" type="button" data-ir="preco">Continuar</button>
+        <button class="btn" type="button" data-ir="exames">Continuar</button>
       </section>
 
 
+      <section class="tela tela--recuada" data-tela="exames" data-titulo="O que está incluso" data-progresso="70%">
+        <span class="kicker kicker--curto">O que está incluso</span>
+        <h2 class="tt h2--p">Uma avaliação completa</h2>
+        <p class="texto texto--menor" style="margin-bottom:22px">Exames importantíssimos para a sua saúde ocular:</p>
+        <div class="lista">
+
+          <div class="item"><i>&#9670;</i><div><div class="item__nome">Acuidade visual</div><div class="item__desc">Nitidez da sua visão</div></div></div>
+          
+          <div class="item"><i>&#9670;</i><div><div class="item__nome">Refratometria</div><div class="item__desc">Avaliação do grau dos óculos</div></div></div>
+          
+          <div class="item"><i>&#9670;</i><div><div class="item__nome">Tonometria</div><div class="item__desc">Pressão intraocular</div></div></div>
+          
+          <div class="item"><i>&#9670;</i><div><div class="item__nome">Biomicroscopia</div><div class="item__desc">Estruturas anteriores e externa do globo ocular</div></div></div>
+          
+          <div class="item"><i>&#9670;</i><div><div class="item__nome">Fundoscopia</div><div class="item__desc">Fundo de olho</div></div></div>
+                  </div>
+        <p class="rodape-nota">Tudo incluso no valor da consulta.</p>
+        <button class="btn" type="button" style="margin-top:26px" data-ir="preco">Continuar</button>
+      </section>
+      
       <section class="tela" data-tela="preco" data-titulo="Investimento" data-progresso="92%">
         <div class="miolo">
           <span class="kicker">Investimento</span>
@@ -298,7 +319,7 @@ h1,h2{margin:0}
 (function(){
   "use strict";
   var WA = "5568992063205";
-  var MSG = {"local": "Olá! Vim pelo link da bio da Dra. Nauara Naissa. Sou de Rio Branco e gostaria de agendar minha consulta presencial.", "tele": "Olá! Vim pelo link da bio da Dra. Nauara Naissa. Sou de outra cidade, tenho interesse em cirurgia e posso ir a Rio Branco. Gostaria de agendar a teleconsulta."};
+  var MSG = {"local": "Olá! Vim pelo link da bio da Dra. Nauara Naissa. Sou de {unidade} e gostaria de agendar minha consulta presencial.", "tele": "Olá! Vim pelo link da bio da Dra. Nauara Naissa. Sou de outra cidade, tenho interesse em cirurgia e posso ir a Rio Branco. Gostaria de agendar a teleconsulta."};
   var telas = {}, ordem = [];
   Array.prototype.forEach.call(document.querySelectorAll("[data-tela]"), function(el){
     telas[el.getAttribute("data-tela")] = el; ordem.push(el);
@@ -308,6 +329,9 @@ h1,h2{margin:0}
   var trilha  = barra.parentNode;
   var anuncio = document.getElementById("anuncio");
   var atual = null, historico = [];
+  /* qual unidade o paciente escolheu na tela de localizacao: entra na mensagem
+     do WhatsApp e pode ter numero proprio (mentorado com mais de uma clinica) */
+  var unidade = "Rio Branco", waUnidade = WA;
 
   function mostrar(id, empilhar){
     if(!telas[id] || atual === id) return;
@@ -334,8 +358,9 @@ h1,h2{margin:0}
   function abrirWhats(chave){
     /* window.open tem de acontecer DENTRO do clique: fora dele o navegador
        trata como popup e bloqueia (Safari sempre, Chrome com frequência). */
-    var texto = MSG[chave] || "";
-    var url = "https://wa.me/" + WA + (texto ? "?text=" + encodeURIComponent(texto) : "");
+    var texto = (MSG[chave] || "").replace("{unidade}", unidade);
+    var numero = (chave === "local" && waUnidade) ? waUnidade : WA;
+    var url = "https://wa.me/" + numero + (texto ? "?text=" + encodeURIComponent(texto) : "");
     var aba = window.open(url, "_blank");
     if(!aba) window.location.href = url;
   }
@@ -343,6 +368,10 @@ h1,h2{margin:0}
   document.addEventListener("click", function(e){
     var alvo = e.target.closest ? e.target.closest("[data-ir],[data-whats]") : null;
     if(!alvo) return;
+    if(alvo.hasAttribute("data-unidade")){
+      unidade = alvo.getAttribute("data-unidade") || unidade;
+      waUnidade = alvo.getAttribute("data-wa") || WA;
+    }
     if(alvo.hasAttribute("data-whats")){ abrirWhats(alvo.getAttribute("data-whats")); return; }
     mostrar(alvo.getAttribute("data-ir"), true);
   });
