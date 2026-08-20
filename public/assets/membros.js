@@ -75,10 +75,36 @@
      Guardar os dois separados evita reconstruir uma coisa a partir da outra. */
   var chat = { falas: [], historico: [], pensando: false };
 
+  /* O modelo responde em markdown — título, negrito, lista. Aqui vira HTML de
+     verdade, mas só depois de escapar: o texto vem de fora e nada dele pode
+     virar marcação por conta própria. Só três formas são reconhecidas, que são
+     as que ele usa; o resto continua texto. */
+  function formatar(txt) {
+    var html = '', lista = false;
+    esc(txt).split('\n').forEach(function (linha) {
+      var l = linha.trim().replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+      var item = l.match(/^[-–•]\s+(.*)$/);
+      var cab  = l.match(/^#{1,4}\s+(.*)$/);
+
+      if (item) {
+        if (!lista) { html += '<ul>'; lista = true; }
+        html += '<li>' + item[1] + '</li>';
+        return;
+      }
+      if (lista) { html += '</ul>'; lista = false; }
+      if (cab) { html += '<h4>' + cab[1] + '</h4>'; return; }
+      if (l) html += '<p>' + l + '</p>';
+    });
+    if (lista) html += '</ul>';
+    return html || '<p>' + esc(txt) + '</p>';
+  }
+
   function bolha(quem, texto) {
+    /* A fala de quem pergunta é texto puro: markdown ali seria ruído. */
     return '<div class="fala ' + quem + '">' +
       (quem === 'ele' ? '<span class="fala-de">CÉREBRO</span>' : '') +
-      '<div class="fala-tx">' + esc(texto) + '</div></div>';
+      '<div class="fala-tx">' +
+      (quem === 'eu' ? esc(texto) : formatar(texto)) + '</div></div>';
   }
 
   function renderChat() {

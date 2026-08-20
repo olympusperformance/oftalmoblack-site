@@ -532,6 +532,18 @@ input[type="file"].inp::file-selector-button:hover{background:var(--surface);bor
 .fala-de{font-size:9.5px;letter-spacing:1.5px;color:var(--faint);font-weight:600}
 .fala-tx{padding:12px 15px;border-radius:var(--r-md);font-size:14.5px;line-height:1.55;
   white-space:pre-wrap;border:1px solid var(--border-soft);background:var(--surface)}
+/* A resposta vem em markdown e é renderizada: aqui o espaçamento é apertado de
+   propósito, porque a bolha é conversa e não documento. */
+.fala.ele .fala-tx{white-space:normal}
+.fala-tx p{margin:0 0 9px}
+.fala-tx p:last-child{margin-bottom:0}
+.fala-tx h4{margin:14px 0 7px;font-size:12px;letter-spacing:.6px;text-transform:uppercase;
+  color:var(--gold);font-weight:600}
+.fala-tx h4:first-child{margin-top:0}
+.fala-tx strong{color:var(--gold-bright);font-weight:600}
+.fala-tx ul{margin:0 0 9px;padding-left:18px;display:flex;flex-direction:column;gap:5px}
+.fala-tx li{padding-left:2px}
+.fala-tx ul:last-child{margin-bottom:0}
 .fala.eu .fala-tx{background:rgba(232,192,122,.1);border-color:var(--gold-deep);color:var(--text)}
 .fala.erro .fala-tx{border-color:rgba(240,138,138,.4);color:#F08A8A}
 .fala-tx.pensando{color:var(--faint);font-style:italic}
