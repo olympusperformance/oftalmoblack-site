@@ -556,7 +556,9 @@
   /* ── eventos ──────────────────────────────────────────────────────────── */
 
   document.addEventListener('click', function (e) {
-    if (e.target.closest('#sair')) { Club.auth.logout(); return; }
+    /* Dois lugares, um comportamento: o do cabeçalho está sempre à mão, o do
+       Perfil é o que se procura quando se vai "mexer na conta". */
+    if (e.target.closest('#sair, [data-sair]')) { Club.auth.logout(); return; }
 
     var nav = e.target.closest('[data-nav]');
     if (nav) { go(nav.dataset.nav); return; }
