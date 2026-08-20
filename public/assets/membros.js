@@ -23,6 +23,7 @@
     { key:'artifacts', label:'Artefatos', icon:'box' },
     { key:'materials', label:'Materiais', icon:'folder' },
     { key:'agenda',    label:'Agenda',    icon:'calendar' },
+    { key:'cerebro',   label:'Cérebro',   icon:'search' },
     { key:'profile',   label:'Perfil',    icon:'user' }
   ];
 
@@ -68,6 +69,63 @@
 
   /* O grupo de Operação é onde a mentoria acontece no dia a dia; a área é o
      lugar de onde ele chega lá sem procurar conversa antiga no WhatsApp. */
+  /* ── chat do Cérebro ──────────────────────────────────────────────────── */
+  /* O histórico que o modelo recebe vem dele mesmo (a função devolve a versão
+     que ela quer na próxima volta); a lista de bolhas é só o que a pessoa vê.
+     Guardar os dois separados evita reconstruir uma coisa a partir da outra. */
+  var chat = { falas: [], historico: [], pensando: false };
+
+  function bolha(quem, texto) {
+    return '<div class="fala ' + quem + '">' +
+      (quem === 'ele' ? '<span class="fala-de">CÉREBRO</span>' : '') +
+      '<div class="fala-tx">' + esc(texto) + '</div></div>';
+  }
+
+  function renderChat() {
+    var fluxo = $('chatFluxo');
+    if (!chat.falas.length && !chat.pensando) {
+      fluxo.innerHTML =
+        '<div class="chat-vazio">' + ico('search') +
+        '<p>O Cérebro guarda o que foi conversado no seu grupo de Operação e os números da sua clínica.</p>' +
+        '<div class="chat-ideias">' +
+          ['O que ficou combinado na última conversa?',
+           'Quantos leads entraram nos últimos 30 dias?',
+           'O que a equipe me pediu e eu não respondi?'].map(function (q) {
+            return '<button class="chat-ideia" data-pergunta="' + esc(q) + '">' + esc(q) + '</button>';
+          }).join('') +
+        '</div></div>';
+      return;
+    }
+    fluxo.innerHTML = chat.falas.map(function (f) { return bolha(f.quem, f.texto); }).join('') +
+      (chat.pensando ? '<div class="fala ele"><span class="fala-de">CÉREBRO</span>' +
+        '<div class="fala-tx pensando">procurando nas conversas…</div></div>' : '');
+    fluxo.scrollTop = fluxo.scrollHeight;
+  }
+
+  function perguntar(texto) {
+    texto = (texto || '').trim();
+    if (!texto || chat.pensando) return;
+    chat.falas.push({ quem:'eu', texto:texto });
+    chat.pensando = true;
+    $('chatInput').value = '';
+    $('chatInput').disabled = true;
+    renderChat();
+
+    Club.data.cerebro.perguntar(texto, chat.historico).then(function (d) {
+      chat.historico = d.historico || [];
+      chat.falas.push({ quem:'ele', texto:d.resposta || 'Não achei nada sobre isso.' });
+    }).catch(function (err) {
+      /* O erro entra como fala do Cérebro: um toast desapareceria e a pessoa
+         ficaria olhando a pergunta sem resposta, sem saber por quê. */
+      chat.falas.push({ quem:'ele erro', texto: err.message || 'Não consegui responder agora.' });
+    }).then(function () {
+      chat.pensando = false;
+      $('chatInput').disabled = false;
+      renderChat();
+      $('chatInput').focus();
+    });
+  }
+
   function renderGrupo() {
     var a = $('btnGrupo');
     var url = (st.membro && st.membro.whatsapp_url || '').trim();
@@ -439,9 +497,31 @@
 
   /* ── render geral ─────────────────────────────────────────────────────── */
 
+  /* O campo do Início não tem conversa própria: manda a pergunta para a aba
+     Cérebro, onde o fio já é guardado. Dois campos, uma conversa. */
+  $('ceForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var texto = $('ceInput').value;
+    if (!texto.trim()) return;
+    $('ceInput').value = '';
+    go('cerebro');
+    perguntar(texto);
+  });
+
+  $('chatForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    perguntar($('chatInput').value);
+  });
+
+  $('chatFluxo').addEventListener('click', function (e) {
+    var ideia = e.target.closest('[data-pergunta]');
+    if (ideia) perguntar(ideia.dataset.pergunta);
+  });
+
   function render() {
     renderIdentidade();
     renderGrupo();
+    renderChat();
     renderTasks();
     var disponiveis = renderArtifacts();
     var proxima = renderAgenda();

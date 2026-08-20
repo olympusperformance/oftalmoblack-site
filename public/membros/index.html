@@ -49,6 +49,19 @@
           <svg class="ic"><use href="#i-whatsapp"/></svg><span>Meu grupo no WhatsApp</span></a>
       </div>
 
+      <!-- A pergunta começa aqui e a conversa continua na aba Cérebro: dois
+           lugares para digitar, uma conversa só. -->
+      <form class="cta-cerebro" id="ceForm">
+        <span class="cta-brain"><svg class="ic"><use href="#i-brain"/></svg></span>
+        <div class="cta-tx">
+          <span class="cta-lbl">PERGUNTE AO CÉREBRO</span>
+          <input id="ceInput" class="cta-inp" autocomplete="off" maxlength="600"
+            placeholder="O que ficou combinado com a equipe?">
+        </div>
+        <button class="btn btn-primary" type="submit">
+          <svg class="ic"><use href="#i-chevron-right"/></svg><span class="hide-sm">Perguntar</span></button>
+      </form>
+
       <div class="dash">
         <div class="col-6">
           <div class="week">
@@ -131,6 +144,20 @@
     <div class="view" data-view="agenda" hidden>
       <div class="hello"><h1>Agenda</h1><p>Encontros ao vivo e aulas gravadas da sua turma.</p></div>
       <div id="agendaFull"></div>
+    </div>
+
+    <div class="view" data-view="cerebro" hidden>
+      <div class="hello"><h1>Cérebro</h1>
+        <p>Pergunte em português sobre o que já foi conversado com a equipe — e sobre os números da sua clínica.</p></div>
+      <div class="chat">
+        <div class="chat-fluxo" id="chatFluxo" aria-live="polite"></div>
+        <form class="chat-envio" id="chatForm">
+          <input id="chatInput" class="chat-inp" autocomplete="off" maxlength="600"
+            placeholder="O que ficou combinado sobre o funil de agendamento?">
+          <button class="btn btn-primary" id="chatBtn" type="submit">
+            <svg class="ic"><use href="#i-chevron-right"/></svg><span class="hide-sm">Perguntar</span></button>
+        </form>
+      </div>
     </div>
 
     <div class="view" data-view="profile" hidden>

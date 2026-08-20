@@ -18,6 +18,10 @@
     return;
   }
 
+  /* A URL do projeto também é usada para chamar Edge Function (o chat do
+     Cérebro), então fica à mão em vez de cada arquivo reler o config. */
+  C.cfg = cfg;
+
   C.sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
     auth: {
       persistSession: true,

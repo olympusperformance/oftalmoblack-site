@@ -485,6 +485,71 @@ input[type="file"].inp::file-selector-button:hover{background:var(--surface);bor
 .art-st-list li.ok .ic{color:var(--success)}
 .art.locked .art-ck,.art.locked .art-st-list{display:none}
 
+/* ---------- convite do Cérebro no Início ---------- */
+/* Fica acima do resumo da semana porque é a pergunta que traz a pessoa: o que
+   ficou combinado. O ouro aqui é reflexo, não preenchimento — a faixa clara
+   atravessa devagar, como luz em metal polido, e o brilho do ícone pulsa junto.
+   Sem isso o bloco competiria com o botão dourado da direita. */
+.cta-cerebro{display:flex;align-items:center;gap:16px;margin-bottom:22px;padding:15px 18px;
+  border:1px solid var(--border);border-radius:var(--r-lg);position:relative;overflow:hidden;
+  background:
+    linear-gradient(100deg,rgba(232,192,122,.12),rgba(232,192,122,.02) 46%,rgba(232,192,122,.1)),
+    var(--panel);
+  background-size:220% 100%,auto;
+  animation:reflexo 7s ease-in-out infinite}
+@keyframes reflexo{0%,100%{background-position:0% 0,0 0}50%{background-position:100% 0,0 0}}
+.cta-brain{flex-shrink:0;width:44px;height:44px;border-radius:23px;display:grid;place-items:center;
+  color:var(--gold);font-size:22px;border:1px solid var(--gold-deep);
+  background:radial-gradient(circle at 30% 25%,rgba(247,227,180,.22),rgba(232,192,122,.05) 70%);
+  animation:brilho 7s ease-in-out infinite}
+@keyframes brilho{
+  0%,100%{box-shadow:0 0 0 rgba(232,192,122,0);   color:var(--gold)}
+  50%    {box-shadow:0 0 22px rgba(232,192,122,.4);color:var(--gold-bright)}}
+.cta-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.cta-lbl{font-size:9.5px;letter-spacing:1.6px;font-weight:600;color:var(--gold-deep)}
+.cta-inp{width:100%;background:none;border:0;color:var(--text);font:inherit;font-size:15px;padding:2px 0}
+.cta-inp::placeholder{color:var(--faint)}
+.cta-inp:focus{outline:none}
+.cta-cerebro:focus-within{border-color:var(--gold-deep)}
+/* Movimento é enfeite: quem pediu para reduzi-lo no sistema não deve vê-lo. */
+@media (prefers-reduced-motion:reduce){
+  .cta-cerebro,.cta-brain{animation:none}
+}
+@media (max-width:560px){
+  .cta-cerebro{flex-wrap:wrap;gap:12px}
+  .cta-tx{flex-basis:100%;order:3}
+}
+
+/* ---------- chat do Cérebro ---------- */
+/* Conversa, não formulário: o fluxo rola sozinho e o campo fica preso embaixo,
+   para a pessoa nunca perder de vista onde escreve. */
+.chat{display:flex;flex-direction:column;gap:14px;max-width:820px}
+.chat-fluxo{min-height:340px;max-height:min(58vh,560px);overflow-y:auto;display:flex;
+  flex-direction:column;gap:12px;padding:4px 2px}
+.fala{max-width:82%;display:flex;flex-direction:column;gap:5px}
+.fala.eu{align-self:flex-end;align-items:flex-end}
+.fala.ele{align-self:flex-start}
+.fala-de{font-size:9.5px;letter-spacing:1.5px;color:var(--faint);font-weight:600}
+.fala-tx{padding:12px 15px;border-radius:var(--r-md);font-size:14.5px;line-height:1.55;
+  white-space:pre-wrap;border:1px solid var(--border-soft);background:var(--surface)}
+.fala.eu .fala-tx{background:rgba(232,192,122,.1);border-color:var(--gold-deep);color:var(--text)}
+.fala.erro .fala-tx{border-color:rgba(240,138,138,.4);color:#F08A8A}
+.fala-tx.pensando{color:var(--faint);font-style:italic}
+.chat-envio{display:flex;gap:10px;align-items:center}
+.chat-inp{flex:1;min-width:0;background:var(--surface-hi);border:1px solid var(--border-soft);
+  border-radius:var(--r-md);color:var(--text);font:inherit;font-size:14.5px;padding:13px 16px}
+.chat-inp:focus{outline:none;border-color:var(--gold)}
+.chat-inp:disabled{opacity:.55}
+.chat-vazio{text-align:center;color:var(--faint);padding:38px 16px;display:flex;
+  flex-direction:column;align-items:center;gap:14px}
+.chat-vazio .ic{font-size:26px;color:var(--gold-deep)}
+.chat-vazio p{margin:0;max-width:420px;font-size:13.5px;line-height:1.5}
+/* As sugestões existem para a primeira pergunta não ser um campo em branco. */
+.chat-ideias{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chat-ideia{border:1px solid var(--border-soft);background:var(--surface);color:var(--muted);
+  border-radius:var(--r-md);padding:9px 13px;font:inherit;font-size:12.5px;cursor:pointer}
+.chat-ideia:hover{border-color:var(--gold-deep);color:var(--text)}
+
 /* ---------- atalho para o grupo de Operação ---------- */
 /* O grupo é onde a mentoria acontece todo dia. O botão fica ao lado da
    saudação, no verde do WhatsApp para ser reconhecido de relance, mas com o
