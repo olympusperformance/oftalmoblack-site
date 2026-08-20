@@ -23,7 +23,7 @@
     { key:'artifacts', label:'Artefatos', icon:'box' },
     { key:'materials', label:'Materiais', icon:'folder' },
     { key:'agenda',    label:'Agenda',    icon:'calendar' },
-    { key:'cerebro',   label:'Cérebro',   icon:'search' },
+    { key:'cerebro',   label:'Cérebro',   icon:'brain' },
     { key:'profile',   label:'Perfil',    icon:'user' }
   ];
 
@@ -82,7 +82,12 @@
   function formatar(txt) {
     var html = '', lista = false;
     esc(txt).split('\n').forEach(function (linha) {
-      var l = linha.trim().replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+      /* Negrito primeiro: se o itálico rodasse antes, comeria um dos dois
+         asteriscos de **texto** e deixaria o outro na tela. */
+      var l = linha.trim()
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*([^*\n]+?)\*/g, '<em>$1</em>')
+        .replace(/`([^`\n]+?)`/g, '<code>$1</code>');
       var item = l.match(/^[-–•]\s+(.*)$/);
       var cab  = l.match(/^#{1,4}\s+(.*)$/);
 
@@ -124,7 +129,8 @@
     }
     fluxo.innerHTML = chat.falas.map(function (f) { return bolha(f.quem, f.texto); }).join('') +
       (chat.pensando ? '<div class="fala ele"><span class="fala-de">CÉREBRO</span>' +
-        '<div class="fala-tx pensando">procurando nas conversas…</div></div>' : '');
+        '<div class="fala-tx pensando"><span class="pulso"><i></i><i></i><i></i></span>' +
+        'procurando nas conversas</div></div>' : '');
     fluxo.scrollTop = fluxo.scrollHeight;
   }
 
@@ -165,8 +171,9 @@
     $('quemNome').textContent = m.nome;
     $('quemTier').textContent = 'MENTORADO ' + (m.tier || 'BLACK');
     $('avatar').textContent = m.iniciais || Club.initials(m.nome);
-    $('turmaFase').textContent = m.turma + ' · ' + m.fase;
-    $('tierNome').textContent = m.tier || 'BLACK';
+    /* Mentorado sem turma ou fase é caso comum (o cadastro entra antes da
+       matrícula na turma), então o rótulo se adapta em vez de escrever null. */
+    $('turmaFase').textContent = [m.turma, m.fase].filter(Boolean).join(' · ') || 'Mentoria';
     $('greeting').innerHTML = Club.greeting() + ', <b>' +
       esc(m.nome.replace(/^(Dr|Dra)\.?\s+/i, '').split(' ')[0]) + '</b>';
     document.title = 'Área do Mentorado — ' + m.nome;
@@ -482,15 +489,6 @@
 
   /* ── resumo da semana ─────────────────────────────────────────────────── */
 
-  function renderStats(disponiveis, proxima) {
-    var feitas = st.tasks.filter(function (t) { return t.status === 'done'; }).length;
-    var pct = st.tasks.length === 0 ? 0 : Math.round((feitas / st.tasks.length) * 100);
-    $('pct').textContent = pct;
-    $('weekFill').style.width = Math.max(pct, 3) + '%';
-    $('statTasks').textContent = feitas + '/' + st.tasks.length;
-    $('statArt').textContent = disponiveis;
-    $('statNext').textContent = proxima ? Club.fmtDate(proxima.inicia_em) : '—';
-  }
 
   /* ── navegação ────────────────────────────────────────────────────────── */
 
@@ -503,7 +501,7 @@
           (n.key === ativo) + '">' + ico(n.icon) + '<span>' + n.label + '</span></button>';
       }).join('') +
       '<div class="rail-foot"><div class="k">' +
-      esc((m.turma + ' · ' + m.fase).toUpperCase()) + '</div>' +
+      esc(([m.turma, m.fase].filter(Boolean).join(' · ') || 'Mentoria').toUpperCase()) + '</div>' +
       '<div class="v">Mentorado ' + esc(m.tier || 'Black') + ' desde ' +
       esc(Club.fmtMesAno(String(m.criado_em || '').slice(0, 10))) + '.</div></div>';
 
@@ -553,7 +551,6 @@
     var proxima = renderAgenda();
     renderMateriais();
     renderPerfil();
-    renderStats(disponiveis, proxima);
   }
 
   /* ── eventos ──────────────────────────────────────────────────────────── */
@@ -582,10 +579,6 @@
       }).then(function (rows) {
         st.tasks = rows;
         renderTasks();
-        renderStats(
-          st.artifacts.filter(function (a) { return a.status === 'Disponível'; }).length,
-          st.events.filter(function (x) { return Club.parseDate(x.inicia_em) >= new Date(); })[0]
-        );
       }).catch(function () { /* já avisado acima */ });
     }
   });
