@@ -523,19 +523,24 @@ input[type="file"].inp::file-selector-button:hover{background:var(--surface);bor
 /* ---------- chat do Cérebro ---------- */
 /* Conversa, não formulário: o fluxo rola sozinho e o campo fica preso embaixo,
    para a pessoa nunca perder de vista onde escreve. */
-.chat{display:flex;flex-direction:column;gap:14px;max-width:920px}
-.chat-fluxo{min-height:380px;max-height:min(66vh,680px);overflow-y:auto;display:flex;
+/* A conversa ocupa a janela: coluna estreita no meio de uma tela larga deixava
+   metade do espaço vazio, e a resposta do Cérebro é longa. A altura também é da
+   janela, para o campo ficar colado embaixo e o fluxo crescer no que sobra. */
+.chat{display:flex;flex-direction:column;gap:14px;width:100%;
+  height:calc(100vh - var(--topbar) - 190px);min-height:420px}
+.chat-fluxo{flex:1;min-height:0;overflow-y:auto;display:flex;
   flex-direction:column;gap:14px;padding:4px 2px;scroll-behavior:smooth}
 /* A barra de rolagem some do caminho até ser necessária. */
 .chat-fluxo::-webkit-scrollbar{width:7px}
 .chat-fluxo::-webkit-scrollbar-thumb{background:var(--surface-hi);border-radius:4px}
 .chat-fluxo::-webkit-scrollbar-thumb:hover{background:var(--border)}
-.fala{max-width:82%;display:flex;flex-direction:column;gap:5px;animation:sobe .32s ease both}
+.fala{max-width:74%;display:flex;flex-direction:column;gap:5px;animation:sobe .32s ease both}
 /* Cada fala sobe uma vez ao entrar: dá a sensação de resposta chegando, não de
    tela redesenhada. */
 @keyframes sobe{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
 /* A resposta é longa por natureza — quase toda a largura, e o texto respira. */
-.fala.ele{max-width:94%}
+/* A do Cérebro vai mais longe que a minha: é ela que traz texto. */
+.fala.ele{max-width:88%}
 .fala.eu{align-self:flex-end;align-items:flex-end}
 .fala.ele{align-self:flex-start}
 .fala-de{font-size:9.5px;letter-spacing:1.5px;color:var(--faint);font-weight:600}
@@ -570,7 +575,7 @@ input[type="file"].inp::file-selector-button:hover{background:var(--surface);bor
   .fala{animation:none}
   .pulso i{animation:none;opacity:.7}
 }
-.chat-envio{display:flex;gap:10px;align-items:center}
+.chat-envio{display:flex;gap:10px;align-items:center;flex-shrink:0}
 .chat-inp{flex:1;min-width:0;background:var(--surface-hi);border:1px solid var(--border-soft);
   border-radius:var(--r-md);color:var(--text);font:inherit;font-size:14.5px;padding:13px 16px}
 .chat-inp:focus{outline:none;border-color:var(--gold);
