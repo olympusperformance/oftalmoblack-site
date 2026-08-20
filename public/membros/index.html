@@ -38,9 +38,15 @@
   <main class="main">
 
     <div class="view" data-view="home">
-      <div class="hello">
-        <h1 id="greeting">—</h1>
-        <p>Suas entregas da semana estão abaixo.</p>
+      <div class="hello hello-top">
+        <div>
+          <h1 id="greeting">—</h1>
+          <p>Suas entregas da semana estão abaixo.</p>
+        </div>
+        <!-- Some quando o mentorado não tem grupo cadastrado: botão que não
+             leva a lugar nenhum é pior do que botão nenhum. -->
+        <a class="btn btn-zap" id="btnGrupo" target="_blank" rel="noopener noreferrer" hidden>
+          <svg class="ic"><use href="#i-whatsapp"/></svg><span>Meu grupo no WhatsApp</span></a>
       </div>
 
       <div class="dash">

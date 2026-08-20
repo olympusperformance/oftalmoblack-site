@@ -22,7 +22,8 @@
      existem na tela (o seletor de vários membros, por exemplo); mandar um deles
      para o PostgREST devolve erro de coluna inexistente. */
   var COLUNAS = {
-    members:   ['nome', 'email', 'iniciais', 'turma', 'fase', 'tier', 'instagram', 'ativo'],
+    members:   ['nome', 'email', 'iniciais', 'turma', 'fase', 'tier', 'instagram',
+               'whatsapp_url', 'ativo'],
     tasks:     ['member_id', 'titulo', 'descricao', 'categoria', 'cadencia', 'vence_em',
                 'progresso_atual', 'progresso_total', 'status'],
     events:    ['member_id', 'titulo', 'mentor', 'inicia_em', 'formato', 'link'],

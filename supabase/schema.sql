@@ -35,6 +35,14 @@ create table if not exists public.members (
   criado_em  timestamptz not null default now()
 );
 
+-- O grupo de Operação do mentorado no WhatsApp. Fica no cadastro, e não em
+-- cerebro.grupos, por dois motivos: o painel edita o cadastro pela API (o
+-- schema cerebro não é exposto), e mentorado sem grupo mapeado no Cérebro
+-- também precisa do link. É link de convite — quem tem, entra.
+alter table public.members
+  add column if not exists whatsapp_url text;
+
+
 create table if not exists public.tasks (
   id              uuid primary key default gen_random_uuid(),
   member_id       uuid not null references public.members(id) on delete cascade,

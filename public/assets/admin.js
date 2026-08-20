@@ -16,7 +16,7 @@
              demResp: '', demMembro: '', demAbertas: 'open',
              arvMembro: '', arvFiltro: 'all',
              /* Demanda que está com a linha de nova subtarefa aberta. */
-             novaSub: null,
+             novaSub: null, zapEdit: null,
              /* Quais galhos das árvores (membros e demandas) estão abertos.
                 Fica na tela, não no banco: é postura de leitura do momento. */
              abertos: {} };
@@ -335,6 +335,11 @@
       membros.map(linhaMentorado).join(''),
       st.arvMembro ? 'Este mentorado não tem nada cadastrado.'
                    : 'Nenhum membro cadastrado ainda.');
+
+    if (st.zapEdit) {
+      var campo = $('listaMembros').querySelector('[data-zap-inp]');
+      if (campo) { campo.focus(); campo.select(); }
+    }
   }
 
   function linhaMentorado(m) {
@@ -363,17 +368,32 @@
           m.email) + '</div></div></div>' +
       td(situacao) +
       td(barra(c.feitas, c.total)) +
-      td('<span class="tx-s">' + esc(arts.length + ' artefato' + (arts.length === 1 ? '' : 's') +
-        (c.total ? ' · ' + (c.total - c.feitas) + ' em aberto' : '') +
-        (ultima ? ' · ' + Club.fmtDate(ultima) : '')) + '</span>') +
-      '<div class="td end"><div class="row-acts">' +
+      (st.zapEdit === m.id
+        /* Enquanto cola o convite, o campo toma as duas últimas colunas: um
+           input estreito na coluna de ações escreveria por cima do detalhe. */
+        ? '<div class="td zap-cell"><input class="cell-date zap-inp" data-zap-inp="' + m.id +
+          '" type="url" value="' + esc(m.whatsapp_url || '') +
+          '" placeholder="Cole o convite do grupo — Enter salva, Esc fecha" autocomplete="off"></div>'
+        : td('<span class="tx-s">' + esc(arts.length + ' artefato' + (arts.length === 1 ? '' : 's') +
+            (c.total ? ' · ' + (c.total - c.feitas) + ' em aberto' : '') +
+            (ultima ? ' · ' + Club.fmtDate(ultima) : '')) + '</span>') +
+          '<div class="td end"><div class="row-acts">' +
+        /* O ícone aparece sempre: verde e clicável quando há grupo, apagado
+           quando não há. Assim a lacuna se vê na lista, sem abrir cadastro. */
+        (m.whatsapp_url
+          ? '<a class="btn btn-sm btn-ghost zap" href="' + esc(m.whatsapp_url) +
+            '" target="_blank" rel="noopener noreferrer" title="Abrir o grupo de Operação"' +
+            ' aria-label="Abrir o grupo no WhatsApp">' + ico('whatsapp') + '</a>'
+          : '<button class="btn btn-sm btn-ghost sem-zap" data-zap="' + m.id +
+            '" title="Colar o convite do grupo" aria-label="Cadastrar o grupo dele">' +
+            ico('whatsapp') + '</button>') +
         '<a class="btn btn-sm btn-ghost" href="/membros/?membro=' + esc(m.id) +
           '" aria-label="Ver a área dele">' + ico('eye') + '</a>' +
         '<button class="btn btn-sm btn-ghost" data-edit="member" data-id="' + m.id +
           '" aria-label="Editar">' + ico('edit') + '</button>' +
         '<button class="btn btn-sm btn-ghost" data-del="member" data-id="' + m.id +
           '" aria-label="Remover">' + ico('trash') + '</button>' +
-      '</div></div>' +
+      '</div></div>') +
     '</div>';
 
     if (!aberto || !temFilho) return linha;
@@ -494,7 +514,7 @@
 
   function modalMembro(m) {
     m = m || { nome:'', email:'', iniciais:'', turma:'Turma 03', fase:'Fase 1',
-               tier:'BLACK', instagram:'', ativo:true };
+               tier:'BLACK', instagram:'', whatsapp_url:'', ativo:true };
     Club.modal.open({
       title: m.id ? 'Editar membro' : 'Novo membro',
       sub: m.id ? m.nome : 'O e-mail é o login dele na área do mentorado.',
@@ -513,6 +533,12 @@
             placeholder:'automático', hint:'Deixe em branco para calcular do nome.' }) +
         '</div>' +
         Club.field('Instagram', 'instagram', { value:m.instagram, placeholder:'@perfil' }) +
+        /* O convite do grupo de Operação. A Evolution só entrega o link dos
+           grupos em que o número dela é administrador; nos outros, alguém
+           gera no WhatsApp e cola aqui. */
+        Club.field('Grupo no WhatsApp', 'whatsapp_url', { value:m.whatsapp_url,
+          placeholder:'https://chat.whatsapp.com/…',
+          hint:'Link de convite do grupo de Operação dele. Aparece na área do mentorado.' }) +
         Club.checkbox('Acesso ativo', 'ativo', m.ativo),
       onSubmit: function (d) {
         if (!d.nome || !d.email) { Club.toast('Nome e e-mail são obrigatórios.', 'alert'); return; }
@@ -1181,6 +1207,45 @@
     });
   }
 
+  /* Cadastrar trinta convites pelo formulário seria trinta vezes abrir, rolar e
+     fechar. Aqui o ícone abre um campo na própria linha: cola, Enter, próximo. */
+  function abrirGrupo(id) {
+    st.zapEdit = id;
+    renderMembers();
+  }
+
+  function fecharGrupo(gravar) {
+    var inp = document.querySelector('[data-zap-inp]');
+    if (!inp || !inp.dataset.zapInp) return;
+    var id = inp.dataset.zapInp;
+    var url = inp.value.trim();
+    var m = achar('member', id);
+    inp.dataset.zapInp = '';
+    st.zapEdit = null;
+
+    if (gravar && m && url !== (m.whatsapp_url || '')) salvarMembro(id, { whatsapp_url: url || null });
+    else renderMembers();
+  }
+
+  /* Otimista como o resto do quadro: vale na tela antes de o banco confirmar. */
+  function salvarMembro(id, patch) {
+    var m = achar('member', id);
+    if (!m) return;
+    var antes = {};
+    Object.keys(patch).forEach(function (k) { antes[k] = m[k]; });
+    Object.assign(m, patch);
+    renderMembers();
+
+    Club.data.members.save(Object.assign({ id:id }, patch)).then(function (linha) {
+      st.members = st.members.map(function (x) { return x.id === id ? linha : x; });
+      renderMembers();
+    }).catch(function (err) {
+      Object.assign(m, antes);
+      renderMembers();
+      Club.toast(err.message || 'Não foi possível salvar o grupo.', 'alert');
+    });
+  }
+
   /* ── subtarefas na linha ──────────────────────────────────────────────── */
 
   function abrirNovaSub(demandId) {
@@ -1641,6 +1706,9 @@
     var prazo = e.target.closest('[data-prazo]');
     if (prazo) { editarPrazo(prazo); return; }
 
+    var zap = e.target.closest('[data-zap]');
+    if (zap) { abrirGrupo(zap.dataset.zap); return; }
+
     var maisSub = e.target.closest('[data-add-sub]');
     if (maisSub) { abrirNovaSub(maisSub.dataset.addSub); return; }
 
@@ -1668,13 +1736,21 @@
   /* Enter salva e o campo continua de pé para o próximo item; Esc desiste;
      sair do campo confirma o que já estava escrito. */
   document.addEventListener('keydown', function (e) {
-    if (!e.target.matches || !e.target.matches('[data-sub-inp]')) return;
-    if (e.key === 'Enter')  { e.preventDefault(); fecharNovaSub(true); }
-    if (e.key === 'Escape') { e.preventDefault(); fecharNovaSub(false); }
+    if (!e.target.matches) return;
+    if (e.target.matches('[data-sub-inp]')) {
+      if (e.key === 'Enter')  { e.preventDefault(); fecharNovaSub(true); }
+      if (e.key === 'Escape') { e.preventDefault(); fecharNovaSub(false); }
+    }
+    if (e.target.matches('[data-zap-inp]')) {
+      if (e.key === 'Enter')  { e.preventDefault(); fecharGrupo(true); }
+      if (e.key === 'Escape') { e.preventDefault(); fecharGrupo(false); }
+    }
   });
 
   document.addEventListener('focusout', function (e) {
-    if (e.target.matches && e.target.matches('[data-sub-inp]')) fecharNovaSub(true);
+    if (!e.target.matches) return;
+    if (e.target.matches('[data-sub-inp]')) fecharNovaSub(true);
+    if (e.target.matches('[data-zap-inp]')) fecharGrupo(true);
   });
 
   $('filtroArvMembro').addEventListener('change', function () {

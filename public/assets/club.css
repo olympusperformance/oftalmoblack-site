@@ -16,6 +16,9 @@
   --rail:248px; --topbar:68px;
 }
 *{box-sizing:border-box}
+/* O atributo hidden precisa vencer qualquer display do componente: um .btn é
+   inline-flex, e sem isto continuava desenhado depois de escondido pelo JS. */
+[hidden]{display:none !important}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);font-size:16px;
   -webkit-font-smoothing:antialiased;min-height:100vh}
@@ -481,6 +484,28 @@ input[type="file"].inp::file-selector-button:hover{background:var(--surface);bor
 .art-st-list li.ok{color:var(--muted)}
 .art-st-list li.ok .ic{color:var(--success)}
 .art.locked .art-ck,.art.locked .art-st-list{display:none}
+
+/* ---------- atalho para o grupo de Operação ---------- */
+/* O grupo é onde a mentoria acontece todo dia. O botão fica ao lado da
+   saudação, no verde do WhatsApp para ser reconhecido de relance, mas com o
+   peso de um botão secundário: quem manda na tela continua sendo a semana. */
+.hello-top{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.btn-zap{flex-shrink:0;border-color:rgba(37,211,102,.34);color:#5BD68A;background:rgba(37,211,102,.07)}
+.btn-zap:hover{border-color:#25D366;color:#7BE3A4;background:rgba(37,211,102,.13)}
+.btn-zap .ic{font-size:17px}
+/* Na lista do admin: verde quando há grupo, apagado quando falta cadastrar. */
+.row-acts .zap{color:#5BD68A}
+.row-acts .zap:hover{color:#7BE3A4}
+.row-acts .sem-zap{color:var(--faint);opacity:.4}
+.row-acts .sem-zap:hover{opacity:1;color:#5BD68A}
+/* Enquanto o convite é colado, o campo toma a coluna de detalhe e a de ações —
+   é o que dá largura para o link caber sem escrever por cima do vizinho. */
+.td.zap-cell{grid-column:4/-1}
+.zap-inp{width:100%}
+@media (max-width:560px){
+  .hello-top{gap:14px}
+  .btn-zap{width:100%;justify-content:center}
+}
 
 /* ---------- célula editável e menu suspenso ---------- */
 /* A demanda muda de mão o dia inteiro: situação, dono, prazo. Abrir o

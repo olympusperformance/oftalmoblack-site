@@ -111,6 +111,25 @@ Em pausa → Concluída / Cancelada). Só o administrador alcança: as política
 apontar para um mentorado (`member_id`) quando é sobre alguém — "campanha do
 Pedro", "site da Cíntia" — e fica solta quando é interna.
 
+### O grupo de Operação na área do mentorado
+
+Cada mentorado tem um grupo de WhatsApp com a equipe — é onde a mentoria
+acontece no dia a dia. O convite fica em `members.whatsapp_url`, e não em
+`cerebro.grupos`, por dois motivos: o painel edita o cadastro pela API (o schema
+`cerebro` não é exposto) e mentorado sem grupo mapeado no Cérebro também precisa
+do link.
+
+Do lado do mentorado, o botão aparece ao lado da saudação e some por completo
+quando não há link — botão que não leva a lugar nenhum é pior que botão nenhum.
+Do lado do administrador, a coluna de ações mostra o ícone em verde quando há
+grupo e apagado quando falta, de modo que a lacuna se vê na lista sem abrir
+cadastro nenhum; clicar no apagado abre o campo na própria linha para colar o
+convite. O mesmo campo existe no formulário do membro.
+
+A Evolution só entrega o convite dos grupos em que o número dela é
+administrador (`GET /group/inviteCode`); nos outros, alguém gera no WhatsApp e
+cola no painel.
+
 ### Membros: cadastro e progresso na mesma tela
 
 A aba **Membros** é a árvore de acompanhamento. Cadastro e progresso eram a

@@ -66,6 +66,16 @@
 
   /* ── cabeçalho ────────────────────────────────────────────────────────── */
 
+  /* O grupo de Operação é onde a mentoria acontece no dia a dia; a área é o
+     lugar de onde ele chega lá sem procurar conversa antiga no WhatsApp. */
+  function renderGrupo() {
+    var a = $('btnGrupo');
+    var url = (st.membro && st.membro.whatsapp_url || '').trim();
+    if (!url) { a.hidden = true; return; }
+    a.href = url;
+    a.hidden = false;
+  }
+
   function renderIdentidade() {
     var m = st.membro;
     $('quemNome').textContent = m.nome;
@@ -351,6 +361,15 @@
 
   function renderPerfil() {
     var m = st.membro;
+    /* Alguns valores são endereço, não texto: aqui vale poder clicar. */
+    function linhaLink(k, url, rotulo) {
+      if (!url) return linha(k, null);
+      return '<div style="display:flex;justify-content:space-between;gap:18px;padding:13px 0;' +
+        'border-bottom:1px solid var(--border-soft)">' +
+        '<span style="color:var(--faint);font-size:12.5px;letter-spacing:.4px">' + esc(k) + '</span>' +
+        '<a href="' + esc(url) + '" target="_blank" rel="noopener noreferrer" ' +
+        'style="font-size:14px;text-align:right;color:var(--gold)">' + esc(rotulo) + '</a></div>';
+    }
     function linha(k, v) {
       return '<div style="display:flex;justify-content:space-between;gap:18px;padding:13px 0;' +
         'border-bottom:1px solid var(--border-soft)">' +
@@ -370,6 +389,7 @@
         linha('Fase', m.fase) +
         linha('Tier', m.tier) +
         linha('Instagram', m.instagram) +
+        linhaLink('Grupo de Operação', m.whatsapp_url, 'abrir no WhatsApp') +
         linha('No Club desde', Club.fmtMesAno(String(m.criado_em || '').slice(0, 10))) +
         '<button class="btn btn-danger btn-block" id="sair" style="margin-top:20px">' +
           ico('log-out') + 'Sair da área</button>' +
@@ -421,6 +441,7 @@
 
   function render() {
     renderIdentidade();
+    renderGrupo();
     renderTasks();
     var disponiveis = renderArtifacts();
     var proxima = renderAgenda();
