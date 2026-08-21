@@ -194,12 +194,26 @@ h1,h2{margin:0}
         <p class="texto texto--menor texto--gap">Para seguir com o seu atendimento, você mora em Rio Branco ou região ou em outra cidade?</p>
         <div class="opcoes">
 
-          <button class="opcao" type="button" data-ir="a1" data-unidade="Rio Branco" data-wa="">Moro em Rio Branco ou região <i>&rsaquo;</i></button>
+          <button class="opcao" type="button" data-ir="motivo" data-unidade="Rio Branco" data-wa="">Moro em Rio Branco ou região <i>&rsaquo;</i></button>
                     <button class="opcao" type="button" data-ir="bq">Moro em outra cidade <i>&rsaquo;</i></button>
         </div>
       </section>
       
-      <!-- ===== RAMO A · PACIENTE DA PRAÇA ===== -->
+
+      <section class="tela tela--recuada" data-tela="motivo" data-titulo="O seu caso" data-progresso="32%">
+        <span class="kicker kicker--curto">O seu caso</span>
+        <h2 class="tt h2">O que traz você aqui?</h2>
+        <p class="texto texto--menor texto--gap">Escolha a opção mais parecida com o seu caso — a nossa equipe já recebe a sua mensagem sabendo disso.</p>
+        <div class="opcoes">
+
+          <button class="opcao" type="button" data-ir="a1" data-motivo="Quero parar de usar óculos">Quero parar de usar óculos <i>&rsaquo;</i></button>
+          
+          <button class="opcao" type="button" data-ir="a1" data-motivo="Acho que tenho catarata">Acho que tenho catarata <i>&rsaquo;</i></button>
+          
+          <button class="opcao" type="button" data-ir="a1" data-motivo="Consulta e exames de rotina">Consulta e exames de rotina <i>&rsaquo;</i></button>
+                  </div>
+      </section>
+            <!-- ===== RAMO A · PACIENTE DA PRAÇA ===== -->
       <section class="tela" data-tela="a1" data-titulo="Perfeito!" data-progresso="45%">
         <div class="miolo pilha">
           <i class="icone">&#10003;</i>
@@ -301,15 +315,32 @@ h1,h2{margin:0}
       </section>
       
 
-      <section class="tela" data-tela="fora" data-titulo="Entendemos<br>perfeitamente">
+      <section class="tela" data-tela="fora" data-titulo="Tem outro caminho">
         <div class="miolo pilha" style="text-align:center">
           <i class="icone icone--centro">&#9825;</i>
-          <h2 class="tt h2--m">Entendemos<br>perfeitamente</h2>
+          <h2 class="tt h2--m">Tem outro caminho</h2>
           <div class="regua" style="margin-left:auto;margin-right:auto"></div>
-          <p class="texto">Agradecemos muito o seu contato e o interesse no trabalho da Dra. Nauara Naissa. Se um dia você decidir dar esse passo em direção à sua liberdade visual, estaremos de portas abertas para te receber aqui em Rio Branco.</p>
-          <p class="assinatura" style="margin:26px 0 0">Cuide bem da sua visão.</p>
+          <p class="texto">Você não precisa vir a Rio Branco para começar. A Dra. Nauara atende por vídeo, com hora marcada, e nessa conversa já dá para entender o seu caso e saber o que fazer a seguir.</p>
+
+          <div class="cartao cartao--centro" style="margin-top:24px;text-align:left">
+            <p class="texto texto--menor" style="margin-bottom:14px">A consulta on-line acontece por vídeo, com hora marcada. A Dra. Nauara avalia o seu histórico e as suas queixas, orienta o que fazer a seguir e diz quais exames você precisa fazer perto de casa.</p>
+            <div class="lista">
+
+              <div class="item"><i>&#9670;</i><div><div class="item__nome">Você agenda pelo WhatsApp</div><div class="item__desc">Escolhemos o dia e o horário que servem para você</div></div></div>
+              
+              <div class="item"><i>&#9670;</i><div><div class="item__nome">Conversa por vídeo</div><div class="item__desc">A Dra. Nauara ouve o seu histórico, as suas queixas e o que você já usa</div></div></div>
+              
+              <div class="item"><i>&#9670;</i><div><div class="item__nome">Orientação</div><div class="item__desc">Ela diz o que fazer a seguir e quais exames você pode fazer perto de casa</div></div></div>
+                          </div>
+            <div class="regua regua--fina regua--centro"></div>
+            <div class="tt preco preco--menor">R$ 350</div>
+            <div class="preco-obs">Atendimento on-line, por vídeo</div>
+          </div>
+                    <p class="assinatura" style="margin:26px 0 0">Cuide bem da sua visão.</p>
         </div>
-      </section>
+
+        <button class="btn" type="button" data-whats="fora">Agendar consulta on-line</button>
+              </section>
       
     </main>
   </div>
@@ -319,7 +350,7 @@ h1,h2{margin:0}
 (function(){
   "use strict";
   var WA = "5568992063205";
-  var MSG = {"local": "Olá! Vim pelo link da bio da Dra. Nauara Naissa. Sou de {unidade} e gostaria de agendar minha consulta presencial.", "tele": "Olá! Vim pelo link da bio da Dra. Nauara Naissa. Sou de outra cidade, tenho interesse em cirurgia e posso ir a Rio Branco. Gostaria de agendar a teleconsulta."};
+  var MSG = {"local": "Olá! Vim pelo link da bio da Dra. Nauara Naissa. Sou de {unidade} e gostaria de agendar minha consulta presencial. Meu caso: {motivo}.", "tele": "Olá! Vim pelo link da bio da Dra. Nauara Naissa. Sou de outra cidade, tenho interesse em cirurgia e posso ir a Rio Branco. Gostaria de agendar a teleconsulta.", "fora": "Olá! Vim pelo link da bio da Dra. Nauara Naissa. Sou de outra cidade e não consigo ir até aí, mas gostaria de agendar a consulta on-line."};
   var telas = {}, ordem = [];
   Array.prototype.forEach.call(document.querySelectorAll("[data-tela]"), function(el){
     telas[el.getAttribute("data-tela")] = el; ordem.push(el);
@@ -332,6 +363,8 @@ h1,h2{margin:0}
   /* qual unidade o paciente escolheu na tela de localizacao: entra na mensagem
      do WhatsApp e pode ter numero proprio (mentorado com mais de uma clinica) */
   var unidade = "Rio Branco", waUnidade = WA;
+    /* por que o paciente veio: escolhido na tela "motivo", entra na mensagem */
+    var motivo = "";
 
   function mostrar(id, empilhar){
     if(!telas[id] || atual === id) return;
@@ -358,7 +391,7 @@ h1,h2{margin:0}
   function abrirWhats(chave){
     /* window.open tem de acontecer DENTRO do clique: fora dele o navegador
        trata como popup e bloqueia (Safari sempre, Chrome com frequência). */
-    var texto = (MSG[chave] || "").replace("{unidade}", unidade);
+    var texto = (MSG[chave] || "").replace("{unidade}", unidade).replace("{motivo}", motivo);
     var numero = (chave === "local" && waUnidade) ? waUnidade : WA;
     var url = "https://wa.me/" + numero + (texto ? "?text=" + encodeURIComponent(texto) : "");
     var aba = window.open(url, "_blank");
@@ -368,6 +401,9 @@ h1,h2{margin:0}
   document.addEventListener("click", function(e){
     var alvo = e.target.closest ? e.target.closest("[data-ir],[data-whats]") : null;
     if(!alvo) return;
+    if(alvo.hasAttribute("data-motivo")){
+      motivo = alvo.getAttribute("data-motivo") || motivo;
+    }
     if(alvo.hasAttribute("data-unidade")){
       unidade = alvo.getAttribute("data-unidade") || unidade;
       waUnidade = alvo.getAttribute("data-wa") || WA;
