@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Agendamento · Medvision Batatais</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#FEFDFB">
+<style>
+:root{
+  --primaria:#C9A24B; --primaria-rgb:201,162,75;
+  --primaria-escura:#856B32; --primaria-escura-rgb:133,107,50;
+  --metal:#B8860B; --metal-claro:#DFC991; --metal-suave:#E8D8B1;
+  --metal-linha:#E4D1A2; --metal-rgb:223,201,145; --metal-linha-rgb:228,209,162;
+  --tinta:#1D1D1F; --tinta-suave:#635C4D; --tinta-fraca:#A59D8F;
+  --papel:#FEFEFD; --papel-2:#FDFCF9; --papel-rgb:254,254,253;
+  --fundo-1:#FEFDFB; --fundo-2:#FAF7F0; --fundo-3:#F7F2E6;
+  --sombra-rgb:76,62,28; --trilha:#FAF7EF;
+  --curva:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--fundo-3);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI","Helvetica Neue",Helvetica,sans-serif;color:var(--tinta)}
+button{font:inherit;color:inherit}
+.tt{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI","Helvetica Neue",Helvetica,sans-serif;font-weight:600;letter-spacing:-1.2px}
+
+@keyframes glassReveal{from{opacity:0;transform:translateY(20px) scale(.985);filter:blur(9px)}to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
+@keyframes iconReveal{0%{opacity:0;transform:scale(.6);filter:blur(12px)}100%{opacity:1;transform:scale(1);filter:blur(0)}}
+@keyframes riseIn{from{opacity:0;transform:translateY(22px);filter:blur(6px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
+@keyframes sheen{0%{transform:translateX(-160%) skewX(-18deg)}100%{transform:translateX(340%) skewX(-18deg)}}
+@keyframes revealRule{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes floatOrb{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(14px,-16px) scale(1.06)}}
+@keyframes floatEye{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+.palco{min-height:100vh;min-height:100dvh;display:flex;justify-content:center;background:radial-gradient(130% 90% at 50% -10%,var(--fundo-1) 0%,var(--fundo-2) 58%,var(--fundo-3) 100%)}
+.folha{position:relative;width:100%;max-width:470px;min-height:100vh;min-height:100dvh;background:linear-gradient(180deg,var(--papel),var(--papel-2));display:flex;flex-direction:column;overflow:hidden;box-shadow:0 40px 100px -30px rgba(var(--sombra-rgb),.24),0 0 0 1px rgba(0,0,0,.02)}
+
+.orbes{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.orbe{position:absolute;border-radius:50%}
+.orbe--1{top:-70px;right:-50px;width:260px;height:260px;background:radial-gradient(circle,rgba(var(--primaria-rgb),.26),transparent 68%);filter:blur(36px);animation:floatOrb 14s ease-in-out infinite}
+.orbe--2{bottom:60px;left:-70px;width:280px;height:280px;background:radial-gradient(circle,rgba(var(--metal-rgb),.32),transparent 68%);filter:blur(44px);animation:floatOrb 18s ease-in-out infinite reverse}
+.orbe--3{top:44%;left:34%;width:220px;height:220px;background:radial-gradient(circle,rgba(var(--primaria-escura-rgb),.13),transparent 68%);filter:blur(54px);animation:floatOrb 22s ease-in-out infinite}
+
+.topo{position:sticky;top:0;z-index:10;background:rgba(var(--papel-rgb),.72);backdrop-filter:saturate(180%) blur(26px);-webkit-backdrop-filter:saturate(180%) blur(26px);border-bottom:1px solid rgba(255,255,255,.6);box-shadow:0 1px 0 rgba(var(--primaria-rgb),.05)}
+.topo__miolo{display:flex;flex-direction:column;align-items:center;gap:11px;padding:20px 24px 15px;padding-top:max(20px,env(safe-area-inset-top))}
+.avatar{border-radius:50%;background:linear-gradient(160deg,var(--metal-claro),var(--metal));flex:none}
+.avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;border:1.5px solid var(--papel)}
+.avatar--mini{width:54px;height:54px;padding:2px;box-shadow:0 6px 18px -6px rgba(var(--primaria-escura-rgb),.4),inset 0 1px 0 rgba(255,255,255,.6)}
+.avatar--grande{width:104px;height:104px;padding:3px;margin-bottom:30px;background:linear-gradient(160deg,var(--metal-suave),var(--metal));box-shadow:0 18px 40px -14px rgba(var(--primaria-escura-rgb),.42),inset 0 1px 0 rgba(255,255,255,.6);animation:iconReveal .9s var(--curva) both,floatEye 5.5s ease-in-out .9s infinite}
+.avatar--grande img{border-width:2px}
+.avatar--mono{display:flex;align-items:center;justify-content:center;color:var(--papel);font-weight:600}
+.avatar--mini.avatar--mono{font-size:20px;letter-spacing:-.5px}
+.avatar--grande.avatar--mono{font-size:38px;letter-spacing:-1.5px}
+.identidade{display:flex;flex-direction:column;align-items:center;line-height:1;text-align:center}
+.identidade__nome{font-size:21px;font-weight:600;color:var(--tinta);letter-spacing:-.6px}
+.identidade__selo{display:flex;align-items:center;gap:8px;margin-top:7px}
+.identidade__selo i{width:14px;height:1px;background:var(--metal-linha);display:block}
+.identidade__selo span{font-size:10px;font-weight:600;color:var(--metal);letter-spacing:2.4px;text-transform:uppercase}
+.identidade__registro{font-size:10px;font-weight:500;color:var(--tinta-fraca);letter-spacing:1.2px;margin-top:7px}
+
+.progresso{height:2px;background:var(--trilha);overflow:hidden}
+.progresso__barra{height:100%;width:0;background:linear-gradient(90deg,var(--metal),var(--metal-claro));transition:width .7s var(--curva);box-shadow:0 0 8px rgba(var(--metal-rgb),.6)}
+
+.corpo{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;padding:22px 30px 42px;padding-bottom:calc(42px + env(safe-area-inset-bottom))}
+.voltar{align-self:flex-start;background:none;border:none;color:var(--tinta-fraca);font-size:15px;font-weight:500;padding:6px 4px;margin-bottom:6px;cursor:pointer;display:flex;align-items:center;gap:5px;letter-spacing:.2px}
+.voltar:hover{color:var(--primaria)}
+.voltar i{font-size:19px;line-height:1;font-style:normal}
+.voltar[hidden]{display:none}
+
+.tela{display:none;flex:1;flex-direction:column}
+.tela[data-ativa]{display:flex;animation:glassReveal .6s var(--curva) both}
+.tela--abertura[data-ativa]{animation-duration:.7s;justify-content:center;padding:20px 0}
+.tela--recuada[data-ativa]{padding-top:14px}
+.miolo{flex:1;display:flex;flex-direction:column;justify-content:center;padding:12px 0}
+.pilha>*{animation:riseIn .6s var(--curva) both}
+.pilha>*:nth-child(1){animation-delay:.10s}
+.pilha>*:nth-child(2){animation-delay:.18s}
+.pilha>*:nth-child(3){animation-delay:.26s}
+.pilha>*:nth-child(4){animation-delay:.34s}
+.pilha>*:nth-child(5){animation-delay:.42s}
+.pilha>*:nth-child(6){animation-delay:.50s}
+.pilha>.avatar--grande{animation:iconReveal .9s var(--curva) both,floatEye 5.5s ease-in-out .9s infinite}
+.pilha>.regua{animation:revealRule .9s .3s var(--curva) both}
+
+.kicker{font-size:11px;font-weight:600;color:var(--metal);letter-spacing:3px;text-transform:uppercase;margin-bottom:18px}
+.kicker--curto{margin-bottom:16px}
+h1,h2{margin:0}
+.h1{font-size:46px;line-height:1.04;color:var(--tinta);letter-spacing:-1.8px;margin:0 0 22px}
+.h2{font-size:36px;line-height:1.12;color:var(--tinta);letter-spacing:-1.3px;margin:0 0 14px}
+.h2--g{font-size:40px;line-height:1.08;letter-spacing:-1.6px;margin:0 0 18px}
+.h2--p{font-size:32px;line-height:1.14;letter-spacing:-1.2px;margin:0 0 14px}
+.h2--m{font-size:33px;line-height:1.14;letter-spacing:-1.2px;margin:0 0 16px}
+.regua{width:46px;height:2px;background:linear-gradient(90deg,var(--primaria),var(--metal-claro));margin:0 0 24px;transform-origin:left}
+.regua--fina{width:40px;height:1px;background:var(--metal-claro);margin:0 0 16px}
+.regua--centro{margin:20px auto}
+.texto{font-size:20px;line-height:1.55;color:var(--tinta-suave);margin:0;text-wrap:pretty}
+.texto--menor{font-size:19px;line-height:1.5}
+.texto--fim{margin-bottom:44px}
+.texto--gap{margin-bottom:38px}
+.texto strong{color:var(--tinta);font-weight:600}
+
+.btn{position:relative;overflow:hidden;background:linear-gradient(150deg,rgba(var(--primaria-rgb),.97),rgba(var(--primaria-escura-rgb),.97));backdrop-filter:blur(10px) saturate(160%);-webkit-backdrop-filter:blur(10px) saturate(160%);color:#fff;border:1px solid rgba(var(--metal-rgb),.5);border-radius:100px;padding:22px;font-size:19px;font-weight:600;width:100%;cursor:pointer;letter-spacing:.3px;box-shadow:0 16px 36px -10px rgba(var(--primaria-escura-rgb),.5),inset 0 1px 0 rgba(255,255,255,.3),inset 0 -1px 1px rgba(var(--sombra-rgb),.28);animation:riseIn .7s var(--curva) .46s both}
+.btn::before{content:"";position:absolute;top:0;left:0;width:45%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.42),transparent);animation:sheen 1.7s ease-out .7s both;pointer-events:none}
+.btn:hover{filter:brightness(1.08)}
+.btn:active{transform:scale(.98)}
+.btn--secundario{background:rgba(255,255,255,.45);backdrop-filter:blur(18px) saturate(170%);-webkit-backdrop-filter:blur(18px) saturate(170%);color:var(--tinta-suave);border:1px solid rgba(255,255,255,.8);box-shadow:0 10px 26px -14px rgba(var(--sombra-rgb),.22),inset 0 1px 0 rgba(255,255,255,.9);font-size:18px;padding:20px}
+.btn--secundario::before{display:none}
+
+.opcoes{display:flex;flex-direction:column;gap:14px}
+.opcao{position:relative;overflow:hidden;background:rgba(255,255,255,.55);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid rgba(255,255,255,.8);border-radius:20px;padding:24px 26px;font-size:20px;font-weight:600;color:var(--tinta);width:100%;cursor:pointer;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:14px;box-shadow:0 12px 32px -14px rgba(var(--sombra-rgb),.28),inset 0 1px 0 rgba(255,255,255,.9)}
+.opcao:hover{border-color:rgba(var(--metal-linha-rgb),.9);box-shadow:0 16px 36px -12px rgba(var(--primaria-rgb),.3),inset 0 1px 0 rgba(255,255,255,.95)}
+.opcao:active{transform:scale(.99)}
+.opcao i{color:var(--metal);font-size:22px;font-style:normal;line-height:1}
+
+.cartao{position:relative;overflow:hidden;background:rgba(var(--papel-rgb),.6);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border:1px solid rgba(255,255,255,.72);border-radius:26px;padding:38px 30px;box-shadow:0 22px 46px -20px rgba(var(--primaria-escura-rgb),.38),inset 0 1px 0 rgba(255,255,255,.9);animation:iconReveal .85s var(--curva) .1s both}
+.cartao::before{content:"";position:absolute;top:0;left:0;width:55%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);animation:sheen 2s ease-out .5s both;pointer-events:none}
+.cartao--centro{text-align:center}
+.destaque{font-size:20px;line-height:1.5;font-weight:600;color:var(--primaria);margin:0}
+.preco{font-size:60px;font-weight:600;color:var(--tinta);letter-spacing:-2px;line-height:1}
+.preco--menor{font-size:52px}
+.preco-parcelas{font-size:18px;font-weight:600;color:var(--metal)}
+.preco-obs{font-size:14px;font-weight:600;color:var(--tinta-fraca);letter-spacing:.3px;margin-top:14px;text-transform:uppercase}
+
+.lista{display:flex;flex-direction:column;gap:12px}
+.item{display:flex;gap:15px;align-items:flex-start;background:rgba(255,255,255,.45);backdrop-filter:blur(16px) saturate(170%);-webkit-backdrop-filter:blur(16px) saturate(170%);border:1px solid rgba(255,255,255,.7);border-radius:18px;padding:16px 18px;box-shadow:0 8px 22px -14px rgba(var(--sombra-rgb),.2),inset 0 1px 0 rgba(255,255,255,.85)}
+.item i{color:var(--metal);font-size:15px;line-height:1.5;font-style:normal;flex:none}
+.item__nome{font-size:18px;font-weight:600;color:var(--tinta)}
+.item__desc{font-size:16px;color:var(--tinta-fraca);line-height:1.35}
+.marcadores{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.marcador{background:rgba(255,255,255,.5);border:1px solid rgba(var(--metal-linha-rgb),.55);border-radius:100px;padding:10px 18px;font-size:16px;font-weight:600;color:var(--tinta)}
+
+.icone{width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.55);backdrop-filter:blur(18px) saturate(180%);-webkit-backdrop-filter:blur(18px) saturate(180%);border:1px solid rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;margin-bottom:30px;box-shadow:0 10px 28px -10px rgba(var(--primaria-escura-rgb),.3),inset 0 1px 0 rgba(255,255,255,.9);animation:iconReveal .8s var(--curva) .1s both;color:var(--primaria);font-size:26px;font-style:normal;flex:none}
+.icone--centro{margin-left:auto;margin-right:auto;width:66px;height:66px}
+.assinatura{font-size:17px;font-weight:600;color:var(--metal);letter-spacing:.2px}
+.rodape-nota{font-size:15px;line-height:1.5;color:var(--tinta-fraca);margin:18px 0 0}
+.rascunho{background:#B3261E;color:#fff;font-size:13px;font-weight:600;line-height:1.4;letter-spacing:.4px;text-align:center;padding:9px 14px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+@media (max-width:400px){
+  .corpo{padding-left:22px;padding-right:22px}
+  .h1{font-size:40px}
+  .h2{font-size:32px}
+  .h2--g{font-size:35px}
+  .preco{font-size:52px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important;transition:none !important}
+}
+</style>
+</head>
+<body>
+
+<div class="rascunho">RASCUNHO — não publicar. Falta preencher: consulta.valor. Na página, o que está entre &lsaquo; &rsaquo; é buraco.</div>
+<div class="palco">
+  <div class="folha">
+
+    <div class="orbes" aria-hidden="true">
+      <div class="orbe orbe--1"></div>
+      <div class="orbe orbe--2"></div>
+      <div class="orbe orbe--3"></div>
+    </div>
+
+    <header class="topo">
+      <div class="topo__miolo">
+        <div class="avatar avatar--mini avatar--mono" aria-hidden="true">CL</div>
+        <div class="identidade">
+          <span class="tt identidade__nome">Dr. Carlos Leandro</span>
+          <div class="identidade__selo"><i></i><span>Medvision</span><i></i></div>
+
+          <span class="identidade__registro">CRM-SP 113760 · RQE 50046</span>
+                  </div>
+      </div>
+      <div class="progresso" hidden><div class="progresso__barra" id="barra"></div></div>
+    </header>
+
+    <main class="corpo">
+      <button class="voltar" id="voltar" type="button" hidden><i>&lsaquo;</i> Voltar</button>
+      <p class="sr" id="anuncio" role="status" aria-live="polite"></p>
+
+      <!-- ===== TELA · ABERTURA ===== -->
+      <section class="tela tela--abertura pilha" data-tela="abertura" data-titulo="Início">
+        <div class="avatar avatar--grande avatar--mono" aria-hidden="true">CL</div>
+        <span class="kicker">Medvision Batatais</span>
+        <h1 class="tt h1">Liberte-se<br>dos óculos.</h1>
+        <div class="regua"></div>
+        <p class="texto texto--fim">Saiba se você é um possível candidato a se livrar dos óculos. Descubra em poucos passos o melhor caminho para a sua liberdade visual com o Dr. Carlos Leandro.</p>
+        <button class="btn" type="button" data-ir="local">Começar</button>
+      </section>
+
+
+
+      <!-- ===== TELA · LOCALIZAÇÃO ===== -->
+      <section class="tela tela--recuada" data-tela="local" data-titulo="Passo 01 · Localização" data-progresso="22%">
+        <span class="kicker kicker--curto">Passo 01 · Localização</span>
+        <h2 class="tt h2">Onde você mora?</h2>
+        <p class="texto texto--menor texto--gap">Para seguir com o seu atendimento, você mora em Batatais ou região ou em outra cidade?</p>
+        <div class="opcoes">
+
+          <button class="opcao" type="button" data-ir="a1" data-unidade="Batatais" data-wa="">Moro em Batatais ou região <i>&rsaquo;</i></button>
+                    <button class="opcao" type="button" data-ir="bq">Moro em outra cidade <i>&rsaquo;</i></button>
+        </div>
+      </section>
+      
+      <!-- ===== RAMO A · PACIENTE DA PRAÇA ===== -->
+      <section class="tela" data-tela="a1" data-titulo="Perfeito!" data-progresso="45%">
+        <div class="miolo pilha">
+          <i class="icone">&#10003;</i>
+          <h2 class="tt h2--g">Perfeito!</h2>
+          <p class="texto">O Dr. Carlos Leandro realizará uma avaliação detalhada e indicará a técnica mais adequada para o seu caso.</p>
+        </div>
+        <button class="btn" type="button" data-ir="exames">Continuar</button>
+      </section>
+
+
+      <section class="tela tela--recuada" data-tela="exames" data-titulo="O que está incluso" data-progresso="70%">
+        <span class="kicker kicker--curto">O que está incluso</span>
+        <h2 class="tt h2--p">Uma avaliação completa</h2>
+        <p class="texto texto--menor" style="margin-bottom:22px">Exames importantíssimos para a sua saúde ocular:</p>
+        <div class="lista">
+
+          <div class="item"><i>&#9670;</i><div><div class="item__nome">Acuidade visual</div><div class="item__desc">Nitidez da sua visão</div></div></div>
+          
+          <div class="item"><i>&#9670;</i><div><div class="item__nome">Refratometria</div><div class="item__desc">Avaliação do grau dos óculos</div></div></div>
+          
+          <div class="item"><i>&#9670;</i><div><div class="item__nome">Tonometria</div><div class="item__desc">Pressão intraocular</div></div></div>
+          
+          <div class="item"><i>&#9670;</i><div><div class="item__nome">Biomicroscopia</div><div class="item__desc">Estruturas anteriores do olho</div></div></div>
+          
+          <div class="item"><i>&#9670;</i><div><div class="item__nome">Fundoscopia</div><div class="item__desc">Fundo de olho</div></div></div>
+                  </div>
+        <p class="rodape-nota">Tudo incluso no valor da consulta.</p>
+        <button class="btn" type="button" style="margin-top:26px" data-ir="preco">Continuar</button>
+      </section>
+      
+      <section class="tela" data-tela="preco" data-titulo="Investimento" data-progresso="92%">
+        <div class="miolo">
+          <span class="kicker">Investimento</span>
+          <div class="cartao cartao--centro">
+            <p class="texto texto--menor" style="margin-bottom:18px">Nossa consulta oftalmológica completa está no valor de:</p>
+            <div class="tt preco">‹preco›</div>
+            <div class="regua regua--fina regua--centro"></div>
+            <div class="preco-obs">‹preco_obs›</div>
+          </div>
+        </div>
+        <button class="btn" type="button" data-whats="local">Agendar consulta</button>
+      </section>
+
+
+      <!-- ===== RAMO B · PACIENTE DE FORA ===== -->
+      <section class="tela tela--recuada" data-tela="bq" data-titulo="Uma pergunta importante" data-progresso="30%">
+        <span class="kicker kicker--curto">Uma pergunta importante</span>
+        <h2 class="tt h2--m">Você viria a Batatais?</h2>
+        <p class="texto texto--menor texto--gap">Nossa clínica fica em Batatais, e é aqui que o Dr. Carlos Leandro realiza as cirurgias. Você viria até aqui para realizar o seu sonho de ter a liberdade visual?</p>
+        <div class="opcoes">
+          <button class="btn" type="button" style="animation-delay:.1s" data-ir="b1">Sim, eu iria a Batatais</button>
+          <button class="btn btn--secundario" type="button" data-ir="fora">Não</button>
+        </div>
+      </section>
+
+      <section class="tela" data-tela="b1" data-titulo="Que ótimo!" data-progresso="45%">
+        <div class="miolo pilha">
+          <i class="icone">&#9733;</i>
+          <h2 class="tt h2--g">Que ótimo!</h2>
+          <p class="texto">Ficamos muito felizes com a sua decisão de cuidar da sua visão.</p>
+        </div>
+        <button class="btn" type="button" data-ir="tele">Continuar</button>
+      </section>
+
+      <section class="tela" data-tela="tele" data-titulo="Primeiro passo" data-progresso="60%">
+        <div class="miolo">
+          <span class="kicker">Primeiro passo</span>
+          <div class="cartao cartao--centro">
+            <p class="texto texto--menor" style="margin-bottom:18px">O primeiro passo é uma <strong>teleconsulta</strong> com o Dr. Carlos Leandro, no valor de:</p>
+            <div class="tt preco preco--menor">‹tele_preco›</div>
+            <div class="regua regua--fina regua--centro"></div>
+            <div class="preco-obs">Atendimento on-line com o Dr. Carlos Leandro</div>
+          </div>
+        </div>
+        <button class="btn" type="button" data-ir="tele_etapas">Continuar</button>
+      </section>
+
+      <section class="tela tela--recuada" data-tela="tele_etapas" data-titulo="Na teleconsulta" data-progresso="78%">
+        <span class="kicker kicker--curto">Na teleconsulta</span>
+        <h2 class="tt h2--p">O Dr. Carlos Leandro avalia o seu caso</h2>
+        <p class="texto texto--menor" style="margin-bottom:20px">Ele analisará seus exames, esclarecerá todas as suas dúvidas e avaliará se o seu caso é indicado para cirurgia:</p>
+        <div class="marcadores">
+
+          <span class="marcador">Catarata</span>
+          
+          <span class="marcador">Cirurgia refrativa</span>
+                  </div>
+        <button class="btn" type="button" style="margin-top:30px" data-ir="protocolo">Continuar</button>
+      </section>
+
+      <section class="tela" data-tela="protocolo" data-titulo="Último passo" data-progresso="92%">
+        <div class="miolo pilha">
+          <span class="kicker">Último passo</span>
+          <h2 class="tt h2--p">Medvision</h2>
+          <div class="regua"></div>
+          <p class="texto">Se o seu caso for indicado, orientaremos você sobre como realizar a cirurgia com o Dr. Carlos Leandro aqui em Batatais, com todo o suporte da nossa equipe.</p>
+        </div>
+        <button class="btn" type="button" data-whats="tele">Agendar teleconsulta</button>
+      </section>
+      
+
+      <section class="tela" data-tela="fora" data-titulo="Entendemos<br>perfeitamente">
+        <div class="miolo pilha" style="text-align:center">
+          <i class="icone icone--centro">&#9825;</i>
+          <h2 class="tt h2--m">Entendemos<br>perfeitamente</h2>
+          <div class="regua" style="margin-left:auto;margin-right:auto"></div>
+          <p class="texto">Agradecemos muito o seu contato e o interesse no trabalho do Dr. Carlos Leandro. Se um dia você decidir dar esse passo em direção à sua liberdade visual, estaremos de portas abertas para te receber aqui em Batatais.</p>
+          <p class="assinatura" style="margin:26px 0 0">Cuide bem da sua visão.</p>
+        </div>
+      </section>
+      
+    </main>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var WA = "5516999991643";
+  var MSG = {"local": "Olá! Vim pelo link da bio do Dr. Carlos Leandro. Sou de {unidade} e gostaria de agendar minha consulta presencial.", "tele": "Olá! Vim pelo link da bio do Dr. Carlos Leandro. Sou de outra cidade, tenho interesse em cirurgia e posso ir a Batatais. Gostaria de agendar a teleconsulta."};
+  var telas = {}, ordem = [];
+  Array.prototype.forEach.call(document.querySelectorAll("[data-tela]"), function(el){
+    telas[el.getAttribute("data-tela")] = el; ordem.push(el);
+  });
+  var voltar  = document.getElementById("voltar");
+  var barra   = document.getElementById("barra");
+  var trilha  = barra.parentNode;
+  var anuncio = document.getElementById("anuncio");
+  var atual = null, historico = [];
+  /* qual unidade o paciente escolheu na tela de localizacao: entra na mensagem
+     do WhatsApp e pode ter numero proprio (mentorado com mais de uma clinica) */
+  var unidade = "Batatais", waUnidade = WA;
+
+  function mostrar(id, empilhar){
+    if(!telas[id] || atual === id) return;
+    if(atual && empilhar !== false) historico.push(atual);
+    ordem.forEach(function(el){ el.removeAttribute("data-ativa"); });
+    var tela = telas[id];
+    tela.setAttribute("data-ativa", "");
+    atual = id;
+    var pct = tela.getAttribute("data-progresso");
+    if(pct){ trilha.hidden = false; barra.style.width = pct; }
+    else { trilha.hidden = true; barra.style.width = "0"; }
+    voltar.hidden = historico.length === 0;
+    anuncio.textContent = tela.getAttribute("data-titulo") || "";
+    window.scrollTo(0, 0);
+    if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  }
+
+  function voltarUma(){
+    if(!historico.length) return;
+    mostrar(historico.pop(), false);
+    voltar.hidden = historico.length === 0;
+  }
+
+  function abrirWhats(chave){
+    /* window.open tem de acontecer DENTRO do clique: fora dele o navegador
+       trata como popup e bloqueia (Safari sempre, Chrome com frequência). */
+    var texto = (MSG[chave] || "").replace("{unidade}", unidade);
+    var numero = (chave === "local" && waUnidade) ? waUnidade : WA;
+    var url = "https://wa.me/" + numero + (texto ? "?text=" + encodeURIComponent(texto) : "");
+    var aba = window.open(url, "_blank");
+    if(!aba) window.location.href = url;
+  }
+
+  document.addEventListener("click", function(e){
+    var alvo = e.target.closest ? e.target.closest("[data-ir],[data-whats]") : null;
+    if(!alvo) return;
+    if(alvo.hasAttribute("data-unidade")){
+      unidade = alvo.getAttribute("data-unidade") || unidade;
+      waUnidade = alvo.getAttribute("data-wa") || WA;
+    }
+    if(alvo.hasAttribute("data-whats")){ abrirWhats(alvo.getAttribute("data-whats")); return; }
+    mostrar(alvo.getAttribute("data-ir"), true);
+  });
+  voltar.addEventListener("click", voltarUma);
+
+  mostrar("abertura", false);
+})();
+</script>
+</body>
+</html>
