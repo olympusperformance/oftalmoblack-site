@@ -626,7 +626,7 @@
       td('<span class="tx-s">' + esc(t.cadencia || '—') + '</span>') +
       td(feita
         ? status('var(--success)', 'Concluída')
-        : '<span style="color:' + (atrasada ? '#F08A8A' : 'inherit') + '">' +
+        : '<span style="color:' + (atrasada ? 'var(--danger)' : 'inherit') + '">' +
           esc(Club.fmtDue(t.vence_em)) + '</span>') +
       td(t.progresso_total > 0
         ? barra(t.progresso_atual, t.progresso_total)
@@ -1022,7 +1022,7 @@
     var atrasada = n !== null && n < 0 && Club.DEM_ABERTOS.indexOf(r.status) !== -1;
     return tdCel('<button class="cell' + (r.vence_em ? '' : ' vazio') +
       '" data-prazo="' + escopo + ':' + r.id + '">' +
-      '<span class="tx"' + (atrasada ? ' style="color:#F08A8A"' : '') + '>' +
+      '<span class="tx"' + (atrasada ? ' style="color:var(--danger)"' : '') + '>' +
       esc(r.vence_em ? Club.fmtDue(r.vence_em) : 'sem prazo') + '</span></button>');
   }
 

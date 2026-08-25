@@ -8,6 +8,7 @@
 <title>Área do Mentorado — Club OftalmoBlack</title>
 <link rel="icon" href="/assets/favicon.png">
 <link rel="stylesheet" href="/assets/club.css">
+<script src="/assets/club-tema.js"></script>
 </head>
 <body>
 
@@ -23,6 +24,7 @@
     </span>
   </a>
   <span class="topbar-sp"></span>
+  <button class="icon-btn" data-tema aria-label="Alternar tema"><svg class="ic"><use href="#i-moon"/></svg></button>
   <button class="icon-btn" aria-label="Notificações"><svg class="ic"><use href="#i-bell"/></svg><span class="badge"></span></button>
   <div class="who">
     <span class="avatar" id="avatar">--</span>
@@ -108,7 +110,7 @@
           <button data-st="done" aria-selected="false">Concluídas</button>
           <button data-st="all" aria-selected="false">Todas</button>
         </div>
-        <select class="inp" id="filtroCategoria" style="max-width:210px"></select>
+        <div class="pick" id="filtroCategoria" style="max-width:210px"></div>
       </div>
       <div id="taskListFull"></div>
     </div>
@@ -121,7 +123,7 @@
     <div class="view" data-view="materials" hidden>
       <div class="hello"><h1>Materiais</h1><p>Tudo que o Club já entregou para você, pronto para baixar.</p></div>
       <div class="toolbar">
-        <select class="inp" id="filtroCategoriaMat" style="max-width:240px"></select>
+        <div class="pick" id="filtroCategoriaMat" style="max-width:240px"></div>
       </div>
       <div id="listaMateriais"></div>
     </div>

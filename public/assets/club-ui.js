@@ -38,26 +38,30 @@
                   'Aguardando retorno', 'Em pausa', 'Concluída', 'Cancelada'];
   C.DEM_ABERTOS = ['A fazer', 'Planejando', 'Em andamento', 'Em risco',
                    'Aguardando retorno', 'Em pausa'];
+  /* As cores saem do CSS, não daqui: escritas como token elas acompanham o tema
+     claro sem o JS precisar saber que existe tema. Vão para style="color:…",
+     onde var() vale igual a um hex. */
   C.DEM_COR = {
-    'A fazer':            '#9A94A6',
-    'Planejando':         '#7B5CFF',
-    'Em andamento':       '#4A9EF0',
-    'Em risco':           '#F0803A',
-    'Aguardando retorno': '#F0B34A',
-    'Em pausa':           '#8D8291',
-    'Concluída':          '#5BD68A',
-    'Cancelada':          '#6B6577'
+    'A fazer':            'var(--muted)',
+    'Planejando':         'var(--purple)',
+    'Em andamento':       'var(--blue)',
+    'Em risco':           'var(--orange)',
+    'Aguardando retorno': 'var(--warning)',
+    'Em pausa':           'var(--gray-2)',
+    'Concluída':          'var(--success)',
+    'Cancelada':          'var(--faint)'
   };
   C.DEM_PRIORIDADES = ['Alta', 'Média', 'Baixa'];
-  C.DEM_PRIO_COR = { 'Alta':'#F08A8A', 'Média':'#E8C07A', 'Baixa':'#6B6577' };
+  C.DEM_PRIO_COR = { 'Alta':'var(--danger)', 'Média':'var(--gold)', 'Baixa':'var(--faint)' };
 
   C.TINT = {
-    'Conteúdo':'#7B5CFF', 'Tráfego':'#4A9EF0', 'Vendas':'#E8C07A', 'Estrutura':'#5BD68A'
+    'Conteúdo':'var(--purple)', 'Tráfego':'var(--blue)',
+    'Vendas':'var(--gold)',     'Estrutura':'var(--success)'
   };
   C.ART_ST = {
-    'Disponível':  { color:'#5BD68A', icon:'unlock' },
-    'Em produção': { color:'#F0B34A', icon:'loader' },
-    'Bloqueado':   { color:'#6B6577', icon:'lock' }
+    'Disponível':  { color:'var(--success)', icon:'unlock' },
+    'Em produção': { color:'var(--warning)', icon:'loader' },
+    'Bloqueado':   { color:'var(--faint)',   icon:'lock' }
   };
 
   /* ── texto ────────────────────────────────────────────────────────────── */
@@ -342,6 +346,13 @@
         '</button>';
       }).join('');
 
+    /* Quando o menu nasce de um seletor, ele acompanha a largura do campo: uma
+       lista mais estreita que o proprio campo parece desalinhada. */
+    if (opts.largura) {
+      menuEl.style.minWidth = opts.largura + 'px';
+      if (opts.largura > 280) menuEl.style.maxWidth = opts.largura + 'px';
+    }
+
     document.body.appendChild(menuEl);
     posicionar(menuEl, anchor);
     anchor.setAttribute('aria-expanded', 'true');
@@ -388,6 +399,76 @@
     if (!menuEl || !menuEl.dataset.dono) return;
     var alvo = document.querySelector('[data-menu-id="' + menuEl.dataset.dono + '"]');
     if (alvo) alvo.setAttribute('aria-expanded', 'true');
+  };
+
+  /* ── seletor de valor ─────────────────────────────────────────────────── */
+  /* A lista do <select> nativo é desenhada pelo sistema operacional, e nenhum
+     CSS nosso entra nela: no Windows ela abre com fundo claro e herda a nossa
+     letra clara, então a opção fica branca no branco. Este seletor é um botão
+     com o menu acima, então a escolha se lê igual em qualquer máquina. */
+
+  var pickN = 0;
+
+  function pickItens(itens, opts) {
+    var lista = itens.map(function (i) {
+      return typeof i === 'string' ? { value: i, label: i } : i;
+    });
+    if (opts.vazio) lista.unshift({ value: '', label: opts.vazio });
+    return lista;
+  }
+
+  /* host:  elemento (ou id) que recebe o botão
+     itens: ['Vendas', ...] ou [{ value, label, color }]
+     opts:  { vazio, titulo, onPick(value, item) }
+     Chamar de novo com outro valor só troca o rótulo — o botão continua o
+     mesmo, então redesenhar a tela não fecha o menu nem tira o foco. */
+  C.pick = function (host, itens, valor, opts) {
+    if (typeof host === 'string') host = document.getElementById(host);
+    if (!host) return;
+    opts = opts || {};
+
+    var lista = pickItens(itens, opts);
+    var atual = valor == null ? '' : String(valor);
+    var achado = lista.filter(function (i) { return String(i.value) === atual; })[0];
+
+    host.classList.add('pick');
+    var btn = host.querySelector('.pick-b');
+    if (!btn) {
+      btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'inp pick-b';
+      btn.dataset.menuId = 'pick' + (++pickN);
+      btn.setAttribute('aria-haspopup', 'listbox');
+      btn.setAttribute('aria-expanded', 'false');
+      btn.innerHTML = '<i class="pick-d" hidden></i><span class="pick-l"></span>' +
+                      '<span class="pick-c">' + C.icon('chevron-down') + '</span>';
+      host.appendChild(btn);
+      /* O estado fica no host: o clique lê sempre a última chamada, e não a
+         lista que existia quando o botão foi criado. */
+      btn.addEventListener('click', function () {
+        var e = host._pick;
+        C.menu(btn, e.lista.map(function (i) {
+          return { value: i.value, label: i.label, color: i.color,
+                   checked: String(i.value) === e.atual };
+        }), {
+          titulo: e.opts.titulo,
+          largura: btn.offsetWidth,
+          onPick: function (v, item) {
+            C.pick(host, e.itens, v, e.opts);
+            if (e.opts.onPick) e.opts.onPick(v, item);
+          }
+        });
+      });
+    }
+    host._pick = { itens: itens, lista: lista, atual: atual, opts: opts };
+
+    var rot = btn.querySelector('.pick-l');
+    rot.textContent = achado ? achado.label : (opts.vazio || 'Selecione');
+    rot.classList.toggle('is-ph', !achado || achado.value === '');
+
+    var ponto = btn.querySelector('.pick-d');
+    ponto.hidden = !(achado && achado.color);
+    if (achado && achado.color) ponto.style.background = achado.color;
   };
 
   /* ── formulário: helpers de campo ─────────────────────────────────────── */

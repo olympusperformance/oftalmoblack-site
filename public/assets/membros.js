@@ -189,17 +189,18 @@
       barra.innerHTML = ico('eye') +
         '<div style="flex:1 1 220px"><b>Pré-visualização.</b> Você está vendo a área como ' +
         esc(st.membro.nome) + '.</div>' +
-        '<select class="inp" id="trocaMembro" style="max-width:230px;font-size:12.5px;padding:7px 10px">' +
-        todos.map(function (m) {
-          return '<option value="' + esc(m.id) + '"' +
-            (m.id === st.membro.id ? ' selected' : '') + '>' + esc(m.nome) + '</option>';
-        }).join('') + '</select>' +
+        '<div class="pick pick-sm" id="trocaMembro" style="max-width:230px"></div>' +
         '<a class="btn btn-sm" href="/admin/">' + ico('arrow-left') + 'Painel</a>';
 
       var main = document.querySelector('.main');
       main.insertBefore(barra, main.firstChild);
-      $('trocaMembro').addEventListener('change', function () {
-        location.search = '?membro=' + this.value;
+      /* Depois de estar no DOM: o seletor mede o próprio botão para alinhar a
+         lista, e fora da página a medida sai zero. */
+      Club.pick('trocaMembro', todos.map(function (m) {
+        return { value: m.id, label: m.nome };
+      }), st.membro.id, {
+        titulo: 'Ver a área de',
+        onPick: function (v) { location.search = '?membro=' + v; }
       });
     });
   }
@@ -221,15 +222,15 @@
         '<span class="check">' + ico('check') + '</span>' +
         '<span class="task-b">' +
           '<span class="tagrow">' +
-            '<span class="tag" style="color:' + tint + ';border-color:' + tint +
-              '55;background:' + tint + '14"><span class="dot"></span>' + esc(t.categoria) + '</span>' +
+            '<span class="tag" style="color:' + tint + '">' +
+              '<span class="dot"></span>' + esc(t.categoria) + '</span>' +
             '<span class="cad">' + esc(t.cadencia) + '</span>' +
           '</span>' +
           '<span class="task-t" style="display:block">' + esc(t.titulo) + '</span>' +
           '<span class="task-d" style="display:block">' + esc(t.descricao) + '</span>' +
           prog +
           '<span class="task-f">' +
-            '<span class="f-open"' + (Club.isLate(t) ? ' style="color:#F08A8A"' : '') + '>' +
+            '<span class="f-open"' + (Club.isLate(t) ? ' style="color:var(--danger)"' : '') + '>' +
               ico('clock') + esc(Club.fmtDue(t.vence_em)) + '</span>' +
             '<span class="f-done">' + ico('check-circle') + 'Concluída</span>' +
           '</span>' +
@@ -243,12 +244,13 @@
       ? st.tasks.slice(0, 4).map(cartaoTarefa).join('')
       : Club.empty('check-square', 'Nenhuma tarefa por enquanto. Aproveite.');
 
-    var cats = ['Todas as categorias'].concat(Club.CATEGORIAS);
-    $('filtroCategoria').innerHTML = cats.map(function (c, i) {
-      var v = i === 0 ? '' : c;
-      return '<option value="' + esc(v) + '"' + (v === st.categoria ? ' selected' : '') +
-        '>' + esc(c) + '</option>';
-    }).join('');
+    Club.pick('filtroCategoria', Club.CATEGORIAS.map(function (c) {
+      return { value: c, label: c, color: Club.TINT[c] };
+    }), st.categoria, {
+      vazio: 'Todas as categorias',
+      titulo: 'Categoria',
+      onPick: function (v) { st.categoria = v; renderTasks(); }
+    });
 
     Array.prototype.forEach.call($('filtroStatus').children, function (b) {
       b.setAttribute('aria-selected', String(b.dataset.st === st.status));
@@ -402,12 +404,11 @@
   }
 
   function renderMateriais() {
-    var cats = ['Todas as categorias'].concat(Club.MAT_CATEGORIAS);
-    $('filtroCategoriaMat').innerHTML = cats.map(function (c, i) {
-      var v = i === 0 ? '' : c;
-      return '<option value="' + esc(v) + '"' + (v === st.matCategoria ? ' selected' : '') +
-        '>' + esc(c) + '</option>';
-    }).join('');
+    Club.pick('filtroCategoriaMat', Club.MAT_CATEGORIAS, st.matCategoria, {
+      vazio: 'Todas as categorias',
+      titulo: 'Categoria',
+      onPick: function (v) { st.matCategoria = v; renderMateriais(); }
+    });
 
     var rows = st.matCategoria
       ? st.materials.filter(function (m) { return m.categoria === st.matCategoria; })
@@ -583,16 +584,6 @@
         renderTasks();
       }).catch(function () { /* já avisado acima */ });
     }
-  });
-
-  $('filtroCategoria').addEventListener('change', function () {
-    st.categoria = this.value;
-    renderTasks();
-  });
-
-  $('filtroCategoriaMat').addEventListener('change', function () {
-    st.matCategoria = this.value;
-    renderMateriais();
   });
 
   /* ── partida ──────────────────────────────────────────────────────────── */

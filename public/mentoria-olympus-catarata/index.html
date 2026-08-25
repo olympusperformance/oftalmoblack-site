@@ -285,6 +285,9 @@ input::placeholder,textarea::placeholder{color:var(--faint)}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold);background:rgba(216,157,77,.06);box-shadow:0 0 0 3px rgba(216,157,77,.14)}
 select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23D89D4D' stroke-width='2' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center}
 select:invalid{color:var(--faint)}
+/* A lista suspensa é desenhada pelo sistema: sem cor própria em cada opção, no
+   Windows ela abre clara sob a nossa letra clara. */
+select option{background:#0a0a0a;color:#f5f0e6}
 textarea{resize:vertical;min-height:96px}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .form-card .btn{width:100%;margin-top:6px}
