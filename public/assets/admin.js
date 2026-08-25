@@ -864,18 +864,33 @@
       ? todos.filter(function (e) { return e.grupo === st.botGrupo; })
       : todos;
 
+    /* Sem resposta primeiro: são o trabalho a fazer, e no meio da lista eles
+       sumiriam. Exemplo sem resposta não ensina nada e o bot nem o enxerga. */
+    var vazio = function (e) { return !e.resposta || !e.resposta.trim(); };
+    lista = lista.slice().sort(function (a, b) { return (vazio(a) ? 0 : 1) - (vazio(b) ? 0 : 1); });
+    var faltam = todos.filter(vazio).length;
+
+    $('avisoBotVazios').innerHTML = faltam
+      ? '<div class="aviso-bot">' + ico('edit') + '<span><b>' + faltam +
+        ' comentário' + (faltam > 1 ? 's' : '') + ' esperando resposta.</b> ' +
+        'São comentários reais do perfil, como as pessoas escreveram. ' +
+        'Enquanto estiverem sem resposta, o bot não os usa.</span></div>'
+      : '';
+
     $('listaBotExemplos').innerHTML = tabela(
       'minmax(0,1fr) minmax(0,1.2fr) 112px 104px 130px',
       ['Comentário modelo', 'Resposta', 'Grupo', 'De quem', '>Ações'],
       lista.map(function (e) {
-        var apagado = e.ativo ? '' : ' style="opacity:.5"';
-        return '<div class="tr"' + apagado + '>' +
+        var falta = vazio(e);
+        return '<div class="tr' + (e.ativo ? '' : ' off') + (falta ? ' tr-falta' : '') + '">' +
           td('<b>' + esc(e.comentario) + '</b>') +
-          td(esc(e.resposta)) +
+          td(falta ? '<span class="tx-s">esperando o Dr.</span>' : esc(e.resposta)) +
           td(esc(botRotulo(e.grupo))) +
-          td(esc(e.origem || 'italo')) +
+          td(esc(falta ? '—' : (e.origem || 'italo'))) +
           tdCel(
-            '<button class="btn btn-sm" data-edit="botExemplo" data-id="' + e.id + '">Editar</button> ' +
+            '<button class="btn btn-sm' + (falta ? ' btn-primary' : '') +
+              '" data-edit="botExemplo" data-id="' + e.id + '">' +
+              (falta ? 'Responder' : 'Editar') + '</button> ' +
             '<button class="btn btn-sm" data-bot-ativo="' + e.id + '">' +
               (e.ativo ? 'Desligar' : 'Ligar') + '</button>', 'end') +
         '</div>';
@@ -892,12 +907,13 @@
         Club.select('Grupo', 'grupo', BOT_GRUPOS, e.grupo) +
         Club.field('Comentário modelo', 'comentario', { value:e.comentario, required:true,
           placeholder:'Fiz cirurgia há 20 anos e o grau voltou' }) +
-        Club.field('Resposta certa para ele', 'resposta', { value:e.resposta, required:true,
+        Club.field('Resposta certa para ele', 'resposta', { value:e.resposta || '',
           placeholder:'Não é fácil passar por isso de novo. Força aí 💙',
-          hint:'Curta, sem preço, sem prometer nada e sem opinar sobre o caso da pessoa.' }),
+          hint:'Curta, sem preço, sem prometer nada e sem opinar sobre o caso da pessoa. ' +
+               'Pode deixar em branco e responder depois — sem resposta, o bot não usa este exemplo.' }),
       onSubmit: function (d) {
-        if (!d.comentario || !d.resposta) {
-          Club.toast('Comentário e resposta são obrigatórios.', 'alert'); return;
+        if (!d.comentario) {
+          Club.toast('O comentário modelo é obrigatório.', 'alert'); return;
         }
         d.id = e.id;
         d.origem = e.origem || 'italo';

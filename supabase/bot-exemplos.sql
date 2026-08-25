@@ -23,7 +23,10 @@ create table if not exists public.bot_exemplos (
   -- colirio | fe | elogio | emoji | riso | saudacao | outro
   grupo       text not null,
   comentario  text not null,
-  resposta    text not null,
+  -- Nulo = esperando a resposta do Dr. Alex. O comentário entra primeiro, a voz
+  -- vem depois — e exemplo sem resposta não ensina nada, então fica de fora da
+  -- busca até ser preenchido.
+  resposta    text,
   -- Sai do ar sem perder o histórico: resposta ruim vira exemplo do que não fazer.
   ativo       boolean not null default true,
   -- 'italo' | 'dr alex' | 'bot aprovado' — de quem é a voz desta resposta
@@ -69,6 +72,7 @@ language sql stable as $$
          ts_rank(to_tsvector('portuguese', e.comentario), c.q) as forca
     from public.bot_exemplos e, consulta c
    where e.ativo
+     and e.resposta is not null and btrim(e.resposta) <> ''
      and (p_grupo is null or e.grupo = p_grupo)
    order by forca desc, e.criado_em desc
    limit greatest(p_quantos, 1);
@@ -161,45 +165,46 @@ end $$;
 grant execute on function public.bot_virar_exemplo(uuid) to authenticated;
 
 -- ── semente ────────────────────────────────────────────────────────────────
--- Os primeiros exemplos, escritos em 25/08 a partir dos comentários reais do
--- perfil. Servem para a tela não nascer vazia e para o bot ter voz desde o
--- primeiro dia. Todos passaram pelo conferidor do fluxo: nenhum promete,
--- precifica ou afirma fato clínico.
+-- Trinta comentários REAIS do perfil, exatamente como as pessoas escreveram —
+-- com os erros de digitação, os acentos faltando e o texto inteiro. Dez de cada
+-- grupo que hoje fica calado.
+--
+-- Entram SEM RESPOSTA de propósito. A resposta é a voz do Dr. Alex, e voz não
+-- se inventa: quem preenche é ele, na tela do painel. Enquanto o campo estiver
+-- vazio, o exemplo não é usado pelo bot.
 --
 -- Só entra se a tabela estiver vazia — rodar o arquivo duas vezes não duplica.
-insert into public.bot_exemplos (grupo, comentario, resposta)
+insert into public.bot_exemplos (grupo, comentario)
 select * from (values
-  ('duvida', 'dói?', 'Te respondi no direct pra falar disso com calma 👀'),
-  ('duvida', 'funciona mesmo?', 'Essa merece uma conversa de verdade — te escrevi no direct'),
-  ('duvida', 'Atendende 11 anos?', 'Melhor te explicar direitinho no direct, já te chamei por lá'),
-  ('duvida', 'E glaucoma tem jeito?', 'Cada história é uma história. Te mandei mensagem no direct 📩'),
-  ('duvida', 'é definitivo ou volta?', 'Prefiro te explicar com calma: te escrevi no direct'),
-  ('duvida', 'posso fazer com 70 anos?', 'Já te chamei no direct pra conversar 🤍'),
-  ('duvida', 'e quem já operou catarata pode?', 'Isso depende de avaliação, e te respondi no direct'),
-  ('duvida', 'Corrige miopia e presbiopia ao mesmo tempo? É possível?', 'Pergunta boa demais pra caber aqui — te escrevi no direct 👀'),
-  ('duvida', 'Fiz cirurgia de catarata, pelo sus, mas não vejo bem o posso fazer?', 'Vamos conversar no direct? Te mandei mensagem por lá'),
-  ('duvida', 'Porque no SUS eles não operam quando a paciente tem menos que 40 anos ? Fiquei indignada', 'Olha o seu direct, te respondi por lá 🤍'),
-  ('relato', 'Idade chega', 'Chega mesmo, e vem trazendo história 🤍'),
-  ('relato', 'Eu tem 18 de miopia 27', 'Isso é grau que pesa no dia a dia'),
-  ('relato', 'Desse vídeo eu só não tenho catarata 😭', 'Rimos pra não chorar, né 😅'),
-  ('relato', '48 e enxergo de perto perfeitamente, agora de longe é tudo embaraçado.', 'Muita gente passa por isso nessa fase da vida'),
-  ('relato', 'Há mais ou menos um ano não consigo mais ler de perto, como isso é ruim viu.', 'É chato demais mesmo. Que venham dias melhores'),
-  ('relato', 'Eu vir estava lá, faço aplicação de injeção no olho.', 'Não é fácil essa rotina. Força aí 💙'),
-  ('relato', 'Eu teu tenho 76 cirurgia do dois mais depois de faser essas cirurgias vou ter que usar óculos', 'Bom demais te ler por aqui'),
-  ('relato', 'Estou com catarata ,assim, diz o médico. Esperando ser chamada a 9 meses e nada.', 'Nove meses é tempo demais esperando. Torço pra que sua vez chegue'),
-  ('relato', 'Vendo seu vídeo doutor em 2012 eu descobri que eu tinha catarata congênita', 'Quanta história, viu. Obrigado por voltar aqui pra contar'),
-  ('relato', 'Quem já fez se manifeste aqui p saber se é verdade', 'Bora ver quem aparece 👀'),
-  ('objecao', 'só pra rico', 'Entendo o seu ponto'),
-  ('objecao', 'aí fica caro né', 'É um investimento alto mesmo, respeito a colocação'),
-  ('objecao', 'pra quem tem dinheiro', 'Faz sentido o que você diz'),
-  ('objecao', 'parece propaganda enganosa', 'Respeito a sua desconfiança, obrigado por dizer'),
-  ('objecao', 'Mas não tenho dinheiro 😞😞', 'Compreendo, viu. Espero que sua hora chegue 🤍'),
-  ('objecao', 'meu sonho mas não tenho condições', 'Que ele siga guardado aí, esperando a hora certa'),
-  ('objecao', 'Eu bem que quero, porém o valor hein', 'Justo. Obrigado por comentar'),
-  ('objecao', 'Grande verdade eu queria ter condições pra isso .', 'Tomara que apareça o caminho 🤍'),
-  ('objecao', 'Um dia vou ter DINHEIRO 💰 para fazer essa CIRURGIA.', 'Um dia chega 🤍'),
-  ('objecao', 'A se eu tiverce esta oportunidade, pq tenho catarata e preciso operare é muito caro', 'Torço pra que a oportunidade apareça'),
-  ('outro', 'São aqui do são Paulo', 'Obrigado por acompanhar de longe 🤍'),
-  ('outro', 'primeira vez que vejo isso', 'Que bom te ver por aqui 🤍')
-) as s(grupo, comentario, resposta)
+  ('duvida', 'dói?'),
+  ('duvida', 'funciona mesmo?'),
+  ('duvida', 'Atendende 11 anos?'),
+  ('duvida', 'E glaucoma tem jeito?'),
+  ('duvida', 'é definitivo ou volta?'),
+  ('duvida', 'posso fazer com 70 anos?'),
+  ('duvida', 'e quem já operou catarata pode?'),
+  ('duvida', 'Corrige miopia e presbiopia ao mesmo tempo? É possível?'),
+  ('duvida', 'Fiz cirurgia de catarata, pelo sus, mas não vejo bem o posso fazer?'),
+  ('duvida', 'Porque no SUS eles não operam quando a paciente tem menos que 40 anos ? Fiquei indignada ontem fui uma consulta com a oftalmologista e ela disse que a carne que estava crescendo não era de tal importância para realizar uma cirurgia. Só me passou apenas um colírio para eu não sentir irritação, vermelhidão e ardência no meu olho.. 🥺'),
+  ('relato', 'Idade chega'),
+  ('relato', 'Eu tem 18 de miopia 27'),
+  ('relato', 'Desse vídeo eu só não tenho catarata 😭'),
+  ('relato', '48 e enxergo de perto perfeitamente, agora de longe é tudo embaraçado.'),
+  ('relato', 'Há mais ou menos um ano não consigo mais ler de perto, como isso é ruim viu.'),
+  ('relato', 'Eu vir estava lá, faço aplicação de injeção no olho. Ela entrou primeiro que eu, não estava enchergando nada e saiu lendo tudo'),
+  ('relato', 'Eu teu tenho 76 cirurgia do dois mais depois de faser essas cirurgias vou ter que usar óculos pra lê nunca usei mais fazer o que'),
+  ('relato', 'Estou com catarata ,assim, diz o médico. Esperando ser chamada pelo SUS a 9 meses e nada. Cada vez sem enxergar. Pra quem pode fazer esse tratamento aconselho fazer .'),
+  ('relato', 'Vendo seu vídeo doutor em 2012 eu descobri que eu tinha catarata congênita daí eu fui em hospital das clínicas de santa casa aí os médicos falou que eu poderia ficar bom poderia ficar do jeito que tá que eu tinha nascido com esse problema aí eu fiquei com medo é de mexer no olho e ficar cega aí daí agora eu resolvi fazer exames descobri que eu tava com grau de miopia muito alto e catarata aí resolvi fiz a cirurgia de um olho Graças a Deus muito feliz porque eu nunca enxerguei totalmente nunca caía nas ruas veio sem poder enxergar os degrau agora tô enxergando com o olho de longe de perto eu sei que eu vou usar óculos mas só em poder tá enxergando para mim é tudo vou fazer no próximo mês a cirurgia do outro olho tô muito feliz e realizada'),
+  ('relato', 'Quem já fez se manifeste aqui p saber se é verdade'),
+  ('objecao', 'só pra rico'),
+  ('objecao', 'aí fica caro né'),
+  ('objecao', 'pra quem tem dinheiro'),
+  ('objecao', 'parece propaganda enganosa'),
+  ('objecao', 'Mas não tenho dinheiro 😞😞'),
+  ('objecao', 'meu sonho mas não tenho condições'),
+  ('objecao', 'Eu bem que quero, porém o valor hein'),
+  ('objecao', 'Grande verdade eu queria ter condições pra isso .'),
+  ('objecao', 'Um dia vou ter DINHEIRO 💰 para fazer essa CIRURGIA.'),
+  ('objecao', 'A se eu tiverce esta oportunidade, pq tenho catarata e preciso operare é muito caro e a condição é pouca')
+) as s(grupo, comentario)
 where not exists (select 1 from public.bot_exemplos);

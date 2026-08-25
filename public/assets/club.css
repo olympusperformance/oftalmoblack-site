@@ -543,6 +543,16 @@ input[type="file"].inp::file-selector-button:hover{background:var(--surface);bor
 /* Fila de aprovação do bot: aqui o texto É a decisão. Cortar o comentário e a
    resposta em reticências economiza espaço e obriga a abrir cada linha para
    saber o que se está aprovando — o contrário do que a tela serve. */
+/* Comentário à espera da resposta do médico: a linha fica marcada à esquerda
+   para não se perder no meio dos que já estão prontos. */
+.tr.tr-falta{background:var(--lv0)}
+.tr.tr-falta .td:first-child{box-shadow:inset 2px 0 0 var(--gold)}
+.aviso-bot{display:flex;gap:10px;align-items:flex-start;margin:0 0 14px;padding:12px 14px;
+  border:1px solid var(--border-soft);border-radius:var(--r-md);background:var(--surface);
+  font-size:13px;color:var(--muted);line-height:1.5}
+.aviso-bot .ic{flex-shrink:0;margin-top:2px;color:var(--gold)}
+.aviso-bot b{color:var(--text)}
+
 .tr.tr-lida .td{align-items:flex-start}
 .tr.tr-lida .tx{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.45}
 
