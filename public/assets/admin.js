@@ -1830,7 +1830,11 @@
     demand:    { store:'demands',    nome:function (r) { return r.titulo; },
                  aviso:'As subtarefas dela saem junto.' },
     staff:     { store:'staff',      nome:function (r) { return r.nome; },
-                 aviso:'As demandas dele continuam, sem responsável.' }
+                 aviso:'As demandas dele continuam, sem responsável.' },
+    /* Sem esta linha o clique em Editar/Responder morre em silêncio: achar()
+       procura o store aqui e estoura antes de o modal abrir. */
+    botExemplo: { store:'botExemplos', nome:function (r) { return r.comentario; },
+                  aviso:'' }
   };
 
   function achar(tipo, id) {
