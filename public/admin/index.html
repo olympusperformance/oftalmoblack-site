@@ -133,6 +133,32 @@
       <div id="listaMateriais"></div>
     </div>
 
+    <div class="view" data-view="botFila" hidden>
+      <div class="hello"><h1>O que o bot respondeu</h1>
+        <p>Cada resposta que a IA escreveu nos comentários. O que você aprovar vira exemplo e ensina as próximas.</p></div>
+      <div class="statgrid" id="statsBot"></div>
+      <div class="toolbar">
+        <div class="seg" id="filtroBotFila">
+          <button data-fila="pend" aria-selected="true">Esperando você</button>
+          <button data-fila="all" aria-selected="false">Todas</button>
+        </div>
+        <span class="sp"></span>
+      </div>
+      <div id="listaBotFila"></div>
+    </div>
+
+    <div class="view" data-view="botExemplos" hidden>
+      <div class="hello"><h1>Voz do bot</h1>
+        <p>Comentário modelo e a resposta certa para ele. Quanto mais respostas diferentes para o mesmo tipo, menos o perfil se repete.</p></div>
+      <div class="toolbar">
+        <select class="inp" id="filtroBotGrupo" style="max-width:260px"></select>
+        <span class="sp"></span>
+        <button class="btn btn-primary" data-new="botExemplo">
+          <svg class="ic"><use href="#i-plus"/></svg>Novo exemplo</button>
+      </div>
+      <div id="listaBotExemplos"></div>
+    </div>
+
     <div class="view" data-view="artifacts" hidden>
       <div class="hello"><h1>Artefatos</h1><p>O que o Club entrega — e o que ainda está em produção.</p></div>
       <div class="toolbar">

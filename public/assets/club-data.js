@@ -35,7 +35,10 @@
     staff:     ['nome', 'apelido', 'ativo'],
     artifact_steps: ['artifact_id', 'titulo', 'ordem'],
     step_progress:  ['member_id', 'step_id', 'feito'],
-    demand_steps:   ['demand_id', 'titulo', 'ordem', 'feito']
+    demand_steps:   ['demand_id', 'titulo', 'ordem', 'feito'],
+    bot_exemplos:   ['grupo', 'comentario', 'resposta', 'ativo', 'origem'],
+    bot_respostas:  ['comentario', 'usuario', 'grupo', 'resposta', 'comment_id',
+                     'permalink', 'decisao', 'exemplo_id', 'decidido']
   };
 
   /* Campo de data ou de chave estrangeira vazio precisa virar null; string
@@ -268,6 +271,62 @@
     /* A tela troca a situação de uma demanda sem recarregar a lista inteira, e
        precisa reordenar com a mesma regra do carregamento. */
     ordenar: function (rows) { return rows.slice().sort(byDemanda); }
+  };
+
+  /* ── voz do bot do Instagram ────────────────────────────────────────────
+     Pares comentário → resposta. Não é um roteiro de respostas prontas: é o
+     material que ensina a voz. O bot procura aqui os exemplos mais parecidos
+     com o comentário que acabou de chegar e escreve no mesmo tom.
+
+     Vários exemplos para o mesmo tipo de comentário é bom, não é duplicata —
+     dez respostas diferentes para "Grau zero" ensinam a variar; uma só ensina
+     a repetir a mesma frase o dia inteiro. */
+  var AVISO_BOT = 'A voz do bot ainda não foi criada no banco. ' +
+    'Rode supabase/bot-exemplos.sql no SQL Editor do Supabase.';
+
+  C.data.botExemplos = {
+    list: function () {
+      return tolerante(sb().from('bot_exemplos').select('*'), AVISO_BOT, 'faltaBot')
+        .then(function (rows) {
+          return rows.sort(function (a, b) {
+            if (a.grupo !== b.grupo) return a.grupo < b.grupo ? -1 : 1;
+            return (b.criado_em || '') < (a.criado_em || '') ? -1 : 1;
+          });
+        });
+    },
+    save: function (e) {
+      return grava('bot_exemplos', e).catch(function (err) {
+        if (/does not exist|schema cache/i.test(err.message || '')) throw new Error(AVISO_BOT);
+        throw err;
+      });
+    },
+    remove: function (id) { return apaga('bot_exemplos', id); }
+  };
+
+  /* O que o bot escreveu e ainda espera aval. Aprovar copia o par para os
+     exemplos — pela função do banco, que faz as duas coisas de uma vez e não
+     deixa aprovar a mesma resposta duas vezes. */
+  C.data.botRespostas = {
+    list: function (o) {
+      var q = sb().from('bot_respostas').select('*');
+      if (opt(o, 'pendentes')) q = q.is('decisao', null);
+      return tolerante(q, AVISO_BOT, 'faltaBot').then(function (rows) {
+        return rows.sort(function (a, b) {
+          return (b.respondido || '') < (a.respondido || '') ? -1 : 1;
+        });
+      });
+    },
+    virarExemplo: function (id) {
+      return sb().rpc('bot_virar_exemplo', { p_id: id }).then(function (res) {
+        if (res.error) throw new Error(res.error.message);
+        return res.data;
+      });
+    },
+    descartar: function (id) {
+      return grava('bot_respostas', {
+        id: id, decisao: 'descartada', decidido: new Date().toISOString()
+      });
+    }
   };
 
   /* Checklist da demanda. Aqui a etapa é da demanda e o "feito" mora nela

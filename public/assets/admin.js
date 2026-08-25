@@ -34,6 +34,10 @@
       { key:'agenda',    label:'Agenda',     icon:'calendar' },
       { key:'materials', label:'Materiais',  icon:'folder' }
     ] },
+    { grupo:'Instagram', itens: [
+      { key:'botFila',     label:'O bot respondeu', icon:'bell' },
+      { key:'botExemplos', label:'Voz do bot',      icon:'edit' }
+    ] },
     { grupo:'Time', itens: [
       { key:'demands',   label:'Demandas',   icon:'check-circle' },
       { key:'artifacts', label:'Artefatos',  icon:'box' }
@@ -75,12 +79,15 @@
       Club.data.staff.list(),
       Club.data.steps.list(),
       Club.data.progress.list(),
-      Club.data.demandSteps.list()
+      Club.data.demandSteps.list(),
+      Club.data.botExemplos.list(),
+      Club.data.botRespostas.list()
     ]).then(function (r) {
       st.members = r[0]; st.tasks = r[1]; st.events = r[2];
       st.artifacts = r[3]; st.materials = r[4];
       st.demands = r[5]; st.staff = r[6];
       st.steps = r[7]; st.progress = r[8]; st.demandSteps = r[9];
+      st.botExemplos = r[10]; st.botRespostas = r[11];
       indexar();
     });
   }
@@ -762,6 +769,167 @@
         }).catch(aviso);
       }
     });
+  }
+
+  /* ── voz do bot do Instagram ──────────────────────────────────────────────
+     Duas telas que trabalham juntas. "O bot respondeu" é a fila do que a IA
+     escreveu nos comentários e ainda espera aval; aprovar copia o par para
+     "Voz do bot", que é o material de onde ele aprende a escrever.
+
+     O ciclo é esse: o bot responde, você aprova o que ficou bom, e a próxima
+     resposta sai melhor. Se as respostas entrassem sozinhas, o modelo passaria
+     a aprender com ele mesmo e o tom derivaria sem ninguém perceber. */
+
+  var BOT_GRUPOS = [
+    { value:'relato',  label:'Relato — conta a própria história' },
+    { value:'duvida',  label:'Dúvida — pergunta se pode fazer' },
+    { value:'objecao', label:'Objeção — reclama ou desconfia' },
+    { value:'outro',   label:'Outro — não se encaixou em nada' }
+  ];
+
+  function botRotulo(g) {
+    var achou = BOT_GRUPOS.filter(function (x) { return x.value === g; })[0];
+    return achou ? achou.label.split(' — ')[0] : (g || '—');
+  }
+
+  function renderBotFila() {
+    if (Club.faltaBot) {
+      $('listaBotFila').innerHTML = '<div class="placeholder">' + ico('alert') +
+        '<h2>Falta criar no banco</h2><p>' + esc(Club.faltaBot) + '</p></div>';
+      $('statsBot').innerHTML = '';
+      return;
+    }
+    var todas = st.botRespostas || [];
+    var pend = todas.filter(function (r) { return !r.decisao; });
+    var virou = todas.filter(function (r) { return r.decisao === 'exemplo'; });
+
+    var ativos = (st.botExemplos || []).filter(function (e) { return e.ativo; }).length;
+    $('statsBot').innerHTML =
+      cardStat('ESPERANDO VOCÊ', pend.length,
+               pend.length ? 'aprove ou descarte' : 'nada pendente') +
+      cardStat('VIRARAM EXEMPLO', virou.length, 'ensinando o bot a escrever') +
+      cardStat('EXEMPLOS ATIVOS', ativos, (st.botExemplos || []).length + ' cadastrados no total');
+
+    /* Quem comentou tem coluna própria: a célula do painel é de uma linha só,
+       com reticências, e espremer autor e data junto do texto some com os dois. */
+    var lista = st.botFila === 'all' ? todas : pend;
+    $('listaBotFila').innerHTML = tabela(
+      '158px minmax(0,1fr) minmax(0,1.15fr) 96px 196px',
+      ['Quem', 'Comentou', 'O bot respondeu', 'Grupo', '>Decisão'],
+      lista.map(function (r) {
+        var quando = r.respondido ? Club.fmtDataCurta(r.respondido) : '';
+        var quem = r.usuario ? '@' + esc(r.usuario) : 'sem autor';
+        var autor = r.permalink
+          ? '<a href="' + esc(r.permalink) + '" target="_blank" rel="noopener" ' +
+            'title="Abrir no Instagram">' + quem + '</a>'
+          : quem;
+        var acao = r.decisao === 'exemplo'
+          ? '<span class="dotst" style="color:var(--ok)"><i></i>virou exemplo</span>'
+          : r.decisao === 'descartada'
+            ? '<span class="dotst" style="color:var(--muted)"><i></i>descartada</span>'
+            : '<button class="btn btn-sm btn-primary" data-bot-aprovar="' + r.id + '">' +
+              'Virar exemplo</button> <button class="btn btn-sm" data-bot-descartar="' + r.id + '">' +
+              'Descartar</button>';
+        return '<div class="tr tr-lida">' +
+          td('<span class="tx-t">' + autor + '</span>') +
+          td('<span class="tx-s">' + esc(quando) + '</span> ' + esc(r.comentario)) +
+          td(esc(r.resposta)) +
+          td(esc(botRotulo(r.grupo))) +
+          tdCel(acao, 'end') +
+        '</div>';
+      }).join(''),
+      st.botFila === 'all'
+        ? 'O bot ainda não escreveu nenhuma resposta.'
+        : 'Nada esperando você. Quando o bot escrever, aparece aqui.');
+  }
+
+  function renderBotExemplos() {
+    if (Club.faltaBot) {
+      $('listaBotExemplos').innerHTML = '<div class="placeholder">' + ico('alert') +
+        '<h2>Falta criar no banco</h2><p>' + esc(Club.faltaBot) + '</p></div>';
+      return;
+    }
+    var todos = st.botExemplos || [];
+    var porGrupo = {};
+    todos.forEach(function (e) { porGrupo[e.grupo] = (porGrupo[e.grupo] || 0) + 1; });
+
+    $('filtroBotGrupo').innerHTML =
+      '<option value="">Todos os grupos (' + todos.length + ')</option>' +
+      BOT_GRUPOS.map(function (g) {
+        return '<option value="' + g.value + '"' + (st.botGrupo === g.value ? ' selected' : '') +
+          '>' + esc(g.label) + ' (' + (porGrupo[g.value] || 0) + ')</option>';
+      }).join('');
+
+    var lista = st.botGrupo
+      ? todos.filter(function (e) { return e.grupo === st.botGrupo; })
+      : todos;
+
+    $('listaBotExemplos').innerHTML = tabela(
+      'minmax(0,1fr) minmax(0,1.2fr) 112px 104px 130px',
+      ['Comentário modelo', 'Resposta', 'Grupo', 'De quem', '>Ações'],
+      lista.map(function (e) {
+        var apagado = e.ativo ? '' : ' style="opacity:.5"';
+        return '<div class="tr"' + apagado + '>' +
+          td('<b>' + esc(e.comentario) + '</b>') +
+          td(esc(e.resposta)) +
+          td(esc(botRotulo(e.grupo))) +
+          td(esc(e.origem || 'italo')) +
+          tdCel(
+            '<button class="btn btn-sm" data-edit="botExemplo" data-id="' + e.id + '">Editar</button> ' +
+            '<button class="btn btn-sm" data-bot-ativo="' + e.id + '">' +
+              (e.ativo ? 'Desligar' : 'Ligar') + '</button>', 'end') +
+        '</div>';
+      }).join(''),
+      'Nenhum exemplo ainda. Comece cadastrando um comentário que você já viu e a resposta que daria.');
+  }
+
+  function modalBotExemplo(e) {
+    e = e || { grupo:'relato', comentario:'', resposta:'', origem:'italo' };
+    Club.modal.open({
+      title: e.id ? 'Editar exemplo' : 'Novo exemplo',
+      sub: 'O bot procura os exemplos mais parecidos com o comentário que chegou e escreve no mesmo tom.',
+      body:
+        Club.select('Grupo', 'grupo', BOT_GRUPOS, e.grupo) +
+        Club.field('Comentário modelo', 'comentario', { value:e.comentario, required:true,
+          placeholder:'Fiz cirurgia há 20 anos e o grau voltou' }) +
+        Club.field('Resposta certa para ele', 'resposta', { value:e.resposta, required:true,
+          placeholder:'Não é fácil passar por isso de novo. Força aí 💙',
+          hint:'Curta, sem preço, sem prometer nada e sem opinar sobre o caso da pessoa.' }),
+      onSubmit: function (d) {
+        if (!d.comentario || !d.resposta) {
+          Club.toast('Comentário e resposta são obrigatórios.', 'alert'); return;
+        }
+        d.id = e.id;
+        d.origem = e.origem || 'italo';
+        d.ativo = e.ativo === undefined ? true : e.ativo;
+        Club.data.botExemplos.save(d).then(function () {
+          Club.modal.close();
+          recarregar(e.id ? 'Exemplo atualizado.' : 'Exemplo criado.');
+        }).catch(aviso);
+      }
+    });
+  }
+
+  function aprovarResposta(id) {
+    Club.data.botRespostas.virarExemplo(id)
+      .then(function () { recarregar('Virou exemplo. O bot já aprende com ele.'); })
+      .catch(function (err) { Club.toast(err.message || 'Não foi possível aprovar.', 'alert'); });
+  }
+
+  function descartarResposta(id) {
+    Club.data.botRespostas.descartar(id)
+      .then(function () { recarregar('Descartada.'); })
+      .catch(function (err) { Club.toast(err.message || 'Não foi possível descartar.', 'alert'); });
+  }
+
+  /* Desligar em vez de apagar: exemplo ruim ainda conta a história de por que
+     ele foi escrito, e ligar de volta é um clique. */
+  function alternarExemplo(id) {
+    var e = (st.botExemplos || []).filter(function (x) { return x.id === id; })[0];
+    if (!e) return;
+    Club.data.botExemplos.save({ id:id, ativo: !e.ativo })
+      .then(function () { recarregar(e.ativo ? 'Exemplo desligado.' : 'Exemplo ligado.'); })
+      .catch(aviso);
   }
 
   /* ── artefatos ────────────────────────────────────────────────────────── */
@@ -1668,7 +1836,8 @@
   }
 
   var MODAIS = { member:modalMembro, task:modalTarefa, event:modalEvento,
-                 artifact:modalArtefato, material:modalMaterial, demand:modalDemanda };
+                 artifact:modalArtefato, material:modalMaterial, demand:modalDemanda,
+                 botExemplo:modalBotExemplo };
 
   /* ── eventos ──────────────────────────────────────────────────────────── */
 
@@ -1684,6 +1853,18 @@
 
     var apagar = e.target.closest('[data-del]');
     if (apagar) { remover(apagar.dataset.del, apagar.dataset.id); return; }
+
+    var bfila = e.target.closest('#filtroBotFila button');
+    if (bfila) { st.botFila = bfila.dataset.fila; renderBotFila(); return; }
+
+    var bap = e.target.closest('[data-bot-aprovar]');
+    if (bap) { aprovarResposta(bap.dataset.botAprovar); return; }
+
+    var bdes = e.target.closest('[data-bot-descartar]');
+    if (bdes) { descartarResposta(bdes.dataset.botDescartar); return; }
+
+    var bat = e.target.closest('[data-bot-ativo]');
+    if (bat) { alternarExemplo(bat.dataset.botAtivo); return; }
 
     var stat = e.target.closest('#filtroStatus button');
     if (stat) { st.status = stat.dataset.st; renderTasks(); return; }
@@ -1792,6 +1973,11 @@
     renderDemandas();
   });
 
+  $('filtroBotGrupo').addEventListener('change', function () {
+    st.botGrupo = this.value;
+    renderBotExemplos();
+  });
+
   $('filtroCategoriaMat').addEventListener('change', function () {
     st.matCategoria = this.value;
     renderMaterials();
@@ -1818,6 +2004,8 @@
     renderArtifacts();
     renderMaterials();
     renderDemandas();
+    renderBotFila();
+    renderBotExemplos();
   }
 
   function falhou(err) {
