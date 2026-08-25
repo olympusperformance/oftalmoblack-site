@@ -21,15 +21,32 @@
                 Fica na tela, não no banco: é postura de leitura do momento. */
              abertos: {} };
 
+  /* A navegação é uma árvore de um nível: quem é solto fica solto, quem tem
+     'itens' vira um grupo com título. Agenda e Materiais moram em Mentorados
+     porque são o que o mentorado consome; Artefatos mora em Time porque é o
+     que o time produz. A chave de cada view continua a mesma — só o rótulo de
+     'members' mudou para Progressão. */
   var NAV = [
-    { key:'overview',  label:'Visão geral', icon:'home' },
-    { key:'members',   label:'Membros',     icon:'users' },
-    { key:'demands',   label:'Demandas',    icon:'check-circle' },
-    { key:'tasks',     label:'Tarefas',     icon:'check-square' },
-    { key:'agenda',    label:'Agenda',      icon:'calendar' },
-    { key:'materials', label:'Materiais',   icon:'folder' },
-    { key:'artifacts', label:'Artefatos',   icon:'box' }
+    { key:'overview', label:'Visão geral', icon:'home' },
+    { grupo:'Mentorados', itens: [
+      { key:'members',   label:'Progressão', icon:'users' },
+      { key:'tasks',     label:'Tarefas',    icon:'check-square' },
+      { key:'agenda',    label:'Agenda',     icon:'calendar' },
+      { key:'materials', label:'Materiais',  icon:'folder' }
+    ] },
+    { grupo:'Time', itens: [
+      { key:'demands',   label:'Demandas',   icon:'check-circle' },
+      { key:'artifacts', label:'Artefatos',  icon:'box' }
+    ] }
   ];
+
+  /* A barra do celular é uma fila de chips: não comporta hierarquia, então lê
+     a mesma árvore achatada, na mesma ordem. */
+  function navPlano() {
+    return NAV.reduce(function (acc, n) {
+      return acc.concat(n.itens || [n]);
+    }, []);
+  }
 
   var esc = Club.esc, ico = Club.icon;
   var $ = function (id) { return document.getElementById(id); };
@@ -173,17 +190,24 @@
   /* ── navegação ────────────────────────────────────────────────────────── */
 
   function renderNav() {
+    function botao(n, filho) {
+      return '<button class="nav' + (filho ? ' nav-filho' : '') + '" role="tab" data-nav="' +
+        n.key + '" aria-selected="' + (n.key === st.view) + '">' +
+        ico(n.icon) + '<span>' + esc(n.label) + '</span></button>';
+    }
+
     $('rail').innerHTML =
       '<div class="rail-lbl">ADMINISTRAÇÃO</div>' +
       NAV.map(function (n) {
-        return '<button class="nav" role="tab" data-nav="' + n.key + '" aria-selected="' +
-          (n.key === st.view) + '">' + ico(n.icon) + '<span>' + n.label + '</span></button>';
+        if (!n.itens) return botao(n, false);
+        return '<div class="rail-lbl rail-grupo">' + esc(n.grupo) + '</div>' +
+          n.itens.map(function (f) { return botao(f, true); }).join('');
       }).join('') +
       '<div class="rail-foot"><div class="k">' + st.members.length + ' MEMBROS</div>' +
       '<div class="v">' + st.tasks.filter(function (t) { return t.status !== 'done'; }).length +
       ' tarefas em aberto agora.</div></div>';
 
-    $('navm').innerHTML = NAV.map(function (n) {
+    $('navm').innerHTML = navPlano().map(function (n) {
       return '<button class="chip" role="tab" data-nav="' + n.key + '" aria-selected="' +
         (n.key === st.view) + '">' + ico(n.icon) + n.label + '</button>';
     }).join('');
