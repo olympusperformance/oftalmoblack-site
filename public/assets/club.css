@@ -545,8 +545,12 @@ input[type="file"].inp::file-selector-button:hover{background:var(--surface);bor
    saber o que se está aprovando — o contrário do que a tela serve. */
 /* Comentário à espera da resposta do médico: a linha fica marcada à esquerda
    para não se perder no meio dos que já estão prontos. */
-.tr.tr-falta{background:var(--lv0)}
-.tr.tr-falta .td:first-child{box-shadow:inset 2px 0 0 var(--gold)}
+/* A faixa vai na borda da LINHA, não na célula: na célula ela nasce depois do
+   recuo da linha e encosta na primeira letra, com a altura errada. Mesmo
+   recurso que a árvore de progressão usa para ligar filho a pai. */
+.tr.tr-falta{background:var(--lv0);position:relative}
+.tr.tr-falta::before{content:"";position:absolute;top:0;bottom:0;left:0;width:3px;
+  background:var(--gold)}
 .aviso-bot{display:flex;gap:10px;align-items:flex-start;margin:0 0 14px;padding:12px 14px;
   border:1px solid var(--border-soft);border-radius:var(--r-md);background:var(--surface);
   font-size:13px;color:var(--muted);line-height:1.5}
