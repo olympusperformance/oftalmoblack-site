@@ -107,6 +107,17 @@ h1,h2{margin:0}
 .btn--secundario::before{display:none}
 
 .opcoes{display:flex;flex-direction:column;gap:14px}
+.campo-cidade{position:relative}
+.campo-cidade input{width:100%;background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.85);border-radius:18px;padding:20px 22px;font:inherit;font-size:19px;font-weight:600;color:var(--tinta);box-shadow:0 12px 32px -14px rgba(var(--sombra-rgb),.28),inset 0 1px 0 rgba(255,255,255,.9);-webkit-appearance:none;appearance:none}
+.campo-cidade input::placeholder{color:var(--tinta-fraca);font-weight:500}
+.campo-cidade input:focus{outline:none;border-color:rgba(var(--metal-linha-rgb),.95);box-shadow:0 16px 36px -12px rgba(var(--primaria-rgb),.3),inset 0 1px 0 rgba(255,255,255,.95)}
+.sugestoes{list-style:none;margin:10px 0 0;padding:6px;max-height:230px;overflow-y:auto;background:rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.9);border-radius:18px;box-shadow:0 18px 40px -16px rgba(var(--sombra-rgb),.34);-webkit-overflow-scrolling:touch}
+.sugestoes li{margin:0}
+.sugestoes button{width:100%;background:none;border:0;text-align:left;padding:13px 16px;border-radius:12px;font:inherit;font-size:17px;font-weight:600;color:var(--tinta);cursor:pointer}
+.sugestoes button:hover,.sugestoes button:focus{background:rgba(var(--primaria-rgb),.08);outline:none}
+.sugestoes button i{font-style:normal;color:var(--tinta-fraca);font-weight:500}
+.btn[disabled]{opacity:.42;cursor:default;box-shadow:none}
+.campo-cidade--vazio{margin:10px 0 0;font-size:15px;color:var(--tinta-fraca)}
 .opcao{position:relative;overflow:hidden;background:rgba(255,255,255,.55);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid rgba(255,255,255,.8);border-radius:20px;padding:24px 26px;font-size:20px;font-weight:600;color:var(--tinta);width:100%;cursor:pointer;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:14px;box-shadow:0 12px 32px -14px rgba(var(--sombra-rgb),.28),inset 0 1px 0 rgba(255,255,255,.9)}
 .opcao:hover{border-color:rgba(var(--metal-linha-rgb),.9);box-shadow:0 16px 36px -12px rgba(var(--primaria-rgb),.3),inset 0 1px 0 rgba(255,255,255,.95)}
 .opcao:active{transform:scale(.99)}
@@ -201,6 +212,7 @@ h1,h2{margin:0}
         </div>
       </section>
       
+
       <!-- ===== RAMO A · PACIENTE DA PRAÇA ===== -->
       <section class="tela" data-tela="a1" data-titulo="Perfeito!" data-progresso="45%">
         <div class="miolo pilha">
@@ -263,10 +275,10 @@ h1,h2{margin:0}
           <h2 class="tt h2--g">Que ótimo!</h2>
           <p class="texto">Ficamos muito felizes com a sua decisão de cuidar da sua visão.</p>
         </div>
-        <button class="btn" type="button" data-ir="tele">Continuar</button>
+        <button class="btn" type="button" data-ir="tele_etapas">Continuar</button>
       </section>
 
-      <section class="tela" data-tela="tele" data-titulo="Primeiro passo" data-progresso="60%">
+      <section class="tela" data-tela="tele" data-titulo="Primeiro passo" data-progresso="78%">
         <div class="miolo">
           <span class="kicker">Primeiro passo</span>
           <div class="cartao cartao--centro">
@@ -276,10 +288,10 @@ h1,h2{margin:0}
             <div class="preco-obs">Atendimento on-line com o Dr. Lucas</div>
           </div>
         </div>
-        <button class="btn" type="button" data-ir="tele_etapas">Continuar</button>
+        <button class="btn" type="button" data-ir="protocolo">Continuar</button>
       </section>
 
-      <section class="tela tela--recuada" data-tela="tele_etapas" data-titulo="Na teleconsulta" data-progresso="78%">
+      <section class="tela tela--recuada" data-tela="tele_etapas" data-titulo="Na teleconsulta" data-progresso="60%">
         <span class="kicker kicker--curto">Na teleconsulta</span>
         <h2 class="tt h2--p">O Dr. Lucas avalia o seu caso</h2>
         <p class="texto texto--menor" style="margin-bottom:20px">Ele analisará seus exames, esclarecerá todas as suas dúvidas e avaliará se o seu caso é indicado para cirurgia:</p>
@@ -289,7 +301,7 @@ h1,h2{margin:0}
           
           <span class="marcador">Glaucoma</span>
                   </div>
-        <button class="btn" type="button" style="margin-top:30px" data-ir="protocolo">Continuar</button>
+        <button class="btn" type="button" style="margin-top:30px" data-ir="tele">Continuar</button>
       </section>
 
       <section class="tela" data-tela="protocolo" data-titulo="Último passo" data-progresso="92%">
@@ -321,7 +333,7 @@ h1,h2{margin:0}
 (function(){
   "use strict";
   var WA = "5531998744301";
-  var MSG = {"local": "Olá! Vim pelo link da bio do Dr. Lucas Sales. Sou de {unidade} e gostaria de agendar minha consulta presencial.", "tele": "Olá! Vim pelo link da bio do Dr. Lucas Sales. Sou de outra cidade, tenho interesse em cirurgia e posso ir a Belo Horizonte. Gostaria de agendar a teleconsulta."};
+  var MSG = {"local": "Olá! Vim pelo link da bio do Dr. Lucas Sales. Sou de {unidade} e gostaria de agendar minha consulta presencial.", "tele": "Olá! Vim pelo link da bio do Dr. Lucas Sales. Sou de outra cidade, tenho interesse em cirurgia e posso ir a Belo Horizonte. Gostaria de agendar a teleconsulta.", "fora": "Olá! Vim pelo link da bio do Dr. Lucas Sales. Sou de outra cidade e não consigo ir até aí, mas gostaria de agendar a consulta on-line."};
   var telas = {}, ordem = [];
   Array.prototype.forEach.call(document.querySelectorAll("[data-tela]"), function(el){
     telas[el.getAttribute("data-tela")] = el; ordem.push(el);
@@ -334,6 +346,88 @@ h1,h2{margin:0}
   /* qual unidade o paciente escolheu na tela de localizacao: entra na mensagem
      do WhatsApp e pode ter numero proprio (mentorado com mais de uma clinica) */
   var unidade = "Belo Horizonte", waUnidade = WA;
+    /* por que o paciente veio: escolhido na tela "motivo", entra na mensagem */
+    var motivo = "";
+    /* cidade que o paciente de fora digitou. A lista dos 5.571 municipios do IBGE
+       vem embutida na propria pagina: nada de API do Google, nada de requisicao
+       externa -- a pagina continua funcionando offline e sem chave de terceiros. */
+    var cidadePaciente = "";
+    var CIDADES = {};
+    (function(){
+      var campo = document.getElementById("cidade-campo");
+      if(!campo) return;
+      var lista = document.getElementById("cidade-sugestoes");
+      var vazio = document.getElementById("cidade-vazio");
+      var ok    = document.getElementById("cidade-ok");
+      var todas = null;
+      function achatar(){
+        if(todas) return todas;
+        todas = [];
+        for(var uf in CIDADES){
+          for(var i=0;i<CIDADES[uf].length;i++){
+            todas.push({ nome: CIDADES[uf][i], uf: uf, busca: sem(CIDADES[uf][i]) });
+          }
+        }
+        return todas;
+      }
+      function sem(s){
+        return s.toLowerCase()
+                .replace(/[àáâãä]/g,"a").replace(/[éêë]/g,"e").replace(/[íï]/g,"i")
+                .replace(/[óôõö]/g,"o").replace(/[úü]/g,"u").replace(/ç/g,"c")
+                .replace(/[^a-z0-9 ]/g,"");
+      }
+      function marcar(valor){
+        cidadePaciente = valor;
+        ok.disabled = !valor;
+      }
+      function fechar(){ lista.hidden = true; lista.innerHTML = ""; vazio.hidden = true; }
+      campo.addEventListener("input", function(){
+        var q = sem(campo.value.trim());
+        marcar("");
+        if(q.length < 2){ fechar(); return; }
+        var achados = [], dados = achatar();
+        for(var i=0;i<dados.length && achados.length<40;i++){
+          if(dados[i].busca.indexOf(q) === 0) achados.push(dados[i]);
+        }
+        if(achados.length < 40){
+          for(var j=0;j<dados.length && achados.length<40;j++){
+            if(dados[j].busca.indexOf(q) > 0 && achados.indexOf(dados[j]) === -1) achados.push(dados[j]);
+          }
+        }
+        lista.innerHTML = "";
+        achados.forEach(function(c){
+          var li = document.createElement("li");
+          var b  = document.createElement("button");
+          b.type = "button";
+          b.innerHTML = c.nome + ' <i>· ' + c.uf + '</i>';
+          b.addEventListener("click", function(){
+            campo.value = c.nome + " · " + c.uf;
+            marcar(c.nome + " (" + c.uf + ")");
+            fechar();
+          });
+          li.appendChild(b); lista.appendChild(li);
+        });
+        lista.hidden = achados.length === 0;
+        vazio.hidden = achados.length !== 0;
+        /* O botao NUNCA depende de clicar na sugestao. Quem digita a cidade certa
+           e nao toca na lista tem de conseguir seguir -- e no teste era exatamente
+           o que travava: "Buenos Aires" acha a homonima de Pernambuco, a pessoa nao
+           clica, e o Continuar ficava morto.
+           Com correspondencia exata, guarda o nome canonico com a UF; sem ela, vale
+           o que a pessoa escreveu (cidade pequena, distrito, grafia diferente ou
+           paciente de fora do Brasil). */
+        var exata = null;
+        for(var k=0;k<achados.length;k++){ if(achados[k].busca === q){ exata = achados[k]; break; } }
+        if(exata) marcar(exata.nome + " (" + exata.uf + ")");
+        else if(campo.value.trim().length >= 3) marcar(campo.value.trim());
+      });
+      campo.addEventListener("blur", function(){
+        setTimeout(function(){
+          if(!cidadePaciente && campo.value.trim().length >= 3) marcar(campo.value.trim());
+          fechar();
+        }, 180);
+      });
+    })();
 
   function mostrar(id, empilhar){
     if(!telas[id] || atual === id) return;
@@ -360,7 +454,9 @@ h1,h2{margin:0}
   function abrirWhats(chave){
     /* window.open tem de acontecer DENTRO do clique: fora dele o navegador
        trata como popup e bloqueia (Safari sempre, Chrome com frequência). */
-    var texto = (MSG[chave] || "").replace("{unidade}", unidade);
+    var texto = (MSG[chave] || "").replace("{unidade}", unidade)
+                                  .replace("{motivo}", motivo)
+                                  .replace("{cidade}", cidadePaciente);
     var numero = (chave === "local" && waUnidade) ? waUnidade : WA;
     var url = "https://wa.me/" + numero + (texto ? "?text=" + encodeURIComponent(texto) : "");
     var aba = window.open(url, "_blank");
@@ -370,6 +466,9 @@ h1,h2{margin:0}
   document.addEventListener("click", function(e){
     var alvo = e.target.closest ? e.target.closest("[data-ir],[data-whats]") : null;
     if(!alvo) return;
+    if(alvo.hasAttribute("data-motivo")){
+      motivo = alvo.getAttribute("data-motivo") || motivo;
+    }
     if(alvo.hasAttribute("data-unidade")){
       unidade = alvo.getAttribute("data-unidade") || unidade;
       waUnidade = alvo.getAttribute("data-wa") || WA;
