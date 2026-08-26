@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#07060A">
+<title>Demandas na TV — Club OftalmoBlack</title>
+<link rel="icon" href="/assets/favicon.png">
+<!-- club.css entra pelos tokens de cor, pelas fontes e pelo reset. O
+     club-tema.js fica fora de propósito: painel de parede é sempre escuro. -->
+<link rel="stylesheet" href="/assets/club.css">
+<link rel="stylesheet" href="/assets/tv-demandas.css">
+</head>
+<body>
+
+<div class="halo"></div>
+<div class="halo2"></div>
+
+<!-- Portão. Uma senha só, sem e-mail: não há usuário aqui, há uma tela. -->
+<div class="tv-gate" id="portao" hidden>
+  <form class="tv-gate-cx" id="formSenha">
+    <div class="tv-gate-eb">CLUB OFTALMOBLACK</div>
+    <h1>Quadro de demandas</h1>
+    <p>Esta tela é protegida por senha. Peça a senha à administração.</p>
+    <input class="inp tv-gate-inp" id="senha" type="password" autocomplete="current-password"
+           placeholder="Senha" aria-label="Senha" required>
+    <button class="btn btn-primary tv-gate-btn" type="submit" id="btnEntrar">Ver o quadro</button>
+    <div class="tv-gate-erro" id="erro" hidden></div>
+  </form>
+</div>
+
+<!-- Quadro. Sem barra, sem menu, sem botão: numa TV não há mouse. -->
+<div class="tv-quadro" id="quadro" hidden>
+  <header class="tv-top">
+    <div class="tv-top-id">
+      <span class="tv-top-eb">CLUB OFTALMOBLACK</span>
+      <h1>Demandas</h1>
+    </div>
+    <div class="tv-top-nums" id="numeros"></div>
+    <div class="tv-top-hora">
+      <span class="tv-relogio" id="relogio">--:--</span>
+      <span class="tv-atualizado" id="atualizado">carregando…</span>
+    </div>
+  </header>
+
+  <div class="tv-cols" id="colunas"></div>
+</div>
+
+<script src="/config.js"></script>
+<!-- club-ui.js entra pelo vocabulário do quadro (situações, cores, prioridades)
+     e pelas datas: repetir isso aqui faria a TV divergir do painel no dia em
+     que a operação mudar um nome de situação. -->
+<script src="/assets/club-ui.js"></script>
+<script src="/assets/tv-demandas.js"></script>
+</body>
+</html>

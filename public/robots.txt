@@ -3,6 +3,7 @@ Allow: /
 Disallow: /membros/
 Disallow: /admin/
 Disallow: /entrar/
+Disallow: /demandas/
 Disallow: /mentorados/
 
 Sitemap: https://oftalmoblack.com.br/sitemap.xml

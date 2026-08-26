@@ -11,6 +11,7 @@ public/                # tudo que vai pro ar
   entrar/              # login da área de membros
   admin/               # painel do administrador
   membros/             # área do mentorado
+  demandas/            # o quadro de demandas numa TV do escritório
   mentorados/          # centrais artesanais antigas (ainda no ar)
   config.js            # regerado no boot a partir das variáveis de ambiente
   assets/              # css, js, fontes e imagens
@@ -18,6 +19,7 @@ public/                # tudo que vai pro ar
   sitemap.xml
 docker-entrypoint.d/   # scripts que a imagem nginx roda no boot
 supabase/              # SQL do banco: tabelas, RLS, acervo, demandas, progresso
+  functions/           # Edge Functions (a que serve o quadro da TV)
 Dockerfile             # nginx alpine servindo public/
 nginx.conf             # gzip, cache de assets, headers de segurança
 ```
@@ -67,13 +69,14 @@ CLUB_CONFIG_PATH=/tmp/config.js SUPABASE_URL=https://... SUPABASE_ANON_KEY=sb_pu
 
 ## Área de membros
 
-Três telas, todas no mesmo visual (`assets/club.css`, extraído do protótipo):
+Quatro telas, todas no mesmo visual (`assets/club.css`, extraído do protótipo):
 
 | Rota | O quê |
 |---|---|
 | `/entrar/` | Login por e-mail e senha (Supabase Auth) |
 | `/admin/` | Demandas, membros, tarefas, agenda, materiais e artefatos |
 | `/membros/` | O que o mentorado enxerga; o admin pode espiar com `?membro=<id>` |
+| `/demandas/` | O quadro de demandas na TV do escritório, sem login |
 
 O site continua sendo HTML estático: o navegador fala direto com o Supabase, sem
 servidor nosso no meio. Quem decide o que cada pessoa alcança é o Row Level
@@ -110,6 +113,44 @@ Em pausa → Concluída / Cancelada). Só o administrador alcança: as política
 `demands` e `staff` não têm regra de leitura para mentorado. A demanda pode
 apontar para um mentorado (`member_id`) quando é sobre alguém — "campanha do
 Pedro", "site da Cíntia" — e fica solta quando é interna.
+
+### O quadro na TV do escritório
+
+`/demandas/` é o mesmo quadro da aba Demandas desenhado para ser lido de longe:
+uma coluna por situação, letra grande, nada clicável. Relê o banco a cada 30
+segundos, e a coluna que tem mais demanda do que caberia na altura da tela gira
+de página a cada 20 — o pé da coluna diz onde está ("6–14 de 14"), então nada
+fica escondido sem avisar. Não rola: a TV não tem quem role.
+
+Esta é a única tela do site que não fala direto com o Supabase, e o motivo é
+que ela entra sem login. As tabelas `demands`, `demand_steps` e `staff` só têm
+política de leitura para administrador, e abrir uma para `anon` entregaria o
+quadro a quem tem a chave publishable — que é pública e vive no `/config.js`.
+Então quem lê o banco é a Edge Function `demandas-tv`
+(`supabase/functions/demandas-tv/`), com a chave de serviço que nunca sai de
+lá. O RLS continua fechado como estava, e a função só sabe ler: não há caminho
+de escrita nela.
+
+Quem manda no portão são duas variáveis de ambiente **do projeto Supabase** (não
+do EasyPanel — a senha não pode viver no `config.js`, que qualquer visitante lê):
+
+| Variável | Para quê |
+|---|---|
+| `DEMANDAS_PUBLICO=1` | Quadro aberto, sem senha. É o modo de hoje |
+| `DEMANDAS_SENHA=…` | Quadro trancado por esta senha |
+
+Sem nenhuma das duas a função se recusa a responder — segredo esquecido não
+vira porta aberta por acidente. Para trancar depois:
+
+```bash
+supabase secrets set DEMANDAS_SENHA=... --project-ref <ref>
+supabase secrets unset DEMANDAS_PUBLICO --project-ref <ref>
+supabase functions deploy demandas-tv --project-ref <ref> --no-verify-jwt
+```
+
+Não há nada a mudar no site: a tela pergunta ao servidor se precisa de senha e
+desenha o portão sozinha. A senha que funcionou fica no `localStorage` daquela
+TV, para a tela voltar sozinha depois de uma queda de luz.
 
 ### Cérebro: o mentorado pergunta em português
 
