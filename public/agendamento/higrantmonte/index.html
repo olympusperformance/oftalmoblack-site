@@ -286,10 +286,13 @@ h1,h2{margin:0}
         <h2 class="tt h2--m">Você viria a Itaberaba?</h2>
         <p class="texto texto--menor texto--gap">Atendemos em Itaberaba, Ruy Barbosa e Petrolina, e é em Itaberaba que o Dr. Higrant realiza as cirurgias. Você viria até lá para realizar o seu sonho de ter a liberdade visual?</p>
         <div class="opcoes">
-          <button class="btn" type="button" style="animation-delay:.1s" data-ir="b1">Sim, eu iria a Itaberaba</button>
+          <button class="btn" type="button" style="animation-delay:.1s" data-vem="1"
+                  data-ir="b1">Sim, eu iria a Itaberaba</button>
           <button class="btn btn--secundario" type="button" data-ir="fora">Não</button>
         </div>
       </section>
+      
+
 
       <section class="tela" data-tela="b1" data-titulo="Que ótimo!" data-progresso="45%">
         <div class="miolo pilha">
@@ -356,7 +359,7 @@ h1,h2{margin:0}
 (function(){
   "use strict";
   var WA = "5575988928172";
-  var MSG = {"local": "Olá! Vim pelo link da bio do Dr. Higrant Monte. Sou de {unidade} e gostaria de agendar minha consulta presencial.", "tele": "Olá! Vim pelo link da bio do Dr. Higrant Monte. Sou de {cidade}, tenho interesse em cirurgia e posso ir a Itaberaba. Gostaria de agendar a teleconsulta.", "fora": "Olá! Vim pelo link da bio do Dr. Higrant Monte. Sou de {cidade} e não consigo ir até aí, mas gostaria de agendar a consulta on-line."};
+  var MSG = {"local": "Olá! Vim pelo link da bio do Dr. Higrant Monte. Sou de {unidade} e gostaria de agendar minha consulta presencial.", "tele": "Olá! Vim pelo link da bio do Dr. Higrant Monte. Sou de {cidade}, tenho interesse em cirurgia e posso ir a Itaberaba. Gostaria de agendar a teleconsulta."};
   var telas = {}, ordem = [];
   Array.prototype.forEach.call(document.querySelectorAll("[data-tela]"), function(el){
     telas[el.getAttribute("data-tela")] = el; ordem.push(el);
@@ -374,7 +377,25 @@ h1,h2{margin:0}
     /* cidade que o paciente de fora digitou. A lista dos 5.571 municipios do IBGE
        vem embutida na propria pagina: nada de API do Google, nada de requisicao
        externa -- a pagina continua funcionando offline e sem chave de terceiros. */
+    /* Rastreio: os dois helpers nao fazem nada se a pagina nao declarou GA4 nem
+       pixel -- e' o que deixa as chamadas ga()/meta() no resto do codigo sem "if".
+       ⚠️ FICAM FORA DE QUALQUER BLOCO CONDICIONAL, DE PROPOSITO. Ja estiveram
+       dentro do bloco dos parceiros (26/08/2026) e o resultado foi 25 paginas no
+       ar com "ga is not defined" no clique do WhatsApp: o botao nao abria nada,
+       porque so a pagina do Dr. Alex tem parceiros. Nao mover para dentro de bloco.
+       E nao escrever marcador de bloco literal em comentario: o parser le' o
+       marcador de dentro do comentario como abertura de bloco de verdade -- foi
+       assim que a primeira tentativa de consertar isto reintroduziu o bug. */
+    var PAGE_PATH = "/agendamento", META_CAT = "‹meta_categoria›";
+    function ga(nome, dados){
+      if (typeof gtag === "function") gtag("event", nome, dados);
+    }
+    function meta(nome, conteudo){
+      if (typeof fbq === "function") fbq("trackCustom", nome,
+        { content_category: META_CAT, content_name: conteudo });
+    }
     var cidadePaciente = "";
+    var vemDeFora = false;
     function semAcento(s){
       return String(s).toLowerCase().trim()
                .replace(/[àáâãä]/g,"a").replace(/[éêë]/g,"e").replace(/[íï]/g,"i")
@@ -490,6 +511,7 @@ h1,h2{margin:0}
   function abrirWhats(chave){
     /* window.open tem de acontecer DENTRO do clique: fora dele o navegador
        trata como popup e bloqueia (Safari sempre, Chrome com frequência). */
+    if(chave === "local" && vemDeFora && MSG.vem) chave = "vem";
     var texto = (MSG[chave] || "").replace("{unidade}", unidade)
                                   .replace("{motivo}", motivo)
                                   .replace("{cidade}", cidadePaciente);
@@ -520,6 +542,9 @@ h1,h2{margin:0}
     if(alvo.hasAttribute("data-motivo")){
       motivo = alvo.getAttribute("data-motivo") || motivo;
     }
+    /* "Sim, eu iria a <cidade>": mora fora, mas viaja. Sem isso a mensagem da
+       tela de preco diria "Sou de <cidade do medico>", que e' falso. */
+    if(alvo.hasAttribute("data-vem")){ vemDeFora = true; }
     if(alvo.hasAttribute("data-unidade")){
       unidade = alvo.getAttribute("data-unidade") || unidade;
       waUnidade = alvo.getAttribute("data-wa") || WA;
