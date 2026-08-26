@@ -373,6 +373,12 @@ h1,h2{margin:0}
        vem embutida na propria pagina: nada de API do Google, nada de requisicao
        externa -- a pagina continua funcionando offline e sem chave de terceiros. */
     var cidadePaciente = "";
+    function semAcento(s){
+      return String(s).toLowerCase().trim()
+               .replace(/[àáâãä]/g,"a").replace(/[éêë]/g,"e").replace(/[íï]/g,"i")
+               .replace(/[óôõö]/g,"o").replace(/[úü]/g,"u").replace(/ç/g,"c")
+               .replace(/[^a-z0-9]/g,"");
+    }
     /* Fluxo embutido dos parceiros: o paciente que nao vem a' praca do medico
        escolhe uma cidade e percorre AQUI DENTRO as telas do colega -- exames,
        preco e WhatsApp dele. Nada de redirecionar para outro site: quem chegou
@@ -489,7 +495,13 @@ h1,h2{margin:0}
       if(chave === "parceiro" && parceiro){
         /* o lead vai para o WhatsApp DO COLEGA, com a mensagem dizendo de onde veio */
         numero = parceiro.whatsapp;
-        texto  = parceiro.mensagem.replace("{cidade}", cidadePaciente);
+        /* Se a pessoa JA mora na praca do colega, "posso ir a Maringa" fica bobo --
+           e justamente o caso mais comum e mais quente. O trecho da viagem sai. */
+        var chave1 = cidadePaciente.replace(/\s*\([A-Z]{2}\)\s*$/, "");
+        var mesma  = !!cidadePaciente && semAcento(chave1) === semAcento(parceiro.cidade || "");
+        texto  = parceiro.mensagem
+                   .replace("{cidade}", cidadePaciente)
+                   .replace("{ida}", mesma ? "" : " e posso ir a " + parceiro.cidade);
       }
     var url = "https://wa.me/" + numero + (texto ? "?text=" + encodeURIComponent(texto) : "");
     var ramo = (chave === "parceiro" && parceiro) ? ("Indicacao-" + parceiro.slug) : chave;
