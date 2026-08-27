@@ -35,7 +35,10 @@
     staff:     ['nome', 'apelido', 'ativo'],
     artifact_steps: ['artifact_id', 'titulo', 'ordem'],
     step_progress:  ['member_id', 'step_id', 'feito'],
-    demand_steps:   ['demand_id', 'titulo', 'ordem', 'feito'],
+    /* As mesmas colunas da demanda: a subtarefa ganhou situação, dono e prazo
+       depois, e sem elas aqui o filtro descartava o campo e o update ia vazio. */
+    demand_steps:   ['demand_id', 'titulo', 'ordem', 'feito', 'status', 'prioridade',
+                     'responsaveis', 'member_id', 'vence_em'],
     bot_exemplos:   ['grupo', 'comentario', 'resposta', 'ativo', 'origem'],
     bot_respostas:  ['comentario', 'usuario', 'grupo', 'resposta', 'comment_id',
                      'permalink', 'decisao', 'exemplo_id', 'decidido']
