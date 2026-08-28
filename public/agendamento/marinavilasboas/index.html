@@ -71,7 +71,11 @@ button{font:inherit;color:inherit}
 .tela[data-ativa]{display:flex;animation:glassReveal .6s var(--curva) both}
 .tela--abertura[data-ativa]{animation-duration:.7s;justify-content:center;padding:20px 0}
 .tela--recuada[data-ativa]{padding-top:14px}
-.miolo{flex:1;display:flex;flex-direction:column;justify-content:center;padding:12px 0}
+/* O miolo NAO estica mais. Com flex:1 + center ele engolia o espaco livre e empurrava o botao para o fim da tela: medido em 375x812, 477px de miolo para 138px de texto no aviso -- 339px de vazio, com o botao em y=808 de 812. Bastava a barra de endereco do navegador para o botao sumir. Pedido da Dra. Cintia em 27/08/2026: "subisse tudo que esta escrito para que o botao de continuar ficasse visivel ja na tela imediatamente". */
+.miolo{flex:0 1 auto;display:flex;flex-direction:column;justify-content:flex-start;padding:12px 0}
+.tela[data-ativa]{justify-content:flex-start}
+/* A abertura continua centralizada de proposito: e' capa, nao passo do funil. */
+.tela--abertura[data-ativa]{justify-content:center}
 .pilha>*{animation:riseIn .6s var(--curva) both}
 .pilha>*:nth-child(1){animation-delay:.10s}
 .pilha>*:nth-child(2){animation-delay:.18s}
@@ -151,6 +155,45 @@ h1,h2{margin:0}
 .rascunho{background:#B3261E;color:#fff;font-size:13px;font-weight:600;line-height:1.4;letter-spacing:.4px;text-align:center;padding:9px 14px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
+/* CELULAR (por largura) OU TELA BAIXA. O funil e' link na bio: o trafego e'
+   telefone. Num aparelho de 667px de altura -- iPhone
+   SE/8, e qualquer aparelho com a barra de endereco aberta -- a respiracao generosa
+   do desenho joga o botao para fora. Medido antes desta regra: exames com 932px de
+   pagina para 667px de tela. Aqui o ritmo vertical encolhe; em tela alta nada muda.
+   Pedido da Dra. Cintia em 27/08/2026: "tem bastante espaco vazio nao utilizado na
+   pagina que poderia ser eliminado pra que o botao suba". */
+@media (max-width:520px), (max-height:820px){
+  .corpo{padding-top:14px;padding-bottom:20px;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+  .avatar--grande{width:78px;height:78px;margin-bottom:16px}
+  .avatar--grande.avatar--mono{font-size:30px}
+  .kicker{margin-bottom:11px}
+  .kicker--curto{margin-bottom:10px}
+  .texto--fim{margin-bottom:22px}
+  .texto--gap{margin-bottom:20px}
+  .miolo{padding:4px 0}
+  .tela--recuada[data-ativa]{padding-top:6px}
+  .btn{padding-top:17px;padding-bottom:17px}
+  .lista{gap:8px}
+  .item{padding-top:11px;padding-bottom:11px}
+  .rodape-nota{margin-top:11px}
+  .opcoes{gap:9px}
+  .cartao{padding-top:18px;padding-bottom:18px}
+  .icone{width:46px;height:46px}
+  .marcadores{gap:7px}
+  .marcador{padding-top:7px;padding-bottom:7px}
+  /* O cabecalho e' sticky: os 158px dele custam em TODA tela, nao numa so'.
+     Em tela baixa o retrato encolhe e a identidade fica em duas linhas apertadas --
+     continua identificando o medico, que e' a funcao dele, gastando ~60px a menos. */
+  .topo__miolo{flex-direction:row;gap:12px;padding:10px 18px 9px;padding-top:max(10px,env(safe-area-inset-top))}
+  .identidade{text-align:left;align-items:flex-start}
+  .avatar--mini{width:42px;height:42px}
+  .voltar{margin-bottom:2px;padding-top:2px;padding-bottom:2px}
+  .texto{margin-bottom:14px}
+  .tt.h2,.tt.h2--m,.tt.h2--p{margin-bottom:10px}
+  .lista{gap:7px}
+  .item{padding-top:10px;padding-bottom:10px}
+  .btn{margin-top:14px}
+}
 @media (max-width:400px){
   .corpo{padding-left:22px;padding-right:22px}
   .h1{font-size:40px}
@@ -334,8 +377,9 @@ h1,h2{margin:0}
           <div class="regua"></div>
           <p class="texto">Se o seu caso for indicado, orientaremos você sobre como realizar a cirurgia com a Dra. Marina aqui em Patos de Minas, com todo o suporte da nossa equipe.</p>
         </div>
+
         <button class="btn" type="button" data-whats="tele">Agendar teleconsulta</button>
-      </section>
+              </section>
       
 
 
