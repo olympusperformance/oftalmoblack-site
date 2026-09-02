@@ -773,10 +773,8 @@ document.querySelectorAll('.js-wa').forEach(function(a){
 });
 
 /* Formulário de aplicação
-   FORM_ENDPOINT: URL /exec do Apps Script "Aplicações · Mentoria Olympus Catarata" (projeto standalone na
-   conta olympusperformanceltda, código em apps-script/Code.gs, App da Web "qualquer pessoa"; publicado 17/08/2026).
-   Grava na planilha 1_hrlrBdhIy9uCcgw-tgByysfKoalWiLC6bkSqF_gPm8, aba Aplicações. Vazio = só WhatsApp. */
-var FORM_ENDPOINT='https://script.google.com/macros/s/AKfycbytTL5pQ1xgA2IFpQ0drNPc2O3g8UYaYDddtYZhb16dUBw_hNgw6gYRsRkoO-y_PtFG5A/exec';
+   FORM_ENDPOINT: destino dos dados (definir com João Felipe). Vazio = só WhatsApp. */
+var FORM_ENDPOINT='';
 var WA_NUMERO='5592991441889';
 
 document.getElementById('form-aplicacao').addEventListener('submit',function(ev){
@@ -791,7 +789,7 @@ document.getElementById('form-aplicacao').addEventListener('submit',function(ev)
   };
   if(FORM_ENDPOINT){
     try{
-      fetch(FORM_ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(dados),keepalive:true}).catch(function(){});
+      fetch(FORM_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(dados),keepalive:true}).catch(function(){});
     }catch(e){}
   }
   if(typeof gtag==='function')gtag('event','aplicacao_enviada',{page_location:location.href});
