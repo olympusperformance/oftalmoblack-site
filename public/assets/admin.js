@@ -107,11 +107,26 @@
      mentorado e esconde o campo, em vez de quebrar a gravação. */
   var CHAVE_EU = 'ob-admin-eu';
 
+  /* Login → sigla da equipe. É o vínculo que staff.user_id faria no banco; fica
+     aqui até a migração rodar (e continua valendo como reserva depois). Trocar
+     de e-mail = editar esta lista. */
+  var EU_POR_EMAIL = {
+    'felipentys@gmail.com':       'FM',
+    'italomontepro@gmail.com':    'IM',
+    'pedrolarry.jj@gmail.com':    'PL',
+    'felipejoao.nm@gmail.com':    'JF',
+    'thomasads.trafego@gmail.com':'TA'
+  };
+
   function descobrirEu() {
-    st.temProjeto = !st.demands.length || ('projeto' in st.demands[0]);
+    st.temProjeto = !!st.demands.length && ('projeto' in st.demands[0]);
     var porLogin = st.staff.filter(function (p) {
       return p.user_id && sessao && p.user_id === sessao.userId;
     })[0];
+    var sigla = sessao && EU_POR_EMAIL[String(sessao.email || '').toLowerCase()];
+    if (!porLogin && sigla) {
+      porLogin = st.staff.filter(function (p) { return p.apelido === sigla; })[0];
+    }
     var guardado = null;
     try { guardado = localStorage.getItem(CHAVE_EU); } catch (err) { /* sem storage */ }
     var porEscolha = st.staff.filter(function (p) { return p.id === guardado; })[0];
@@ -1081,9 +1096,35 @@
 
   /* Projeto é o eixo de leitura: demanda de mentorado se agrupa por ele;
      interna, pelo texto livre em `projeto`; sem nada, vai para "Sem projeto". */
+  /* Sem a coluna no banco, o projeto mora no começo do título: "[SDR IA Marina]
+     Migrar pra Sonnet 5". A tela lê e escreve a tag; o resto do sistema (TV,
+     Hermes) enxerga o título inteiro e não precisa saber da convenção. Quando a
+     coluna existir, ela manda e a tag deixa de ser escrita. */
+  var TAG = /^\s*\[([^\]]+)\]\s*/;
+
+  function lerProjeto(d) {
+    if (st.temProjeto && d.projeto) return String(d.projeto).trim();
+    var m = TAG.exec(d.titulo || '');
+    return m ? m[1].trim() : '';
+  }
+
+  function tituloSemTag(t) { return String(t || '').replace(TAG, ''); }
+
+  function comTag(projeto, titulo) {
+    var base = tituloSemTag(titulo);
+    return projeto ? '[' + projeto + '] ' + base : base;
+  }
+
+  /* O que gravar ao trocar o projeto: coluna, ou o título reescrito. */
+  function patchProjeto(r, v) {
+    v = (v || '').trim();
+    if (st.temProjeto) return { projeto: v || null };
+    return { titulo: comTag(v, r.titulo) };
+  }
+
   function projetoDe(d) {
     if (d.member_id) return { key:'m:' + d.member_id, nome:membro(d.member_id) || 'Mentorado removido', tipo:'mentorado' };
-    var p = (d.projeto || '').trim();
+    var p = lerProjeto(d);
     if (p) return { key:'p:' + p.toLowerCase(), nome:p, tipo:'projeto' };
     return { key:'z:', nome:'Sem projeto', tipo:'vazio' };
   }
@@ -1091,7 +1132,8 @@
   function projetosExistentes() {
     var vistos = {};
     st.demands.forEach(function (d) {
-      var p = (d.projeto || '').trim();
+      if (d.member_id) return;
+      var p = lerProjeto(d);
       if (p) vistos[p.toLowerCase()] = p;
     });
     return Object.keys(vistos).sort().map(function (k) { return vistos[k]; });
@@ -1183,11 +1225,6 @@
       ? '<div class="notice">' + ico('alert') + '<div>' +
         esc(Club.faltaChecklistDemanda) + '</div></div>'
       : '';
-    if (!st.temProjeto) {
-      avisoCk += '<div class="notice">' + ico('alert') + '<div>O banco ainda não tem a coluna ' +
-        '<b>projeto</b> nas demandas: rode o bloco de 02/09 de supabase/demandas.sql no SQL Editor. ' +
-        'Até lá o quadro agrupa só por mentorado.</div></div>';
-    }
 
     var comChecklist = rows.filter(function (d) { return etapasDaDemanda(d.id).length; });
     $('btnExpandirDem').hidden = !comChecklist.length;
@@ -1209,7 +1246,7 @@
        projeto": as linhas se juntam sob o projeto (mentorado ou texto livre),
        o grupo que tem atraso vem primeiro e, dentro dele, quem vence antes. A
        coluna Projeto só aparece na lista: no agrupado ela é o cabeçalho. */
-    var comProjeto = st.temProjeto && st.demAgrupar === 'lista';
+    var comProjeto = st.demAgrupar === 'lista';
     var cols = comProjeto
       ? 'minmax(230px,2fr) 132px 96px 140px 124px 128px 116px 116px 104px'
       : 'minmax(230px,2fr) 132px 96px 140px 124px 116px 116px 104px';
@@ -1298,11 +1335,12 @@
     /* De onde veio e o que é: as duas linhas curtas cabem juntas embaixo do
        título e liberam a coluna para o checklist. */
     var sub = [d.origem, d.descricao].filter(Boolean).join(' · ');
+    var titulo = d.member_id ? d.titulo : tituloSemTag(d.titulo);
 
     var linha = '<div class="tr' + (fechada ? ' off' : '') + '"' +
       ' style="box-shadow:inset 3px 0 0 ' + cor + '">' +
       '<div class="td nm">' + toggleOuAdd(chave, etapas.length, d.id) +
-        '<div class="tx"><div class="tx tx-t" title="' + esc(d.titulo) + '">' + esc(d.titulo) + '</div>' +
+        '<div class="tx"><div class="tx tx-t" title="' + esc(d.titulo) + '">' + esc(titulo) + '</div>' +
         (sub ? '<div class="tx tx-s">' + esc(sub) + '</div>' : '') +
       '</div></div>' +
       colunasDe(d, 'd') +
@@ -1337,8 +1375,8 @@
      o projeto dela. */
   function celulaProjeto(d) {
     if (d.member_id) return tdCel('<span class="tx tx-s">' + esc(membro(d.member_id) || '—') + '</span>');
-    return tdCel(celula('d.projeto', d.id, '<span class="tx">' + esc(d.projeto || 'sem projeto') + '</span>',
-      !d.projeto));
+    var p = lerProjeto(d);
+    return tdCel(celula('d.projeto', d.id, '<span class="tx">' + esc(p || 'sem projeto') + '</span>', !p));
   }
 
   /* Célula que abre menu no clique. Fica invisível como controle até o mouse
@@ -1470,7 +1508,7 @@
     }
 
     if (par[1] === 'projeto') {
-      var atual = (r.projeto || '').trim();
+      var atual = lerProjeto(r);
       var itens = [{ value:'', label:'Sem projeto', checked:!atual }]
         .concat(projetosExistentes().map(function (p) {
           return { value:p, label:p, checked:p.toLowerCase() === atual.toLowerCase() };
@@ -1482,7 +1520,7 @@
           if (nome === null) return;
           v = nome.trim();
         }
-        salvar(r.id, { projeto: v || null });
+        salvar(r.id, patchProjeto(r, v));
       } });
       return;
     }
@@ -1726,7 +1764,7 @@
       title: novo ? 'Nova demanda' : 'Editar demanda',
       sub: novo ? 'Operação interna — o mentorado não enxerga isto.' : d.titulo,
       body:
-        Club.field('O que precisa ser feito', 'titulo', { value:d.titulo, required:true,
+        Club.field('O que precisa ser feito', 'titulo', { value:tituloSemTag(d.titulo), required:true,
           placeholder:'Conectar o WhatsApp da clínica do Arthur' }) +
         Club.field('Detalhe', 'descricao', { value:d.descricao, textarea:true,
           placeholder:'Contexto, links, o que já foi tentado.' }) +
@@ -1749,12 +1787,10 @@
           [{ value:'', label:'Nenhum — demanda interna' }].concat(
             st.members.map(function (m) { return { value:m.id, label:m.nome }; })),
           d.member_id || '') +
-        (st.temProjeto
-          ? Club.field('Projeto', 'projeto', { value:d.projeto || '',
-              placeholder:'SDR IA Marina, Tráfego B2C Dr. Alex, Sistema Black…',
-              hint:'Só para demanda interna; a de mentorado se agrupa por ele. ' +
-                   (projetosExistentes().length ? 'Existem: ' + projetosExistentes().join(', ') + '.' : '') })
-          : '') +
+        Club.field('Projeto', 'projeto', { value:d.id ? lerProjeto(d) : '',
+          placeholder:'SDR IA Marina, Tráfego B2C Dr. Alex, Sistema Black…',
+          hint:'Só para demanda interna; a de mentorado se agrupa por ele. ' +
+               (projetosExistentes().length ? 'Existem: ' + projetosExistentes().join(', ') + '.' : '') }) +
         Club.field('Subtarefas', 'subtarefas', { value:subAtuais.map(function (e) {
             return e.titulo; }).join('\n'), textarea:true,
           placeholder:'Número liberado pela operadora\nAPI conectada\nFluxo testado',
@@ -1767,8 +1803,9 @@
         dados.id = d.id;
         dados.member_id = dados.member_id || null;
         dados.responsaveis = dados.responsaveis || [];
-        if (st.temProjeto) dados.projeto = String(dados.projeto || '').trim() || null;
-        else delete dados.projeto;
+        var proj = dados.member_id ? '' : String(dados.projeto || '').trim();
+        if (st.temProjeto) { dados.projeto = proj || null; dados.titulo = tituloSemTag(dados.titulo); }
+        else { delete dados.projeto; dados.titulo = comTag(proj, dados.titulo); }
 
         var titulos = String(dados.subtarefas || '').split('\n')
           .map(function (l) { return l.trim(); })
