@@ -198,3 +198,39 @@ create policy "admin manda nas etapas da demanda" on public.demand_steps
 
 grant select, insert, update, delete on public.demand_steps to authenticated;
 revoke all on public.demand_steps from anon;
+
+-- ============================================================================
+-- Migração 2026-09-02: o quadro ganha "projeto" e a equipe ganha login
+--
+-- Rode de novo o arquivo inteiro ou só este bloco; é idempotente.
+--
+-- `staff.user_id` liga a pessoa da equipe ao login do Supabase Auth. É o que
+-- deixa o painel saber quem é "eu" e abrir a aba Demandas já filtrada em
+-- "Minhas". Quem não tem login continua podendo ser responsável.
+--
+-- `demands.projeto` é o eixo de leitura da lista: demanda de mentorado já se
+-- agrupa pelo mentorado (member_id); a interna se agrupa por este texto livre
+-- ("SDR IA Marina", "Tráfego B2C Dr. Alex", "Sistema Black"...). Vazio = sem
+-- projeto. Texto livre de propósito: o vocabulário nasce do uso, e a célula
+-- na linha sugere os nomes que já existem.
+-- ============================================================================
+
+alter table public.staff
+  add column if not exists user_id uuid references auth.users (id) on delete set null;
+
+create unique index if not exists staff_user_id_uq
+  on public.staff (user_id) where user_id is not null;
+
+alter table public.demands
+  add column if not exists projeto text;
+
+create index if not exists demands_projeto_idx on public.demands (projeto);
+
+-- Felipe Melo (Coordenação) é o primeiro login ligado. Os demais entram pelo
+-- painel (botão Equipe) ou por um update igual a este.
+update public.staff s
+   set user_id = u.id
+  from auth.users u
+ where u.email = 'felipentys@gmail.com'
+   and s.apelido = 'FM'
+   and s.user_id is null;

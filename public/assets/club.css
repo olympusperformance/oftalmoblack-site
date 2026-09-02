@@ -814,3 +814,19 @@ input[type="file"].inp::file-selector-button:hover{background:var(--surface);bor
 /* A linha de acrescentar não tem situação nem prazo para mostrar: o nome
    atravessa até a coluna de ações, e o campo ganha espaço de escrever. */
 .tr.nova .nm{grid-column:1/-2}
+
+/* ── quadro de demandas agrupado por projeto ─────────────────────────────
+   O cabeçalho do grupo é uma linha da mesma grade, atravessando as colunas:
+   assim o grupo não quebra o alinhamento das linhas que vêm embaixo. */
+.tr.grp{grid-template-columns:1fr auto;background:var(--th);border-top:1px solid var(--border-soft);
+  padding:10px 14px;cursor:pointer;user-select:none}
+.tr.grp:first-child{border-top:0}
+.tr.grp:hover{background:var(--surface-hi)}
+.grp-t{display:flex;align-items:center;gap:9px;min-width:0}
+.grp-t .tg{flex-shrink:0}
+.grp-n{font-weight:600;font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.grp-k{font-size:11px;color:var(--faint);white-space:nowrap}
+.grp-m{display:flex;gap:10px;font-size:11px;color:var(--muted);white-space:nowrap}
+.grp-m b{font-weight:600}
+.grp-m .late{color:var(--danger)}
+.grp-m .today{color:var(--gold)}

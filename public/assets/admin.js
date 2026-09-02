@@ -14,6 +14,12 @@
              view: 'overview', membro: '', status: 'all',
              matCategoria: '', matMembro: '',
              demResp: '', demMembro: '', demAbertas: 'open',
+             /* "Minhas" é a leitura padrão do quadro: quem abre vê o que é seu,
+                agrupado por projeto. "eu" é a pessoa da equipe ligada ao login
+                (staff.user_id) ou, enquanto a migração não roda, a escolhida no
+                próprio botão e guardada neste navegador. */
+             demVisao: 'minhas', demAgrupar: 'projeto', eu: null, temProjeto: true,
+             grpFechado: {},
              arvMembro: '', arvFiltro: 'all',
              /* Demanda que está com a linha de nova subtarefa aberta. */
              novaSub: null, zapEdit: null,
@@ -89,7 +95,40 @@
       st.steps = r[7]; st.progress = r[8]; st.demandSteps = r[9];
       st.botExemplos = r[10]; st.botRespostas = r[11];
       indexar();
+      descobrirEu();
     });
+  }
+
+  /* ── quem sou eu no quadro ─────────────────────────────────────────────
+     Primeiro pelo vínculo do banco (staff.user_id = login). Sem vínculo, vale a
+     escolha feita no botão "Minhas" e guardada no localStorage: é o que deixa o
+     quadro funcionar hoje, antes de o SQL de 02/09 rodar. A coluna "projeto"
+     segue a mesma regra: se o banco ainda não a tem, o painel agrupa só por
+     mentorado e esconde o campo, em vez de quebrar a gravação. */
+  var CHAVE_EU = 'ob-admin-eu';
+
+  function descobrirEu() {
+    st.temProjeto = !st.demands.length || ('projeto' in st.demands[0]);
+    var porLogin = st.staff.filter(function (p) {
+      return p.user_id && sessao && p.user_id === sessao.userId;
+    })[0];
+    var guardado = null;
+    try { guardado = localStorage.getItem(CHAVE_EU); } catch (err) { /* sem storage */ }
+    var porEscolha = st.staff.filter(function (p) { return p.id === guardado; })[0];
+    st.eu = porLogin || porEscolha || null;
+    if (!st.eu) st.demVisao = 'todas';
+  }
+
+  function escolherEu(anchor) {
+    var ativos = st.staff.filter(function (p) { return p.ativo; });
+    Club.menu(anchor, ativos.map(function (p) {
+      return { value:p.id, label:p.nome, checked:!!(st.eu && st.eu.id === p.id) };
+    }), { titulo:'Quem é você no quadro?', onPick:function (v) {
+      st.eu = ativos.filter(function (p) { return p.id === v; })[0] || null;
+      try { localStorage.setItem(CHAVE_EU, v); } catch (err) { /* sem storage */ }
+      st.demVisao = 'minhas';
+      renderDemandas();
+    } });
   }
 
   function membro(id) {
@@ -1036,8 +1075,31 @@
     return d.responsaveis.map(function (id) { return pessoa(id) || '—'; }).join(', ');
   }
 
+  function minha(d) {
+    return !!(st.eu && d.responsaveis && d.responsaveis.indexOf(st.eu.id) !== -1);
+  }
+
+  /* Projeto é o eixo de leitura: demanda de mentorado se agrupa por ele;
+     interna, pelo texto livre em `projeto`; sem nada, vai para "Sem projeto". */
+  function projetoDe(d) {
+    if (d.member_id) return { key:'m:' + d.member_id, nome:membro(d.member_id) || 'Mentorado removido', tipo:'mentorado' };
+    var p = (d.projeto || '').trim();
+    if (p) return { key:'p:' + p.toLowerCase(), nome:p, tipo:'projeto' };
+    return { key:'z:', nome:'Sem projeto', tipo:'vazio' };
+  }
+
+  function projetosExistentes() {
+    var vistos = {};
+    st.demands.forEach(function (d) {
+      var p = (d.projeto || '').trim();
+      if (p) vistos[p.toLowerCase()] = p;
+    });
+    return Object.keys(vistos).sort().map(function (k) { return vistos[k]; });
+  }
+
   function demandasVisiveis() {
     return st.demands.filter(function (d) {
+      if (st.demVisao === 'minhas' && !minha(d)) return false;
       if (st.demAbertas === 'open' && Club.DEM_ABERTOS.indexOf(d.status) === -1) return false;
       if (st.demResp && (!d.responsaveis || d.responsaveis.indexOf(st.demResp) === -1)) return false;
       if (st.demMembro && d.member_id !== st.demMembro) return false;
@@ -1068,26 +1130,50 @@
     Array.prototype.forEach.call($('filtroAbertas').children, function (b) {
       b.setAttribute('aria-selected', String(b.dataset.ab === st.demAbertas));
     });
+    Array.prototype.forEach.call($('filtroVisao').children, function (b) {
+      b.setAttribute('aria-selected', String(b.dataset.visao === st.demVisao));
+    });
+    Array.prototype.forEach.call($('filtroAgrupar').children, function (b) {
+      b.setAttribute('aria-selected', String(b.dataset.agrupar === st.demAgrupar));
+    });
+    $('filtroVisao').firstElementChild.textContent = st.eu
+      ? 'Minhas (' + (st.eu.apelido || Club.initials(st.eu.nome)) + ')' : 'Minhas';
 
-    var abertas = st.demands.filter(function (d) {
+    var universo = st.demVisao === 'minhas' ? st.demands.filter(minha) : st.demands;
+    var abertas = universo.filter(function (d) {
       return Club.DEM_ABERTOS.indexOf(d.status) !== -1;
     });
     var atrasadas = abertas.filter(function (d) {
       var n = Club.diffDays(d.vence_em);
       return n !== null && n < 0;
     });
-    var risco = st.demands.filter(function (d) {
+    var risco = universo.filter(function (d) {
       return d.status === 'Em risco' || d.status === 'Aguardando retorno';
     });
     var semDono = abertas.filter(function (d) {
       return !d.responsaveis || !d.responsaveis.length;
     });
 
-    $('statsDemandas').innerHTML =
-      cardStat('EM ABERTO', abertas.length, st.demands.length + ' no total') +
-      cardStat('ATRASADAS', atrasadas.length, atrasadas.length ? 'passaram do prazo' : 'tudo dentro do prazo') +
-      cardStat('PEDINDO ATENÇÃO', risco.length, 'em risco ou aguardando retorno') +
-      cardStat('SEM RESPONSÁVEL', semDono.length, semDono.length ? 'ninguém tocando' : 'todas com dono');
+    if (st.demVisao === 'minhas') {
+      /* Na leitura pessoal os cartões são a agenda: o que venceu, o que vence
+         hoje, o que vence até domingo e o que ainda não tem dia. */
+      var hoje = abertas.filter(function (d) { return Club.diffDays(d.vence_em) === 0; });
+      var semana = abertas.filter(function (d) {
+        var n = Club.diffDays(d.vence_em); return n !== null && n > 0 && n <= 6;
+      });
+      var semPrazo = abertas.filter(function (d) { return !d.vence_em; });
+      $('statsDemandas').innerHTML =
+        cardStat('ATRASADAS', atrasadas.length, atrasadas.length ? 'passaram do prazo' : 'nada atrasado') +
+        cardStat('HOJE', hoje.length, hoje.length ? 'vencem hoje' : 'nada vence hoje') +
+        cardStat('ESTA SEMANA', semana.length, 'vencem nos próximos 6 dias') +
+        cardStat('SEM PRAZO', semPrazo.length, abertas.length + ' em aberto no total');
+    } else {
+      $('statsDemandas').innerHTML =
+        cardStat('EM ABERTO', abertas.length, st.demands.length + ' no total') +
+        cardStat('ATRASADAS', atrasadas.length, atrasadas.length ? 'passaram do prazo' : 'tudo dentro do prazo') +
+        cardStat('PEDINDO ATENÇÃO', risco.length, 'em risco ou aguardando retorno') +
+        cardStat('SEM RESPONSÁVEL', semDono.length, semDono.length ? 'ninguém tocando' : 'todas com dono');
+    }
 
     var rows = demandasVisiveis();
 
@@ -1097,6 +1183,11 @@
       ? '<div class="notice">' + ico('alert') + '<div>' +
         esc(Club.faltaChecklistDemanda) + '</div></div>'
       : '';
+    if (!st.temProjeto) {
+      avisoCk += '<div class="notice">' + ico('alert') + '<div>O banco ainda não tem a coluna ' +
+        '<b>projeto</b> nas demandas: rode o bloco de 02/09 de supabase/demandas.sql no SQL Editor. ' +
+        'Até lá o quadro agrupa só por mentorado.</div></div>';
+    }
 
     var comChecklist = rows.filter(function (d) { return etapasDaDemanda(d.id).length; });
     $('btnExpandirDem').hidden = !comChecklist.length;
@@ -1106,20 +1197,31 @@
 
     if (!rows.length) {
       $('listaDemandas').innerHTML = avisoCk + Club.empty('check-circle',
-        st.demResp || st.demMembro ? 'Nenhuma demanda com este filtro.'
-                                   : 'Nenhuma demanda em aberto. Aproveite.');
+        st.demVisao === 'minhas' && !st.eu ? 'Clique em "Minhas" e diga quem você é no quadro.'
+        : st.demResp || st.demMembro ? 'Nenhuma demanda com este filtro.'
+        : st.demVisao === 'minhas' ? 'Nada em aberto no seu nome. Aproveite.'
+        : 'Nenhuma demanda em aberto. Aproveite.');
       return;
     }
 
-    /* Uma lista só, na mesma leitura da aba Membros: uma linha embaixo da
-       outra, com a situação virando coluna. A ordenação já vem do banco por
-       situação, prioridade e prazo (ver byDemanda em club-data.js), então as
-       situações continuam juntas sem precisar de cabeçalho separando. */
-    $('listaDemandas').innerHTML = avisoCk + tabela(
-      'minmax(230px,2fr) 132px 96px 140px 124px 116px 116px 104px',
-      ['Demanda', 'Situação', 'Prioridade', 'Responsáveis', 'Mentorado',
-       'Checklist', 'Prazo', '>Ações'],
-      rows.map(linhaDemanda).join(''), '');
+    /* Duas leituras da mesma tabela. "Lista": uma linha embaixo da outra, na
+       ordem do banco (situação → prioridade → prazo, ver byDemanda). "Por
+       projeto": as linhas se juntam sob o projeto (mentorado ou texto livre),
+       o grupo que tem atraso vem primeiro e, dentro dele, quem vence antes. A
+       coluna Projeto só aparece na lista: no agrupado ela é o cabeçalho. */
+    var comProjeto = st.temProjeto && st.demAgrupar === 'lista';
+    var cols = comProjeto
+      ? 'minmax(230px,2fr) 132px 96px 140px 124px 128px 116px 116px 104px'
+      : 'minmax(230px,2fr) 132px 96px 140px 124px 116px 116px 104px';
+    var cabecalhos = ['Demanda', 'Situação', 'Prioridade', 'Responsáveis', 'Mentorado']
+      .concat(comProjeto ? ['Projeto'] : [])
+      .concat(['Checklist', 'Prazo', '>Ações']);
+
+    var corpo = st.demAgrupar === 'projeto'
+      ? gruposPorProjeto(rows).map(linhaGrupo).join('')
+      : rows.map(function (d) { return linhaDemanda(d, comProjeto); }).join('');
+
+    $('listaDemandas').innerHTML = avisoCk + tabela(cols, cabecalhos, corpo, '');
 
     /* O campo de subtarefa é redesenhado a cada render: sem devolver o foco, o
        Enter que salvou uma subtarefa deixaria o time digitando no vazio. */
@@ -1130,7 +1232,63 @@
     Club.reancorarMenu();
   }
 
-  function linhaDemanda(d) {
+  /* Prazo mais próximo primeiro; sem prazo por último; empate = prioridade. */
+  var PESO_PRIO = { 'Alta':0, 'Média':1, 'Baixa':2 };
+  function porPrazo(a, b) {
+    var fa = Club.DEM_ABERTOS.indexOf(a.status) === -1;
+    var fb = Club.DEM_ABERTOS.indexOf(b.status) === -1;
+    if (fa !== fb) return fa ? 1 : -1;
+    var pa = a.vence_em || '9999', pb = b.vence_em || '9999';
+    if (pa !== pb) return pa < pb ? -1 : 1;
+    return (PESO_PRIO[a.prioridade] || 1) - (PESO_PRIO[b.prioridade] || 1);
+  }
+
+  function gruposPorProjeto(rows) {
+    var mapa = {};
+    rows.forEach(function (d) {
+      var p = projetoDe(d);
+      var g = mapa[p.key] = mapa[p.key] || { key:p.key, nome:p.nome, tipo:p.tipo, itens:[] };
+      g.itens.push(d);
+    });
+    var grupos = Object.keys(mapa).map(function (k) { return mapa[k]; });
+    grupos.forEach(function (g) {
+      g.itens.sort(porPrazo);
+      var abertas = g.itens.filter(function (d) { return Club.DEM_ABERTOS.indexOf(d.status) !== -1; });
+      g.abertas = abertas.length;
+      g.atrasadas = abertas.filter(function (d) {
+        var n = Club.diffDays(d.vence_em); return n !== null && n < 0;
+      }).length;
+      g.hoje = abertas.filter(function (d) { return Club.diffDays(d.vence_em) === 0; }).length;
+      var prazos = abertas.map(function (d) { return d.vence_em || '9999'; }).sort();
+      g.proximo = prazos[0] || '9999';
+    });
+    grupos.sort(function (a, b) {
+      if (a.atrasadas !== b.atrasadas) return b.atrasadas - a.atrasadas;
+      if (a.hoje !== b.hoje) return b.hoje - a.hoje;
+      if (a.proximo !== b.proximo) return a.proximo < b.proximo ? -1 : 1;
+      if (a.tipo !== b.tipo) return a.tipo === 'vazio' ? 1 : b.tipo === 'vazio' ? -1 : 0;
+      return a.nome.localeCompare(b.nome);
+    });
+    return grupos;
+  }
+
+  function linhaGrupo(g) {
+    var chave = 'g:' + g.key;
+    var fechado = !!st.grpFechado[chave];
+    var meta = '<b>' + g.abertas + '</b> em aberto' +
+      (g.atrasadas ? ' · <span class="late"><b>' + g.atrasadas + '</b> atrasada' + (g.atrasadas > 1 ? 's' : '') + '</span>' : '') +
+      (g.hoje ? ' · <span class="today"><b>' + g.hoje + '</b> hoje</span>' : '');
+    var cab = '<div class="tr grp" data-grupo="' + esc(chave) + '">' +
+      '<div class="grp-t"><button class="tg" aria-expanded="' + (!fechado) +
+        '" aria-label="Abrir ou fechar projeto">' + ico('chevron-right') + '</button>' +
+        '<span class="grp-n">' + esc(g.nome) + '</span>' +
+        '<span class="grp-k">' + (g.tipo === 'mentorado' ? 'mentorado' : g.tipo === 'projeto' ? 'projeto' : '') + '</span>' +
+      '</div><div class="grp-m">' + meta + '</div></div>';
+    if (fechado) return cab;
+    return cab + g.itens.map(function (d) { return linhaDemanda(d, false); }).join('');
+  }
+
+  function linhaDemanda(d, comProjeto) {
     var cor = Club.DEM_COR[d.status];
     var fechada = Club.DEM_ABERTOS.indexOf(d.status) === -1;
 
@@ -1148,6 +1306,7 @@
         (sub ? '<div class="tx tx-s">' + esc(sub) + '</div>' : '') +
       '</div></div>' +
       colunasDe(d, 'd') +
+      (comProjeto ? celulaProjeto(d) : '') +
       td(etapas.length ? barra(feitas, etapas.length)
                        : '<span class="tx-s">sem checklist</span>') +
       celulaPrazo(d, 'd') +
@@ -1167,8 +1326,19 @@
     /* A demanda sem checklist nenhum também precisa abrir: é do "+" dela que a
        primeira subtarefa nasce, e sem isto o campo não teria onde aparecer. */
     if (st.novaSub !== d.id && (!st.abertos[chave] || !etapas.length)) return linha;
-    var filhos = st.abertos[chave] ? etapas.map(linhaSubtarefa).join('') : '';
+    var filhos = st.abertos[chave] ? etapas.map(function (e) {
+      return linhaSubtarefa(e, comProjeto);
+    }).join('') : '';
     return linha + filhos + linhaNovaSub(d.id);
+  }
+
+  /* Texto livre, mas com memória: o menu lista os projetos que já existem e
+     deixa criar um novo. Demanda de mentorado não tem projeto: o mentorado é
+     o projeto dela. */
+  function celulaProjeto(d) {
+    if (d.member_id) return tdCel('<span class="tx tx-s">' + esc(membro(d.member_id) || '—') + '</span>');
+    return tdCel(celula('d.projeto', d.id, '<span class="tx">' + esc(d.projeto || 'sem projeto') + '</span>',
+      !d.projeto));
   }
 
   /* Célula que abre menu no clique. Fica invisível como controle até o mouse
@@ -1236,7 +1406,7 @@
   /* Subtarefa da demanda: mesmas colunas, mesmas listas, mesmo jeito de trocar.
      A única que fica vazia é Checklist — a subtarefa não abre outro nível, e
      nesta coluna a barra da mãe já conta a história dela. */
-  function linhaSubtarefa(e) {
+  function linhaSubtarefa(e, comProjeto) {
     return '<div class="tr lv1' + (e.feito ? ' feito' : '') + '">' +
       '<div class="td nm"><span class="tg void"></span>' +
         '<button class="cbx" data-sub="' + esc(e.id) + '" aria-pressed="' + (!!e.feito) +
@@ -1247,6 +1417,7 @@
         '<div class="tx"><div class="tx tx-t" title="' + esc(e.titulo) + '">' +
           esc(e.titulo) + '</div></div></div>' +
       colunasDe(e, 's') +
+      (comProjeto ? td('') : '') +
       td('') +
       celulaPrazo(e, 's') +
       '<div class="td end"><div class="row-acts">' +
@@ -1294,6 +1465,24 @@
         return { value:v, label:v, color:Club.DEM_PRIO_COR[v], checked:v === r.prioridade };
       }), { titulo:'Prioridade', onPick:function (v) {
         salvar(r.id, { prioridade:v });
+      } });
+      return;
+    }
+
+    if (par[1] === 'projeto') {
+      var atual = (r.projeto || '').trim();
+      var itens = [{ value:'', label:'Sem projeto', checked:!atual }]
+        .concat(projetosExistentes().map(function (p) {
+          return { value:p, label:p, checked:p.toLowerCase() === atual.toLowerCase() };
+        }))
+        .concat([{ value:'__novo', label:'Novo projeto…' }]);
+      Club.menu(el, itens, { titulo:'Projeto', onPick:function (v) {
+        if (v === '__novo') {
+          var nome = window.prompt('Nome do projeto', atual);
+          if (nome === null) return;
+          v = nome.trim();
+        }
+        salvar(r.id, { projeto: v || null });
       } });
       return;
     }
@@ -1527,7 +1716,7 @@
   function modalDemanda(d) {
     var novo = !d;
     d = d || { titulo:'', descricao:'', status:'A fazer', prioridade:'Média',
-               responsaveis:[], member_id:null, origem:'', vence_em:'' };
+               responsaveis:[], member_id:null, origem:'', vence_em:'', projeto:'' };
     var subAtuais = d.id ? etapasDaDemanda(d.id) : [];
 
     var opcoesEquipe = st.staff.filter(function (p) { return p.ativo; })
@@ -1560,6 +1749,12 @@
           [{ value:'', label:'Nenhum — demanda interna' }].concat(
             st.members.map(function (m) { return { value:m.id, label:m.nome }; })),
           d.member_id || '') +
+        (st.temProjeto
+          ? Club.field('Projeto', 'projeto', { value:d.projeto || '',
+              placeholder:'SDR IA Marina, Tráfego B2C Dr. Alex, Sistema Black…',
+              hint:'Só para demanda interna; a de mentorado se agrupa por ele. ' +
+                   (projetosExistentes().length ? 'Existem: ' + projetosExistentes().join(', ') + '.' : '') })
+          : '') +
         Club.field('Subtarefas', 'subtarefas', { value:subAtuais.map(function (e) {
             return e.titulo; }).join('\n'), textarea:true,
           placeholder:'Número liberado pela operadora\nAPI conectada\nFluxo testado',
@@ -1572,6 +1767,8 @@
         dados.id = d.id;
         dados.member_id = dados.member_id || null;
         dados.responsaveis = dados.responsaveis || [];
+        if (st.temProjeto) dados.projeto = String(dados.projeto || '').trim() || null;
+        else delete dados.projeto;
 
         var titulos = String(dados.subtarefas || '').split('\n')
           .map(function (l) { return l.trim(); })
@@ -1904,6 +2101,28 @@
     var ab = e.target.closest('#filtroAbertas button');
     if (ab) { st.demAbertas = ab.dataset.ab; renderDemandas(); return; }
 
+    var vis = e.target.closest('#filtroVisao button');
+    if (vis) {
+      if (vis.dataset.visao === 'minhas' && (!st.eu || st.demVisao === 'minhas')) {
+        /* Sem vínculo no banco (ou clique repetido) o botão pergunta quem é. */
+        vis.dataset.menuId = 'eu';
+        escolherEu(vis);
+        return;
+      }
+      st.demVisao = vis.dataset.visao; renderDemandas(); return;
+    }
+
+    var agr = e.target.closest('#filtroAgrupar button');
+    if (agr) { st.demAgrupar = agr.dataset.agrupar; renderDemandas(); return; }
+
+    var grp = e.target.closest('[data-grupo]');
+    if (grp) {
+      var gk = grp.dataset.grupo;
+      st.grpFechado[gk] = !st.grpFechado[gk];
+      renderDemandas();
+      return;
+    }
+
     /* Um galho só: a chave diz de qual árvore ele é ('d:' é demanda). */
     var galho = e.target.closest('[data-abrir]');
     if (galho) {
@@ -2038,6 +2257,11 @@
     if (!s) return;                 // a guarda já redirecionou
     sessao = s;
     aplicarIdentidade();
-    return carregar().then(function () { render(); go('overview'); });
+    return carregar().then(function () {
+      render();
+      /* #demandas na URL abre direto no quadro: é o atalho que vai no favorito. */
+      var alvo = (location.hash || '').replace('#', '');
+      go(alvo === 'demandas' ? 'demands' : alvo && document.querySelector('.view[data-view="' + alvo + '"]') ? alvo : 'overview');
+    });
   }).catch(falhou);
 })();

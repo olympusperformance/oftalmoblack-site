@@ -106,8 +106,16 @@
       <div class="hello"><h1>Demandas</h1><p>A operação do Club — o que está em pé, com quem e desde quando.</p></div>
       <div class="statgrid" id="statsDemandas"></div>
       <div class="toolbar">
+        <div class="seg" id="filtroVisao">
+          <button data-visao="minhas" aria-selected="true">Minhas</button>
+          <button data-visao="todas" aria-selected="false">Todas</button>
+        </div>
         <select class="inp" id="filtroResponsavel" style="max-width:230px"></select>
         <select class="inp" id="filtroMembroDem" style="max-width:230px"></select>
+        <div class="seg" id="filtroAgrupar">
+          <button data-agrupar="projeto" aria-selected="true">Por projeto</button>
+          <button data-agrupar="lista" aria-selected="false">Lista</button>
+        </div>
         <div class="seg" id="filtroAbertas">
           <button data-ab="open" aria-selected="true">Em aberto</button>
           <button data-ab="all" aria-selected="false">Todas</button>

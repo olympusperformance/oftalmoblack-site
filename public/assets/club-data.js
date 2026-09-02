@@ -31,8 +31,8 @@
     materials: ['titulo', 'descricao', 'categoria', 'visivel_para', 'arquivo_path',
                 'arquivo_nome', 'arquivo_tipo', 'arquivo_bytes', 'publicado_em'],
     demands:   ['titulo', 'descricao', 'status', 'prioridade', 'responsaveis',
-                'member_id', 'origem', 'vence_em'],
-    staff:     ['nome', 'apelido', 'ativo'],
+                'member_id', 'origem', 'vence_em', 'projeto'],
+    staff:     ['nome', 'apelido', 'ativo', 'user_id'],
     artifact_steps: ['artifact_id', 'titulo', 'ordem'],
     step_progress:  ['member_id', 'step_id', 'feito'],
     /* As mesmas colunas da demanda: a subtarefa ganhou situação, dono e prazo
