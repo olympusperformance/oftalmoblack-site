@@ -310,7 +310,7 @@ h1,h2{margin:0}
           <span class="kicker">Investimento</span>
           <div class="cartao cartao--centro">
             <p class="texto texto--menor" style="margin-bottom:18px">Nossa consulta oftalmológica completa está no valor de:</p>
-            <div class="tt preco">‹preco›</div>
+            <div class="tt preco" id="preco-valor">‹preco›</div>
             <div class="regua regua--fina regua--centro"></div>
             <div class="preco-obs">‹preco_obs›</div>
           </div>
@@ -416,6 +416,22 @@ h1,h2{margin:0}
   /* qual unidade o paciente escolheu na tela de localizacao: entra na mensagem
      do WhatsApp e pode ter numero proprio (mentorado com mais de uma clinica) */
   var unidade = "Foz do Iguaçu", waUnidade = WA;
+  /* Preco por UNIDADE. Nasceu do Dr. Leo Sappi (03/09/2026): consulta R$ 400 em
+     Fortaleza e R$ 190 em Baturite, parcelamento e pre-operatorio diferentes em
+     cada uma. Mostrar so' um numero deixaria a pagina errada em mais de duas
+     vezes para quem escolhesse a outra cidade. O valor que vem no HTML e' o da
+     unidade padrao (a primeira do perfil); se o JS nao rodar, e' esse que fica. */
+  var PRECOS = {};
+  function aplicaPreco(){
+    var p = PRECOS[unidade];
+    if(!p) return;
+    var el = document.getElementById("preco-valor");
+    if(el && p.valor) el.textContent = p.valor;
+    el = document.getElementById("preco-parcelas");
+    if(el){ el.textContent = p.parcelas || ""; el.hidden = !p.parcelas; }
+    el = document.getElementById("preco-nota");
+    if(el){ el.innerHTML = p.nota || ""; el.hidden = !p.nota; }
+  }
     /* por que o paciente veio: escolhido na tela "motivo", entra na mensagem */
     var motivo = "";
     /* cidade que o paciente de fora digitou. A lista dos 5.571 municipios do IBGE
@@ -582,6 +598,7 @@ h1,h2{margin:0}
     if(alvo.hasAttribute("data-unidade")){
       unidade = alvo.getAttribute("data-unidade") || unidade;
       waUnidade = alvo.getAttribute("data-wa") || WA;
+      aplicaPreco();
     }
     if(alvo.hasAttribute("data-whats")){ abrirWhats(alvo.getAttribute("data-whats")); return; }
     mostrar(alvo.getAttribute("data-ir"), true);

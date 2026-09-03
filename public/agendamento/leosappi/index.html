@@ -207,8 +207,6 @@ h1,h2{margin:0}
 </style>
 </head>
 <body>
-
-<div class="rascunho">RASCUNHO — não publicar. Falta preencher: consulta.valor. Na página, o que está entre &lsaquo; &rsaquo; é buraco.</div>
 <div class="palco">
   <div class="folha">
 
@@ -251,10 +249,12 @@ h1,h2{margin:0}
       <section class="tela tela--recuada" data-tela="local" data-titulo="Passo 01 · Localização" data-progresso="22%">
         <span class="kicker kicker--curto">Passo 01 · Localização</span>
         <h2 class="tt h2">Onde você mora?</h2>
-        <p class="texto texto--menor texto--gap">Para seguir com o seu atendimento, você mora em Fortaleza ou região ou em outra cidade?</p>
+        <p class="texto texto--menor texto--gap">Atendemos em Fortaleza e Baturité. Para seguir com o seu atendimento, onde você mora?</p>
         <div class="opcoes">
 
           <button class="opcao" type="button" data-ir="a1" data-unidade="Fortaleza" data-wa="">Moro em Fortaleza ou região <i>&rsaquo;</i></button>
+          
+          <button class="opcao" type="button" data-ir="a1" data-unidade="Baturité" data-wa="">Moro em Baturité ou região <i>&rsaquo;</i></button>
                     <button class="opcao" type="button" data-ir="cidade">Moro em outra cidade <i>&rsaquo;</i></button>
         </div>
       </section>
@@ -310,11 +310,15 @@ h1,h2{margin:0}
           <span class="kicker">Investimento</span>
           <div class="cartao cartao--centro">
             <p class="texto texto--menor" style="margin-bottom:18px">Nossa consulta oftalmológica completa está no valor de:</p>
-            <div class="tt preco">‹preco›</div>
+            <div class="tt preco" id="preco-valor">R$ 400</div>
             <div class="regua regua--fina regua--centro"></div>
-            <div class="preco-obs">‹preco_obs›</div>
+
+            <div class="preco-parcelas" id="preco-parcelas">em até 4x</div>
+                        <div class="preco-obs">Atendimento particular e Issec · não atendemos outros convênios</div>
           </div>
-        </div>
+
+          <p class="rodape-nota" id="preco-nota" style="margin-top:18px;text-align:left">Os exames pré-operatórios da cirurgia são cobrados à parte: <strong>R$ 1.600</strong>.</p>
+                  </div>
         <button class="btn" type="button" data-whats="local">Agendar consulta</button>
       </section>
 
@@ -323,7 +327,7 @@ h1,h2{margin:0}
       <section class="tela tela--recuada" data-tela="bq" data-titulo="Uma pergunta importante" data-progresso="30%">
         <span class="kicker kicker--curto">Uma pergunta importante</span>
         <h2 class="tt h2--m">Você viria a Fortaleza?</h2>
-        <p class="texto texto--menor texto--gap">Nossa clínica fica em Fortaleza, e é aqui que o Dr. Leo realiza as cirurgias. Você viria até aqui para realizar o seu sonho de ter a liberdade visual?</p>
+        <p class="texto texto--menor texto--gap">Atendemos em Fortaleza e Baturité, e é em Fortaleza que o Dr. Leo realiza as cirurgias. Você viria até lá para realizar o seu sonho de ter a liberdade visual?</p>
         <div class="opcoes">
           <button class="btn" type="button" style="animation-delay:.1s" data-vem="1"
                   data-ir="b1">Sim, eu iria a Fortaleza</button>
@@ -347,7 +351,7 @@ h1,h2{margin:0}
           <span class="kicker">Primeiro passo</span>
           <div class="cartao cartao--centro">
             <p class="texto texto--menor" style="margin-bottom:18px">O primeiro passo é uma <strong>teleconsulta</strong> com o Dr. Leo, no valor de:</p>
-            <div class="tt preco preco--menor">‹tele_preco›</div>
+            <div class="tt preco preco--menor">R$ 200</div>
             <div class="regua regua--fina regua--centro"></div>
             <div class="preco-obs">Atendimento on-line com o Dr. Leo</div>
           </div>
@@ -414,6 +418,22 @@ h1,h2{margin:0}
   /* qual unidade o paciente escolheu na tela de localizacao: entra na mensagem
      do WhatsApp e pode ter numero proprio (mentorado com mais de uma clinica) */
   var unidade = "Fortaleza", waUnidade = WA;
+  /* Preco por UNIDADE. Nasceu do Dr. Leo Sappi (03/09/2026): consulta R$ 400 em
+     Fortaleza e R$ 190 em Baturite, parcelamento e pre-operatorio diferentes em
+     cada uma. Mostrar so' um numero deixaria a pagina errada em mais de duas
+     vezes para quem escolhesse a outra cidade. O valor que vem no HTML e' o da
+     unidade padrao (a primeira do perfil); se o JS nao rodar, e' esse que fica. */
+  var PRECOS = {"Fortaleza": {"valor": "R$ 400", "parcelas": "em até 4x", "nota": "Os exames pré-operatórios da cirurgia são cobrados à parte: <strong>R$ 1.600</strong>."}, "Baturité": {"valor": "R$ 190", "parcelas": "em até 2x", "nota": "Os exames pré-operatórios da cirurgia são cobrados à parte: <strong>R$ 550</strong>."}};
+  function aplicaPreco(){
+    var p = PRECOS[unidade];
+    if(!p) return;
+    var el = document.getElementById("preco-valor");
+    if(el && p.valor) el.textContent = p.valor;
+    el = document.getElementById("preco-parcelas");
+    if(el){ el.textContent = p.parcelas || ""; el.hidden = !p.parcelas; }
+    el = document.getElementById("preco-nota");
+    if(el){ el.innerHTML = p.nota || ""; el.hidden = !p.nota; }
+  }
     /* por que o paciente veio: escolhido na tela "motivo", entra na mensagem */
     var motivo = "";
     /* cidade que o paciente de fora digitou. A lista dos 5.571 municipios do IBGE
@@ -428,7 +448,7 @@ h1,h2{margin:0}
        E nao escrever marcador de bloco literal em comentario: o parser le' o
        marcador de dentro do comentario como abertura de bloco de verdade -- foi
        assim que a primeira tentativa de consertar isto reintroduziu o bug. */
-    var PAGE_PATH = "/agendamento", META_CAT = "‹meta_categoria›";
+    var PAGE_PATH = "/agendamento", META_CAT = "";
     function ga(nome, dados){
       if (typeof gtag === "function") gtag("event", nome, dados);
     }
@@ -580,6 +600,7 @@ h1,h2{margin:0}
     if(alvo.hasAttribute("data-unidade")){
       unidade = alvo.getAttribute("data-unidade") || unidade;
       waUnidade = alvo.getAttribute("data-wa") || WA;
+      aplicaPreco();
     }
     if(alvo.hasAttribute("data-whats")){ abrirWhats(alvo.getAttribute("data-whats")); return; }
     mostrar(alvo.getAttribute("data-ir"), true);
