@@ -316,9 +316,7 @@ h1,h2{margin:0}
             <div class="preco-parcelas" id="preco-parcelas">em até 4x</div>
                         <div class="preco-obs">Atendimento particular e Issec · não atendemos outros convênios</div>
           </div>
-
-          <p class="rodape-nota" id="preco-nota" style="margin-top:18px;text-align:left">Os exames pré-operatórios da cirurgia são cobrados à parte: <strong>R$ 1.600</strong>.</p>
-                  </div>
+        </div>
         <button class="btn" type="button" data-whats="local">Agendar consulta</button>
       </section>
 
@@ -423,7 +421,7 @@ h1,h2{margin:0}
      cada uma. Mostrar so' um numero deixaria a pagina errada em mais de duas
      vezes para quem escolhesse a outra cidade. O valor que vem no HTML e' o da
      unidade padrao (a primeira do perfil); se o JS nao rodar, e' esse que fica. */
-  var PRECOS = {"Fortaleza": {"valor": "R$ 400", "parcelas": "em até 4x", "nota": "Os exames pré-operatórios da cirurgia são cobrados à parte: <strong>R$ 1.600</strong>."}, "Baturité": {"valor": "R$ 190", "parcelas": "em até 2x", "nota": "Os exames pré-operatórios da cirurgia são cobrados à parte: <strong>R$ 550</strong>."}};
+  var PRECOS = {"Fortaleza": {"valor": "R$ 400", "parcelas": "em até 4x", "nota": ""}, "Baturité": {"valor": "R$ 190", "parcelas": "em até 2x", "nota": ""}};
   function aplicaPreco(){
     var p = PRECOS[unidade];
     if(!p) return;
