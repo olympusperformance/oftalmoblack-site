@@ -13,7 +13,7 @@
              demands: [], staff: [], steps: [], progress: [], demandSteps: [],
              view: 'overview', membro: '', status: 'all',
              matCategoria: '', matMembro: '',
-             demResp: '', demMembro: '', demAbertas: 'open',
+             demResp: '', demMembro: '', demProjeto: '', demAbertas: 'open',
              /* "Minhas" é a leitura padrão do quadro: quem abre vê o que é seu,
                 agrupado por projeto. "eu" é a pessoa da equipe ligada ao login
                 (staff.user_id) ou, enquanto a migração não roda, a escolhida no
@@ -107,6 +107,34 @@
      mentorado e esconde o campo, em vez de quebrar a gravação. */
   var CHAVE_EU = 'ob-admin-eu';
 
+  /* Leitura da aba Demandas guardada no navegador, por login: visão, agrupamento,
+     filtros e quais grupos estão fechados. Quem volta ao quadro encontra a
+     leitura que deixou, sem mexer em filtro de novo (pedido da equipe 02/09). */
+  var CHAVE_DEM = 'ob-admin-dem';
+  var PREFS_DEM = ['demVisao', 'demAgrupar', 'demAbertas', 'demResp', 'demMembro', 'demProjeto', 'grpFechado'];
+
+  function chaveDem() {
+    return CHAVE_DEM + ':' + (sessao && sessao.email ? String(sessao.email).toLowerCase() : 'anon');
+  }
+
+  function carregarPrefsDem() {
+    var raw = null;
+    try { raw = localStorage.getItem(chaveDem()); } catch (err) { /* sem storage */ }
+    if (!raw) return;
+    try {
+      var p = JSON.parse(raw);
+      PREFS_DEM.forEach(function (k) { if (k in p && p[k] !== undefined) st[k] = p[k]; });
+    } catch (err) { /* guardado velho ou corrompido: ignora */ }
+    if (!st.grpFechado || typeof st.grpFechado !== 'object') st.grpFechado = {};
+    if (!st.eu) st.demVisao = 'todas';
+  }
+
+  function salvarPrefsDem() {
+    var p = {};
+    PREFS_DEM.forEach(function (k) { p[k] = st[k]; });
+    try { localStorage.setItem(chaveDem(), JSON.stringify(p)); } catch (err) { /* sem storage */ }
+  }
+
   /* Login → sigla da equipe. É o vínculo que staff.user_id faria no banco; fica
      aqui até a migração rodar (e continua valendo como reserva depois). Trocar
      de e-mail = editar esta lista. */
@@ -132,6 +160,7 @@
     var porEscolha = st.staff.filter(function (p) { return p.id === guardado; })[0];
     st.eu = porLogin || porEscolha || null;
     if (!st.eu) st.demVisao = 'todas';
+    carregarPrefsDem();
   }
 
   function escolherEu(anchor) {
@@ -1139,12 +1168,54 @@
     return Object.keys(vistos).sort().map(function (k) { return vistos[k]; });
   }
 
+  /* Projeto em dois níveis, sem coluna nova: "Olympus / Imersão Grau Zero" é a
+     frente "Imersão Grau Zero" dentro do pai "Olympus". Fechado na reunião de
+     equipe de 02/09: Clínica Dr. Alex e Olympus são pais; cada mentorado segue
+     no topo, como grupo próprio; projeto sem barra também fica no topo. */
+  var SEP_PROJETO = ' / ';
+
+  function partesProjeto(nome) {
+    var i = String(nome || '').indexOf(SEP_PROJETO);
+    if (i === -1) return { pai: null, frente: String(nome || '').trim() };
+    return { pai: nome.slice(0, i).trim(), frente: nome.slice(i + SEP_PROJETO.length).trim() };
+  }
+
+  /* Opções do filtro de projeto: cada pai (lendo o guarda-chuva inteiro), as
+     frentes dele indentadas, e por fim os projetos soltos. */
+  function opcoesProjeto() {
+    var nomes = projetosExistentes(), pais = {}, lista = [];
+    nomes.forEach(function (n) {
+      var pp = partesProjeto(n);
+      if (pp.pai) pais[pp.pai.toLowerCase()] = pp.pai;
+    });
+    Object.keys(pais).sort().forEach(function (k) {
+      lista.push({ value: pais[k], label: pais[k] + ' (tudo)' });
+      nomes.forEach(function (n) {
+        var pp = partesProjeto(n);
+        if (pp.pai && pp.pai.toLowerCase() === k) lista.push({ value: n, label: '    ' + pp.frente });
+      });
+    });
+    nomes.forEach(function (n) {
+      if (!partesProjeto(n).pai) lista.push({ value: n, label: n });
+    });
+    return lista;
+  }
+
+  /* O filtro casa o nome inteiro (uma frente) ou só o pai (todas as frentes). */
+  function casaProjeto(d, alvo) {
+    var p = projetoDe(d);
+    if (p.tipo !== 'projeto') return false;
+    var n = p.nome.toLowerCase(); alvo = String(alvo || '').toLowerCase();
+    return n === alvo || n.indexOf(alvo + SEP_PROJETO.toLowerCase()) === 0;
+  }
+
   function demandasVisiveis() {
     return st.demands.filter(function (d) {
       if (st.demVisao === 'minhas' && !minha(d)) return false;
       if (st.demAbertas === 'open' && Club.DEM_ABERTOS.indexOf(d.status) === -1) return false;
       if (st.demResp && (!d.responsaveis || d.responsaveis.indexOf(st.demResp) === -1)) return false;
       if (st.demMembro && d.member_id !== st.demMembro) return false;
+      if (st.demProjeto && !casaProjeto(d, st.demProjeto)) return false;
       return true;
     });
   }
@@ -1168,6 +1239,21 @@
         return '<option value="' + esc(m.id) + '"' + (m.id === st.demMembro ? ' selected' : '') +
           '>' + esc(m.nome) + '</option>';
       }).join('');
+
+    var opProj = opcoesProjeto();
+    if (st.demProjeto && !opProj.some(function (o) { return o.value.toLowerCase() === st.demProjeto.toLowerCase(); })) {
+      st.demProjeto = '';
+    }
+    $('filtroProjetoDem').innerHTML = '<option value="">Qualquer projeto</option>' +
+      opProj.map(function (o) {
+        return '<option value="' + esc(o.value) + '"' +
+          (o.value.toLowerCase() === String(st.demProjeto || '').toLowerCase() ? ' selected' : '') +
+          '>' + esc(o.label) + '</option>';
+      }).join('');
+
+    /* A leitura escolhida fica guardada a cada desenho: é mais simples do que
+       lembrar de salvar em cada botão, e cobre a escolha de "quem sou eu". */
+    salvarPrefsDem();
 
     Array.prototype.forEach.call($('filtroAbertas').children, function (b) {
       b.setAttribute('aria-selected', String(b.dataset.ab === st.demAbertas));
@@ -1235,17 +1321,18 @@
     if (!rows.length) {
       $('listaDemandas').innerHTML = avisoCk + Club.empty('check-circle',
         st.demVisao === 'minhas' && !st.eu ? 'Clique em "Minhas" e diga quem você é no quadro.'
-        : st.demResp || st.demMembro ? 'Nenhuma demanda com este filtro.'
+        : st.demResp || st.demMembro || st.demProjeto ? 'Nenhuma demanda com este filtro.'
         : st.demVisao === 'minhas' ? 'Nada em aberto no seu nome. Aproveite.'
         : 'Nenhuma demanda em aberto. Aproveite.');
       return;
     }
 
-    /* Duas leituras da mesma tabela. "Lista": uma linha embaixo da outra, na
-       ordem do banco (situação → prioridade → prazo, ver byDemanda). "Por
-       projeto": as linhas se juntam sob o projeto (mentorado ou texto livre),
-       o grupo que tem atraso vem primeiro e, dentro dele, quem vence antes. A
-       coluna Projeto só aparece na lista: no agrupado ela é o cabeçalho. */
+    /* Duas leituras da mesma tabela. "Por demanda": uma linha embaixo da outra,
+       na ordem do banco (situação → prioridade → prazo, ver byDemanda), com a
+       coluna Projeto pra filtrar. "Por projeto": as linhas se juntam sob o
+       projeto (mentorado, ou pai → frente pra interna), o grupo que tem atraso
+       vem primeiro e, dentro dele, quem vence antes. A coluna Projeto só
+       aparece na lista: no agrupado ela é o cabeçalho. */
     var comProjeto = st.demAgrupar === 'lista';
     var cols = comProjeto
       ? 'minmax(230px,2fr) 132px 96px 140px 124px 128px 116px 116px 104px'
@@ -1280,49 +1367,78 @@
     return (PESO_PRIO[a.prioridade] || 1) - (PESO_PRIO[b.prioridade] || 1);
   }
 
+  function contarGrupo(g, itens) {
+    var abertas = itens.filter(function (d) { return Club.DEM_ABERTOS.indexOf(d.status) !== -1; });
+    g.abertas = abertas.length;
+    g.atrasadas = abertas.filter(function (d) {
+      var n = Club.diffDays(d.vence_em); return n !== null && n < 0;
+    }).length;
+    g.hoje = abertas.filter(function (d) { return Club.diffDays(d.vence_em) === 0; }).length;
+    var prazos = abertas.map(function (d) { return d.vence_em || '9999'; }).sort();
+    g.proximo = prazos[0] || '9999';
+  }
+
+  function ordemGrupo(a, b) {
+    if (a.atrasadas !== b.atrasadas) return b.atrasadas - a.atrasadas;
+    if (a.hoje !== b.hoje) return b.hoje - a.hoje;
+    if (a.proximo !== b.proximo) return a.proximo < b.proximo ? -1 : 1;
+    if (a.tipo !== b.tipo) return a.tipo === 'vazio' ? 1 : b.tipo === 'vazio' ? -1 : 0;
+    return a.nome.localeCompare(b.nome);
+  }
+
   function gruposPorProjeto(rows) {
     var mapa = {};
     rows.forEach(function (d) {
       var p = projetoDe(d);
-      var g = mapa[p.key] = mapa[p.key] || { key:p.key, nome:p.nome, tipo:p.tipo, itens:[] };
+      var g = mapa[p.key] = mapa[p.key] || { key:p.key, nome:p.nome, tipo:p.tipo, itens:[], filhos:[] };
       g.itens.push(d);
     });
     var grupos = Object.keys(mapa).map(function (k) { return mapa[k]; });
+    grupos.forEach(function (g) { g.itens.sort(porPrazo); contarGrupo(g, g.itens); });
+
+    /* Projeto "Pai / Frente" sobe pro pai: o pai é uma linha que abre e fecha
+       as frentes dele e soma os números delas. Mentorado e projeto sem barra
+       ficam no topo, como antes. */
+    var pais = {}, topo = [];
     grupos.forEach(function (g) {
-      g.itens.sort(porPrazo);
-      var abertas = g.itens.filter(function (d) { return Club.DEM_ABERTOS.indexOf(d.status) !== -1; });
-      g.abertas = abertas.length;
-      g.atrasadas = abertas.filter(function (d) {
-        var n = Club.diffDays(d.vence_em); return n !== null && n < 0;
-      }).length;
-      g.hoje = abertas.filter(function (d) { return Club.diffDays(d.vence_em) === 0; }).length;
-      var prazos = abertas.map(function (d) { return d.vence_em || '9999'; }).sort();
-      g.proximo = prazos[0] || '9999';
+      var pp = g.tipo === 'projeto' ? partesProjeto(g.nome) : { pai: null };
+      if (!pp.pai) { topo.push(g); return; }
+      var pk = 'pai:' + pp.pai.toLowerCase();
+      var pai = pais[pk] = pais[pk] || { key:pk, nome:pp.pai, tipo:'pai', itens:[], filhos:[] };
+      g.nome = pp.frente;
+      pai.filhos.push(g);
     });
-    grupos.sort(function (a, b) {
-      if (a.atrasadas !== b.atrasadas) return b.atrasadas - a.atrasadas;
-      if (a.hoje !== b.hoje) return b.hoje - a.hoje;
-      if (a.proximo !== b.proximo) return a.proximo < b.proximo ? -1 : 1;
-      if (a.tipo !== b.tipo) return a.tipo === 'vazio' ? 1 : b.tipo === 'vazio' ? -1 : 0;
-      return a.nome.localeCompare(b.nome);
+    Object.keys(pais).forEach(function (k) {
+      var pai = pais[k];
+      pai.filhos.sort(ordemGrupo);
+      contarGrupo(pai, pai.filhos.reduce(function (acc, f) { return acc.concat(f.itens); }, []));
+      topo.push(pai);
     });
-    return grupos;
+    topo.sort(ordemGrupo);
+    return topo;
   }
 
-  function linhaGrupo(g) {
+  function linhaGrupo(g, nivel) {
+    nivel = nivel || 0;
     var chave = 'g:' + g.key;
     var fechado = !!st.grpFechado[chave];
     var meta = '<b>' + g.abertas + '</b> em aberto' +
       (g.atrasadas ? ' · <span class="late"><b>' + g.atrasadas + '</b> atrasada' + (g.atrasadas > 1 ? 's' : '') + '</span>' : '') +
       (g.hoje ? ' · <span class="today"><b>' + g.hoje + '</b> hoje</span>' : '');
-    var cab = '<div class="tr grp" data-grupo="' + esc(chave) + '">' +
+    var rotulo = g.tipo === 'mentorado' ? 'mentorado'
+      : g.tipo === 'pai' ? g.filhos.length + (g.filhos.length === 1 ? ' frente' : ' frentes')
+      : g.tipo === 'projeto' ? (nivel ? 'frente' : 'projeto') : '';
+    var cab = '<div class="tr grp' + (nivel ? ' sub' : '') + (g.tipo === 'pai' ? ' pai' : '') +
+      '" data-grupo="' + esc(chave) + '">' +
       '<div class="grp-t"><button class="tg" aria-expanded="' + (!fechado) +
         '" aria-label="Abrir ou fechar projeto">' + ico('chevron-right') + '</button>' +
         '<span class="grp-n">' + esc(g.nome) + '</span>' +
-        '<span class="grp-k">' + (g.tipo === 'mentorado' ? 'mentorado' : g.tipo === 'projeto' ? 'projeto' : '') + '</span>' +
+        '<span class="grp-k">' + rotulo + '</span>' +
       '</div><div class="grp-m">' + meta + '</div></div>';
     if (fechado) return cab;
-    return cab + g.itens.map(function (d) { return linhaDemanda(d, false); }).join('');
+    return cab +
+      g.filhos.map(function (f) { return linhaGrupo(f, nivel + 1); }).join('') +
+      g.itens.map(function (d) { return linhaDemanda(d, false); }).join('');
   }
 
   function linhaDemanda(d, comProjeto) {
@@ -2246,6 +2362,11 @@
 
   $('filtroMembroDem').addEventListener('change', function () {
     st.demMembro = this.value;
+    renderDemandas();
+  });
+
+  $('filtroProjetoDem').addEventListener('change', function () {
+    st.demProjeto = this.value;
     renderDemandas();
   });
 

@@ -830,3 +830,8 @@ input[type="file"].inp::file-selector-button:hover{background:var(--surface);bor
 .grp-m b{font-weight:600}
 .grp-m .late{color:var(--danger)}
 .grp-m .today{color:var(--gold)}
+/* Pai (Clínica Dr. Alex, Olympus) fica mais forte; a frente dele entra recuada
+   e mais leve, pra ler o dois níveis sem perder o alinhamento das linhas. */
+.tr.grp.pai .grp-n{font-size:13.5px;color:var(--gold)}
+.tr.grp.sub{background:var(--surface);padding-left:34px}
+.tr.grp.sub .grp-n{font-weight:500}
