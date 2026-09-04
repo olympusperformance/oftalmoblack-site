@@ -6,6 +6,16 @@
 <title>Agendamento · Dr. Gustavo Ribeiro</title>
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#FBFBFB">
+<!-- Meta Pixel · Dr. Gustavo Ribeiro (dataset 1377579574085399) · padrão de tracking Mestre 30/08/2026 -->
+<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','1377579574085399');
+fbq('track','PageView',{content_category:'clinica_gustavo',content_name:'quiz-agendamento'});
+fbq('track','ViewContent',{content_category:'clinica_gustavo',content_name:'quiz-agendamento'});</script>
+<noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=1377579574085399&ev=PageView&noscript=1"></noscript>
 <style>
 :root{
   --primaria:#282848; --primaria-rgb:40,40,72;
@@ -442,7 +452,7 @@ h1,h2{margin:0}
        E nao escrever marcador de bloco literal em comentario: o parser le' o
        marcador de dentro do comentario como abertura de bloco de verdade -- foi
        assim que a primeira tentativa de consertar isto reintroduziu o bug. */
-    var PAGE_PATH = "/agendamento", META_CAT = "";
+    var PAGE_PATH = "/agendamento", META_CAT = "clinica_gustavo";
     function ga(nome, dados){
       if (typeof gtag === "function") gtag("event", nome, dados);
     }
@@ -577,7 +587,7 @@ h1,h2{margin:0}
     var ramo = chave;
           ga("whatsapp_click", { page_path: PAGE_PATH, link_url: url, ramo: ramo });
 
-      meta("LeadQuiz", "quiz-agendamento");
+      meta("MQL", "quiz-agendamento");
         var aba = window.open(url, "_blank");
     if(!aba) window.location.href = url;
   }
