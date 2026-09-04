@@ -1,0 +1,29 @@
+name: Deploy oftalmoblack-web
+
+# Publica automaticamente no VPS (EasyPanel, serviço sistema_black_oftalmoblack-web) a cada push na main.
+# A chave SSH do secret só consegue rodar /usr/local/bin/oftalmoblack-web-deploy.sh no servidor (comando forçado),
+# então mesmo em repo público ela não dá shell. Rodar à mão: aba Actions → "Run workflow".
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-oftalmoblack-web
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Deploy via SSH (comando forçado no servidor)
+        env:
+          SSH_KEY: ${{ secrets.OLYMPUS_VPS_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.OLYMPUS_VPS_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          ssh -i ~/.ssh/id_ed25519 -o BatchMode=yes -o ConnectTimeout=20 root@187.127.26.142 deploy
