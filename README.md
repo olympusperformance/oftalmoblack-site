@@ -1,7 +1,10 @@
-# Club OftalmoBlack — site
+# Club OftalmoBlack · site e workspace da equipe
 
-Landing page e área de membros do Club OftalmoBlack. HTML estático, sem build
-step e sem backend — o nginx só entrega arquivos.
+Este repositório reúne o site público do Club OftalmoBlack, a área dos mentorados e o **workspace da equipe em `/admin/`**. O Admin é o ambiente de trabalho para organizar demandas, responsáveis, prazos, membros, agenda, materiais e artefatos.
+
+O objetivo do projeto é tornar esse workspace útil no dia a dia da equipe. Orientações para agentes ficam em [AGENTS.md](AGENTS.md).
+
+A interface usa HTML estático, sem etapa de build. O nginx entrega os arquivos; autenticação, dados e funções de apoio ficam no Supabase.
 
 ## Estrutura
 
@@ -11,7 +14,7 @@ public/                # tudo que vai pro ar
   entrar/              # login da área de membros
   admin/               # painel do administrador
   membros/             # área do mentorado
-  demandas/            # o quadro de demandas numa TV do escritório
+  demandas/            # exibição auxiliar do quadro, somente leitura
   mentorados/          # centrais artesanais antigas (ainda no ar)
   config.js            # regerado no boot a partir das variáveis de ambiente
   assets/              # css, js, fontes e imagens
@@ -19,7 +22,7 @@ public/                # tudo que vai pro ar
   sitemap.xml
 docker-entrypoint.d/   # scripts que a imagem nginx roda no boot
 supabase/              # SQL do banco: tabelas, RLS, acervo, demandas, progresso
-  functions/           # Edge Functions (a que serve o quadro da TV)
+  functions/           # Edge Functions de apoio às interfaces
 Dockerfile             # nginx alpine servindo public/
 nginx.conf             # gzip, cache de assets, headers de segurança
 ```
@@ -36,7 +39,9 @@ Ou com Docker:
 docker build -t oftalmoblack-site . && docker run --rm -p 8080:80 oftalmoblack-site
 ```
 
-## Deploy — EasyPanel (VPS Hostinger)
+## Deploy · GitHub Actions e EasyPanel (VPS Hostinger)
+
+Desde 04/09/2026, um push na `main` dispara o deploy automaticamente pelo GitHub Actions, via SSH com comando forçado (commit `a2b2adb`). O EasyPanel continua responsável pelo serviço e pelo build. A configuração inicial abaixo fica como referência técnica.
 
 1. **Create Service → App**
 2. **Source:** GitHub → este repositório, branch `main`
@@ -48,7 +53,7 @@ docker build -t oftalmoblack-site . && docker run --rm -p 8080:80 oftalmoblack-s
 O EasyPanel termina o TLS no Traefik e fala HTTP com o container — por isso o
 `nginx.conf` não força HTTPS internamente (forçar causa loop de redirect).
 
-Push na `main` dispara redeploy se o auto-deploy estiver ligado.
+O fluxo corrente é commit e push na `main` → GitHub Actions → deploy. Não é necessário habilitar o antigo webhook manual descrito em documentos anteriores a 04/09/2026.
 
 ### Variáveis de ambiente
 
@@ -76,7 +81,7 @@ Quatro telas, todas no mesmo visual (`assets/club.css`, extraído do protótipo)
 | `/entrar/` | Login por e-mail e senha (Supabase Auth) |
 | `/admin/` | Demandas, membros, tarefas, agenda, materiais e artefatos |
 | `/membros/` | O que o mentorado enxerga; o admin pode espiar com `?membro=<id>` |
-| `/demandas/` | O quadro de demandas na TV do escritório, sem login |
+| `/demandas/` | Exibição auxiliar do quadro, somente leitura |
 
 O site continua sendo HTML estático: o navegador fala direto com o Supabase, sem
 servidor nosso no meio. Quem decide o que cada pessoa alcança é o Row Level
@@ -107,50 +112,12 @@ privado: sem URL pública, sem caminho adivinhável, download por link assinado 
 dois minutos. A visibilidade é `visivel_para`, um array de `member_id`; nulo quer
 dizer turma inteira. Um arquivo, uma linha, vários destinatários.
 
-**Demandas** é o quadro interno da operação, no vocabulário que a equipe já usa
-no ClickUp (A fazer → Planejando → Em andamento → Em risco / Aguardando retorno /
-Em pausa → Concluída / Cancelada). Só o administrador alcança: as políticas de
+**Demandas** é o quadro interno da operação no `/admin`, com os estados
+A fazer → Planejando → Em andamento → Em risco / Aguardando retorno /
+Em pausa → Concluída / Cancelada. Só o administrador alcança: as políticas de
 `demands` e `staff` não têm regra de leitura para mentorado. A demanda pode
 apontar para um mentorado (`member_id`) quando é sobre alguém — "campanha do
 Pedro", "site da Cíntia" — e fica solta quando é interna.
-
-### O quadro na TV do escritório
-
-`/demandas/` é o mesmo quadro da aba Demandas desenhado para ser lido de longe:
-uma coluna por situação, letra grande, nada clicável. Relê o banco a cada 30
-segundos, e a coluna que tem mais demanda do que caberia na altura da tela gira
-de página a cada 20 — o pé da coluna diz onde está ("6–14 de 14"), então nada
-fica escondido sem avisar. Não rola: a TV não tem quem role.
-
-Esta é a única tela do site que não fala direto com o Supabase, e o motivo é
-que ela entra sem login. As tabelas `demands`, `demand_steps` e `staff` só têm
-política de leitura para administrador, e abrir uma para `anon` entregaria o
-quadro a quem tem a chave publishable — que é pública e vive no `/config.js`.
-Então quem lê o banco é a Edge Function `demandas-tv`
-(`supabase/functions/demandas-tv/`), com a chave de serviço que nunca sai de
-lá. O RLS continua fechado como estava, e a função só sabe ler: não há caminho
-de escrita nela.
-
-Quem manda no portão são duas variáveis de ambiente **do projeto Supabase** (não
-do EasyPanel — a senha não pode viver no `config.js`, que qualquer visitante lê):
-
-| Variável | Para quê |
-|---|---|
-| `DEMANDAS_PUBLICO=1` | Quadro aberto, sem senha. É o modo de hoje |
-| `DEMANDAS_SENHA=…` | Quadro trancado por esta senha |
-
-Sem nenhuma das duas a função se recusa a responder — segredo esquecido não
-vira porta aberta por acidente. Para trancar depois:
-
-```bash
-supabase secrets set DEMANDAS_SENHA=... --project-ref <ref>
-supabase secrets unset DEMANDAS_PUBLICO --project-ref <ref>
-supabase functions deploy demandas-tv --project-ref <ref> --no-verify-jwt
-```
-
-Não há nada a mudar no site: a tela pergunta ao servidor se precisa de senha e
-desenha o portão sozinha. A senha que funcionou fica no `localStorage` daquela
-TV, para a tela voltar sozinha depois de uma queda de luz.
 
 ### Cérebro: o mentorado pergunta em português
 
@@ -260,7 +227,7 @@ lugar nenhum deste projeto.
 
 ## Integrações externas
 
-O site não tem backend, mas depende de três serviços de fora:
+A interface estática depende de serviços externos:
 
 | O quê | Onde | Observação |
 |---|---|---|
@@ -270,6 +237,46 @@ O site não tem backend, mas depende de três serviços de fora:
 
 O endpoint do Make fica visível no JS — é inerente a site estático. Se começar a
 receber spam, colocar rate limit ou captcha do lado do Make.
+
+## Referência auxiliar · exibição do quadro (`/demandas/`)
+
+Esta seção preserva a documentação de uma rota existente para consulta técnica. Ela não define uma frente de trabalho ou prioridade do projeto.
+
+`/demandas/` é o mesmo quadro da aba Demandas desenhado para ser lido de longe:
+uma coluna por situação, letra grande, nada clicável. Relê o banco a cada 30
+segundos, e a coluna que tem mais demanda do que caberia na altura da tela gira
+de página a cada 20 — o pé da coluna diz onde está ("6–14 de 14"), então nada
+fica escondido sem avisar. Não rola: a TV não tem quem role.
+
+Esta é a única tela do site que não fala direto com o Supabase, e o motivo é
+que ela entra sem login. As tabelas `demands`, `demand_steps` e `staff` só têm
+política de leitura para administrador, e abrir uma para `anon` entregaria o
+quadro a quem tem a chave publishable — que é pública e vive no `/config.js`.
+Então quem lê o banco é a Edge Function `demandas-tv`
+(`supabase/functions/demandas-tv/`), com a chave de serviço que nunca sai de
+lá. O RLS continua fechado como estava, e a função só sabe ler: não há caminho
+de escrita nela.
+
+Quem manda no portão são duas variáveis de ambiente **do projeto Supabase** (não
+do EasyPanel — a senha não pode viver no `config.js`, que qualquer visitante lê):
+
+| Variável | Para quê |
+|---|---|
+| `DEMANDAS_PUBLICO=1` | Quadro aberto, sem senha. Modo registrado na implementação de 27/08/2026 |
+| `DEMANDAS_SENHA=…` | Quadro trancado por esta senha |
+
+Sem nenhuma das duas a função se recusa a responder — segredo esquecido não
+vira porta aberta por acidente. Para trancar depois:
+
+```bash
+supabase secrets set DEMANDAS_SENHA=... --project-ref <ref>
+supabase secrets unset DEMANDAS_PUBLICO --project-ref <ref>
+supabase functions deploy demandas-tv --project-ref <ref> --no-verify-jwt
+```
+
+Não há nada a mudar no site: a tela pergunta ao servidor se precisa de senha e
+desenha o portão sozinha. A senha que funcionou fica no `localStorage` daquela
+TV, para a tela voltar sozinha depois de uma queda de luz.
 
 ## Origem
 
@@ -282,10 +289,9 @@ backup do cPanel antes de desligar a hospedagem:
 - **`.htaccess`** — retorna 403, pode conter redirects ou regras de cache
 - **arquivos não referenciados no `index.html`** — não aparecem num espelho HTTP
 
-## DNS
+## DNS · referência datada
 
-Nameservers atuais: `ns1/ns2.mentoriaolympusdecatarata.com` (TurboCloud). TTL do
-registro A: 600s.
+O levantamento documental de 15/08/2026 registrou delegação no registro.br para `ns1/ns2.star4070.com.br` (Turbocloud). Os nomes `ns1/ns2.mentoriaolympusdecatarata.com` da versão anterior deste README apareciam dentro da zona e não comprovavam a delegação pública. Confirmar a situação no DNS público antes de qualquer mudança; este registro não é uma verificação atual.
 
 Para migrar apontando só o site e **preservando o e-mail**, alterar apenas o
 registro **A** (e o `www`) para o IP do VPS. O **MX** deve continuar apontando
