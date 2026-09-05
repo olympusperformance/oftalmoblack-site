@@ -51,7 +51,8 @@ CREATE TABLE IF NOT EXISTS cerebro.instagram_metricas (
   publicacoes        integer,
   seguidores_ganhos  integer,   -- fluxo: entraram neste dia
   visualizacoes      integer,   -- views, últimos 7 dias até `dia`
-  alcance            integer,   -- reach, mesma janela
+  alcance            integer,   -- reach, janela de 7 dias
+  alcance_dia        integer,   -- reach daquele dia sozinho (série retroativa)
   interacoes         integer,   -- total_interactions
   contas_engajadas   integer,   -- accounts_engaged
   visitas_perfil     integer,   -- profile_views
@@ -156,7 +157,7 @@ GRANT SELECT ON public.instagram_resumo TO anon, authenticated;
 CREATE OR REPLACE VIEW public.instagram_serie
   WITH (security_invoker = on) AS
   SELECT c.member_id, c.username, m.dia, m.seguidores, m.seguidores_ganhos,
-         m.visualizacoes, m.alcance, m.interacoes, m.visitas_perfil
+         m.alcance_dia, m.visualizacoes, m.alcance, m.interacoes, m.visitas_perfil
     FROM cerebro.instagram_metricas m
     JOIN cerebro.instagram_contas c ON c.ig_user_id = m.ig_user_id
    WHERE c.ativo;

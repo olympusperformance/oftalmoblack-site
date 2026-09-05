@@ -922,6 +922,179 @@
       }).join('') + '</span>';
   }
 
+  /* ── detalhe de uma conta ─────────────────────────────────────────────── */
+  /* Clicar no mentorado abre o histórico dele. O que existe de passado, e por
+     quê, está medido: o Instagram devolve `reach` diário por quase dois anos,
+     mas `follower_count` só 30 dias, e `views` não tem série diária nenhuma
+     (só janela). Então o gráfico grande é o alcance — o único com memória
+     longa — e a curva de seguidores é reconstruída dos ganhos diários, o que
+     vale um aviso na tela: é estimativa, não medição.
+
+     Os gráficos são SVG escrito à mão. Trazer uma biblioteca de gráfico para
+     duas séries seria mais peso no navegador do que o desenho inteiro. */
+
+  function serieDe(username, dias) {
+    var corte = new Date();
+    corte.setDate(corte.getDate() - dias);
+    return (st.igSerie || [])
+      .filter(function (p) { return p.username === username && new Date(p.dia + 'T12:00') >= corte; })
+      .sort(function (a, b) { return a.dia < b.dia ? -1 : 1; });
+  }
+
+  /* Área + linha. `campo` diz qual número ler; nulo vira buraco, não zero —
+     dia sem coleta não é dia de alcance zero. */
+  function grafico(pontos, campo, cor, altura) {
+    var H = altura || 150, W = 900, PB = 22;
+    var vals = pontos.map(function (p) { return p[campo]; });
+    var validos = vals.filter(function (v) { return v !== null && v !== undefined; });
+    if (validos.length < 2) {
+      return '<div class="ig-vazio">Ainda não há série suficiente para desenhar.</div>';
+    }
+    var max = Math.max.apply(null, validos), min = Math.min.apply(null, validos);
+    var span = (max - min) || 1;
+    var passo = W / (pontos.length - 1 || 1);
+    var y = function (v) { return PB + (H - PB * 2) * (1 - (v - min) / span); };
+
+    var d = '', area = '', aberto = false;
+    pontos.forEach(function (p, i) {
+      var v = p[campo];
+      if (v === null || v === undefined) { aberto = false; return; }
+      var px = i * passo, py = y(v);
+      d += (aberto ? 'L' : 'M') + px.toFixed(1) + ' ' + py.toFixed(1) + ' ';
+      area += (aberto ? 'L' : 'M' + px.toFixed(1) + ' ' + H + 'L') + px.toFixed(1) + ' ' + py.toFixed(1) + ' ';
+      aberto = true;
+    });
+    var ultimo = pontos.length - 1;
+    area += 'L' + (ultimo * passo).toFixed(1) + ' ' + H + 'Z';
+
+    var id = 'g' + Math.random().toString(36).slice(2, 8);
+    var meio = pontos[Math.floor(pontos.length / 2)];
+    return '<svg class="ig-graf" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" ' +
+      'role="img" aria-label="série de ' + esc(campo) + '">' +
+      '<defs><linearGradient id="' + id + '" x1="0" x2="0" y1="0" y2="1">' +
+      '<stop offset="0%" stop-color="' + cor + '" stop-opacity=".28"/>' +
+      '<stop offset="100%" stop-color="' + cor + '" stop-opacity="0"/></linearGradient></defs>' +
+      '<path d="' + area + '" fill="url(#' + id + ')"/>' +
+      '<path d="' + d + '" fill="none" stroke="' + cor + '" stroke-width="2" ' +
+      'stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>' +
+      '</svg>' +
+      '<div class="ig-eixo"><span>' + esc(Club.fmtDataCurta(pontos[0].dia)) + '</span>' +
+      '<span>' + esc(meio ? Club.fmtDataCurta(meio.dia) : '') + '</span>' +
+      '<span>' + esc(Club.fmtDataCurta(pontos[ultimo].dia)) + '</span></div>';
+  }
+
+  /* Barras de ganho diário. Cada dia é uma coluna que ocupa a altura toda e
+     ancora a barra na base — com `top` em elemento relative, como estava, a
+     barra saía do cartão e caía por cima do bloco de baixo. Dia negativo
+     (o Instagram devolve ganho, mas conta apagada pode zerar) cresce para
+     baixo a partir do meio. */
+  function barras(pontos, campo, altura) {
+    var H = altura || 96;
+    var vals = pontos.map(function (p) { return p[campo] || 0; });
+    if (!vals.length) return '<div class="ig-vazio">Sem dados no período.</div>';
+    var teto = Math.max.apply(null, vals.map(Math.abs)) || 1;
+    var temNeg = vals.some(function (v) { return v < 0; });
+    var util = temNeg ? H / 2 : H;
+    return '<div class="ig-barras' + (temNeg ? ' tem-neg' : '') + '" style="height:' + H + 'px">' +
+      pontos.map(function (p, i) {
+        var v = vals[i];
+        var h = Math.max(2, Math.abs(v) / teto * util * 0.94);
+        var cor = v < 0 ? 'var(--danger)' : 'var(--success)';
+        return '<span class="ig-col' + (v < 0 ? ' neg' : '') + '">' +
+          '<i style="height:' + h.toFixed(1) + 'px;background:' + cor + '" title="' +
+          esc(Club.fmtDataCurta(p.dia)) + ': ' + (v > 0 ? '+' : '') + v + ' seguidores"></i></span>';
+      }).join('') + '</div>';
+  }
+
+  /* Curva de seguidores para trás: o total de hoje menos o que entrou depois de
+     cada dia. É estimativa — `follower_count` conta quem chegou, não quem saiu,
+     então quanto mais longe do hoje, mais a linha erra. Por isso 30 dias e o
+     aviso ao lado do título. */
+  function curvaSeguidores(pontos, totalHoje) {
+    var acc = totalHoje, saida = [];
+    for (var i = pontos.length - 1; i >= 0; i--) {
+      saida.unshift({ dia: pontos[i].dia, seguidores: acc });
+      acc -= (pontos[i].seguidores_ganhos || 0);
+    }
+    return saida;
+  }
+
+  function abrirDetalheIg(username) {
+    var l = (st.igResumo || []).filter(function (x) { return x.username === username; })[0];
+    if (!l) return;
+    var dias = st.igDetDias || 90;
+    var serie = serieDe(username, dias);
+    var serie30 = serieDe(username, 30);
+
+    var alc = serie.map(function (p) { return p.alcance_dia; })
+                   .filter(function (v) { return v !== null && v !== undefined; });
+    var media = alc.length ? Math.round(alc.reduce(function (a, b) { return a + b; }, 0) / alc.length) : null;
+    var melhor = serie.filter(function (p) { return p.alcance_dia !== null; })
+                      .sort(function (a, b) { return b.alcance_dia - a.alcance_dia; })[0];
+    var ganhos30 = serie30.reduce(function (a, p) { return a + (p.seguidores_ganhos || 0); }, 0);
+    var curva = curvaSeguidores(serie30, l.seguidores || 0);
+
+    Club.modal.open({
+      title: (l.mentorado || username),
+      sub: 'Instagram · histórico',
+      leitura: true,
+      largura: 980,
+      body:
+        '<div class="ig-det">' +
+          '<div class="ig-det-top">' +
+            '<a class="ig-arroba" href="https://instagram.com/' + esc(username) + '" ' +
+              'target="_blank" rel="noopener">@' + esc(username) + '</a>' +
+            '<div class="seg ig-per" id="igPeriodo">' +
+              [30, 90, 180].map(function (d) {
+                return '<button data-igdias="' + d + '" aria-selected="' + (d === dias) + '">' +
+                  d + ' dias</button>';
+              }).join('') +
+            '</div>' +
+          '</div>' +
+
+          '<div class="statgrid ig-det-stats">' +
+            cardStat('SEGUIDORES', numeroCurto(l.seguidores), 'agora') +
+            cardStat('GANHOS EM 30 DIAS', (ganhos30 > 0 ? '+' : '') + numeroCurto(ganhos30),
+                     'somando o que entrou por dia') +
+            cardStat('ALCANCE MÉDIO/DIA', numeroCurto(media), 'nos últimos ' + dias + ' dias') +
+            cardStat('MELHOR DIA', melhor ? numeroCurto(melhor.alcance_dia) : '—',
+                     melhor ? Club.fmtDataCurta(melhor.dia) : 'sem série') +
+          '</div>' +
+
+          '<div class="ig-bloco">' +
+            '<div class="ig-bloco-h"><h3>Alcance por dia</h3>' +
+            '<span class="tx-s">quantas contas viram algo dele naquele dia</span></div>' +
+            grafico(serie, 'alcance_dia', 'var(--gold)', 170) +
+          '</div>' +
+
+          '<div class="ig-grid2">' +
+            '<div class="ig-bloco">' +
+              '<div class="ig-bloco-h"><h3>Seguidores que entraram</h3>' +
+              '<span class="tx-s">por dia, últimos 30 — o teto que a API entrega</span></div>' +
+              barras(serie30, 'seguidores_ganhos', 96) +
+            '</div>' +
+            '<div class="ig-bloco">' +
+              '<div class="ig-bloco-h"><h3>Curva de seguidores</h3>' +
+              '<span class="tx-s">reconstruída dos ganhos — estimativa, não medição</span></div>' +
+              grafico(curva, 'seguidores', 'var(--info, #6aa9ff)', 96) +
+            '</div>' +
+          '</div>' +
+
+          '<div class="ig-bloco">' +
+            '<div class="ig-bloco-h"><h3>A semana que passou</h3>' +
+            '<span class="tx-s">janela de 7 dias, do último retrato</span></div>' +
+            '<div class="ig-semana">' +
+              '<div><b>' + numeroCurto(l.visualizacoes) + '</b><span>visualizações</span></div>' +
+              '<div><b>' + numeroCurto(l.alcance) + '</b><span>alcance</span></div>' +
+              '<div><b>' + numeroCurto(l.interacoes) + '</b><span>interações</span></div>' +
+              '<div><b>' + numeroCurto(l.visitas_perfil) + '</b><span>visitas ao perfil</span></div>' +
+              '<div><b>' + numeroCurto(l.publicacoes) + '</b><span>publicações</span></div>' +
+            '</div>' +
+          '</div>' +
+        '</div>'
+    });
+  }
+
   function renderIgMetricas() {
     if (Club.instagramIndisponivel) {
       $('listaIg').innerHTML = '<div class="placeholder">' + ico('alert') +
@@ -965,7 +1138,7 @@
        'Views (7d)', '>Alcance (7d)'],
       linhas.map(function (l) {
         var nome = l.mentorado || '(sem mentorado)';
-        return '<div class="tr">' +
+        return '<div class="tr tr-click" data-ig-det="' + esc(l.username) + '">' +
           td('<div class="tx"><div class="tx tx-t">' + esc(nome) + '</div>' +
              '<div class="tx tx-s"><a href="https://instagram.com/' + esc(l.username) +
              '" target="_blank" rel="noopener">@' + esc(l.username) + '</a></div></div>') +
@@ -2332,6 +2505,17 @@
 
     var bfila = e.target.closest('#filtroBotFila button');
     if (bfila) { st.botFila = bfila.dataset.fila; renderBotFila(); return; }
+
+    var igper = e.target.closest('#igPeriodo button');
+    if (igper) {
+      st.igDetDias = Number(igper.dataset.igdias);
+      var atual = document.querySelector('.ig-arroba');
+      if (atual) { Club.modal.close(); abrirDetalheIg(atual.textContent.replace('@', '')); }
+      return;
+    }
+
+    var igdet = e.target.closest('[data-ig-det]');
+    if (igdet && !e.target.closest('a')) { abrirDetalheIg(igdet.dataset.igDet); return; }
 
     var big = e.target.closest('#filtroIg button');
     if (big) {

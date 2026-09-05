@@ -840,3 +840,51 @@ input[type="file"].inp::file-selector-button:hover{background:var(--surface);bor
    não carrega nenhuma e 14 barras não justificam a primeira. */
 .ig-spark { display: inline-flex; align-items: flex-end; gap: 2px; height: 20px; }
 .ig-spark i { width: 4px; border-radius: 1px; display: block; opacity: .85; }
+
+/* ── detalhe do Instagram ──────────────────────────────────────────────────
+   Um histórico se lê em silêncio: cada bloco é um cartão discreto e o dado é
+   quem fala. Os gráficos são SVG escrito à mão (ver admin.js) — o painel não
+   carrega biblioteca de gráfico e duas séries não justificam a primeira. */
+.ig-det{display:flex;flex-direction:column;gap:14px}
+.ig-det-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.ig-arroba{font-size:13px;color:var(--gold);text-decoration:none;font-weight:600}
+.ig-arroba:hover{text-decoration:underline}
+.ig-per button{font-size:11.5px;padding:5px 11px}
+.ig-det-stats{margin:0}
+
+.ig-bloco{background:var(--surface);border:1px solid var(--border-soft);border-radius:12px;
+  padding:14px 16px 10px}
+.ig-bloco-h{display:flex;align-items:baseline;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.ig-bloco-h h3{margin:0;font-size:13px;font-weight:600;color:var(--text);letter-spacing:.2px}
+.ig-bloco-h .tx-s{font-size:11px;color:var(--faint)}
+.ig-grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:820px){.ig-grid2{grid-template-columns:1fr}}
+
+/* O SVG estica na largura e mantém a altura: preserveAspectRatio="none" faz o
+   traço deformar, e é por isso que a linha usa vector-effect para não engordar. */
+.ig-graf{display:block;width:100%;height:auto;overflow:visible}
+.ig-eixo{display:flex;justify-content:space-between;font-size:10.5px;color:var(--faint);
+  padding:6px 2px 2px;letter-spacing:.3px}
+
+.ig-barras{display:flex;align-items:flex-end;gap:2px;width:100%;padding:4px 0 6px;
+  box-sizing:content-box;overflow:hidden}
+.ig-col{flex:1;min-width:2px;height:100%;display:flex;align-items:flex-end}
+/* Dia de perda cresce do meio para baixo, em vez de para fora do cartão. */
+.ig-barras.tem-neg .ig-col{align-items:center}
+.ig-barras.tem-neg .ig-col.neg{align-items:flex-start}
+.ig-col i{width:100%;border-radius:2px;display:block;opacity:.9;transition:opacity .15s}
+.ig-col:hover i{opacity:1}
+
+.ig-semana{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:2px 0 8px}
+@media (max-width:700px){.ig-semana{grid-template-columns:repeat(2,1fr)}}
+.ig-semana div{display:flex;flex-direction:column;gap:3px}
+.ig-semana b{font-size:19px;font-weight:600;color:var(--gold-strong);line-height:1.1;
+  font-variant-numeric:tabular-nums}
+.ig-semana span{font-size:11px;color:var(--muted)}
+
+.ig-vazio{font-size:12px;color:var(--faint);padding:18px 0 22px;text-align:center}
+
+/* A linha do quadro vira porta de entrada do histórico: sem o cursor, ninguém
+   descobre que ela abre. */
+.tr-click{cursor:pointer}
+.tr-click:hover{background:var(--surface-hi)}

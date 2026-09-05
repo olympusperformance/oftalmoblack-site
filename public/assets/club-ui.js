@@ -234,11 +234,18 @@
             C.icon('x') + '</button>' +
         '</div>' +
         '<form id="modalForm" novalidate>' + opts.body + '</form>' +
-        '<div class="modal-f">' +
-          '<button class="btn" type="button" data-close>Cancelar</button>' +
-          '<button class="btn btn-primary" type="submit" form="modalForm">' +
-            C.esc(opts.submitLabel || 'Salvar') + '</button>' +
-        '</div>';
+        /* Painel de leitura (um histórico, um detalhe) não tem o que salvar:
+           oferecer "Cancelar / Salvar" ali sugere uma edição que não existe. */
+        (opts.leitura
+          ? '<div class="modal-f"><button class="btn" type="button" data-close>Fechar</button></div>'
+          : '<div class="modal-f">' +
+              '<button class="btn" type="button" data-close>Cancelar</button>' +
+              '<button class="btn btn-primary" type="submit" form="modalForm">' +
+                C.esc(opts.submitLabel || 'Salvar') + '</button>' +
+            '</div>');
+
+      var box = el.querySelector('.modal-box');
+      box.style.maxWidth = opts.largura ? opts.largura + 'px' : '';
 
       el.hidden = false;
       document.body.style.overflow = 'hidden';

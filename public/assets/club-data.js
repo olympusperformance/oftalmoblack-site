@@ -191,13 +191,16 @@
           return res.data || [];
         });
       },
-      /* A série inteira de uma vez: são 15 contas × um retrato por dia, e
-         paginar isso seria mais código que benefício pelos próximos anos. */
+      /* A série inteira de uma vez: 15 contas × um retrato por dia. São ~2,6 mil
+         linhas hoje (seis meses de alcance vieram na carga retroativa) e cresce
+         15 por dia — carregar tudo continua mais barato que ir buscar de novo a
+         cada mentorado que o admin abre. */
       serie: function () {
-        return sb().from('instagram_serie').select('*').order('dia').then(function (res) {
-          if (res.error) return [];
-          return res.data || [];
-        });
+        return sb().from('instagram_serie').select('*')
+          .order('dia').limit(20000).then(function (res) {
+            if (res.error) return [];
+            return res.data || [];
+          });
       }
     },
 
