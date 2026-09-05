@@ -340,8 +340,12 @@
       : Club.empty('check-circle', 'Nenhuma tarefa atrasada. A turma está em dia.');
   }
 
-  function cardStat(k, v, d) {
-    return '<div class="stat"><div class="k">' + esc(k) + '</div>' +
+  /* `dica` é opcional: quando existe, o cartão explica ao passar o mouse o que
+     aquele número quer dizer. Número sem definição vira discussão na reunião. */
+  function cardStat(k, v, d, dica) {
+    return '<div class="stat' + (dica ? ' tem-dica' : '') + '"' +
+      (dica ? ' data-dica="' + esc(dica) + '"' : '') + '>' +
+      '<div class="k">' + esc(k) + '</div>' +
       '<div class="v">' + esc(v) + '</div><div class="d">' + esc(d) + '</div></div>';
   }
 
@@ -939,7 +943,7 @@
 
   /* Área + linha. `campo` diz qual número ler; nulo vira buraco, não zero —
      dia sem coleta não é dia de alcance zero. */
-  function grafico(pontos, campo, cor, altura) {
+  function grafico(pontos, campo, cor, altura, rotulo) {
     var H = altura || 150, W = 900, PB = 22;
     var vals = pontos.map(function (p) { return p[campo]; });
     var validos = vals.filter(function (v) { return v !== null && v !== undefined; });
@@ -965,7 +969,14 @@
 
     var id = 'g' + Math.random().toString(36).slice(2, 8);
     var meio = pontos[Math.floor(pontos.length / 2)];
-    return '<svg class="ig-graf" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" ' +
+
+    /* A série fica guardada para o rastreador do mouse: percorrer o DOM do SVG
+       a cada movimento seria caro e nem devolveria o valor original. */
+    st.igGrafs = st.igGrafs || {};
+    st.igGrafs[id] = { pontos: pontos, campo: campo, rotulo: rotulo || campo, cor: cor, H: H, PB: PB };
+
+    return '<div class="ig-graf-wrap" data-graf="' + id + '">' +
+      '<svg class="ig-graf" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" ' +
       'role="img" aria-label="série de ' + esc(campo) + '">' +
       '<defs><linearGradient id="' + id + '" x1="0" x2="0" y1="0" y2="1">' +
       '<stop offset="0%" stop-color="' + cor + '" stop-opacity=".28"/>' +
@@ -974,6 +985,9 @@
       '<path d="' + d + '" fill="none" stroke="' + cor + '" stroke-width="2" ' +
       'stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>' +
       '</svg>' +
+      '<span class="ig-cursor" hidden></span>' +
+      '<span class="ig-ponto" hidden style="background:' + cor + '"></span>' +
+      '</div>' +
       '<div class="ig-eixo"><span>' + esc(Club.fmtDataCurta(pontos[0].dia)) + '</span>' +
       '<span>' + esc(meio ? Club.fmtDataCurta(meio.dia) : '') + '</span>' +
       '<span>' + esc(Club.fmtDataCurta(pontos[ultimo].dia)) + '</span></div>';
@@ -996,9 +1010,10 @@
         var v = vals[i];
         var h = Math.max(2, Math.abs(v) / teto * util * 0.94);
         var cor = v < 0 ? 'var(--danger)' : 'var(--success)';
-        return '<span class="ig-col' + (v < 0 ? ' neg' : '') + '">' +
-          '<i style="height:' + h.toFixed(1) + 'px;background:' + cor + '" title="' +
-          esc(Club.fmtDataCurta(p.dia)) + ': ' + (v > 0 ? '+' : '') + v + ' seguidores"></i></span>';
+        return '<span class="ig-col' + (v < 0 ? ' neg' : '') +
+          '" data-dia="' + esc(Club.fmtDataCurta(p.dia)) +
+          '" data-valor="' + (v > 0 ? '+' : '') + v + ' seguidores">' +
+          '<i style="height:' + h.toFixed(1) + 'px;background:' + cor + '"></i></span>';
       }).join('') + '</div>';
   }
 
@@ -1014,6 +1029,110 @@
     }
     return saida;
   }
+
+  /* ── a legenda que segue o mouse ───────────────────────────────────────── */
+  /* Uma caixa só, movida por JS. O `title` do navegador demora quase um segundo
+     para aparecer, some sozinho e não formata número — num painel que existe
+     para ser lido rápido, isso é o mesmo que não ter legenda.
+
+     Três clientes, o mesmo balão: cartão do topo (o que aquele número quer
+     dizer), coluna de barra (o dia e quantos entraram) e gráfico de linha (o
+     valor do dia sob o cursor, com linha-guia e ponto). */
+
+  function dica() {
+    var el = document.getElementById('igTip');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'igTip';
+      el.className = 'ig-tip';
+      el.hidden = true;
+      document.body.appendChild(el);
+    }
+    return el;
+  }
+
+  function mostrarDica(html, x, y) {
+    var el = dica();
+    el.innerHTML = html;
+    el.hidden = false;
+    /* Perto da borda direita o balão viraria para dentro da tela sozinho — sem
+       isto ele sai da janela e o número fica ilegível justamente no último dia,
+       que é o que mais se olha. */
+    var larg = el.offsetWidth, alt = el.offsetHeight;
+    var px = Math.min(Math.max(8, x - larg / 2), window.innerWidth - larg - 8);
+    var py = y - alt - 12;
+    if (py < 8) py = y + 18;
+    el.style.left = px + 'px';
+    el.style.top = py + 'px';
+  }
+
+  function esconderDica() {
+    var el = document.getElementById('igTip');
+    if (el) el.hidden = true;
+    Array.prototype.forEach.call(document.querySelectorAll('.ig-cursor,.ig-ponto'), function (n) {
+      n.hidden = true;
+    });
+  }
+
+  function rastrear(e) {
+    var wrap = e.target.closest ? e.target.closest('.ig-graf-wrap') : null;
+    if (wrap) {
+      var g = (st.igGrafs || {})[wrap.dataset.graf];
+      if (!g || !g.pontos.length) return;
+      var r = wrap.getBoundingClientRect();
+      var frac = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+      var i = Math.round(frac * (g.pontos.length - 1));
+      var p = g.pontos[i];
+      var v = p[g.campo];
+      if (v === null || v === undefined) { esconderDica(); return; }
+
+      /* O y do ponto é recalculado a partir da série, não lido do path: o SVG
+         é esticado por preserveAspectRatio e as coordenadas dele não
+         correspondem a pixels da tela. */
+      var vals = g.pontos.map(function (q) { return q[g.campo]; })
+                         .filter(function (q) { return q !== null && q !== undefined; });
+      var max = Math.max.apply(null, vals), min = Math.min.apply(null, vals);
+      var span = (max - min) || 1;
+      /* O respiro de cima e de baixo está em unidades do viewBox; converter
+         para pixels exige a altura do próprio gráfico, não um número fixo —
+         com 150 chumbado, o ponto saía do traço nos gráficos de outra altura. */
+      var PB = g.PB * (r.height / g.H);
+      var y = PB + (r.height - PB * 2) * (1 - (v - min) / span);
+      var x = (i / (g.pontos.length - 1 || 1)) * r.width;
+
+      var cur = wrap.querySelector('.ig-cursor'), pt = wrap.querySelector('.ig-ponto');
+      if (cur) { cur.style.left = x + 'px'; cur.hidden = false; }
+      if (pt) { pt.style.left = x + 'px'; pt.style.top = y + 'px'; pt.hidden = false; }
+
+      mostrarDica('<b>' + numeroCurto(v) + '</b><span>' + esc(g.rotulo) + '</span>' +
+                  '<i>' + esc(Club.fmtDate(p.dia)) + '</i>',
+                  e.clientX, r.top + y);
+      return;
+    }
+
+    var col = e.target.closest ? e.target.closest('.ig-col') : null;
+    if (col) {
+      var rc = col.getBoundingClientRect();
+      mostrarDica('<b>' + esc(col.dataset.valor) + '</b><i>' + esc(col.dataset.dia) + '</i>',
+                  rc.left + rc.width / 2, rc.top);
+      return;
+    }
+
+    var stat = e.target.closest ? e.target.closest('.stat.tem-dica') : null;
+    if (stat) {
+      var rs = stat.getBoundingClientRect();
+      mostrarDica('<span class="ig-tip-txt">' + esc(stat.dataset.dica) + '</span>',
+                  rs.left + rs.width / 2, rs.top);
+      return;
+    }
+
+    esconderDica();
+  }
+
+  document.addEventListener('mousemove', rastrear);
+  document.addEventListener('mouseleave', esconderDica);
+  /* Rolar com o balão aberto o deixaria pendurado no lugar errado. */
+  window.addEventListener('scroll', esconderDica, true);
 
   function abrirDetalheIg(username) {
     var l = (st.igResumo || []).filter(function (x) { return x.username === username; })[0];
@@ -1062,18 +1181,26 @@
           '</div>' +
 
           '<div class="statgrid ig-det-stats">' +
-            cardStat('SEGUIDORES', numeroCurto(l.seguidores), 'agora') +
+            cardStat('SEGUIDORES', numeroCurto(l.seguidores), 'agora',
+                     'Total de seguidores no último retrato. É o número que o próprio ' +
+                     'Instagram mostra no perfil.') +
             cardStat('GANHOS EM 30 DIAS', (ganhos30 > 0 ? '+' : '') + numeroCurto(ganhos30),
-                     'somando o que entrou por dia') +
-            cardStat('ALCANCE MÉDIO/DIA', numeroCurto(media), 'nos últimos ' + dias + ' dias') +
+                     'somando o que entrou por dia',
+                     'Soma de quem seguiu a conta nos últimos 30 dias. O Instagram conta ' +
+                     'quem chegou, não quem saiu — então isto é entrada bruta, não saldo.') +
+            cardStat('ALCANCE MÉDIO/DIA', numeroCurto(media), 'nos últimos ' + dias + ' dias',
+                     'Média de contas únicas que viram algum conteúdo por dia no período. ' +
+                     'Diferente de visualizações: a mesma pessoa vendo três vezes conta uma.') +
             cardStat('MELHOR DIA', melhor ? numeroCurto(melhor.alcance_dia) : '—',
-                     melhor ? Club.fmtDataCurta(melhor.dia) : 'sem série') +
+                     melhor ? Club.fmtDataCurta(melhor.dia) : 'sem série',
+                     'O dia de maior alcance no período — em geral, o dia de um conteúdo ' +
+                     'que rendeu. Vale abrir o perfil e ver o que foi publicado nesta data.') +
           '</div>' +
 
           '<div class="ig-bloco">' +
             '<div class="ig-bloco-h"><h3>Alcance por dia</h3>' +
             '<span class="tx-s">quantas contas viram algo dele naquele dia</span></div>' +
-            grafico(serie, 'alcance_dia', 'var(--gold)', 170) +
+            grafico(serie, 'alcance_dia', 'var(--gold)', 170, 'contas alcançadas') +
           '</div>' +
 
           '<div class="ig-grid2">' +
@@ -1085,7 +1212,7 @@
             '<div class="ig-bloco">' +
               '<div class="ig-bloco-h"><h3>Curva de seguidores</h3>' +
               '<span class="tx-s">reconstruída dos ganhos — estimativa, não medição</span></div>' +
-              grafico(curva, 'seguidores', 'var(--info, #6aa9ff)', 96) +
+              grafico(curva, 'seguidores', 'var(--info, #6aa9ff)', 96, 'seguidores no dia') +
             '</div>' +
           '</div>' +
 
