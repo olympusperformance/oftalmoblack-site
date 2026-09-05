@@ -11,7 +11,7 @@
 
   var st = { members: [], tasks: [], events: [], artifacts: [], materials: [],
              demands: [], staff: [], steps: [], progress: [], demandSteps: [],
-             view: 'overview', membro: '', status: 'all',
+             view: 'overview', membro: '', status: 'all', igOrdem: 'seguidores',
              matCategoria: '', matMembro: '',
              demResp: '', demMembro: '', demProjeto: '', demAbertas: 'open',
              /* "Minhas" é a leitura padrão do quadro: quem abre vê o que é seu,
@@ -41,6 +41,7 @@
       { key:'materials', label:'Materiais',  icon:'folder' }
     ] },
     { grupo:'Instagram', itens: [
+      { key:'igMetricas',  label:'Alcance',         icon:'users' },
       { key:'botFila',     label:'O bot respondeu', icon:'bell' },
       { key:'botExemplos', label:'Voz do bot',      icon:'edit' }
     ] },
@@ -87,13 +88,16 @@
       Club.data.progress.list(),
       Club.data.demandSteps.list(),
       Club.data.botExemplos.list(),
-      Club.data.botRespostas.list()
+      Club.data.botRespostas.list(),
+      Club.data.instagram.resumo(),
+      Club.data.instagram.serie()
     ]).then(function (r) {
       st.members = r[0]; st.tasks = r[1]; st.events = r[2];
       st.artifacts = r[3]; st.materials = r[4];
       st.demands = r[5]; st.staff = r[6];
       st.steps = r[7]; st.progress = r[8]; st.demandSteps = r[9];
       st.botExemplos = r[10]; st.botRespostas = r[11];
+      st.igResumo = r[12]; st.igSerie = r[13];
       indexar();
       descobrirEu();
     });
@@ -873,6 +877,108 @@
   function botRotulo(g) {
     var achou = BOT_GRUPOS.filter(function (x) { return x.value === g; })[0];
     return achou ? achou.label.split(' — ')[0] : (g || '—');
+  }
+
+  /* ── instagram dos mentorados ─────────────────────────────────────────── */
+  /* O acompanhamento era por print e memória. Aqui a conta de cada mentorado
+     aparece com o total de hoje e a variação desde o retrato de 7 e 30 dias
+     atrás — quando ela existe. Antes disso a coluna diz "aguardando", que é
+     diferente de "não cresceu": no primeiro dia não há com o que comparar.
+
+     `visualizacoes` e `alcance` são a janela de 7 dias que o Instagram
+     entrega, não um acumulado nosso; por isso o cabeçalho diz "7 dias". */
+
+  function numeroCurto(n) {
+    if (n === null || n === undefined) return '—';
+    if (n >= 1000000) return (n / 1000000).toFixed(1).replace('.0', '') + 'M';
+    if (n >= 1000) return (n / 1000).toFixed(1).replace('.0', '') + 'k';
+    return String(n);
+  }
+
+  function variacao(v) {
+    if (v === null || v === undefined) return '<span class="tx-s">aguardando</span>';
+    if (v === 0) return '<span class="tx-s">estável</span>';
+    var cor = v > 0 ? 'var(--success)' : 'var(--danger)';
+    return '<span style="color:' + cor + '">' + (v > 0 ? '+' : '') + numeroCurto(v) + '</span>';
+  }
+
+  /* Barrinha de progressão dos últimos retratos, desenhada com divs: o painel
+     não carrega biblioteca de gráfico, e trazer uma para 15 linhas seria caro
+     demais pelo que entrega. Cada barra é um dia; a altura é relativa ao maior
+     ganho da série daquela conta. */
+  function faixaSerie(username) {
+    var pontos = (st.igSerie || []).filter(function (p) { return p.username === username; }).slice(-14);
+    if (pontos.length < 2) return '<span class="tx-s">série curta</span>';
+    var vals = pontos.map(function (p) { return p.seguidores_ganhos || 0; });
+    var teto = Math.max.apply(null, vals.map(Math.abs)) || 1;
+    return '<span class="ig-spark" title="ganho de seguidores por dia">' +
+      pontos.map(function (p, i) {
+        var v = vals[i];
+        var h = Math.max(2, Math.round(Math.abs(v) / teto * 18));
+        var cor = v < 0 ? 'var(--danger)' : 'var(--success)';
+        return '<i style="height:' + h + 'px;background:' + cor + '" title="' +
+               esc(Club.fmtDataCurta ? Club.fmtDataCurta(p.dia) : p.dia) +
+               ': ' + (v > 0 ? '+' : '') + v + '"></i>';
+      }).join('') + '</span>';
+  }
+
+  function renderIgMetricas() {
+    if (Club.instagramIndisponivel) {
+      $('listaIg').innerHTML = '<div class="placeholder">' + ico('alert') +
+        '<h2>Falta criar no banco</h2><p>' + esc(Club.instagramIndisponivel) + '</p></div>';
+      $('statsIg').innerHTML = '';
+      return;
+    }
+
+    var linhas = (st.igResumo || []).slice();
+    if (linhas.length === 0) {
+      $('listaIg').innerHTML = '<div class="placeholder">' + ico('users') +
+        '<h2>Nenhuma coleta ainda</h2><p>A primeira rodada do coletor ainda não ' +
+        'aconteceu. Assim que rodar, as contas aparecem aqui.</p></div>';
+      $('statsIg').innerHTML = '';
+      return;
+    }
+
+    var total = linhas.reduce(function (a, l) { return a + (l.seguidores || 0); }, 0);
+    var views = linhas.reduce(function (a, l) { return a + (l.visualizacoes || 0); }, 0);
+    var comVar = linhas.filter(function (l) { return l.var_seguidores_7d !== null; });
+    var cresceu = comVar.filter(function (l) { return l.var_seguidores_7d > 0; }).length;
+    var dia = linhas[0].dia;
+
+    $('statsIg').innerHTML =
+      cardStat('SEGUIDORES NA TURMA', numeroCurto(total), linhas.length + ' contas acompanhadas') +
+      cardStat('VISUALIZAÇÕES (7 DIAS)', numeroCurto(views), 'somadas as contas') +
+      cardStat('CRESCERAM NA SEMANA', comVar.length ? cresceu : '—',
+               comVar.length ? 'de ' + comVar.length + ' com histórico' : 'aguardando o 2º retrato') +
+      cardStat('ÚLTIMO RETRATO', dia ? Club.fmtDataCurta(dia) : '—', 'um por dia');
+
+    var ordem = st.igOrdem;
+    linhas.sort(function (a, b) {
+      if (ordem === 'crescimento') return (b.var_seguidores_7d || -1e9) - (a.var_seguidores_7d || -1e9);
+      if (ordem === 'views') return (b.visualizacoes || 0) - (a.visualizacoes || 0);
+      return (b.seguidores || 0) - (a.seguidores || 0);
+    });
+
+    $('listaIg').innerHTML = tabela(
+      'minmax(0,1.6fr) 116px 108px 108px 132px 116px 116px',
+      ['Mentorado · conta', 'Seguidores', '7 dias', '30 dias', 'Progressão',
+       'Views (7d)', '>Alcance (7d)'],
+      linhas.map(function (l) {
+        var nome = l.mentorado || '(sem mentorado)';
+        return '<div class="tr">' +
+          td('<div class="tx"><div class="tx tx-t">' + esc(nome) + '</div>' +
+             '<div class="tx tx-s"><a href="https://instagram.com/' + esc(l.username) +
+             '" target="_blank" rel="noopener">@' + esc(l.username) + '</a></div></div>') +
+          td('<span class="tx-t">' + numeroCurto(l.seguidores) + '</span>') +
+          td(variacao(l.var_seguidores_7d)) +
+          td(variacao(l.var_seguidores_30d)) +
+          td(faixaSerie(l.username)) +
+          td(numeroCurto(l.visualizacoes)) +
+          tdCel(numeroCurto(l.alcance), 'end') +
+        '</div>';
+      }).join(''),
+      'Nenhuma conta coletada.'
+    );
   }
 
   function renderBotFila() {
@@ -2227,6 +2333,16 @@
     var bfila = e.target.closest('#filtroBotFila button');
     if (bfila) { st.botFila = bfila.dataset.fila; renderBotFila(); return; }
 
+    var big = e.target.closest('#filtroIg button');
+    if (big) {
+      st.igOrdem = big.dataset.ig;
+      Array.prototype.forEach.call(document.querySelectorAll('#filtroIg button'), function (b) {
+        b.setAttribute('aria-selected', String(b === big));
+      });
+      renderIgMetricas();
+      return;
+    }
+
     var bap = e.target.closest('[data-bot-aprovar]');
     if (bap) { aprovarResposta(bap.dataset.botAprovar); return; }
 
@@ -2401,6 +2517,7 @@
     renderArtifacts();
     renderMaterials();
     renderDemandas();
+    renderIgMetricas();
     renderBotFila();
     renderBotExemplos();
   }

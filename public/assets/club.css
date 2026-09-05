@@ -835,3 +835,8 @@ input[type="file"].inp::file-selector-button:hover{background:var(--surface);bor
 .tr.grp.pai .grp-n{font-size:13.5px;color:var(--gold)}
 .tr.grp.sub{background:var(--surface);padding-left:34px}
 .tr.grp.sub .grp-n{font-weight:500}
+/* Progressão do Instagram: uma barra por dia, altura relativa ao maior ganho
+   da própria conta. Não é gráfico de biblioteca — são divs, porque o painel
+   não carrega nenhuma e 14 barras não justificam a primeira. */
+.ig-spark { display: inline-flex; align-items: flex-end; gap: 2px; height: 20px; }
+.ig-spark i { width: 4px; border-radius: 1px; display: block; opacity: .85; }

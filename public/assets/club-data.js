@@ -173,6 +173,34 @@
       remove: function (id) { return apaga('artifacts', id); }
     },
 
+    /* Instagram dos mentorados: um retrato por dia, escrito pelo coletor
+       (supabase/functions/instagram-metricas). O navegador só lê, e lê por
+       duas views em `public` — o schema `cerebro` não é exposto ao PostgREST.
+       Ver supabase/instagram.sql. */
+    instagram: {
+      resumo: function () {
+        return sb().from('instagram_resumo').select('*').then(function (res) {
+          /* Enquanto supabase/instagram.sql não tiver sido rodado, a view não
+             existe. Uma aba vazia é melhor que derrubar o painel inteiro. */
+          if (res.error && /does not exist|schema cache/i.test(res.error.message || '')) {
+            C.instagramIndisponivel = 'As métricas do Instagram ainda não foram ' +
+              'criadas no banco. Rode supabase/instagram.sql no SQL Editor.';
+            return [];
+          }
+          if (res.error) throw res.error;
+          return res.data || [];
+        });
+      },
+      /* A série inteira de uma vez: são 15 contas × um retrato por dia, e
+         paginar isso seria mais código que benefício pelos próximos anos. */
+      serie: function () {
+        return sb().from('instagram_serie').select('*').order('dia').then(function (res) {
+          if (res.error) return [];
+          return res.data || [];
+        });
+      }
+    },
+
     /* Acervo: cresce sem parar e cada item carrega um arquivo de verdade. */
     materials: {
       list: function (o) {
