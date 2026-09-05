@@ -75,6 +75,12 @@ CREATE INDEX IF NOT EXISTS instagram_metricas_dia ON cerebro.instagram_metricas 
 -- dono e o RLS das tabelas base é ignorado — a view de cima, mesmo sendo
 -- invoker, herdaria o furo e a chave publishable leria a turma inteira sem
 -- login. Foi exatamente o que aconteceu no primeiro teste.
+--
+-- A variação de 7 e 30 dias sai da SOMA dos ganhos diários, não da diferença
+-- contra um retrato antigo do estoque. Motivo: a carga retroativa recupera
+-- alcance e ganho por dia, mas não o total de seguidores de cada dia — esse só
+-- existe a partir da primeira coleta. Comparando estoques, a coluna diria
+-- "aguardando" por um mês inteiro tendo o dado na mão.
 CREATE OR REPLACE VIEW cerebro.instagram_resumo
   WITH (security_invoker = on) AS
 WITH ultima AS (
@@ -83,34 +89,27 @@ WITH ultima AS (
    ORDER BY ig_user_id, dia DESC
 )
 SELECT
-  c.ig_user_id,
-  c.member_id,
-  m.nome                       AS mentorado,
-  c.username,
-  u.dia,
-  u.seguidores,
-  u.publicacoes,
-  u.visualizacoes,
-  u.alcance,
-  u.interacoes,
-  u.visitas_perfil,
-  u.seguidores - h7.seguidores  AS var_seguidores_7d,
-  u.seguidores - h30.seguidores AS var_seguidores_30d,
-  h7.seguidores                 AS seguidores_7d_atras,
-  h30.seguidores                AS seguidores_30d_atras
+  c.ig_user_id, c.member_id, m.nome AS mentorado, c.username,
+  u.dia, u.seguidores, u.publicacoes, u.visualizacoes, u.alcance,
+  u.interacoes, u.visitas_perfil,
+  g7.ganhos  AS var_seguidores_7d,
+  g30.ganhos AS var_seguidores_30d,
+  a30.media  AS alcance_medio_30d
 FROM cerebro.instagram_contas c
 JOIN ultima u ON u.ig_user_id = c.ig_user_id
 LEFT JOIN public.members m ON m.id = c.member_id
 LEFT JOIN LATERAL (
-  SELECT seguidores FROM cerebro.instagram_metricas x
-   WHERE x.ig_user_id = c.ig_user_id AND x.dia <= u.dia - 7
-   ORDER BY x.dia DESC LIMIT 1
-) h7 ON true
+  SELECT sum(seguidores_ganhos)::int AS ganhos FROM cerebro.instagram_metricas x
+   WHERE x.ig_user_id = c.ig_user_id AND x.dia > u.dia - 7 AND x.seguidores_ganhos IS NOT NULL
+) g7 ON true
 LEFT JOIN LATERAL (
-  SELECT seguidores FROM cerebro.instagram_metricas x
-   WHERE x.ig_user_id = c.ig_user_id AND x.dia <= u.dia - 30
-   ORDER BY x.dia DESC LIMIT 1
-) h30 ON true
+  SELECT sum(seguidores_ganhos)::int AS ganhos FROM cerebro.instagram_metricas x
+   WHERE x.ig_user_id = c.ig_user_id AND x.dia > u.dia - 30 AND x.seguidores_ganhos IS NOT NULL
+) g30 ON true
+LEFT JOIN LATERAL (
+  SELECT round(avg(alcance_dia))::int AS media FROM cerebro.instagram_metricas x
+   WHERE x.ig_user_id = c.ig_user_id AND x.dia > u.dia - 30 AND x.alcance_dia IS NOT NULL
+) a30 ON true
 WHERE c.ativo;
 
 -- ---------------------------------------------------------------------------

@@ -90,7 +90,7 @@
       Club.data.botExemplos.list(),
       Club.data.botRespostas.list(),
       Club.data.instagram.resumo(),
-      Club.data.instagram.serie()
+      Club.data.instagram.serie(45)
     ]).then(function (r) {
       st.members = r[0]; st.tasks = r[1]; st.events = r[2];
       st.artifacts = r[3]; st.materials = r[4];
@@ -907,8 +907,10 @@
      demais pelo que entrega. Cada barra é um dia; a altura é relativa ao maior
      ganho da série daquela conta. */
   function faixaSerie(username) {
-    var pontos = (st.igSerie || []).filter(function (p) { return p.username === username; }).slice(-14);
-    if (pontos.length < 2) return '<span class="tx-s">série curta</span>';
+    var pontos = (st.igSerie || [])
+      .filter(function (p) { return p.username === username && p.seguidores_ganhos !== null; })
+      .slice(-14);
+    if (pontos.length < 2) return '<span class="tx-s">aguardando</span>';
     var vals = pontos.map(function (p) { return p.seguidores_ganhos || 0; });
     var teto = Math.max.apply(null, vals.map(Math.abs)) || 1;
     return '<span class="ig-spark" title="ganho de seguidores por dia">' +
@@ -933,13 +935,7 @@
      Os gráficos são SVG escrito à mão. Trazer uma biblioteca de gráfico para
      duas séries seria mais peso no navegador do que o desenho inteiro. */
 
-  function serieDe(username, dias) {
-    var corte = new Date();
-    corte.setDate(corte.getDate() - dias);
-    return (st.igSerie || [])
-      .filter(function (p) { return p.username === username && new Date(p.dia + 'T12:00') >= corte; })
-      .sort(function (a, b) { return a.dia < b.dia ? -1 : 1; });
-  }
+
 
   /* Área + linha. `campo` diz qual número ler; nulo vira buraco, não zero —
      dia sem coleta não é dia de alcance zero. */
@@ -1023,8 +1019,21 @@
     var l = (st.igResumo || []).filter(function (x) { return x.username === username; })[0];
     if (!l) return;
     var dias = st.igDetDias || 90;
-    var serie = serieDe(username, dias);
-    var serie30 = serieDe(username, 30);
+    /* A série completa desta conta vem sob demanda: a lista só carrega os
+       últimos 45 dias de todo mundo, senão o teto de linhas do PostgREST come
+       o histórico. */
+    Club.data.instagram.serieDaConta(username, 180).then(function (todos) {
+      st.igSerieConta = todos;
+      desenharDetalheIg(l, dias, todos);
+    });
+  }
+
+  function desenharDetalheIg(l, dias, todos) {
+    var username = l.username;
+    var corte = new Date(); corte.setDate(corte.getDate() - dias);
+    var corte30 = new Date(); corte30.setDate(corte30.getDate() - 30);
+    var serie = todos.filter(function (p) { return new Date(p.dia + 'T12:00') >= corte; });
+    var serie30 = todos.filter(function (p) { return new Date(p.dia + 'T12:00') >= corte30; });
 
     var alc = serie.map(function (p) { return p.alcance_dia; })
                    .filter(function (v) { return v !== null && v !== undefined; });
@@ -1135,7 +1144,7 @@
     $('listaIg').innerHTML = tabela(
       'minmax(0,1.6fr) 116px 108px 108px 132px 116px 116px',
       ['Mentorado · conta', 'Seguidores', '7 dias', '30 dias', 'Progressão',
-       'Views (7d)', '>Alcance (7d)'],
+       'Alcance médio/dia', '>Views (7d)'],
       linhas.map(function (l) {
         var nome = l.mentorado || '(sem mentorado)';
         return '<div class="tr tr-click" data-ig-det="' + esc(l.username) + '">' +
@@ -1146,8 +1155,8 @@
           td(variacao(l.var_seguidores_7d)) +
           td(variacao(l.var_seguidores_30d)) +
           td(faixaSerie(l.username)) +
-          td(numeroCurto(l.visualizacoes)) +
-          tdCel(numeroCurto(l.alcance), 'end') +
+          td(numeroCurto(l.alcance_medio_30d)) +
+          tdCel(numeroCurto(l.visualizacoes), 'end') +
         '</div>';
       }).join(''),
       'Nenhuma conta coletada.'
@@ -2510,7 +2519,14 @@
     if (igper) {
       st.igDetDias = Number(igper.dataset.igdias);
       var atual = document.querySelector('.ig-arroba');
-      if (atual) { Club.modal.close(); abrirDetalheIg(atual.textContent.replace('@', '')); }
+      if (atual) {
+        var u = atual.textContent.replace('@', '');
+        var linha = (st.igResumo || []).filter(function (x) { return x.username === u; })[0];
+        Club.modal.close();
+        /* Já temos a série desta conta em mãos: trocar 30/90/180 é recortar o
+           que está na memória, não voltar ao banco. */
+        if (linha) desenharDetalheIg(linha, st.igDetDias, st.igSerieConta || []);
+      }
       return;
     }
 

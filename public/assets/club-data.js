@@ -191,13 +191,32 @@
           return res.data || [];
         });
       },
-      /* A série inteira de uma vez: 15 contas × um retrato por dia. São ~2,6 mil
-         linhas hoje (seis meses de alcance vieram na carga retroativa) e cresce
-         15 por dia — carregar tudo continua mais barato que ir buscar de novo a
-         cada mentorado que o admin abre. */
-      serie: function () {
+      /* Série curta, para as barrinhas da lista. Pedir a série inteira aqui foi
+         o erro que fez a coluna Progressão nascer chapada: são ~2,6 mil linhas
+         (seis meses vieram na carga retroativa), o PostgREST corta no teto de
+         linhas e, como a ordem é do dia mais antigo, chegavam só os dias de
+         março — que têm alcance, mas não ganho de seguidor. Recortar por data
+         resolve na origem. */
+      serie: function (dias) {
+        var corte = new Date();
+        corte.setDate(corte.getDate() - (dias || 45));
         return sb().from('instagram_serie').select('*')
-          .order('dia').limit(20000).then(function (res) {
+          .gte('dia', corte.toISOString().slice(0, 10))
+          .order('dia').then(function (res) {
+            if (res.error) return [];
+            return res.data || [];
+          });
+      },
+
+      /* O histórico completo de UMA conta, buscado quando o admin abre o
+         detalhe. Uma conta × 180 dias cabe folgado em qualquer teto. */
+      serieDaConta: function (username, dias) {
+        var corte = new Date();
+        corte.setDate(corte.getDate() - (dias || 180));
+        return sb().from('instagram_serie').select('*')
+          .eq('username', username)
+          .gte('dia', corte.toISOString().slice(0, 10))
+          .order('dia').then(function (res) {
             if (res.error) return [];
             return res.data || [];
           });
