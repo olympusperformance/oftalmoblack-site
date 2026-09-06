@@ -1,0 +1,37 @@
+# ============================================================================
+# Imersão Grau Zero — ajustes de entrega para Apache/cPanel
+# Só afeta a pasta onde este arquivo estiver. Tudo está protegido por
+# <IfModule>, então se o módulo não existir no servidor, a linha é ignorada.
+# Pode apagar este arquivo sem quebrar nada — a página funciona sem ele.
+# ============================================================================
+
+# ---------- compressão ----------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json image/svg+xml
+</IfModule>
+
+# ---------- cache do navegador ----------
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/html                 "access plus 0 seconds"
+  ExpiresByType text/css                  "access plus 7 days"
+  ExpiresByType application/javascript    "access plus 7 days"
+  ExpiresByType image/webp                "access plus 1 year"
+  ExpiresByType image/svg+xml             "access plus 1 year"
+  ExpiresByType font/woff2                "access plus 1 year"
+  ExpiresByType video/mp4                 "access plus 1 year"
+</IfModule>
+
+# ---------- tipos MIME (caso o servidor seja antigo) ----------
+<IfModule mod_mime.c>
+  AddType image/webp  .webp
+  AddType font/woff2  .woff2
+  AddType video/mp4   .mp4
+</IfModule>
+
+# ---------- entrega de vídeo em partes (permite arrastar a barra) ----------
+<IfModule mod_headers.c>
+  <FilesMatch "\.mp4$">
+    Header set Accept-Ranges bytes
+  </FilesMatch>
+</IfModule>
