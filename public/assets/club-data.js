@@ -27,13 +27,19 @@
     tasks:     ['member_id', 'titulo', 'descricao', 'categoria', 'cadencia', 'vence_em',
                 'progresso_atual', 'progresso_total', 'status'],
     events:    ['member_id', 'titulo', 'mentor', 'inicia_em', 'formato', 'link'],
-    artifacts: ['member_id', 'nome', 'subtitulo', 'icone', 'status', 'meta', 'url'],
+    /* group_id, ordem e responsaveis chegam com supabase/frentes.sql. Antes do
+       SQL rodar, artifacts.save corta os três (ver C.faltaGrupos). */
+    artifacts: ['member_id', 'nome', 'subtitulo', 'icone', 'status', 'meta', 'url',
+                'group_id', 'ordem', 'responsaveis'],
+    artifact_groups: ['nome', 'pilar', 'ordem', 'responsaveis'],
     materials: ['titulo', 'descricao', 'categoria', 'visivel_para', 'arquivo_path',
                 'arquivo_nome', 'arquivo_tipo', 'arquivo_bytes', 'publicado_em'],
     demands:   ['titulo', 'descricao', 'status', 'prioridade', 'responsaveis',
                 'member_id', 'origem', 'vence_em', 'projeto'],
     staff:     ['nome', 'apelido', 'ativo', 'user_id'],
-    artifact_steps: ['artifact_id', 'titulo', 'ordem'],
+    /* tipo e cadencia_dias também vêm de frentes.sql; steps.sync só os manda
+       quando a coluna existe (C.temTipo). */
+    artifact_steps: ['artifact_id', 'titulo', 'ordem', 'tipo', 'cadencia_dias'],
     step_progress:  ['member_id', 'step_id', 'feito'],
     /* As mesmas colunas da demanda: a subtarefa ganhou situação, dono e prazo
        depois, e sem elas aqui o filtro descartava o campo e o update ia vazio. */
@@ -46,7 +52,8 @@
 
   /* Campo de data ou de chave estrangeira vazio precisa virar null; string
      vazia o Postgres recusa. */
-  var NULAVEIS = ['vence_em', 'inicia_em', 'member_id', 'publicado_em'];
+  var NULAVEIS = ['vence_em', 'inicia_em', 'member_id', 'publicado_em', 'group_id',
+                  'cadencia_dias'];
 
   /* Tabelas que só a administração enxerga. Quando ainda não foram criadas no
      banco, a aba avisa em vez de derrubar a página inteira. */
@@ -99,6 +106,16 @@
   function byStart(a, b) {
     return String(a.inicia_em || '').localeCompare(String(b.inicia_em || ''));
   }
+
+  /* Artefatos e grupos: pela ordem cadastrada, depois pelo nome. Sem a coluna
+     (antes de frentes.sql) todos empatam em 0 e sobra a ordem alfabética, que
+     ao menos é estável — antes a lista vinha na ordem que o banco quisesse. */
+  function byOrdemNome(a, b) {
+    return ((a.ordem || 0) - (b.ordem || 0)) || byName(a, b);
+  }
+
+  var AVISO_GRUPOS = 'Os grupos de artefatos ainda não existem no banco. ' +
+    'Rode supabase/frentes.sql no SQL Editor do Supabase.';
 
   function opt(o, k) { return o && Object.prototype.hasOwnProperty.call(o, k) ? o[k] : undefined; }
 
@@ -167,10 +184,38 @@
     artifacts: {
       list: function (o) {
         return doMembro(sb().from('artifacts').select('*'), opt(o, 'memberId'))
-          .then(lista);
+          .then(lista).then(function (r) { return r.sort(byOrdemNome); });
       },
-      save: function (a) { return grava('artifacts', a); },
+      save: function (a) {
+        /* Antes de frentes.sql rodar as colunas não existem e o PostgREST
+           recusa a linha inteira. Cortar aqui deixa o cadastro funcionar nos
+           dois estados do banco. ordem é NOT NULL: o formulário devolve texto. */
+        var reg = Object.assign({}, a);
+        if (C.faltaGrupos) {
+          delete reg.group_id; delete reg.ordem; delete reg.responsaveis;
+        } else if ('ordem' in reg) {
+          reg.ordem = parseInt(reg.ordem, 10) || 0;
+        }
+        return grava('artifacts', reg);
+      },
       remove: function (id) { return apaga('artifacts', id); }
+    },
+
+    /* Grupo acima do artefato (SEO / Site, Conteúdo, Tráfego, Sistema Black).
+       Tabela artifact_groups, criada por supabase/frentes.sql. Enquanto não
+       existe, a aba Artefatos fica plana e avisa. */
+    groups: {
+      list: function () {
+        C.faltaGrupos = null;
+        return tolerante(sb().from('artifact_groups').select('*'), AVISO_GRUPOS, 'faltaGrupos')
+          .then(function (r) { return r.sort(byOrdemNome); });
+      },
+      save: function (g) {
+        var reg = Object.assign({}, g);
+        if ('ordem' in reg) reg.ordem = parseInt(reg.ordem, 10) || 0;
+        return grava('artifact_groups', reg);
+      },
+      remove: function (id) { return apaga('artifact_groups', id); }
     },
 
     /* Instagram dos mentorados: um retrato por dia, escrito pelo coletor
@@ -506,30 +551,51 @@
       var a = opt(o, 'artifactId');
       if (a !== undefined) q = q.eq('artifact_id', a);
       return tolerante(q, AVISO_PROG, 'faltaProgresso')
-        .then(function (rows) { return rows.sort(byOrdem); });
+        .then(function (rows) {
+          /* A coluna tipo chega com frentes.sql. Lida da própria linha, e não
+             de uma flag separada, para o sync nunca mandar coluna que o banco
+             não tem. */
+          if (rows.length) C.temTipo = ('tipo' in rows[0]);
+          return rows.sort(byOrdem);
+        });
     },
 
-    save: function (e) { return grava('artifact_steps', e); },
+    save: function (e) {
+      var reg = Object.assign({}, e);
+      if (!C.temTipo) { delete reg.tipo; delete reg.cadencia_dias; }
+      else if ('cadencia_dias' in reg) {
+        reg.cadencia_dias = reg.cadencia_dias ? (parseInt(reg.cadencia_dias, 10) || null) : null;
+      }
+      return grava('artifact_steps', reg);
+    },
     remove: function (id) { return apaga('artifact_steps', id); },
 
-    /* Grava o checklist inteiro de um artefato a partir da lista de títulos do
-       formulário. O casamento é por posição, não por texto: assim renomear a
-       etapa 3 preserva quem já a tinha cumprido — recriar a linha jogaria o
-       progresso de todo mundo fora por causa de um acerto de redação. */
-    sync: function (artifactId, titulos, atuais) {
+    /* Grava o checklist inteiro de um artefato a partir da lista de linhas do
+       formulário: cada linha é um título (texto) ou { titulo, tipo, cadencia_dias }.
+       O casamento é por posição, não por texto: assim renomear a etapa 3
+       preserva quem já a tinha cumprido — recriar a linha jogaria o progresso
+       de todo mundo fora por causa de um acerto de redação. Inserir no meio
+       desloca as marcas; quem chama tem que barrar isso antes (ver a guarda no
+       modal do artefato). */
+    sync: function (artifactId, linhas, atuais) {
       atuais = (atuais || []).slice().sort(byOrdem);
       var acoes = [];
 
-      titulos.forEach(function (titulo, i) {
+      linhas.forEach(function (linha, i) {
+        var nova = typeof linha === 'string' ? { titulo: linha } : (linha || {});
         var atual = atuais[i];
         if (!atual) {
-          acoes.push(C.data.steps.save({ artifact_id: artifactId, titulo: titulo, ordem: i }));
-        } else if (atual.titulo !== titulo || atual.ordem !== i) {
-          acoes.push(C.data.steps.save({ id: atual.id, titulo: titulo, ordem: i }));
+          acoes.push(C.data.steps.save(Object.assign({ artifact_id: artifactId, ordem: i }, nova)));
+          return;
         }
+        var mudou = atual.titulo !== nova.titulo || atual.ordem !== i ||
+          (C.temTipo && 'tipo' in nova && (atual.tipo || 'entrega') !== (nova.tipo || 'entrega')) ||
+          (C.temTipo && 'cadencia_dias' in nova &&
+            (atual.cadencia_dias || null) !== (nova.cadencia_dias ? parseInt(nova.cadencia_dias, 10) : null));
+        if (mudou) acoes.push(C.data.steps.save(Object.assign({ id: atual.id, ordem: i }, nova)));
       });
 
-      atuais.slice(titulos.length).forEach(function (sobra) {
+      atuais.slice(linhas.length).forEach(function (sobra) {
         acoes.push(C.data.steps.remove(sobra.id));
       });
 
@@ -537,12 +603,27 @@
     }
   };
 
+  /* O PostgREST corta a resposta no teto de linhas (1000 por padrão) sem avisar,
+     e a lista inteira do admin passa disso assim que o catálogo cresce
+     (~75 etapas de turma × 29 mentorados). O mesmo corte silencioso já chapou a
+     coluna Progressão do Instagram (ver instagram.serie). Página a página, com
+     ordem fixa para nada repetir nem faltar entre uma e outra. */
+  var PAGINA = 1000;
+
+  function progressoPaginado(memberId, desde, acc) {
+    var q = sb().from('step_progress').select('*').order('member_id').order('step_id')
+      .range(desde, desde + PAGINA - 1);
+    if (memberId !== undefined) q = q.eq('member_id', memberId);
+    return tolerante(q, AVISO_PROG, 'faltaProgresso').then(function (rows) {
+      acc = acc.concat(rows);
+      if (rows.length < PAGINA) return acc;
+      return progressoPaginado(memberId, desde + PAGINA, acc);
+    });
+  }
+
   C.data.progress = {
     list: function (o) {
-      var q = sb().from('step_progress').select('*');
-      var m = opt(o, 'memberId');
-      if (m !== undefined) q = q.eq('member_id', m);
-      return tolerante(q, AVISO_PROG, 'faltaProgresso');
+      return progressoPaginado(opt(o, 'memberId'), 0, []);
     },
 
     /* Upsert no banco: ver marcar_etapa em supabase/progresso.sql. */

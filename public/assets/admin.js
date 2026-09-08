@@ -11,6 +11,7 @@
 
   var st = { members: [], tasks: [], events: [], artifacts: [], materials: [],
              demands: [], staff: [], steps: [], progress: [], demandSteps: [],
+             groups: [],
              view: 'overview', membro: '', status: 'all', igOrdem: 'seguidores',
              matCategoria: '', matMembro: '',
              demResp: '', demMembro: '', demProjeto: '', demAbertas: 'open',
@@ -90,7 +91,8 @@
       Club.data.botExemplos.list(),
       Club.data.botRespostas.list(),
       Club.data.instagram.resumo(),
-      Club.data.instagram.serie(45)
+      Club.data.instagram.serie(45),
+      Club.data.groups.list()
     ]).then(function (r) {
       st.members = r[0]; st.tasks = r[1]; st.events = r[2];
       st.artifacts = r[3]; st.materials = r[4];
@@ -98,6 +100,7 @@
       st.steps = r[7]; st.progress = r[8]; st.demandSteps = r[9];
       st.botExemplos = r[10]; st.botRespostas = r[11];
       st.igResumo = r[12]; st.igSerie = r[13];
+      st.groups = r[14];
       indexar();
       descobrirEu();
     });
@@ -218,6 +221,17 @@
     return st.demandSteps.filter(function (e) { return e.id === id; })[0];
   }
   function marcada(memberId, stepId) { return porEtapa[memberId + '|' + stepId]; }
+
+  /* Quantas marcações (e de quantos mentorados) uma lista de etapas carrega.
+     É o número que decide se mexer no checklist é seguro. */
+  function marcasDe(etapas) {
+    var ids = {}; etapas.forEach(function (e) { ids[e.id] = true; });
+    var n = 0, membros = {};
+    st.progress.forEach(function (p) {
+      if (p.feito && ids[p.step_id]) { n++; membros[p.member_id] = true; }
+    });
+    return { marcas: n, mentorados: Object.keys(membros).length };
+  }
 
   /* Artefato sem dono vale para a turma inteira — é a mesma regra que decide o
      que aparece na área do mentorado. */
@@ -1510,6 +1524,14 @@
           .map(function (l) { return l.trim(); })
           .filter(Boolean);
 
+        /* Guarda de posição. O sync casa etapa velha com linha nova pelo índice,
+           então inserir ou mover uma linha no meio passa as marcações de todo
+           mundo para a etapa errada, em silêncio. Renomear no lugar é seguro;
+           linha nova entra no fim. Apagar linha com marca também para aqui:
+           o cascade levaria o progresso junto sem aviso. */
+        var trava = guardaPosicao(etapasAtuais, titulos);
+        if (trava) { Club.toast(trava, 'alert'); return; }
+
         Club.data.artifacts.save(d).then(function (salvo) {
           /* O artefato novo só ganha id ao ser gravado, e a etapa precisa dele
              para saber de quem é — daí o checklist ir na sequência, não junto. */
@@ -1520,6 +1542,34 @@
         }).catch(aviso);
       }
     });
+  }
+
+  /* Devolve a mensagem que barra o salvamento, ou null quando o novo checklist
+     não desloca nem apaga marcação. Regras: (1) etapa com marca que some da
+     sua posição e reaparece em outra = movida/inserção no meio; (2) linha
+     além do novo tamanho com marca = apagada com progresso. */
+  function guardaPosicao(atuais, titulos) {
+    atuais = (atuais || []).slice().sort(function (a, b) {
+      return (a.ordem - b.ordem) || String(a.criado_em).localeCompare(String(b.criado_em));
+    });
+    var movidas = [], apagadas = [];
+    atuais.forEach(function (e, i) {
+      var m = marcasDe([e]);
+      if (!m.marcas) return;
+      if (i >= titulos.length) { apagadas.push(e); return; }
+      if (titulos[i] !== e.titulo && titulos.indexOf(e.titulo) !== -1) movidas.push(e);
+    });
+    if (movidas.length) {
+      var mm = marcasDe(movidas);
+      return 'Isso deslocaria ' + mm.marcas + ' marcações de ' + mm.mentorados +
+        ' mentorados para a etapa errada. Renomear no lugar é seguro; etapa nova só entra no fim.';
+    }
+    if (apagadas.length) {
+      var ma = marcasDe(apagadas);
+      return 'Apagar "' + apagadas[0].titulo + '" apaga ' + ma.marcas + ' marcações de ' +
+        ma.mentorados + ' mentorados. Deixe a linha e renomeie; etapa com marca não sai por aqui.';
+    }
+    return null;
   }
 
   /* ── demandas ─────────────────────────────────────────────────────────── */
@@ -2589,7 +2639,14 @@
                 aviso:'As tarefas e os artefatos que eram só dele saem junto.' },
     task:     { store:'tasks',     nome:function (r) { return r.titulo; }, aviso:'' },
     event:    { store:'events',    nome:function (r) { return r.titulo; }, aviso:'' },
-    artifact: { store:'artifacts', nome:function (r) { return r.nome; }, aviso:'' },
+    /* O cascade leva etapas e o progresso de todo mundo; o aviso diz quanto. */
+    artifact: { store:'artifacts', nome:function (r) { return r.nome; },
+                aviso:function (r) {
+                  var et = etapasDe(r.id), m = marcasDe(et);
+                  if (!et.length) return '';
+                  return 'Saem junto ' + et.length + ' etapa' + (et.length === 1 ? '' : 's') +
+                    (m.marcas ? ' e ' + m.marcas + ' marcações de ' + m.mentorados + ' mentorados.' : '.');
+                } },
     material:  { store:'materials',  nome:function (r) { return r.titulo; },
                  aviso:'O arquivo sai do servidor junto.' },
     demand:    { store:'demands',    nome:function (r) { return r.titulo; },
@@ -2610,8 +2667,9 @@
     var reg = achar(tipo, id);
     if (!reg) return;
     var t = TIPOS[tipo];
+    var avisoTipo = typeof t.aviso === 'function' ? t.aviso(reg) : t.aviso;
     Club.modal.confirm('Remover?',
-      ['"' + t.nome(reg) + '" será apagado.', t.aviso, 'Não dá para desfazer.']
+      ['"' + t.nome(reg) + '" será apagado.', avisoTipo, 'Não dá para desfazer.']
         .filter(Boolean).join(' '),
       function () {
         Club.data[t.store].remove(id)

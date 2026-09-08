@@ -64,6 +64,25 @@
     'Bloqueado':   { color:'var(--faint)',   icon:'lock' }
   };
 
+  /* Tipo de etapa do checklist (artifact_steps.tipo, supabase/frentes.sql).
+     aceite: o mentorado disse sim, fora do percentual · entrega: ato da equipe ·
+     trava: a conclusão depende do mentorado · opcional: só conta quando marcada ·
+     rotina: o que continua depois dos 100%, marcada = ligada. */
+  C.STEP_TIPOS = ['aceite', 'entrega', 'trava', 'opcional', 'rotina'];
+  C.STEP_TIPO_ROTULO = {
+    aceite:'Aceite', entrega:'Entrega', trava:'Trava', opcional:'Opcional', rotina:'Rotina'
+  };
+  /* Rótulo da cadência de uma rotina (artifact_steps.cadencia_dias). Sem
+     aritmética de prazo nesta rodada: é só como a rotina se apresenta. */
+  C.CADENCIA_DIAS = { 1:'Diária', 7:'Semanal', 14:'Quinzenal', 30:'Mensal' };
+  /* Pilares do método, atributo do grupo de artefatos. */
+  C.PILARES = ['P01 Diagnóstico Black', 'P02 Presbiopia Mental', 'P03 Valor Único',
+               'P04 Black Branding', 'P05 Sistema Black', 'P06 Referência Black',
+               'P07 Máquina Black de Tráfego', 'P08 Ativação Black', 'P09 Chamada Consultiva',
+               'P10 Vendas (In The Bag)', 'P11 Protocolo de Encantamento',
+               'P12 Treino de Competição', 'P13 Recorrência Black', 'P14 Cérebro Black',
+               'P15 Escala com Previsibilidade'];
+
   /* ── texto ────────────────────────────────────────────────────────────── */
 
   C.esc = function (s) {
