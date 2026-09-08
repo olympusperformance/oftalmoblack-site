@@ -11,7 +11,7 @@
 
   var st = { members: [], tasks: [], events: [], artifacts: [], materials: [],
              demands: [], staff: [], steps: [], progress: [], demandSteps: [],
-             groups: [],
+             groups: [], artGrupo: '',
              view: 'overview', membro: '', status: 'all', igOrdem: 'seguidores',
              matCategoria: '', matMembro: '',
              demResp: '', demMembro: '', demProjeto: '', demAbertas: 'open',
@@ -386,26 +386,54 @@
   var ARV_HEAD = ['Mentorado · artefato · etapa', 'Situação', 'Progresso',
                   'Detalhe', '>Ações'];
 
-  function conta(memberId, artifactId) {
-    var feitas = 0, total = 0;
-    var artefatos = artifactId
-      ? st.artifacts.filter(function (a) { return a.id === artifactId; })
-      : artefatosDe(memberId);
-    artefatos.forEach(function (a) {
-      etapasDe(a.id).forEach(function (e) {
-        total++;
-        if (marcada(memberId, e.id)) feitas++;
-      });
-    });
-    return { feitas: feitas, total: total };
+  /* Estado do par (mentorado, artefato): Club.par decide aceite, denominador,
+     próxima etapa e estado. A mesma função roda na área do mentorado. */
+  function contaPar(memberId, a) {
+    return Club.par(etapasDe(a.id), function (id) { return !!marcada(memberId, id); });
   }
 
-  /* Artefato sem checklist conta como em aberto: falta definir as etapas, e
-     escondê-lo no filtro "concluídos" seria dizer que está pronto. */
-  function passaFiltro(c) {
-    if (st.arvFiltro === 'done') return c.total > 0 && c.feitas >= c.total;
-    if (st.arvFiltro === 'open') return c.total === 0 || c.feitas < c.total;
-    return true;
+  /* Grupo do artefato e ordem de leitura: grupo, depois ordem cadastrada. */
+  function grupoDe(a) {
+    return st.groups.filter(function (g) { return g.id === a.group_id; })[0] || null;
+  }
+  function porGrupoOrdem(a, b) {
+    var ga = grupoDe(a), gb = grupoDe(b);
+    return ((ga ? ga.ordem : 999) - (gb ? gb.ordem : 999)) ||
+      ((a.ordem || 0) - (b.ordem || 0)) ||
+      String(a.nome).localeCompare(String(b.nome), 'pt-BR');
+  }
+
+  /* Do mentorado: só os pares aceitos contam. Barra = soma das entregas de
+     implantação; o percentual médio é dos artefatos, cada um pesando 1. */
+  function contaMembro(memberId) {
+    var r = { feitas:0, total:0, aceitos:0, definir:0, travados:0, equipe:0, noar:0, pcts:[] };
+    artefatosDe(memberId).forEach(function (a) {
+      var p = contaPar(memberId, a);
+      if (p.estado === 'definir') { r.definir++; return; }
+      r.aceitos++; r.feitas += p.feitas; r.total += p.total;
+      if (p.estado === 'travado') r.travados++;
+      else if (Club.NO_AR[p.estado]) r.noar++;
+      else r.equipe++;
+      if (p.total || p.rotinas.length) r.pcts.push(p.completo ? 100 : p.pct);
+    });
+    r.pct = r.pcts.length
+      ? Math.round(r.pcts.reduce(function (s, x) { return s + x; }, 0) / r.pcts.length) : 0;
+    return r;
+  }
+
+  /* Par "A definir" só aparece em "Tudo"; em todos os outros filtros ele não
+     é pendência de ninguém. Sem checklist conta como em aberto: falta definir
+     as etapas, e escondê-lo em "No ar" seria dizer que está pronto. */
+  function passaFiltro(p) {
+    switch (st.arvFiltro) {
+      case 'open':    return p.estado === 'nao_iniciado' || p.estado === 'travado' ||
+                             p.estado === 'implantacao' || p.estado === 'sem_criterio';
+      case 'equipe':  return p.estado === 'nao_iniciado' || p.estado === 'implantacao' ||
+                             p.estado === 'sem_criterio';
+      case 'travado': return p.estado === 'travado';
+      case 'done':    return !!Club.NO_AR[p.estado];
+      default:        return true;
+    }
   }
 
   function ultimaMarcacao(memberId) {
@@ -444,28 +472,27 @@
     var algumFechado = membros.some(function (m) { return !st.abertos['m:' + m.id]; });
     $('btnExpandir').textContent = algumFechado ? 'Abrir tudo' : 'Fechar tudo';
 
-    var geral = { feitas: 0, total: 0 };
+    /* Todos os números sobre pares ACEITOS: o que ninguém contratou não é
+       pendência. "Com a equipe" = a próxima etapa é nossa; "Travado" = a
+       próxima depende do mentorado. */
+    var geral = { feitas:0, total:0, aceitos:0, equipe:0, travados:0, noar:0 };
     membros.forEach(function (m) {
-      var c = conta(m.id);
-      geral.feitas += c.feitas; geral.total += c.total;
+      var c = contaMembro(m.id);
+      geral.feitas += c.feitas; geral.total += c.total; geral.aceitos += c.aceitos;
+      geral.equipe += c.equipe; geral.travados += c.travados; geral.noar += c.noar;
     });
-    var ativos = st.members.filter(function (m) { return m.ativo; }).length;
-    var emDia = membros.filter(function (m) {
-      var c = conta(m.id);
-      return c.total > 0 && c.feitas >= c.total;
-    }).length;
-    var semChecklist = st.artifacts.filter(function (a) {
-      return !etapasDe(a.id).length;
-    }).length;
 
     $('statsMembros').innerHTML =
-      cardStat('MEMBROS ATIVOS', ativos, st.members.length - ativos + ' inativos') +
-      cardStat('ETAPAS ENTREGUES', geral.feitas + '/' + geral.total,
-               geral.total ? Math.round((geral.feitas / geral.total) * 100) + '% do combinado'
-                           : 'nenhuma etapa cadastrada') +
-      cardStat('MENTORADOS EM DIA', emDia, membros.length + ' no quadro') +
-      cardStat('ARTEFATOS SEM CHECKLIST', semChecklist,
-               semChecklist ? 'defina as etapas na aba Artefatos' : 'todos com etapas');
+      cardStat('ENTREGAS', geral.feitas + '/' + geral.total,
+               geral.total ? Math.round((geral.feitas / geral.total) * 100) + '% da implantação'
+                           : 'nenhum artefato aceito',
+               'Etapas de entrega e trava marcadas, sobre o total dos artefatos aceitos. Aceite e rotina ficam fora.') +
+      cardStat('COM A EQUIPE', geral.equipe, 'pares cuja próxima etapa é nossa',
+               'Artefatos aceitos em implantação em que a próxima etapa é ato da equipe.') +
+      cardStat('TRAVADO NO MENTORADO', geral.travados, 'esperando acesso, dado ou aprovação',
+               'Artefatos aceitos em que a próxima etapa depende do mentorado.') +
+      cardStat('NO AR', geral.noar, geral.aceitos + ' pares aceitos no total',
+               'Entregues (100% sem rotina) e ativos (100% com a rotina ligada).');
 
     $('listaMembros').innerHTML = tabela(ARV_COLS, ARV_HEAD,
       membros.map(linhaMentorado).join(''),
@@ -482,18 +509,18 @@
     var chave = 'm:' + m.id;
     var aberto = !!st.abertos[chave];
     var arts = artefatosDe(m.id).filter(function (a) {
-      return passaFiltro(conta(m.id, a.id));
-    });
-    var c = conta(m.id);
+      return passaFiltro(contaPar(m.id, a));
+    }).sort(porGrupoOrdem);
+    var c = contaMembro(m.id);
     var ultima = ultimaMarcacao(m.id);
-    var completo = c.total > 0 && c.feitas >= c.total;
     var temFilho = arts.length > 0;
 
     var situacao = !m.ativo
       ? status('var(--faint)', 'Acesso inativo')
-      : completo ? status('var(--success)', 'Tudo entregue')
-      : c.total ? status('var(--warning)', 'Em andamento')
-      : status('var(--faint)', 'Sem etapas');
+      : !c.aceitos ? status('var(--faint)', 'Nada aceito')
+      : c.travados ? status('var(--orange)', 'Travado no mentorado')
+      : c.equipe ? status('var(--warning)', 'Em implantação')
+      : status('var(--success)', 'Tudo no ar');
 
     var linha = '<div class="tr lv0' + (m.ativo ? '' : ' off') + '">' +
       '<div class="td nm">' + toggleTree(chave, temFilho) +
@@ -510,8 +537,9 @@
         ? '<div class="td zap-cell"><input class="cell-date zap-inp" data-zap-inp="' + m.id +
           '" type="url" value="' + esc(m.whatsapp_url || '') +
           '" placeholder="Cole o convite do grupo — Enter salva, Esc fecha" autocomplete="off"></div>'
-        : td('<span class="tx-s">' + esc(arts.length + ' artefato' + (arts.length === 1 ? '' : 's') +
-            (c.total ? ' · ' + (c.total - c.feitas) + ' em aberto' : '') +
+        : td('<span class="tx-s">' + esc(c.aceitos + ' aceito' + (c.aceitos === 1 ? '' : 's') +
+            (c.travados ? ' · ' + c.travados + ' travado' + (c.travados === 1 ? '' : 's') : '') +
+            (c.noar ? ' · ' + c.noar + ' no ar' : '') +
             (ultima ? ' · ' + Club.fmtDate(ultima) : '')) + '</span>') +
           '<div class="td end"><div class="row-acts">' +
         /* O ícone aparece sempre: verde e clicável quando há grupo, apagado
@@ -533,31 +561,81 @@
     '</div>';
 
     if (!aberto || !temFilho) return linha;
-    return linha + arts.map(function (a) { return linhaArtefato(m, a); }).join('');
+
+    /* Faixa por grupo dentro do mentorado: com uma dezena de artefatos por
+       pessoa, a lista não se lê sem agrupar. É cabeçalho, não nível: sem
+       toggle, sem chave nova em abrirTudo. */
+    var saida = '', grupoAtual;
+    arts.forEach(function (a) {
+      var g = grupoDe(a), gid = g ? g.id : 'sem';
+      if (gid !== grupoAtual) {
+        grupoAtual = gid;
+        saida += faixaGrupo(m, g, arts.filter(function (x) { return (grupoDe(x) ? grupoDe(x).id : 'sem') === gid; }));
+      }
+      saida += linhaArtefato(m, a);
+    });
+    return linha + saida;
+  }
+
+  var PESO_ESTADO = { travado:4, implantacao:3, nao_iniciado:3, sem_criterio:3, ativo_off:2, ativo:1, entregue:1, definir:0 };
+
+  function faixaGrupo(m, g, arts) {
+    var pcts = [], pior = 'definir';
+    arts.forEach(function (a) {
+      var p = contaPar(m.id, a);
+      if (p.estado === 'definir') return;
+      if (p.total || p.rotinas.length) pcts.push(p.completo ? 100 : p.pct);
+      if (PESO_ESTADO[p.estado] > PESO_ESTADO[pior]) pior = p.estado;
+    });
+    var pct = pcts.length ? Math.round(pcts.reduce(function (s, x) { return s + x; }, 0) / pcts.length) : null;
+    var s = Club.PAR_ST[pior];
+    return '<div class="tr grp sub">' +
+      '<span class="grp-n">' + esc(g ? g.nome : 'Sem grupo') +
+        (g && g.pilar ? ' <span class="tx-s">· ' + esc(String(g.pilar).split(' ')[0]) + '</span>' : '') + '</span>' +
+      '<span class="tx-s">' + (pct === null ? 'nada aceito' : status(s.cor, s.label) + ' · ' + pct + '%') + '</span>' +
+    '</div>';
+  }
+
+  function detalhePar(p, m) {
+    switch (p.estado) {
+      case 'definir':      return 'sem aceite (fora dos números)';
+      case 'sem_criterio': return 'sem etapas de entrega';
+      case 'nao_iniciado': return 'próxima: ' + (p.proxima ? p.proxima.titulo : '—');
+      case 'travado':      return 'aguardando: ' + p.proxima.titulo + diasDesde(m);
+      case 'implantacao':  return 'próxima: ' + (p.proxima ? p.proxima.titulo : '—');
+      case 'entregue':     return 'entregue' + (ultimaMarcacao(m.id) ? ' em ' + Club.fmtDataCurta(ultimaMarcacao(m.id)) : '');
+      case 'ativo':        return 'rotina ' + (p.cadencia ? Club.cadenciaRotulo(p.cadencia).toLowerCase() : '') + ' ligada';
+      case 'ativo_off':    return (p.rotinas.length - p.ligadas) + ' rotina' + (p.rotinas.length - p.ligadas === 1 ? '' : 's') + ' desligada';
+    }
+    return '';
+  }
+
+  function diasDesde(m) {
+    var u = ultimaMarcacao(m.id);
+    if (!u) return '';
+    var n = -Club.diffDays(u);
+    return n > 0 ? ' · há ' + n + ' d' : '';
   }
 
   function linhaArtefato(m, a) {
     var chave = 'a:' + m.id + ':' + a.id;
     var aberto = !!st.abertos[chave];
-    var etapas = etapasDe(a.id);
-    var c = conta(m.id, a.id);
-    var completo = c.total > 0 && c.feitas >= c.total;
-    var sa = Club.ART_ST[a.status] || Club.ART_ST['Bloqueado'];
+    var etapas = Club.ordenaEtapas(etapasDe(a.id));
+    var p = contaPar(m.id, a);
+    var s = Club.PAR_ST[p.estado];
 
-    var linha = '<div class="tr lv1">' +
+    var linha = '<div class="tr lv1' + (p.estado === 'definir' ? ' off' : '') + '">' +
       '<div class="td nm">' + toggleTree(chave, etapas.length) +
         '<span style="color:var(--gold);font-size:15px;flex-shrink:0">' +
           ico(a.icone || 'box') + '</span>' +
         '<div class="tx"><div class="tx tx-t" title="' + esc(a.nome) + '">' + esc(a.nome) + '</div>' +
         '<div class="tx tx-s">' + (a.member_id ? 'artefato dele' : 'artefato da turma') +
+          (p.rotinas.length ? ' · com rotina' : '') +
         '</div></div></div>' +
-      td(completo ? status('var(--success)', 'Concluído') : status(sa.color, a.status)) +
-      td(barra(c.feitas, c.total)) +
+      td(status(s.cor, Club.rotuloPar(p))) +
+      td(p.total || p.temEtapas ? barra(p.feitas, p.total) : '<span class="tx tx-s">sem checklist</span>') +
       td(etapas.length
-        ? '<span class="tx-s">' + (completo
-            ? 'nada pendente'
-            : (c.total - c.feitas) + ' etapa' + (c.total - c.feitas === 1 ? '' : 's') +
-              ' em aberto') + '</span>'
+        ? '<span class="tx-s">' + esc(detalhePar(p, m)) + '</span>'
         /* Sem checklist não há o que marcar: o atalho leva direto a quem
            resolve isso, que é o cadastro do artefato. */
         : '<button class="btn btn-sm btn-ghost" data-edit="artifact" data-id="' + a.id +
@@ -569,17 +647,37 @@
     '</div>';
 
     if (!aberto || !etapas.length) return linha;
-    return linha + etapas.map(function (e) { return linhaEtapa(m, e); }).join('');
+    return linha + etapas.map(function (e) { return linhaEtapa(m, e, p); }).join('');
   }
 
-  function linhaEtapa(m, e) {
+  /* Cada tipo de etapa se lê diferente: aceite é o "sim" dele, trava espera
+     ato dele, opcional só conta quando marcada, rotina liga e desliga. */
+  function linhaEtapa(m, e, par) {
     var p = marcada(m.id, e.id);
+    var t = Club.tipoEtapa(e);
+    var situacao, nota = '';
+    if (t === 'aceite') {
+      situacao = p ? status('var(--success)', 'Aceito') : status('var(--faint)', 'Sem aceite');
+      nota = 'aceite';
+    } else if (t === 'rotina') {
+      situacao = p ? status('var(--success)', 'Ligada') : status('var(--faint)', 'Desligada');
+      nota = 'rotina · ' + Club.cadenciaRotulo(e.cadencia_dias).toLowerCase() +
+        (par && !par.completo ? ' · começa após a implantação' : '');
+    } else {
+      situacao = p ? status('var(--success)', 'Entregue')
+        : t === 'trava' ? status('var(--orange)', 'Com o mentorado')
+        : status('var(--faint)', 'Em aberto');
+      if (t === 'trava') nota = 'depende do mentorado';
+      if (t === 'opcional') nota = 'opcional · conta só se marcar';
+    }
     return '<div class="tr lv2' + (p ? ' feito' : '') + '">' +
       '<div class="td nm"><span class="tg void"></span>' +
         '<button class="cbx" data-etapa="' + esc(m.id) + '|' + esc(e.id) + '" aria-pressed="' +
           (!!p) + '" aria-label="Marcar etapa">' + ico('check') + '</button>' +
-        '<div class="tx"><div class="tx tx-t" title="' + esc(e.titulo) + '">' + esc(e.titulo) + '</div></div></div>' +
-      td(p ? status('var(--success)', 'Entregue') : status('var(--faint)', 'Em aberto')) +
+        (t === 'rotina' ? '<span style="color:var(--faint);flex-shrink:0">' + ico('refresh') + '</span>' : '') +
+        '<div class="tx"><div class="tx tx-t" title="' + esc(e.titulo) + '">' + esc(e.titulo) + '</div>' +
+        (nota ? '<div class="tx tx-s">' + esc(nota) + '</div>' : '') + '</div></div>' +
+      td(situacao) +
       td('') +
       td('<span class="tx-s">' + (p && p.feito_em
         ? esc('em ' + Club.fmtDataCurta(p.feito_em)) : '—') + '</span>') +
@@ -1460,37 +1558,174 @@
       .catch(aviso);
   }
 
-  /* ── artefatos ────────────────────────────────────────────────────────── */
+  /* ── artefatos: o catálogo ────────────────────────────────────────────── */
+  /* Papel desta aba: o que o Club entrega, em que grupo, com que dono e com
+     que critério de 100%. Acompanhar mentorado é na Progressão. */
+
+  function siglas(ids) {
+    return (ids || []).map(function (id) {
+      var p = st.staff.filter(function (x) { return x.id === id; })[0];
+      return p ? (p.apelido || p.nome) : null;
+    }).filter(Boolean).join(', ');
+  }
+
+  function criterioDe(etapas) {
+    if (!etapas.length) return '<span class="tx-s" style="color:var(--warning)">sem critério</span>';
+    var n = { aceite:0, entrega:0, trava:0, opcional:0, rotina:0 };
+    etapas.forEach(function (e) { n[Club.tipoEtapa(e)]++; });
+    var partes = [];
+    if (n.entrega)  partes.push(n.entrega + ' entrega' + (n.entrega === 1 ? '' : 's'));
+    if (n.trava)    partes.push(n.trava + ' trava' + (n.trava === 1 ? '' : 's'));
+    if (n.opcional) partes.push(n.opcional + (n.opcional === 1 ? ' opcional' : ' opcionais'));
+    return '<div class="tx tx-t">' + esc(partes.join(' · ') || 'só rotina') + '</div>' +
+      '<div class="tx tx-s">' + esc((n.aceite ? 'com aceite' : 'sem aceite') +
+        (n.rotina ? ' + ' + n.rotina + ' rotina' + (n.rotina === 1 ? '' : 's') : '')) + '</div>';
+  }
+
+  function tipoArtefato(etapas) {
+    var cad = null, tem = false;
+    etapas.forEach(function (e) {
+      if (Club.tipoEtapa(e) !== 'rotina') return;
+      tem = true;
+      if (e.cadencia_dias && (!cad || e.cadencia_dias < cad)) cad = e.cadencia_dias;
+    });
+    return tem ? 'Rotina ' + Club.cadenciaRotulo(cad).toLowerCase() : 'Entrega';
+  }
+
+  /* Quantos mentorados aceitaram, chegaram a 100%, estão ativos ou travados.
+     O denominador é quem pode ter o artefato: a turma, ou o dono quando é dele. */
+  function adocaoDe(a) {
+    var alvo = a.member_id
+      ? st.members.filter(function (m) { return m.id === a.member_id; })
+      : st.members.filter(function (m) { return m.ativo; });
+    var n = { aceitos:0, cem:0, ativos:0, travados:0 };
+    alvo.forEach(function (m) {
+      var p = contaPar(m.id, a);
+      if (p.estado === 'definir') return;
+      n.aceitos++;
+      if (p.estado === 'entregue') n.cem++;
+      if (p.estado === 'ativo' || p.estado === 'ativo_off') n.ativos++;
+      if (p.estado === 'travado') n.travados++;
+    });
+    var partes = [n.aceitos + ' aceito' + (n.aceitos === 1 ? '' : 's')];
+    if (n.cem) partes.push(n.cem + ' a 100%');
+    if (n.ativos) partes.push(n.ativos + ' ativo' + (n.ativos === 1 ? '' : 's'));
+    if (n.travados) partes.push(n.travados + ' travado' + (n.travados === 1 ? '' : 's'));
+    return '<div class="tx tx-t">' + esc(partes[0]) + '</div>' +
+      '<div class="tx tx-s">' + esc(partes.slice(1).join(' · ') || '—') + '</div>';
+  }
+
+  function linhaCatalogo(a) {
+    var s = Club.ART_ST[a.status] || Club.ART_ST['Bloqueado'];
+    var etapas = etapasDe(a.id);
+    return '<div class="tr">' +
+      '<div class="td"><span class="art-i" style="width:28px;height:28px;border-radius:8px;' +
+        'font-size:14px;margin:0;flex-shrink:0">' + ico(a.icone || 'box') + '</span>' +
+        '<div class="tx"><div class="tx tx-t" title="' + esc(a.nome) + '">' + esc(a.nome) + '</div>' +
+        '<div class="tx tx-s">' + esc([a.subtitulo, a.member_id ? 'só ' + escopo(a.member_id) : null,
+          siglas(a.responsaveis) ? 'dono ' + siglas(a.responsaveis) : null].filter(Boolean).join(' · ')) +
+        '</div></div></div>' +
+      '<div class="td"><div class="tx">' + criterioDe(etapas) + '</div></div>' +
+      td('<span class="tx-s">' + esc(tipoArtefato(etapas)) + '</span>') +
+      '<div class="td"><div class="tx">' + adocaoDe(a) + '</div></div>' +
+      td(status(s.color, a.status)) +
+      '<div class="td end">' + acoes('artifact', a.id) + '</div>' +
+    '</div>';
+  }
+
+  function cabecalhoGrupo(g, n) {
+    var sub = g
+      ? [g.pilar, siglas(g.responsaveis), n + ' artefato' + (n === 1 ? '' : 's')].filter(Boolean).join(' · ')
+      : n + ' artefato' + (n === 1 ? '' : 's') + ' sem grupo';
+    return '<div class="tr grp pai">' +
+      '<span class="grp-n">' + esc(g ? g.nome : 'Sem grupo') +
+        ' <span class="tx-s" style="font-weight:400">' + esc(sub) + '</span></span>' +
+      (g ? '<span>' + acoes('group', g.id) + '</span>' : '<span></span>') +
+    '</div>';
+  }
 
   function renderArtifacts() {
+    var grupos = st.groups.slice().concat([null]);
+    $('filtroArtGrupo').innerHTML = '<option value="">Todos os grupos</option>' +
+      st.groups.map(function (g) {
+        return '<option value="' + esc(g.id) + '"' + (g.id === st.artGrupo ? ' selected' : '') + '>' +
+          esc(g.nome) + '</option>';
+      }).join('') + '<option value="sem"' + (st.artGrupo === 'sem' ? ' selected' : '') + '>Sem grupo</option>';
+
+    var semCriterio = st.artifacts.filter(function (a) { return !etapasDe(a.id).length; }).length;
+    $('artResumo').textContent = st.artifacts.length + ' artefatos · ' + st.groups.length + ' grupos' +
+      (semCriterio ? ' · ' + semCriterio + ' sem critério' : '');
+    $('avisoGrupos').innerHTML = Club.faltaGrupos
+      ? '<div class="notice">' + ico('alert') + '<div>' + esc(Club.faltaGrupos) + '</div></div>' : '';
+
+    var secoes = grupos.map(function (g) {
+      var gid = g ? g.id : 'sem';
+      if (st.artGrupo && st.artGrupo !== gid) return '';
+      var arts = st.artifacts.filter(function (a) {
+        return (g ? a.group_id === g.id : !a.group_id);
+      }).sort(porGrupoOrdem);
+      /* "Sem grupo" some quando está vazia: seria uma seção sem assunto. */
+      if (!arts.length && !g) return '';
+      return cabecalhoGrupo(g, arts.length) + arts.map(linhaCatalogo).join('');
+    }).join('');
+
     $('listaArtefatos').innerHTML = tabela(
-      'minmax(0,2fr) 132px 128px 150px minmax(0,1fr) 88px',
-      ['Artefato', 'Situação', 'Checklist', 'Para quem', 'Observação', '>Ações'],
-      st.artifacts.map(function (a) {
-        var s = Club.ART_ST[a.status] || Club.ART_ST['Bloqueado'];
-        var n = etapasDe(a.id).length;
-        return '<div class="tr">' +
-          '<div class="td"><span class="art-i" style="width:28px;height:28px;border-radius:8px;' +
-            'font-size:14px;margin:0;flex-shrink:0">' + ico(a.icone || 'box') + '</span>' +
-            '<div class="tx"><div class="tx tx-t" title="' + esc(a.nome) + '">' + esc(a.nome) + '</div>' +
-            (a.subtitulo ? '<div class="tx tx-s">' + esc(a.subtitulo) + '</div>' : '') +
-          '</div></div>' +
-          td(status(s.color, a.status)) +
-          td(n
-            ? n + ' etapa' + (n === 1 ? '' : 's')
-            : '<span class="tx-s">sem etapas</span>', 'num') +
-          td(esc(escopo(a.member_id))) +
-          td('<span class="tx-s">' + esc(a.meta || (a.url ? a.url : '—')) + '</span>') +
-          '<div class="td end">' + acoes('artifact', a.id) + '</div>' +
-        '</div>';
-      }).join(''),
-      'Nenhum artefato cadastrado ainda.');
+      'minmax(0,2fr) minmax(0,1.3fr) 128px minmax(0,1.3fr) 118px 88px',
+      ['Artefato', 'Critério de 100%', 'Tipo', 'Adoção', 'Situação', '>Ações'],
+      secoes, 'Nenhum artefato cadastrado ainda.');
+  }
+
+  function opcoesEquipe() {
+    return st.staff.filter(function (p) { return p.ativo; }).map(function (p) {
+      return { value:p.id, label:p.nome + (p.apelido ? ' (' + p.apelido + ')' : '') };
+    });
+  }
+
+  /* O select múltiplo só reflete o array inteiro depois de estar no DOM. */
+  function marcarMultiplos(name, valores) {
+    if (!valores || valores.length < 2) return;
+    var campo = document.querySelector('#modalForm [name="' + name + '"]');
+    if (!campo) return;
+    Array.prototype.forEach.call(campo.options, function (o) {
+      o.selected = valores.indexOf(o.value) !== -1;
+    });
+  }
+
+  function modalGrupo(g) {
+    g = g || { nome:'', pilar:'', ordem: st.groups.length + 1, responsaveis:[] };
+    Club.modal.open({
+      title: g.id ? 'Editar grupo' : 'Novo grupo',
+      sub: g.id ? g.nome : 'O bloco que o Club vende: reúne os artefatos que fazem parte da mesma entrega.',
+      body:
+        Club.field('Nome', 'nome', { value:g.nome, required:true, placeholder:'Tráfego' }) +
+        '<div class="fld-row">' +
+          Club.select('Pilar do método', 'pilar', [{ value:'', label:'—' }].concat(
+            Club.PILARES.map(function (p) { return { value:p, label:p }; })), g.pilar || '') +
+          Club.field('Ordem', 'ordem', { value:g.ordem, type:'number' }) +
+        '</div>' +
+        (opcoesEquipe().length
+          ? Club.select('Responsáveis', 'responsaveis', opcoesEquipe(), (g.responsaveis || [])[0],
+              { multiple:true, hint:'Quem responde pelo grupo. Segure Ctrl (ou Cmd) para mais de um.' })
+          : ''),
+      onSubmit: function (d) {
+        if (!d.nome) { Club.toast('O grupo precisa de um nome.', 'alert'); return; }
+        d.id = g.id;
+        d.responsaveis = d.responsaveis || [];
+        Club.data.groups.save(d).then(function () {
+          Club.modal.close();
+          recarregar(g.id ? 'Grupo atualizado.' : 'Grupo criado.');
+        }).catch(aviso);
+      }
+    });
+    marcarMultiplos('responsaveis', g.responsaveis);
   }
 
   function modalArtefato(a) {
     a = a || { nome:'', subtitulo:'', icone:'box', status:'Em produção', meta:'',
-               url:'', member_id:null };
+               url:'', member_id:null, group_id: st.artGrupo && st.artGrupo !== 'sem' ? st.artGrupo : null,
+               ordem:0, responsaveis:[] };
     var etapasAtuais = a.id ? etapasDe(a.id) : [];
+    var comGrupos = !Club.faltaGrupos;
     Club.modal.open({
       title: a.id ? 'Editar artefato' : 'Novo artefato',
       sub: a.id ? a.nome : 'O que o Club entrega para o mentorado.',
@@ -1499,6 +1734,17 @@
           placeholder:'Landing Page VSL' }) +
         Club.field('Descrição curta', 'subtitulo', { value:a.subtitulo,
           placeholder:'Página de vídeo de vendas' }) +
+        (comGrupos
+          ? '<div class="fld-row">' +
+              Club.select('Grupo', 'group_id', [{ value:'', label:'Sem grupo' }].concat(
+                st.groups.map(function (g) { return { value:g.id, label:g.nome }; })), a.group_id || '') +
+              Club.field('Ordem no grupo', 'ordem', { value:a.ordem || 0, type:'number' }) +
+            '</div>' +
+            (opcoesEquipe().length
+              ? Club.select('Dono', 'responsaveis', opcoesEquipe(), (a.responsaveis || [])[0],
+                  { multiple:true, hint:'Quem move este artefato. Sem dono, vale o do grupo.' })
+              : '')
+          : '') +
         '<div class="fld-row">' +
           Club.select('Situação', 'status', Club.ART_STATUS, a.status) +
           Club.select('Ícone', 'icone', Club.ART_ICONES, a.icone) +
@@ -1512,13 +1758,15 @@
         Club.field('Etapas padrão', 'etapas', { value:etapasAtuais.map(function (e) {
             return e.titulo; }).join('\n'), textarea:true,
           placeholder:'Briefing aprovado\nCopy escrita\nLayout aprovado\nNo ar',
-          hint:'Uma etapa por linha. É este o checklist que aparece em Progresso, ' +
-               'para cada mentorado que recebe o artefato. Renomear uma linha mantém ' +
-               'o que já estava marcado nela; apagar a linha apaga o progresso dela.' }),
+          hint:'Uma etapa por linha, na ordem do checklist. Renomear uma linha mantém ' +
+               'o que já estava marcado nela; etapa nova entra no fim; inserir no meio ' +
+               'ou apagar linha com marca é barrado. O tipo de cada etapa (aceite, ' +
+               'entrega, trava, opcional, rotina) fica como está; linha nova nasce entrega.' }),
       onSubmit: function (d) {
         if (!d.nome) { Club.toast('O artefato precisa de um nome.', 'alert'); return; }
         d.id = a.id;
         d.member_id = d.member_id || null;
+        if (comGrupos) { d.group_id = d.group_id || null; d.responsaveis = d.responsaveis || []; }
 
         var titulos = String(d.etapas || '').split('\n')
           .map(function (l) { return l.trim(); })
@@ -1542,6 +1790,7 @@
         }).catch(aviso);
       }
     });
+    marcarMultiplos('responsaveis', a.responsaveis);
   }
 
   /* Devolve a mensagem que barra o salvamento, ou null quando o novo checklist
@@ -2647,6 +2896,11 @@
                   return 'Saem junto ' + et.length + ' etapa' + (et.length === 1 ? '' : 's') +
                     (m.marcas ? ' e ' + m.marcas + ' marcações de ' + m.mentorados + ' mentorados.' : '.');
                 } },
+    group:    { store:'groups',    nome:function (r) { return r.nome; },
+                aviso:function (r) {
+                  var n = st.artifacts.filter(function (a) { return a.group_id === r.id; }).length;
+                  return n ? 'Os ' + n + ' artefatos dele ficam "Sem grupo"; nada de progresso muda.' : '';
+                } },
     material:  { store:'materials',  nome:function (r) { return r.titulo; },
                  aviso:'O arquivo sai do servidor junto.' },
     demand:    { store:'demands',    nome:function (r) { return r.titulo; },
@@ -2679,8 +2933,8 @@
   }
 
   var MODAIS = { member:modalMembro, task:modalTarefa, event:modalEvento,
-                 artifact:modalArtefato, material:modalMaterial, demand:modalDemanda,
-                 botExemplo:modalBotExemplo };
+                 artifact:modalArtefato, group:modalGrupo, material:modalMaterial,
+                 demand:modalDemanda, botExemplo:modalBotExemplo };
 
   /* ── eventos ──────────────────────────────────────────────────────────── */
 
@@ -2854,6 +3108,11 @@
   $('filtroArvMembro').addEventListener('change', function () {
     st.arvMembro = this.value;
     renderMembers();
+  });
+
+  $('filtroArtGrupo').addEventListener('change', function () {
+    st.artGrupo = this.value;
+    renderArtifacts();
   });
 
   $('filtroResponsavel').addEventListener('change', function () {

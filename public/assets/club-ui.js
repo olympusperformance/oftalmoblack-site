@@ -83,6 +83,87 @@
                'P12 Treino de Competição', 'P13 Recorrência Black', 'P14 Cérebro Black',
                'P15 Escala com Previsibilidade'];
 
+  /* ── estado de um par (mentorado, artefato) ───────────────────────────── */
+  /* Uma função só, usada pelo painel e pela área do mentorado, para as duas
+     telas nunca contarem de jeito diferente. Recebe as etapas do artefato (com
+     tipo) e uma função que diz se a etapa está marcada para este mentorado.
+
+     Regras: aceite e rotina ficam fora do percentual; opcional só entra quando
+     marcada; 100% = todas as entregas e travas marcadas. Sem aceite marcado e
+     sem nenhuma marca, o par é "A definir": o mentorado não contratou, não
+     está atrasado. Qualquer marca vale como aceite (quem já tem "Dados
+     recebidos" marcado aceitou). */
+
+  var PESO_TIPO = { aceite:0, entrega:1, trava:1, opcional:1, rotina:2 };
+
+  C.tipoEtapa = function (e) { return (e && e.tipo) || 'entrega'; };
+
+  /* Aceite primeiro, depois entrega/trava/opcional na ordem cadastrada, rotina
+     no fim: a ordem do banco continua sendo só a chave do sync por posição. */
+  C.ordenaEtapas = function (etapas) {
+    return (etapas || []).slice().sort(function (a, b) {
+      return (PESO_TIPO[C.tipoEtapa(a)] - PESO_TIPO[C.tipoEtapa(b)]) ||
+        ((a.ordem || 0) - (b.ordem || 0)) ||
+        String(a.criado_em || '').localeCompare(String(b.criado_em || ''));
+    });
+  };
+
+  C.PAR_ST = {
+    definir:      { label:'A definir',              cor:'var(--faint)' },
+    sem_criterio: { label:'Sem critério',           cor:'var(--warning)' },
+    nao_iniciado: { label:'Não iniciado',           cor:'var(--gray-2)' },
+    travado:      { label:'Travado no mentorado',   cor:'var(--orange)' },
+    implantacao:  { label:'Em implantação',         cor:'var(--warning)' },
+    entregue:     { label:'Entregue',               cor:'var(--success)' },
+    ativo:        { label:'Ativo',                  cor:'var(--success)' },
+    ativo_off:    { label:'Ativo · rotina desligada', cor:'var(--warning)' }
+  };
+  C.NO_AR = { entregue:true, ativo:true, ativo_off:true };
+
+  C.cadenciaRotulo = function (dias) {
+    return C.CADENCIA_DIAS[dias] || (dias ? 'a cada ' + dias + ' dias' : 'sem prazo');
+  };
+
+  C.par = function (etapas, feita) {
+    var r = { aceito:false, feitas:0, total:0, pct:0, proxima:null, rotinas:[], ligadas:0,
+              marcas:0, cadencia:null, completo:false, estado:'definir', temEtapas:false };
+    C.ordenaEtapas(etapas).forEach(function (e) {
+      r.temEtapas = true;
+      var ok = !!feita(e.id), t = C.tipoEtapa(e);
+      if (ok) r.marcas++;
+      if (t === 'aceite') { if (ok) r.aceito = true; return; }
+      if (t === 'rotina') {
+        r.rotinas.push(e);
+        if (ok) r.ligadas++;
+        if (e.cadencia_dias && (!r.cadencia || e.cadencia_dias < r.cadencia)) r.cadencia = e.cadencia_dias;
+        return;
+      }
+      if (t === 'opcional' && !ok) return;
+      r.total++;
+      if (ok) r.feitas++; else if (!r.proxima) r.proxima = e;
+    });
+    if (!r.aceito && r.marcas) r.aceito = true;
+    r.pct = r.total ? Math.round((r.feitas / r.total) * 100) : 0;
+    r.completo = r.total ? r.feitas >= r.total : r.rotinas.length > 0;
+
+    if (!r.aceito) r.estado = 'definir';
+    else if (!r.total && !r.rotinas.length) r.estado = 'sem_criterio';
+    else if (!r.completo && !r.feitas) r.estado = 'nao_iniciado';
+    else if (!r.completo && r.proxima && C.tipoEtapa(r.proxima) === 'trava') r.estado = 'travado';
+    else if (!r.completo) r.estado = 'implantacao';
+    else if (!r.rotinas.length) r.estado = 'entregue';
+    else if (r.ligadas === r.rotinas.length) r.estado = 'ativo';
+    else r.estado = 'ativo_off';
+    return r;
+  };
+
+  /* "Ativo · semanal", "Travado no mentorado", ... */
+  C.rotuloPar = function (r) {
+    var s = C.PAR_ST[r.estado] || C.PAR_ST.definir;
+    if (r.estado === 'ativo' && r.cadencia) return s.label + ' · ' + C.cadenciaRotulo(r.cadencia).toLowerCase();
+    return s.label;
+  };
+
   /* ── texto ────────────────────────────────────────────────────────────── */
 
   C.esc = function (s) {

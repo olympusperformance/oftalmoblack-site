@@ -284,34 +284,61 @@
     return st.progress.some(function (p) { return p.step_id === stepId && p.feito; });
   }
 
+  /* Mesma régua do painel (Club.par): aceite e rotina fora da barra, opcional
+     só quando marcada. O mentorado vê o que falta da implantação, e depois dos
+     100% vê a rotina como acompanhamento, não como pendência. */
+  function parDe(a) { return Club.par(etapasDe(a.id), feita); }
+
   function checklist(a, detalhado) {
-    var etapas = etapasDe(a.id);
+    var etapas = Club.ordenaEtapas(etapasDe(a.id));
     if (!etapas.length) return '';
-    var feitas = etapas.filter(function (e) { return feita(e.id); }).length;
-    var pct = Math.round((feitas / etapas.length) * 100);
+    var r = parDe(a);
+    var pct = r.total ? r.pct : (r.completo ? 100 : 0);
 
     var barra = '<div class="art-ck">' +
       '<span class="track"><span class="fill" style="width:' + pct + '%"></span></span>' +
-      '<span class="n">' + feitas + '/' + etapas.length + '</span></div>';
+      '<span class="n">' + r.feitas + '/' + r.total + '</span></div>';
 
     if (!detalhado) return barra;
 
-    return barra + '<ul class="art-st-list">' + etapas.map(function (e) {
-      var ok = feita(e.id);
-      return '<li' + (ok ? ' class="ok"' : '') + '>' +
-        ico(ok ? 'check-circle' : 'clock') + '<span>' + esc(e.titulo) + '</span></li>';
-    }).join('') + '</ul>';
+    var itens = etapas.filter(function (e) {
+      var t = Club.tipoEtapa(e);
+      if (t === 'aceite') return false;
+      if (t === 'opcional' && !feita(e.id)) return false;
+      /* A rotina só aparece depois da implantação: antes disso não é pendência dele. */
+      if (t === 'rotina' && !r.completo) return false;
+      return true;
+    }).map(function (e) {
+      var ok = feita(e.id), t = Club.tipoEtapa(e);
+      var icone = t === 'rotina' ? 'refresh' : ok ? 'check-circle' : 'clock';
+      var sufixo = t === 'rotina'
+        ? ' · ' + Club.cadenciaRotulo(e.cadencia_dias).toLowerCase()
+        : (t === 'trava' && !ok ? ' · esperando você' : '');
+      return '<li' + (ok || t === 'rotina' ? ' class="ok"' : '') + '>' +
+        ico(icone) + '<span>' + esc(e.titulo + sufixo) + '</span></li>';
+    });
+
+    return barra + '<ul class="art-st-list">' + itens.join('') + '</ul>';
   }
 
   function cartaoArtefato(a, detalhado) {
     var s = Club.ART_ST[a.status] || Club.ART_ST['Bloqueado'];
     var locked = a.status === 'Bloqueado';
+    var r = parDe(a);
+    /* O chip diz o que importa pra ele: entregue, ativo com acompanhamento, ou
+       esperando algo dele. Atraso e nota nunca chegam aqui. */
+    var chip = r.estado === 'ativo'
+      ? { color:'var(--success)', icon:'refresh',
+          label:'Ativo · acompanhamento ' + (r.cadencia ? Club.cadenciaRotulo(r.cadencia).toLowerCase() : 'contínuo') }
+      : r.estado === 'entregue' ? { color:'var(--success)', icon:'check-circle', label:'Entregue' }
+      : r.estado === 'travado'  ? { color:'var(--orange)',  icon:'clock', label:'Esperando você' }
+      : { color:s.color, icon:s.icon, label:a.status };
     var corpo =
       '<div class="art-i">' + ico(a.icone || 'box') + '</div>' +
       '<p class="art-n">' + esc(a.nome) + '</p>' +
       '<p class="art-s">' + esc(a.subtitulo) + '</p>' +
       checklist(a, detalhado) +
-      '<div class="art-st" style="color:' + s.color + '">' + ico(s.icon) + esc(a.status) + '</div>' +
+      '<div class="art-st" style="color:' + chip.color + '">' + ico(chip.icon) + esc(chip.label) + '</div>' +
       '<p class="art-m">' + esc(a.meta) + '</p>';
 
     /* Só vira link quando há para onde ir e o artefato não está bloqueado. */
@@ -323,12 +350,18 @@
 
   function renderArtifacts() {
     var vazio = Club.empty('box', 'Nenhum artefato liberado ainda.');
+    /* Par "A definir" (tem checklist, nenhuma marca, sem aceite) não aparece:
+       é o que o mentorado não contratou, e mostrar "0/12" ali soaria como
+       atraso nosso. Artefato sem checklist continua aparecendo como antes. */
+    var meus = st.artifacts.filter(function (a) {
+      return !etapasDe(a.id).length || parDe(a).estado !== 'definir';
+    });
     /* Na aba cheia cabe o checklist inteiro; no resumo da capa só a barra. */
-    $('artList').innerHTML = st.artifacts.length
-      ? st.artifacts.map(function (a) { return cartaoArtefato(a, false); }).join('') : vazio;
-    $('artListFull').innerHTML = st.artifacts.length
-      ? st.artifacts.map(function (a) { return cartaoArtefato(a, true); }).join('') : vazio;
-    return st.artifacts.filter(function (a) { return a.status === 'Disponível'; }).length;
+    $('artList').innerHTML = meus.length
+      ? meus.map(function (a) { return cartaoArtefato(a, false); }).join('') : vazio;
+    $('artListFull').innerHTML = meus.length
+      ? meus.map(function (a) { return cartaoArtefato(a, true); }).join('') : vazio;
+    return meus.filter(function (a) { return a.status === 'Disponível'; }).length;
   }
 
   /* ── agenda ───────────────────────────────────────────────────────────── */

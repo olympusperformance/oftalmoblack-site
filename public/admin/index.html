@@ -66,7 +66,9 @@
         <div class="seg" id="filtroArvSituacao">
           <button data-sit="all" aria-selected="true">Tudo</button>
           <button data-sit="open" aria-selected="false">Em aberto</button>
-          <button data-sit="done" aria-selected="false">Concluídos</button>
+          <button data-sit="equipe" aria-selected="false">Com a equipe</button>
+          <button data-sit="travado" aria-selected="false">Travados</button>
+          <button data-sit="done" aria-selected="false">No ar</button>
         </div>
         <span class="sp"></span>
         <button class="btn" data-expandir="1" id="btnExpandir">Abrir tudo</button>
@@ -186,12 +188,17 @@
     </div>
 
     <div class="view" data-view="artifacts" hidden>
-      <div class="hello"><h1>Artefatos</h1><p>O que o Club entrega — e o que ainda está em produção.</p></div>
+      <div class="hello"><h1>Artefatos</h1><p>O catálogo do Club: o que existe, em que grupo, quem é o dono e o que precisa acontecer pro 100%.</p></div>
       <div class="toolbar">
+        <select class="inp" id="filtroArtGrupo" style="max-width:240px"></select>
+        <span class="tx-s" id="artResumo"></span>
         <span class="sp"></span>
+        <button class="btn" data-new="group">
+          <svg class="ic"><use href="#i-plus"/></svg>Novo grupo</button>
         <button class="btn btn-primary" data-new="artifact">
           <svg class="ic"><use href="#i-plus"/></svg>Novo artefato</button>
       </div>
+      <div id="avisoGrupos"></div>
       <div id="listaArtefatos"></div>
     </div>
 
