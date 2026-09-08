@@ -421,6 +421,20 @@ h1,h2{margin:0}
   "use strict";
   var WA = "557791430079";
   var MSG = {"local": "Olá! Vim pelo link da bio da Dra. Luciana da Hora. Sou de {unidade} e gostaria de agendar minha consulta presencial. Meu caso: {motivo}.", "tele": "Olá! Vim pelo link da bio da Dra. Luciana da Hora. Sou de {cidade}, tenho interesse em cirurgia e posso ir a Vitória da Conquista. Gostaria de agendar a teleconsulta."};
+  /* Frase de ANUNCIO (utm_medium=cpc na URL, last-touch guardado 90 dias no aparelho): quem
+     veio de trafego pago abre o WhatsApp com "Vi um anuncio", nao "link da bio". Mesmo padrao
+     do quiz do Dr. Alex (02/09/2026); frases catalogadas em frases-origem.md (Norte). Lead nunca
+     ve codigo: so a frase muda. Instalado 08/09/2026 pra campanha de Quiz da LUV. */
+  var MSG_ADS = {"local": "Olá! Vi um anúncio da Dra. Luciana da Hora. Sou de {unidade} e gostaria de agendar minha consulta presencial. Meu caso: {motivo}.", "tele": "Olá! Vi um anúncio da Dra. Luciana da Hora. Sou de {cidade}, tenho interesse em cirurgia e posso ir a Vitória da Conquista. Gostaria de agendar a teleconsulta."};
+  var vemDeAnuncio = (function(){
+    var K = "luciana_quiz_medium", DIAS = 90, agora = Date.now(), medium = "";
+    try {
+      var q = new URLSearchParams(location.search).get("utm_medium");
+      if(q){ medium = q.toLowerCase(); localStorage.setItem(K, JSON.stringify({ m: medium, t: agora })); }
+      else { var g = JSON.parse(localStorage.getItem(K) || "null"); if(g && agora - g.t < DIAS * 864e5) medium = g.m; }
+    } catch(e){}
+    return medium === "cpc";
+  })();
   var telas = {}, ordem = [];
   Array.prototype.forEach.call(document.querySelectorAll("[data-tela]"), function(el){
     telas[el.getAttribute("data-tela")] = el; ordem.push(el);
@@ -596,7 +610,7 @@ h1,h2{margin:0}
     /* window.open tem de acontecer DENTRO do clique: fora dele o navegador
        trata como popup e bloqueia (Safari sempre, Chrome com frequência). */
     if(chave === "local" && vemDeFora && MSG.vem) chave = "vem";
-    var texto = (MSG[chave] || "").replace("{unidade}", unidade)
+    var texto = ((vemDeAnuncio && MSG_ADS[chave]) || MSG[chave] || "").replace("{unidade}", unidade)
                                   .replace("{motivo}", motivo)
                                   .replace("{cidade}", cidadePaciente);
     var numero = (chave === "local" && waUnidade) ? waUnidade : WA;
