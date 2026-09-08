@@ -6,6 +6,16 @@
 <title>Agendamento · Santa Luzia Hospital de Olhos</title>
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#FBFCFD">
+<!-- Meta Pixel · Dra. Luciana da Hora (dataset 1025369820465448) · padrão de tracking Mestre 30/08/2026 -->
+<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','1025369820465448');
+fbq('track','PageView',{content_category:'clinica_luciana',content_name:'quiz-agendamento'});
+fbq('track','ViewContent',{content_category:'clinica_luciana',content_name:'quiz-agendamento'});</script>
+<noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=1025369820465448&ev=PageView&noscript=1"></noscript>
 <style>
 :root{
   --primaria:#286898; --primaria-rgb:40,104,152;
@@ -252,12 +262,23 @@ h1,h2{margin:0}
         <p class="texto texto--menor texto--gap">Para seguir com o seu atendimento, escolha a sua cidade.</p>
         <div class="opcoes">
 
-          <button class="opcao" type="button" data-ir="a1" data-unidade="Vitória da Conquista" data-wa="">Vitória da Conquista <i>&rsaquo;</i></button>
+          <button class="opcao" type="button" data-ir="motivo" data-unidade="Vitória da Conquista" data-wa="">Vitória da Conquista <i>&rsaquo;</i></button>
                     <button class="opcao" type="button" data-ir="cidade">Outra cidade <i>&rsaquo;</i></button>
         </div>
       </section>
       
 
+      <!-- ===== TELA · MOTIVO (preço muda: consulta R$ 300 · suspeita de catarata R$ 450) ===== -->
+      <section class="tela tela--recuada" data-tela="motivo" data-titulo="O seu caso" data-progresso="32%">
+        <span class="kicker kicker--curto">O seu caso</span>
+        <h2 class="tt h2">O que traz você aqui?</h2>
+        <p class="texto texto--menor texto--gap">Escolha a opção mais parecida com o seu caso. A nossa equipe já recebe a sua mensagem sabendo disso.</p>
+        <div class="opcoes">
+          <button class="opcao" type="button" data-ir="a1" data-motivo="Quero parar de usar óculos" data-preco="R$ 300" data-parcelas="Em até 2x" data-preco-texto="Nossa consulta oftalmológica completa está no valor de:">Quero parar de usar óculos <i>&rsaquo;</i></button>
+          <button class="opcao" type="button" data-ir="a1" data-motivo="Suspeita de catarata" data-preco="R$ 450" data-parcelas="Em até 2x" data-preco-texto="A consulta com avaliação de catarata está no valor de:">Acho que tenho catarata <i>&rsaquo;</i></button>
+          <button class="opcao" type="button" data-ir="a1" data-motivo="Consulta e exames de rotina" data-preco="R$ 300" data-parcelas="Em até 2x" data-preco-texto="Nossa consulta oftalmológica completa está no valor de:">Consulta e exames de rotina <i>&rsaquo;</i></button>
+        </div>
+      </section>
       <section class="tela tela--recuada" data-tela="cidade" data-titulo="Passo 01 · Localização" data-progresso="28%">
         <span class="kicker kicker--curto">Passo 01 · Localização</span>
         <h2 class="tt h2">De qual cidade você é?</h2>
@@ -307,7 +328,7 @@ h1,h2{margin:0}
         <div class="miolo">
           <span class="kicker">Investimento</span>
           <div class="cartao cartao--centro">
-            <p class="texto texto--menor" style="margin-bottom:18px">Nossa consulta oftalmológica completa está no valor de:</p>
+            <p class="texto texto--menor" style="margin-bottom:18px" id="preco-texto">Nossa consulta oftalmológica completa está no valor de:</p>
             <div class="tt preco" id="preco-valor">R$ 300</div>
             <div class="regua regua--fina regua--centro"></div>
 
@@ -399,7 +420,7 @@ h1,h2{margin:0}
 (function(){
   "use strict";
   var WA = "557791430079";
-  var MSG = {"local": "Olá! Vim pelo link da bio da Dra. Luciana da Hora. Sou de {unidade} e gostaria de agendar minha consulta presencial.", "tele": "Olá! Vim pelo link da bio da Dra. Luciana da Hora. Sou de {cidade}, tenho interesse em cirurgia e posso ir a Vitória da Conquista. Gostaria de agendar a teleconsulta."};
+  var MSG = {"local": "Olá! Vim pelo link da bio da Dra. Luciana da Hora. Sou de {unidade} e gostaria de agendar minha consulta presencial. Meu caso: {motivo}.", "tele": "Olá! Vim pelo link da bio da Dra. Luciana da Hora. Sou de {cidade}, tenho interesse em cirurgia e posso ir a Vitória da Conquista. Gostaria de agendar a teleconsulta."};
   var telas = {}, ordem = [];
   Array.prototype.forEach.call(document.querySelectorAll("[data-tela]"), function(el){
     telas[el.getAttribute("data-tela")] = el; ordem.push(el);
@@ -418,9 +439,16 @@ h1,h2{margin:0}
      vezes para quem escolhesse a outra cidade. O valor que vem no HTML e' o da
      unidade padrao (a primeira do perfil); se o JS nao rodar, e' esse que fica. */
   var PRECOS = {};
+  /* Preco por MOTIVO (Dra. Luciana, 08/09/2026): consulta R$ 300, suspeita de
+     catarata R$ 450. O botao da tela "motivo" carrega data-preco / data-parcelas /
+     data-preco-texto; sobrepoe o preco da unidade. Sem escolha, fica o do HTML. */
+  var precoMotivo = null;
   function aplicaPreco(){
     var p = PRECOS[unidade];
+    if(precoMotivo) p = Object.assign({}, p || {}, precoMotivo);
     if(!p) return;
+    var tx = document.getElementById("preco-texto");
+    if(tx && p.texto) tx.textContent = p.texto;
     var el = document.getElementById("preco-valor");
     if(el && p.valor) el.textContent = p.valor;
     el = document.getElementById("preco-parcelas");
@@ -442,7 +470,7 @@ h1,h2{margin:0}
        E nao escrever marcador de bloco literal em comentario: o parser le' o
        marcador de dentro do comentario como abertura de bloco de verdade -- foi
        assim que a primeira tentativa de consertar isto reintroduziu o bug. */
-    var PAGE_PATH = "/agendamento", META_CAT = "";
+    var PAGE_PATH = "/agendamento", META_CAT = "clinica_luciana";
     function ga(nome, dados){
       if (typeof gtag === "function") gtag("event", nome, dados);
     }
@@ -577,7 +605,7 @@ h1,h2{margin:0}
     var ramo = chave;
           ga("whatsapp_click", { page_path: PAGE_PATH, link_url: url, ramo: ramo });
 
-      meta("LeadQuiz", "quiz-agendamento");
+      meta("MQL", "quiz-agendamento");
         var aba = window.open(url, "_blank");
     if(!aba) window.location.href = url;
   }
@@ -587,6 +615,12 @@ h1,h2{margin:0}
     if(!alvo) return;
     if(alvo.hasAttribute("data-motivo")){
       motivo = alvo.getAttribute("data-motivo") || motivo;
+      if(alvo.hasAttribute("data-preco")){
+        precoMotivo = { valor: alvo.getAttribute("data-preco"),
+                        parcelas: alvo.getAttribute("data-parcelas") || "",
+                        texto: alvo.getAttribute("data-preco-texto") || "" };
+        aplicaPreco();
+      }
     }
     /* "Sim, eu iria a <cidade>": mora fora, mas viaja. Sem isso a mensagem da
        tela de preco diria "Sou de <cidade do medico>", que e' falso. */
