@@ -1,0 +1,784 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0B1116">
+<title>Encontro Grau Zero · Aula ao vivo e gratuita com o Dr. Alex Sá</title>
+<meta name="description" content="Dia 24 de setembro, às 20h, o Dr. Alex Sá (CRM-AM 7516 · RQE 3514) explica ao vivo os caminhos que existem hoje pra miopia e catarata. Gratuito.">
+<link rel="canonical" href="https://oftalmoblack.com.br/encontro-grau-zero/">
+<link rel="icon" href="assets/favicon.png" type="image/png">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:url" content="https://oftalmoblack.com.br/encontro-grau-zero/">
+<meta property="og:title" content="Encontro Grau Zero · Aula ao vivo e gratuita com o Dr. Alex Sá">
+<meta property="og:description" content="Dia 24 de setembro, às 20h, o Dr. Alex Sá (CRM-AM 7516 · RQE 3514) explica ao vivo os caminhos que existem hoje pra miopia e catarata. Gratuito.">
+<meta property="og:image" content="https://oftalmoblack.com.br/encontro-grau-zero/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script>
+/* marca JS ativo: sem JS a página fica 100% legível, sem elementos escondidos */
+document.documentElement.className += ' js';
+/* bloco de vídeo some sozinho se o arquivo não existir */
+window.axsVideoFail = function(){
+  var b = document.getElementById('convite');
+  if (b) { b.hidden = true; } else { window.__axsVideoFailed = true; }
+};
+</script>
+
+<!-- Meta Pixel (dataset da clínica) -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','1053938220459513');
+fbq('track','PageView');
+fbq('track','ViewContent',{content_name:'encontro_grau_zero',content_category:'clinica_alexsa'});
+</script>
+<noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=1053938220459513&ev=PageView&noscript=1"></noscript>
+
+<!-- GA4 da clínica -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6P7ZLG2FKG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config','G-6P7ZLG2FKG',{transport_type:'beacon'});
+</script>
+
+<style>
+:root{
+  --ink:#0B1116;
+  --ink-2:#0E1620;
+  --ink-deep:#080D11;
+  --gold:#D2AC67;
+  --gold-hi:#DDBB7C;
+  --gold-line:rgba(210,172,103,.32);
+  --gold-dim:rgba(210,172,103,.14);
+  --ivory:#F4EFE6;
+  --ivory-70:rgba(244,239,230,.72);
+  --ivory-55:rgba(244,239,230,.56);
+  --paper:#FAF6EE;
+  --paper-2:#F2ECE2;
+  --text:#1A222B;
+  --mute:#4A555F;
+  --rule:rgba(26,34,43,.15);
+  --ease:cubic-bezier(.22,1,.36,1);
+  --r:2px;
+  --pad:clamp(24px,4vw,28px);
+  /* acento por superfície: dourado sobre escuro, bronze sobre claro (AA) */
+  --accent:var(--gold);
+  --accent-line:var(--gold-line);
+}
+.paper,.paper-2{--accent:#7A5C22;--accent-line:rgba(122,92,34,.38)}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;font-size:17px}
+body{
+  font-family:'Hanken Grotesk',system-ui,-apple-system,Segoe UI,sans-serif;
+  background:var(--ink);color:var(--ivory);
+  font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+h1,h2,h3,.serif{font-family:'Marcellus','Palatino Linotype',Georgia,serif;font-weight:400;line-height:1.14;letter-spacing:.004em}
+img{max-width:100%;display:block;height:auto}
+a{color:inherit}
+b,strong{font-weight:600}
+::selection{background:var(--gold);color:#101317}
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:0 var(--pad)}
+.wrap.narrow{max-width:720px}
+.skip{position:absolute;left:-9999px;top:0;z-index:200;background:var(--gold);color:#101317;padding:12px 18px;font-weight:600;border-radius:0 0 var(--r) 0}
+.skip:focus{left:0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.sr{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ---------- movimento (subset animate.css, entrada única) ---------- */
+@keyframes axsRise{from{opacity:0;transform:translate3d(0,24px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@keyframes axsFade{from{opacity:0}to{opacity:1}}
+@keyframes axsHalo{0%,100%{box-shadow:0 10px 26px rgba(210,172,103,.20)}50%{box-shadow:0 12px 40px rgba(210,172,103,.46)}}
+.js .rv{opacity:0}
+.js .rv.is-in{animation:axsRise .78s var(--ease) both;animation-delay:var(--d,0s)}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  .js .rv,.js .rv.is-in{opacity:1;transform:none;animation:none}
+  .btn-pulse{animation:none !important}
+  *{transition:none !important}
+}
+
+/* ---------- botões ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:11px;
+  min-height:48px;padding:13px 26px;border-radius:999px;
+  font-weight:600;font-size:1rem;line-height:1.2;text-decoration:none;
+  background:var(--gold);color:#101317;border:1px solid var(--gold);
+  box-shadow:0 10px 26px rgba(210,172,103,.20);
+  transition:background .2s ease,box-shadow .25s ease,transform .16s var(--ease);
+}
+.btn:hover{background:var(--gold-hi);border-color:var(--gold-hi);box-shadow:0 14px 34px rgba(210,172,103,.30)}
+.btn:active{transform:translateY(1px) scale(.99)}
+.btn-lg{font-size:1.06rem;padding:16px 32px;min-height:56px}
+.btn-sm{font-size:.88rem;padding:11px 18px;min-height:48px;box-shadow:none}
+.btn-sm:hover{box-shadow:0 8px 20px rgba(210,172,103,.22)}
+.wa{width:21px;height:21px;flex:none}
+.btn-lg .wa{width:24px;height:24px}
+@media (prefers-reduced-motion: no-preference){
+  .btn-pulse{animation:axsHalo 2.8s var(--ease) 1.6s 3}
+}
+
+/* ---------- topbar ---------- */
+.topbar{position:sticky;top:0;z-index:60;background:rgba(11,17,22,.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(244,239,230,.09)}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:68px;padding-top:10px;padding-bottom:10px}
+.mark{display:block;text-decoration:none;line-height:1.15}
+.mark-name{font-family:'Marcellus','Palatino Linotype',Georgia,serif;font-size:1.06rem;letter-spacing:.05em;color:var(--ivory);display:block}
+.mark-reg{display:block;font-size:.665rem;letter-spacing:.13em;text-transform:uppercase;color:var(--gold);margin-top:3px}
+
+/* ---------- hero ---------- */
+.hero{position:relative;background:var(--ink);overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(760px 540px at 12% 30%,rgba(210,172,103,.11),transparent 62%)}
+.hero-grid{display:grid;position:relative;z-index:1}
+.hero-media{position:relative;order:-1;overflow:hidden}
+.hero-media picture,.final-bg picture{display:block;width:100%;height:100%}
+.hero-media img{width:100%;height:100%;object-fit:cover;object-position:56% 12%;aspect-ratio:13/9}
+.hero-media::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(11,17,22,.42) 0%,rgba(11,17,22,.12) 34%,rgba(11,17,22,.78) 78%,var(--ink) 100%)}
+.hero-plate{display:none}
+.hero-copy{padding:22px var(--pad) 40px}
+.kicker{color:var(--gold);font-size:.72rem;font-weight:600;letter-spacing:.19em;text-transform:uppercase;margin-bottom:12px;line-height:1.5}
+.kicker .k-sep{display:none}
+.kicker .k-2{display:block}
+.hero h1{font-size:clamp(2.05rem,7.4vw,3.7rem);margin-bottom:12px;max-width:13ch}
+.hero h1 em{font-style:normal;color:var(--gold);display:block}
+.lead{font-size:1rem;line-height:1.55;color:var(--ivory-70);max-width:34rem}
+
+.datebar{display:flex;align-items:stretch;margin:20px 0 18px;border-top:1px solid var(--gold-line);border-bottom:1px solid var(--gold-line)}
+.db-cell{display:flex;align-items:baseline;gap:12px;padding:14px 0;flex:1 1 0;min-width:0}
+.db-cell+.db-cell{border-left:1px solid var(--gold-line);padding-left:20px}
+.db-big{font-family:'Marcellus','Palatino Linotype',Georgia,serif;font-size:clamp(2.1rem,8.6vw,2.8rem);color:var(--gold);line-height:1}
+.db-sub{font-size:.84rem;line-height:1.32;color:var(--ivory-70);letter-spacing:.02em}
+.facts{list-style:none;display:flex;flex-wrap:wrap;gap:8px 0;margin-top:20px}
+.facts li{font-size:.83rem;color:var(--ivory-55);letter-spacing:.05em;padding:0 14px;border-left:1px solid rgba(244,239,230,.18)}
+.facts li:first-child{padding-left:0;border-left:0}
+
+/* ---------- seções ---------- */
+.sec{padding:clamp(54px,7.4vw,100px) 0;position:relative}
+.paper{background:var(--paper);color:var(--text)}
+.paper-2{background:var(--paper-2);color:var(--text)}
+.ink{background:var(--ink);color:var(--ivory)}
+.sec h2{font-size:clamp(1.62rem,4.4vw,2.45rem);max-width:20ch}
+.paper h2,.paper-2 h2{color:var(--text)}
+.sec-intro{margin-top:14px;color:var(--mute);font-size:1.03rem;max-width:36rem}
+.ink .sec-intro{color:var(--ivory-70)}
+.rule-top{width:56px;height:1px;background:var(--accent);margin-bottom:22px}
+
+/* ---------- vídeo ---------- */
+.sec-video{border-top:1px solid rgba(244,239,230,.08)}
+.sec-video .wrap{text-align:center}
+.sec-video .rule-top{margin-left:auto;margin-right:auto}
+.sec-video .sec-intro{margin-left:auto;margin-right:auto}
+.sec-video h2{margin-left:auto;margin-right:auto}
+.player{position:relative;width:100%;max-width:420px;margin:34px auto 30px;aspect-ratio:var(--ar,9/16);
+  background:var(--ink-2);border:1px solid var(--gold-line);border-radius:var(--r);overflow:hidden}
+.player video{width:100%;height:100%;object-fit:cover;display:block;background:#000}
+.play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  width:100%;height:100%;border:0;background:transparent;cursor:pointer;transition:opacity .3s ease}
+.play span{display:flex;align-items:center;justify-content:center;width:76px;height:76px;border-radius:50%;
+  background:rgba(11,17,22,.62);border:1px solid var(--gold);backdrop-filter:blur(4px);transition:transform .2s var(--ease),background .2s ease}
+.play:hover span{transform:scale(1.06);background:rgba(11,17,22,.78)}
+.play svg{width:26px;height:26px;margin-left:4px;fill:var(--gold)}
+.player.is-playing .play{opacity:0;pointer-events:none}
+
+/* ---------- caminhos ---------- */
+.caminhos-grid{display:grid;gap:34px}
+.caminhos{list-style:none}
+.caminhos li{border-top:1px solid var(--rule);padding:24px 0 22px}
+.caminhos h3{font-size:1.3rem;color:var(--text);margin-bottom:9px;display:flex;align-items:flex-start;gap:14px}
+.caminhos h3::before{content:"";width:26px;height:1px;background:var(--accent);flex:none;margin-top:.66em}
+.caminhos p{color:var(--mute);font-size:1.02rem;padding-left:40px}
+.closing{margin-top:34px;border-left:1px solid var(--accent);padding:6px 0 6px 22px;color:var(--mute);font-size:1.05rem;max-width:44rem}
+.closing b{color:var(--text);font-weight:600}
+
+/* ---------- mito e verdade ---------- */
+.mitos{margin-top:34px}
+.mitos-head{display:none;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700;padding-bottom:10px}
+.mito-row{border-top:1px solid var(--rule);padding:20px 0;display:grid;gap:8px}
+.mito-row dt{color:var(--mute);text-decoration:line-through;text-decoration-color:rgba(74,85,95,.55);font-size:1rem}
+.mito-row dd{color:var(--text);font-weight:500;font-size:1.03rem;display:flex;gap:12px;align-items:flex-start}
+.mito-row dd svg{width:17px;height:17px;flex:none;margin-top:5px;stroke:var(--accent);fill:none;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- para quem ---------- */
+.perfis{list-style:none;display:grid;gap:0;margin-top:30px}
+.perfis li{border-top:1px solid var(--rule);padding:20px 0;font-size:1.05rem;color:var(--text)}
+.perfis li span{display:block;color:var(--accent);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;font-weight:700;margin-bottom:8px}
+
+/* ---------- como funciona ---------- */
+.passos{list-style:none;margin-top:40px;position:relative;display:grid;gap:0}
+.passo{position:relative;padding:0 0 30px 54px}
+.passo::before{content:"";position:absolute;left:17px;top:6px;bottom:-6px;width:1px;background:var(--accent-line)}
+.passo:last-child{padding-bottom:0}
+.passo:last-child::before{display:none}
+.p-num{position:absolute;left:0;top:0;width:35px;height:35px;border-radius:50%;border:1px solid var(--accent);
+  background:var(--paper-2);color:var(--accent);display:flex;align-items:center;justify-content:center;
+  font-family:'Marcellus','Palatino Linotype',Georgia,serif;font-size:1.02rem;line-height:1}
+.passo h3{font-size:1.18rem;color:var(--text);margin-bottom:7px}
+.passo p{color:var(--mute);font-size:1.01rem}
+.passo small{display:block;color:var(--mute);font-size:.86rem;margin-top:3px}
+.nota{margin-top:34px;background:#fff;border:1px solid var(--rule);border-radius:var(--r);padding:20px 22px;color:var(--mute);font-size:1rem;max-width:46rem}
+.nota b{color:var(--text)}
+
+/* ---------- quem apresenta ---------- */
+.bio-grid{display:grid;gap:32px}
+.bio-photo{position:relative}
+.bio-photo img{border-radius:var(--r);border:1px solid var(--gold-line);width:100%}
+.bio-name{font-family:'Marcellus','Palatino Linotype',Georgia,serif;font-size:1.65rem;margin-top:18px}
+.bio-reg{color:var(--gold);letter-spacing:.13em;font-size:.78rem;text-transform:uppercase;font-weight:600;margin:8px 0 18px}
+.bio-copy p.txt{color:var(--ivory-70);margin-bottom:14px;font-size:1.02rem}
+.numeros{display:grid;gap:0;margin-top:44px;border-top:1px solid rgba(244,239,230,.14)}
+.numero{padding:24px 0;border-bottom:1px solid rgba(244,239,230,.14)}
+.numero b{display:block;font-family:'Marcellus','Palatino Linotype',Georgia,serif;font-weight:400;font-size:2.1rem;color:var(--gold);line-height:1;margin-bottom:7px}
+.numero span{color:var(--ivory-55);font-size:.92rem}
+
+/* ---------- faq ---------- */
+.faq-list{margin-top:30px;max-width:52rem}
+.faq-list details{border-top:1px solid var(--rule)}
+.faq-list details:last-child{border-bottom:1px solid var(--rule)}
+.faq-list summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:18px;
+  padding:20px 0;min-height:56px;font-weight:600;font-size:1.05rem;color:var(--text)}
+.faq-list summary::-webkit-details-marker{display:none}
+.faq-list summary::after{content:"+";font-family:'Marcellus','Palatino Linotype',Georgia,serif;font-size:1.5rem;color:var(--accent);line-height:1;transition:transform .22s var(--ease);flex:none}
+.faq-list details[open] summary::after{transform:rotate(45deg)}
+.faq-list .a{padding:0 0 22px;color:var(--mute);max-width:44rem;font-size:1.01rem}
+
+/* ---------- cta final ---------- */
+.final{position:relative;overflow:hidden;background:var(--ink);text-align:center}
+.final-bg{position:absolute;inset:0;z-index:0}
+.final-bg img{width:100%;height:100%;object-fit:cover;object-position:50% 28%}
+.final-bg::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(11,17,22,.74) 0%,rgba(11,17,22,.87) 48%,rgba(11,17,22,.95) 100%),
+             radial-gradient(700px 420px at 50% 8%,rgba(210,172,103,.16),transparent 64%)}
+.final .wrap{position:relative;z-index:1}
+.final h2{margin:0 auto 16px;max-width:19ch;text-wrap:balance}
+.final .sec-intro{margin:0 auto 26px;color:var(--ivory-70);text-wrap:balance}
+.final-when{display:inline-flex;align-items:baseline;gap:10px;flex-wrap:wrap;justify-content:center;
+  border-top:1px solid var(--gold-line);border-bottom:1px solid var(--gold-line);padding:12px 22px;margin-bottom:30px}
+.final-when b{font-family:'Marcellus','Palatino Linotype',Georgia,serif;font-weight:400;font-size:1.5rem;color:var(--gold)}
+.final-when span{font-size:.8rem;color:var(--ivory-55);letter-spacing:.04em}
+.disclaimer{margin-top:26px;font-size:.9rem;color:var(--ivory-55);max-width:32rem;margin-left:auto;margin-right:auto}
+
+/* ---------- footer ---------- */
+footer{background:var(--ink-deep);padding:40px 0 44px;font-size:.85rem;color:var(--ivory-55);border-top:1px solid rgba(244,239,230,.07)}
+footer .wrap{display:grid;gap:9px}
+footer b{color:var(--ivory-70);font-weight:600}
+footer a{color:var(--gold);text-decoration:none}
+footer a:hover{text-decoration:underline}
+
+/* ---------- barra fixa mobile ---------- */
+.stickybar{
+  position:fixed;left:0;right:0;bottom:0;z-index:70;display:none;align-items:center;gap:12px;
+  padding:11px var(--pad);padding-bottom:calc(11px + env(safe-area-inset-bottom,0px));
+  background:rgba(11,17,22,.96);backdrop-filter:blur(14px);border-top:1px solid var(--gold-line);
+  transform:translateY(105%);transition:transform .34s var(--ease);
+}
+.stickybar strong{font-size:.82rem;font-weight:600;color:var(--ivory);letter-spacing:.03em;line-height:1.25}
+.stickybar .btn{margin-left:auto;flex:none}
+body.cta-on .stickybar{transform:none}
+
+/* ---------- desktop ---------- */
+@media(min-width:920px){
+  body{font-size:17px}
+  .hero-grid{grid-template-columns:minmax(0,1.04fr) minmax(0,.96fr);align-items:stretch}
+  .hero-media{order:0;min-height:100%}
+  .hero-media img{height:100%;aspect-ratio:auto;object-position:58% 16%;min-height:600px}
+  .hero-media::after{background:linear-gradient(90deg,var(--ink) 0%,rgba(11,17,22,.72) 18%,rgba(11,17,22,.06) 58%,rgba(11,17,22,.30) 100%)}
+  .hero-copy{display:flex;flex-direction:column;justify-content:center;
+    padding:88px 56px 92px max(var(--pad),calc((100vw - 1120px)/2))}
+  .hero-plate{display:block;position:absolute;left:0;bottom:26px;z-index:2;
+    background:rgba(11,17,22,.78);border:1px solid var(--gold-line);border-left:0;border-radius:0 var(--r) var(--r) 0;
+    padding:9px 18px;font-size:.78rem;letter-spacing:.07em;white-space:nowrap;backdrop-filter:blur(6px)}
+  .hero-plate b{color:var(--gold);font-weight:600}
+  .kicker .k-sep{display:inline}
+  .kicker .k-2{display:inline}
+  .datebar{max-width:29rem}
+  .caminhos-grid{grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);grid-template-rows:auto 1fr;column-gap:64px;row-gap:0;align-items:start}
+  .cam-head{grid-column:1;grid-row:1}
+  .caminhos{grid-column:2;grid-row:1 / span 2}
+  .caminhos-grid > .closing{grid-column:1;grid-row:2;margin-top:36px;align-self:start}
+  .mitos-head{display:grid;grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr);gap:36px;margin-top:46px}
+  .mitos{margin-top:0}
+  .mitos-head .h-mito{color:var(--mute)}
+  .mitos-head .h-verdade{color:var(--gold)}
+  .mito-row{grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr);gap:36px;align-items:start}
+  .perfis{grid-template-columns:repeat(6,1fr);column-gap:44px}
+  .perfis li:nth-child(1),.perfis li:nth-child(2),.perfis li:nth-child(3){grid-column:span 2}
+  .perfis li:nth-child(4),.perfis li:nth-child(5){grid-column:span 3}
+  .passos{grid-template-columns:repeat(3,1fr);gap:44px;margin-top:56px}
+  .passos::before{content:"";position:absolute;left:17px;right:17px;top:17px;height:1px;background:var(--gold-line)}
+  .passo{padding:52px 0 0 0}
+  .passo::before{display:none}
+  .p-num{z-index:1}
+  .bio-grid{grid-template-columns:minmax(0,.78fr) minmax(0,1.22fr);gap:58px;align-items:center}
+  .bio-name{margin-top:22px}
+  .numeros{grid-template-columns:repeat(3,1fr);border-bottom:1px solid rgba(244,239,230,.14)}
+  .numero{border-bottom:0;padding:28px 30px;border-left:1px solid rgba(244,239,230,.14)}
+  .numero:first-child{border-left:0;padding-left:0}
+  .numero b{font-size:2.5rem}
+}
+@media(min-width:920px) and (max-width:1180px){
+  .hero-copy{padding-left:var(--pad)}
+}
+@media(max-width:919px){
+  .stickybar{display:flex}
+  footer{padding-bottom:110px}
+  .hero-media img{min-height:0}
+  .passos{margin-top:34px}
+  .btn-lg{font-size:1rem;padding:16px 22px;min-height:54px}
+  .final-when b{font-size:1.2rem}
+  .final-when{padding:12px 16px}
+  .final-bg::after{background:linear-gradient(180deg,rgba(11,17,22,.86) 0%,rgba(11,17,22,.92) 48%,rgba(11,17,22,.96) 100%),
+             radial-gradient(560px 340px at 50% 8%,rgba(210,172,103,.15),transparent 64%)}
+}
+@media(max-width:400px){
+  .btn-sm{padding:11px 14px;font-size:.82rem}
+  .mark-name{font-size:.98rem}
+  .mark-reg{font-size:.62rem;letter-spacing:.1em}
+  .stickybar strong{font-size:.76rem}
+  .stickybar .btn{padding:12px 18px;font-size:.86rem}
+  .facts li{padding:0 10px;font-size:.79rem}
+}
+</style>
+</head>
+<body>
+<!--
+  THESIS: um convite datado, não uma página de clínica. A página é o cartão do encontro: a pergunta do
+  paciente em Marcellus e a data como objeto tipográfico. Recusa o hero centrado sobre gradiente e as
+  quatro cards iguais que toda LP de evento repete.
+  OWN-WORLD: fundo lente #0B1116, dourado #D2AC67 só em fio, número e ação, marfim #F4EFE6 sobre escuro
+  e papel #FAF6EE nas seções de leitura. Marcellus display, Hanken Grotesk corpo, cantos 2px, botão pílula,
+  divisão por fio de 1px em vez de caixa.
+  STORY: quem já ouviu "não tem jeito" entende que existem caminhos, que a indicação é individual, e entra
+  no grupo do WhatsApp pra receber o link da aula do dia 24.
+  FIRST VIEWPORT: retrato do médico no consultório à direita (topo no mobile), pergunta em serifada à
+  esquerda, régua de data 24 · 20h em fio dourado e, logo abaixo, o único botão da página.
+  FORM: convite tipográfico datado, 1º da lista ordenada; superfície fixada pelo brief da clínica.
+  FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+-->
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><symbol id="i-wa" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a9.9 9.9 0 0 0-8.5 15.1L2 22l5-1.4A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.6-6.1c-.3-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.6.1a6.7 6.7 0 0 1-2-1.2 7.4 7.4 0 0 1-1.4-1.7c-.1-.3 0-.4.1-.5l.4-.5c.1-.2.2-.3.3-.5a.6.6 0 0 0 0-.5c0-.1-.6-1.4-.8-1.9s-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 2.9 2.9 0 0 0-.9 2.2 5 5 0 0 0 1 2.7 11.4 11.4 0 0 0 4.4 3.9 14.6 14.6 0 0 0 1.5.5 3.6 3.6 0 0 0 1.6.1 2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .1-1.2c0-.1-.2-.2-.5-.3Z"/></symbol></svg>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="mark" href="#conteudo">
+      <span class="mark-name">Dr. Alex Sá</span>
+      <span class="mark-reg">CRM-AM 7516 · RQE 3514</span>
+    </a>
+    <a class="btn btn-sm js-grupo" href="https://chat.whatsapp.com/CGRmhWTrWj49L9r0OQq37T" target="_blank" rel="noopener">
+      <svg class="wa" aria-hidden="true" focusable="false"><use href="#i-wa"></use></svg>
+      Entrar no grupo
+    </a>
+  </div>
+</header>
+
+<main id="conteudo">
+
+<section class="hero">
+  <div class="hero-grid">
+    <div class="hero-copy">
+      <p class="kicker rv">Encontro Grau Zero <span class="k-sep">·</span> <span class="k-2">aula ao vivo e gratuita</span></p>
+      <h1 class="rv" style="--d:.08s">Meu grau tem <em>solução?</em></h1>
+      <p class="lead rv" style="--d:.16s">Uma aula ao vivo com o Dr. Alex Sá sobre os caminhos que existem hoje pra miopia, astigmatismo, hipermetropia, vista cansada e catarata. E por que a indicação é sempre individualizada.</p>
+      <div class="datebar rv" style="--d:.24s">
+        <div class="db-cell">
+          <span class="db-big">24</span>
+          <span class="db-sub">de setembro<br>quinta-feira</span>
+        </div>
+        <div class="db-cell">
+          <span class="db-big">20h</span>
+          <span class="db-sub">horário de<br>Brasília</span>
+        </div>
+      </div>
+      <div class="rv" style="--d:.32s">
+        <a class="btn btn-lg btn-pulse js-grupo" href="https://chat.whatsapp.com/CGRmhWTrWj49L9r0OQq37T" target="_blank" rel="noopener">
+          <svg class="wa" aria-hidden="true" focusable="false"><use href="#i-wa"></use></svg>
+          Entrar no grupo do WhatsApp
+        </a>
+        <ul class="facts">
+          <li>Ao vivo</li>
+          <li>Online</li>
+          <li>Gratuito</li>
+          <li>60 minutos com perguntas</li>
+        </ul>
+      </div>
+    </div>
+    <div class="hero-media">
+      <picture>
+        <source media="(min-width:920px)" srcset="assets/hero-alex-1400.webp">
+        <img src="assets/hero-alex-800.webp" width="800" height="1066" alt="Dr. Alex Sá de jaleco no consultório, ao lado dos equipamentos de exame" fetchpriority="high" decoding="async">
+      </picture>
+      <p class="hero-plate"><b>Dr. Alex Sá</b> · CRM-AM 7516 · RQE 3514</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec ink sec-video" id="convite">
+  <div class="wrap narrow">
+    <div class="rule-top rv"></div>
+    <h2 class="rv">Assista ao convite do Dr. Alex</h2>
+    <p class="sec-intro rv">Em poucos minutos ele explica o que você vai ver na aula do dia 24.</p>
+    <div class="player rv" id="player">
+      <video id="convite-video" src="assets/convite.mp4" poster="assets/convite-poster.jpg"
+             controls playsinline preload="metadata" onerror="axsVideoFail()"></video>
+      <button class="play" type="button" id="play-btn" aria-label="Reproduzir o convite do Dr. Alex Sá">
+        <span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 3.5 20 12 6 20.5Z"/></svg></span>
+      </button>
+    </div>
+    <a class="btn js-grupo" href="https://chat.whatsapp.com/CGRmhWTrWj49L9r0OQq37T" target="_blank" rel="noopener">
+      <svg class="wa" aria-hidden="true" focusable="false"><use href="#i-wa"></use></svg>
+      Entrar no grupo do WhatsApp
+    </a>
+  </div>
+</section>
+
+<section class="sec paper">
+  <div class="wrap caminhos-grid">
+    <div class="cam-head rv">
+      <div class="rule-top"></div>
+      <h2>O que você vai entender na aula</h2>
+      <p class="sec-intro">Quatro caminhos que existem hoje. O que muda de um pro outro, e pra quem cada um costuma ser indicado.</p>
+    </div>
+    <ol class="caminhos">
+      <li class="rv">
+        <h3>Laser</h3>
+        <p>Miopia, astigmatismo e hipermetropia, pra quem depende do óculos o dia inteiro. Procedimento de minutos, com colírio anestésico, sem internação e com alta no mesmo dia.</p>
+      </li>
+      <li class="rv" style="--d:.06s">
+        <h3>Lente que entra dentro do olho</h3>
+        <p>A estratégia pra quem tem grau alto e já ouviu que o caso dele não tem solução. Se existe indicação, é o exame que responde.</p>
+      </li>
+      <li class="rv" style="--d:.12s">
+        <h3>Troca do cristalino</h3>
+        <p>Depois dos 40, o perto começa a sumir. É uma lente que nasce com a gente e para de funcionar, como uma lâmpada. A troca resolve a causa e ainda evita a catarata mais à frente.</p>
+      </li>
+      <li class="rv" style="--d:.18s">
+        <h3>Catarata</h3>
+        <p>Esperar amadurecer era conselho de 30 anos atrás: quanto mais dura, mais difícil de operar. Existe lente que só tira a catarata e lente que tira a catarata e o óculos junto, e essa diferença quase ninguém explica antes.</p>
+      </li>
+    </ol>
+    <p class="closing rv">Qual caminho serve pro seu caso, só o exame diz. <b>Cada caso é um caso, e é isso que a avaliação responde.</b> Na aula, você entende o que existe antes do exame.</p>
+  </div>
+</section>
+
+<section class="sec paper-2">
+  <div class="wrap">
+    <div class="rv">
+      <div class="rule-top"></div>
+      <h2>O que a aula desmonta</h2>
+      <p class="sec-intro">Seis frases que você já ouviu, e o que a oftalmologia responde a cada uma delas hoje.</p>
+    </div>
+    <div class="mitos-head rv" aria-hidden="true">
+      <span class="h-mito">Mito</span>
+      <span class="h-verdade">Verdade</span>
+    </div>
+    <dl class="mitos">
+      <div class="mito-row rv">
+        <dt><span class="sr">Mito: </span>Grau alto não opera.</dt>
+        <dd><span class="sr">Verdade: </span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12.6 9.2 18 20 6.6"/></svg>Grau alto tem estratégia: a lente que entra dentro do olho.</dd>
+      </div>
+      <div class="mito-row rv">
+        <dt><span class="sr">Mito: </span>Depois dos 40 não dá mais.</dt>
+        <dd><span class="sr">Verdade: </span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12.6 9.2 18 20 6.6"/></svg>Depois dos 40 é justamente quando a troca do cristalino entra na conversa.</dd>
+      </div>
+      <div class="mito-row rv">
+        <dt><span class="sr">Mito: </span>Cirurgia de grau é demorada e arriscada.</dt>
+        <dd><span class="sr">Verdade: </span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12.6 9.2 18 20 6.6"/></svg>O procedimento dura minutos, sem ponto, sem corte e sem internação.</dd>
+      </div>
+      <div class="mito-row rv">
+        <dt><span class="sr">Mito: </span>Catarata precisa amadurecer pra operar.</dt>
+        <dd><span class="sr">Verdade: </span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12.6 9.2 18 20 6.6"/></svg>Esse conselho tem 30 anos. Quanto mais dura a catarata, mais difícil de operar.</dd>
+      </div>
+      <div class="mito-row rv">
+        <dt><span class="sr">Mito: </span>Catarata é só de idoso.</dt>
+        <dd><span class="sr">Verdade: </span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12.6 9.2 18 20 6.6"/></svg>Catarata aparece em várias idades, inclusive na infância.</dd>
+      </div>
+      <div class="mito-row rv">
+        <dt><span class="sr">Mito: </span>Depois de operar continua de óculos.</dt>
+        <dd><span class="sr">Verdade: </span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12.6 9.2 18 20 6.6"/></svg>A lente que entra no lugar pode corrigir o grau de longe e de perto, quando existe indicação.</dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<section class="sec paper">
+  <div class="wrap">
+    <div class="rv">
+      <div class="rule-top"></div>
+      <h2>Para quem é essa aula</h2>
+    </div>
+    <ul class="perfis">
+      <li class="rv"><span>Usa óculos ou lente</span>Você tem entre 18 e 45 anos, depende do óculos todo dia e já ouviu que o seu caso não tem jeito.</li>
+      <li class="rv" style="--d:.05s"><span>Passou dos 40</span>O perto começou a sumir, com ou sem multifocal, e você anda culpando o celular.</li>
+      <li class="rv" style="--d:.1s"><span>Catarata</span>Você tem catarata diagnosticada, ou a suspeita ficou no ar depois da última consulta.</li>
+      <li class="rv" style="--d:.15s"><span>Filho ou cuidador</span>Você cuida de alguém com catarata e quer entender as opções antes de qualquer decisão.</li>
+      <li class="rv" style="--d:.2s"><span>Só quer entender</span>Você quer saber o que existe hoje antes de marcar exame, consulta ou qualquer outra coisa.</li>
+    </ul>
+    <p class="closing rv">Se você se reconheceu em um deles, a aula é pra você.</p>
+  </div>
+</section>
+
+<section class="sec paper-2">
+  <div class="wrap">
+    <div class="rv">
+      <div class="rule-top"></div>
+      <h2>Como funciona</h2>
+    </div>
+    <ol class="passos">
+      <li class="passo rv">
+        <span class="p-num">1</span>
+        <h3>Entra no grupo</h3>
+        <p>O botão desta página leva direto pro grupo do WhatsApp do encontro.</p>
+      </li>
+      <li class="passo rv" style="--d:.07s">
+        <span class="p-num">2</span>
+        <h3>Recebe os conteúdos e os avisos</h3>
+        <p>Até o dia 24 chegam três conteúdos curtos e o lembrete da aula.</p>
+      </li>
+      <li class="passo rv" style="--d:.14s">
+        <span class="p-num">3</span>
+        <h3>Assiste ao vivo dia 24, às <b>20h</b></h3>
+        <p>O link da transmissão é publicado no grupo. Você assiste pelo celular e pergunta por texto.</p>
+        <small>horário de Brasília</small>
+      </li>
+    </ol>
+    <p class="nota rv"><b>No grupo, só o Dr. Alex e a equipe publicam.</b> Você não recebe mensagem de ninguém além deles.</p>
+  </div>
+</section>
+
+<section class="sec ink">
+  <div class="wrap bio-grid">
+    <figure class="bio-photo rv">
+      <picture>
+        <source media="(min-width:920px)" srcset="assets/alex-retrato-1400.webp">
+        <img src="assets/alex-retrato-800.webp" width="800" height="1000" alt="Retrato do Dr. Alex Sá, cirurgião oftalmologista" loading="lazy" decoding="async">
+      </picture>
+    </figure>
+    <div class="bio-copy rv" style="--d:.08s">
+      <div class="rule-top"></div>
+      <h2>Quem apresenta</h2>
+      <p class="bio-name">Dr. Alex Sá</p>
+      <p class="bio-reg">CRM-AM 7516 · RQE 3514</p>
+      <p class="txt">Cirurgião oftalmologista, especialista em catarata e cirurgia refrativa, à frente da Clínica Dr. Alex Sá, em Manaus.</p>
+      <p class="txt">Foi professor da Universidade Federal do Amazonas por seis anos e é preceptor do fellowship em cirurgia de catarata do Hospital Universitário Getúlio Vargas, onde ajuda a formar outros cirurgiões. Autor do livro "Cirurgia de Catarata: habilitando-se para o aprendizado".</p>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="numeros rv">
+      <div class="numero"><b>+25 mil</b><span>cirurgias realizadas</span></div>
+      <div class="numero"><b>+15 anos</b><span>de oftalmologia</span></div>
+      <div class="numero"><b>6 anos</b><span>como professor na UFAM</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec paper">
+  <div class="wrap">
+    <div class="rv">
+      <div class="rule-top"></div>
+      <h2>Perguntas frequentes</h2>
+    </div>
+    <div class="faq-list">
+      <details class="rv">
+        <summary>É gratuito mesmo?</summary>
+        <div class="a">Sim. É uma aula educativa, sem custo e sem compromisso.</div>
+      </details>
+      <details class="rv">
+        <summary>É online? Preciso instalar alguma coisa?</summary>
+        <div class="a">Sim, é online e ao vivo. O link chega pelo grupo do WhatsApp no dia. O celular basta.</div>
+      </details>
+      <details class="rv">
+        <summary>Vou sair da aula sabendo se o meu caso tem solução?</summary>
+        <div class="a">A aula explica o que existe hoje e pra quem cada caminho costuma ser indicado. Cada caso é um caso, e é isso que a avaliação responde.</div>
+      </details>
+      <details class="rv">
+        <summary>Sou de outra cidade. Vale a pena?</summary>
+        <div class="a">Sim. A aula é a mesma pra todo o Brasil.</div>
+      </details>
+      <details class="rv">
+        <summary>Preciso ligar a câmera ou falar?</summary>
+        <div class="a">Não. Você assiste e, se quiser, pergunta por texto.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="sec final">
+  <div class="final-bg" aria-hidden="true">
+    <picture>
+      <source media="(min-width:920px)" srcset="assets/clinica-1400.webp">
+      <img src="assets/clinica-800.webp" width="800" height="534" alt="" loading="lazy" decoding="async">
+    </picture>
+  </div>
+  <div class="wrap">
+    <h2 class="rv">Dia 24, às 20h. Entra no grupo e recebe o link.</h2>
+    <p class="sec-intro rv">A aula é ao vivo, online e gratuita. O link da transmissão é publicado no grupo do WhatsApp, junto com os avisos até o dia 24.</p>
+    <p class="final-when rv"><b>24 de setembro · quinta · 20h</b><span>horário de Brasília</span></p>
+    <div class="rv">
+      <a class="btn btn-lg js-grupo" href="https://chat.whatsapp.com/CGRmhWTrWj49L9r0OQq37T" target="_blank" rel="noopener">
+        <svg class="wa" aria-hidden="true" focusable="false"><use href="#i-wa"></use></svg>
+        Entrar no grupo do WhatsApp
+      </a>
+      <p class="disclaimer">Aula educativa e gratuita. Não substitui consulta, exame ou avaliação médica.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><b>Dr. Alex Sá</b> · CRM-AM 7516 · RQE 3514 · Clínica Dr. Alex Sá, Manaus · <a href="https://www.instagram.com/dralexsa" target="_blank" rel="noopener">@dralexsa</a></div>
+    <div>Aula educativa e gratuita. Não substitui consulta, exame ou avaliação médica.</div>
+  </div>
+</footer>
+
+<div class="stickybar" id="stickybar">
+  <strong>24/09 · 20h<br>gratuito</strong>
+  <a class="btn btn-sm js-grupo" href="https://chat.whatsapp.com/CGRmhWTrWj49L9r0OQq37T" target="_blank" rel="noopener">
+    <svg class="wa" aria-hidden="true" focusable="false"><use href="#i-wa"></use></svg>
+    Entrar no grupo
+  </a>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  var VIDEO_SRC = 'assets/convite.mp4';
+
+  /* -------- atribuição: UTM e click ids em localStorage (TTL 7 dias) -------- */
+  try{
+    var K = 'axs_trk', TTL = 7*24*60*60*1000, now = Date.now();
+    var qs = new URLSearchParams(window.location.search);
+    var keys = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','fbclid','gclid'];
+    var novo = {}, temNovo = false;
+    for (var i=0;i<keys.length;i++){
+      var v = qs.get(keys[i]);
+      if (v){ novo[keys[i]] = v; temNovo = true; }
+    }
+    var bruto = window.localStorage.getItem(K), antigo = null;
+    if (bruto){ try{ antigo = JSON.parse(bruto); }catch(e){} }
+    if (antigo && antigo.ts && (now - antigo.ts) > TTL){ window.localStorage.removeItem(K); antigo = null; }
+    if (temNovo){ novo.ts = now; window.localStorage.setItem(K, JSON.stringify(novo)); }
+  }catch(e){}
+
+  /* -------- clique no grupo: Lead no pixel, grupo_click e generate_lead no GA4 -------- */
+  function acharGrupo(no){
+    while (no && no !== document){
+      if (no.classList && no.classList.contains('js-grupo')) return no;
+      no = no.parentNode;
+    }
+    return null;
+  }
+  document.addEventListener('click', function(ev){
+    var a = acharGrupo(ev.target);
+    if (!a) return;
+    try{
+      window.fbq && window.fbq('track','Lead',{content_name:'encontro_grau_zero',content_category:'clinica_alexsa'});
+    }catch(e){}
+    try{
+      window.gtag && window.gtag('event','grupo_click',{link_url:a.href,page_location:window.location.href,transport_type:'beacon'});
+      window.gtag && window.gtag('event','generate_lead',{currency:'BRL',lead_source:'lp-encontro-grau-zero',transport_type:'beacon'});
+    }catch(e){}
+  }, true);
+
+  /* -------- entrada das seções -------- */
+  function revelar(){
+    var alvos = document.querySelectorAll('.rv');
+    if (!('IntersectionObserver' in window)){
+      for (var i=0;i<alvos.length;i++) alvos[i].classList.add('is-in');
+      return;
+    }
+    var io = new IntersectionObserver(function(entradas){
+      entradas.forEach(function(e){
+        if (e.isIntersecting){ e.target.classList.add('is-in'); io.unobserve(e.target); }
+      });
+    }, {rootMargin:'0px 0px -8% 0px', threshold:0.12});
+    for (var j=0;j<alvos.length;j++) io.observe(alvos[j]);
+  }
+
+  /* -------- barra fixa depois do hero -------- */
+  function barra(){
+    var hero = document.querySelector('.hero');
+    if (!hero) return;
+    if (!('IntersectionObserver' in window)){ document.body.classList.add('cta-on'); return; }
+    var io = new IntersectionObserver(function(entradas){
+      entradas.forEach(function(e){
+        document.body.classList.toggle('cta-on', !e.isIntersecting);
+      });
+    }, {threshold:0, rootMargin:'-120px 0px 0px 0px'});
+    io.observe(hero);
+  }
+
+  /* -------- vídeo do convite -------- */
+  function video(){
+    var bloco = document.getElementById('convite');
+    var v = document.getElementById('convite-video');
+    var player = document.getElementById('player');
+    var botao = document.getElementById('play-btn');
+    if (!bloco || !v) return;
+
+    if (!VIDEO_SRC || window.__axsVideoFailed){ bloco.hidden = true; return; }
+    v.addEventListener('error', function(){ bloco.hidden = true; });
+
+    v.addEventListener('loadedmetadata', function(){
+      if (v.videoWidth && v.videoHeight){
+        player.style.setProperty('--ar', v.videoWidth + '/' + v.videoHeight);
+      }
+    });
+
+    if (botao){
+      botao.addEventListener('click', function(){
+        player.classList.add('is-playing');
+        var p = v.play();
+        if (p && p.catch) p.catch(function(){});
+      });
+    }
+    v.addEventListener('play', function(){ player.classList.add('is-playing'); });
+    v.addEventListener('pause', function(){ if (v.currentTime === 0) player.classList.remove('is-playing'); });
+
+    var marcouStart = false, marcou50 = false;
+    v.addEventListener('play', function(){
+      if (marcouStart) return;
+      marcouStart = true;
+      try{ window.gtag && window.gtag('event','video_start',{content_name:'encontro_grau_zero',transport_type:'beacon'}); }catch(e){}
+    });
+    v.addEventListener('timeupdate', function(){
+      if (marcou50 || !v.duration || !isFinite(v.duration)) return;
+      if (v.currentTime / v.duration >= 0.5){
+        marcou50 = true;
+        try{ window.fbq && window.fbq('trackCustom','VideoProgress50',{content_name:'encontro_grau_zero',content_category:'clinica_alexsa'}); }catch(e){}
+        try{ window.gtag && window.gtag('event','video_50',{content_name:'encontro_grau_zero',transport_type:'beacon'}); }catch(e){}
+      }
+    });
+    v.addEventListener('ended', function(){
+      try{ window.gtag && window.gtag('event','video_complete',{content_name:'encontro_grau_zero',transport_type:'beacon'}); }catch(e){}
+    });
+  }
+
+  function iniciar(){ revelar(); barra(); video(); }
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', iniciar);
+  } else {
+    iniciar();
+  }
+})();
+</script>
+
+</body>
+</html>
