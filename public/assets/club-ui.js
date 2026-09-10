@@ -303,7 +303,7 @@
     modalEl = document.createElement('div');
     modalEl.className = 'modal';
     modalEl.hidden = true;
-    modalEl.innerHTML = '<div class="modal-box" role="dialog" aria-modal="true"></div>';
+    modalEl.innerHTML = '<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitle"></div>';
     document.body.appendChild(modalEl);
 
     modalEl.addEventListener('click', function (e) {
@@ -312,6 +312,17 @@
     });
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && !modalEl.hidden) C.modal.close();
+      if (e.key === 'Tab' && !modalEl.hidden) {
+        var focaveis = Array.prototype.filter.call(modalEl.querySelectorAll(
+          'button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),a[href],[tabindex="0"]'),
+          function (el) { return el.getClientRects().length; });
+        var primeiro = focaveis[0], ultimo = focaveis[focaveis.length - 1];
+        if ((e.shiftKey && document.activeElement === primeiro) ||
+            (!e.shiftKey && document.activeElement === ultimo)) {
+          e.preventDefault();
+          (e.shiftKey ? ultimo : primeiro).focus();
+        }
+      }
     });
     return modalEl;
   }
@@ -321,13 +332,13 @@
        <form>, então os campos vêm por name e Enter já envia. */
     open: function (opts) {
       var el = ensureModal();
-      lastFocus = document.activeElement;
+      if (el.hidden) lastFocus = document.activeElement;
       onSubmit = opts.onSubmit;
 
       el.querySelector('.modal-box').innerHTML =
         '<div class="modal-h">' +
           '<div style="flex:1">' +
-            '<h2>' + C.esc(opts.title) + '</h2>' +
+            '<h2 id="modalTitle">' + C.esc(opts.title) + '</h2>' +
             (opts.sub ? '<p class="sub">' + C.esc(opts.sub) + '</p>' : '') +
           '</div>' +
           '<button class="btn btn-ghost btn-sm" data-close aria-label="Fechar">' +
@@ -346,6 +357,7 @@
 
       var box = el.querySelector('.modal-box');
       box.style.maxWidth = opts.largura ? opts.largura + 'px' : '';
+      box.scrollTop = 0;
 
       el.hidden = false;
       document.body.style.overflow = 'hidden';
@@ -366,7 +378,7 @@
       });
 
       var first = form.querySelector('input,select,textarea');
-      if (first) first.focus();
+      (first || el.querySelector('[data-close]')).focus();
     },
 
     close: function () {

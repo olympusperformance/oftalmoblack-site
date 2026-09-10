@@ -1935,6 +1935,8 @@
   }
 
   function renderDemandas() {
+    var quadroAnterior = $('listaDemandas').querySelector('.tblw');
+    var scrollAnterior = quadroAnterior ? quadroAnterior.scrollLeft : 0;
     if (Club.faltaMigracao) {
       $('statsDemandas').innerHTML = '';
       $('listaDemandas').innerHTML = '<div class="notice">' + ico('alert') +
@@ -2048,9 +2050,9 @@
        vem primeiro e, dentro dele, quem vence antes. A coluna Projeto só
        aparece na lista: no agrupado ela é o cabeçalho. */
     var comProjeto = st.demAgrupar === 'lista';
-    var cols = comProjeto
-      ? 'minmax(230px,2fr) 132px 96px 140px 124px 128px 116px 116px 104px'
-      : 'minmax(230px,2fr) 132px 96px 140px 124px 116px 116px 104px';
+    var larguras = [230, 132, 96, 140, 124].concat(comProjeto ? [128] : [])
+      .concat([116, 116, 104]);
+    var cols = 'minmax(230px,2fr) ' + larguras.slice(1).map(function (n) { return n + 'px'; }).join(' ');
     var cabecalhos = ['Demanda', 'Situação', 'Prioridade', 'Responsáveis', 'Mentorado']
       .concat(comProjeto ? ['Projeto'] : [])
       .concat(['Checklist', 'Prazo', '>Ações']);
@@ -2060,6 +2062,10 @@
       : rows.map(function (d) { return linhaDemanda(d, comProjeto); }).join('');
 
     $('listaDemandas').innerHTML = avisoCk + tabela(cols, cabecalhos, corpo, '');
+    Club.ajustarColunas($('listaDemandas'), {
+      chave:chaveDem() + ':colunas:' + st.demAgrupar, minimos:larguras
+    });
+    $('listaDemandas').querySelector('.tblw').scrollLeft = scrollAnterior;
 
     /* O campo de subtarefa é redesenhado a cada render: sem devolver o foco, o
        Enter que salvou uma subtarefa deixaria o time digitando no vazio. */
@@ -2170,9 +2176,11 @@
     var linha = '<div class="tr' + (fechada ? ' off' : '') + '"' +
       ' style="box-shadow:inset 3px 0 0 ' + cor + '">' +
       '<div class="td nm">' + toggleOuAdd(chave, etapas.length, d.id) +
-        '<div class="tx"><div class="tx tx-t" title="' + esc(d.titulo) + '">' + esc(titulo) + '</div>' +
-        (sub ? '<div class="tx tx-s">' + esc(sub) + '</div>' : '') +
-      '</div></div>' +
+        '<button type="button" class="demand-open" data-detalhe-demanda="' + esc(d.id) +
+          '" aria-label="Ver demanda: ' + esc(titulo) + '">' +
+          '<span class="tx tx-t">' + esc(titulo) + '</span>' +
+          (sub ? '<span class="tx tx-s">' + esc(sub) + '</span>' : '') +
+        '</button></div>' +
       colunasDe(d, 'd') +
       (comProjeto ? celulaProjeto(d) : '') +
       td(etapas.length ? barra(feitas, etapas.length)
@@ -2282,8 +2290,9 @@
             ? esc('Feito em ' + Club.fmtDataCurta(e.feito_em))
             : 'Marcar como concluída') + '"' +
           ' aria-label="Marcar subtarefa">' + ico('check') + '</button>' +
-        '<div class="tx"><div class="tx tx-t" title="' + esc(e.titulo) + '">' +
-          esc(e.titulo) + '</div></div></div>' +
+        '<button type="button" class="demand-open" data-detalhe-sub="' + esc(e.id) +
+          '" aria-label="Ver subtarefa: ' + esc(e.titulo) + '">' +
+          '<span class="tx tx-t">' + esc(e.titulo) + '</span></button></div>' +
       colunasDe(e, 's') +
       (comProjeto ? td('') : '') +
       td('') +
@@ -2579,6 +2588,53 @@
       });
     }
     renderDemandas();
+  }
+
+  /* Leitura completa, sem entrar no formulário nem alterar o registro. */
+  function detalheDemanda(id, subId) {
+    var d = achar('demand', id);
+    var r = subId ? etapa(subId) : d;
+    if (!d || !r) return;
+    var projeto = projetoDe(d);
+    var titulo = subId || d.member_id ? r.titulo : tituloSemTag(r.titulo);
+    var etapas = subId ? [] : etapasDaDemanda(d.id);
+    var feitas = etapas.filter(function (e) { return e.feito; }).length;
+    function campo(nome, valor) {
+      return '<div><dt>' + esc(nome) + '</dt><dd>' + valor + '</dd></div>';
+    }
+    Club.modal.open({
+      title:subId ? 'Detalhes da subtarefa' : 'Detalhes da demanda',
+      leitura:true, largura:780,
+      body:'<article class="demand-detail">' +
+        '<p class="demand-context">' + esc(projeto.nome) + '</p>' +
+        '<h3 class="demand-title">' + esc(titulo) + '</h3>' +
+        (subId ? '<button type="button" class="demand-parent" data-detalhe-demanda="' + esc(d.id) +
+          '">' + ico('chevron-right') + '<span>Demanda principal: ' +
+          esc(d.member_id ? d.titulo : tituloSemTag(d.titulo)) + '</span></button>' : '') +
+        '<dl class="demand-meta">' +
+          campo('Situação', status(Club.DEM_COR[r.status] || 'var(--faint)', r.status || 'Não informada')) +
+          campo('Prioridade', status(Club.DEM_PRIO_COR[r.prioridade] || 'var(--faint)', r.prioridade || 'Não informada')) +
+          campo('Responsáveis', esc(responsaveisDe(r))) +
+          campo('Prazo', esc(r.vence_em ? Club.fmtDataCurta(r.vence_em) : 'Sem prazo')) +
+          campo('Mentorado', esc(r.member_id ? membro(r.member_id) || 'Mentorado removido' : 'Demanda interna')) +
+          (!subId ? campo('Origem', esc(r.origem || 'Não informada')) : '') +
+        '</dl>' +
+        (!subId ? '<section class="demand-section"><h4>Descrição</h4><p class="demand-description">' +
+          esc(d.descricao || 'Nenhuma descrição adicionada.') + '</p></section>' : '') +
+        (!subId ? '<section class="demand-section"><h4>Checklist <span>' + feitas + '/' + etapas.length +
+          '</span></h4>' + (etapas.length ? '<ul class="demand-checklist">' + etapas.map(function (e) {
+            return '<li><button type="button" class="demand-step" data-detalhe-sub="' + esc(e.id) + '">' +
+              '<span class="demand-step-icon' + (e.feito ? ' done' : '') + '">' +
+                ico(e.feito ? 'check-circle' : 'clock') + '</span><span class="demand-step-body">' +
+                '<span class="demand-step-title">' + esc(e.titulo) + '</span>' +
+                '<span class="demand-step-meta">' + esc([e.status || (e.feito ? 'Concluída' : 'A fazer'),
+                  responsaveisDe(e), e.vence_em ? Club.fmtDataCurta(e.vence_em) : 'Sem prazo'].join(' · ')) +
+                '</span></span>' + ico('chevron-right') + '</button></li>';
+          }).join('') + '</ul>' : '<p class="demand-description">Nenhuma subtarefa adicionada.</p>') + '</section>' : '') +
+        '<div class="demand-detail-actions"><button type="button" class="btn" data-edit="demand" data-id="' +
+          esc(d.id) + '">' + ico('edit') + (subId ? 'Editar demanda principal' : 'Editar demanda') + '</button></div>' +
+      '</article>'
+    });
   }
 
   function modalDemanda(d) {
@@ -2939,6 +2995,16 @@
   /* ── eventos ──────────────────────────────────────────────────────────── */
 
   document.addEventListener('click', function (e) {
+    var detalhe = e.target.closest('[data-detalhe-demanda]');
+    if (detalhe) { detalheDemanda(detalhe.dataset.detalheDemanda); return; }
+
+    var detalheSub = e.target.closest('[data-detalhe-sub]');
+    if (detalheSub) {
+      var subRegistro = etapa(detalheSub.dataset.detalheSub);
+      if (subRegistro) detalheDemanda(subRegistro.demand_id, subRegistro.id);
+      return;
+    }
+
     var nav = e.target.closest('[data-nav]');
     if (nav) { go(nav.dataset.nav); return; }
 
@@ -3040,9 +3106,9 @@
       return;
     }
 
-    var etapa = e.target.closest('[data-etapa]');
-    if (etapa) {
-      var par = etapa.dataset.etapa.split('|');
+    var etapaBotao = e.target.closest('[data-etapa]');
+    if (etapaBotao) {
+      var par = etapaBotao.dataset.etapa.split('|');
       marcarEtapa(par[0], par[1]);
       return;
     }
