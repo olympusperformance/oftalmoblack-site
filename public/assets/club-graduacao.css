@@ -83,7 +83,7 @@
 .gr-radar-card>small{font-size:10px;color:var(--muted)}.gr-radar-ready>b{color:var(--success)}.gr-radar-near>b{color:var(--gold)}
 .gr-list-toolbar{display:flex;align-items:center;gap:12px;margin-bottom:16px}.gr-list-toolbar>.gr-caption{margin-left:auto}
 .gr-search{position:relative;flex:1;max-width:350px}.gr-search>.ic{position:absolute;left:13px;top:13px;color:var(--muted);font-size:15px}.gr-search input{padding-left:37px;font-size:12px}
-.gr-table-wrap{overflow:auto;border:1px solid var(--border-soft);border-radius:16px;margin-bottom:15px}
+.gr-table-wrap{position:relative;overflow:auto;border:1px solid var(--border-soft);border-radius:16px;margin-bottom:15px}
 .gr-table{width:100%;border-collapse:collapse;text-align:left;min-width:760px}
 .gr-table th{font-weight:500;font-size:10px;color:var(--muted);background:var(--th);padding:14px 18px;white-space:nowrap}
 .gr-table td{font-size:12px;padding:17px 18px;border-top:1px solid var(--border-soft);vertical-align:middle}
