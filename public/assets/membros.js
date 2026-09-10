@@ -143,7 +143,7 @@
     $('chatInput').disabled = true;
     renderChat();
 
-    Club.data.cerebro.perguntar(texto, chat.historico).then(function (d) {
+    Club.data.cerebro.perguntar(texto, chat.historico, admin ? st.membro.id : undefined).then(function (d) {
       chat.historico = d.historico || [];
       chat.falas.push({ quem:'ele', texto:d.resposta || 'Não achei nada sobre isso.' });
     }).catch(function (err) {

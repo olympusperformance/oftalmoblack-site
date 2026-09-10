@@ -160,10 +160,13 @@ que já foi conversado no grupo de Operação e sobre os números da própria cl
 Do lado do site há só a tela e a chamada — quem fala com o modelo e com o banco é
 uma Edge Function (`cerebro-chat`), documentada em `docs/cerebro/chat-function.ts`
 no repositório do CRM. O que garante a privacidade não é o texto do prompt: o
-`member_id` vem do JWT da sessão e é injetado em toda consulta, e as funções que
+`member_id` é resolvido pelo servidor e injetado em toda consulta, e as funções que
 o chat usa (`cerebro_buscar_do_membro` e companhia) têm `revoke execute` para
 `anon` e `authenticated` — só a função, com service role, as chama. O navegador
-manda a pergunta e o token, nada sobre identidade.
+manda a pergunta, o histórico e o token. No acesso normal, o membro vem do login.
+Na pré-visualização, envia também o `member_id` selecionado; a função só aceita
+esse alvo depois de confirmar o usuário autenticado em `app_admins`, e exige um
+mentorado ativo. Trocar de mentorado recarrega a página e limpa a conversa.
 
 O erro aparece como fala do Cérebro, e não como aviso que passa: quem perguntou
 precisa entender por que não teve resposta.

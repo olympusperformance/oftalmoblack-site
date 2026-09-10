@@ -485,18 +485,18 @@
   }
 
   /* Chat do Cérebro. A Edge Function é quem fala com o modelo e com o banco;
-     daqui vai só a pergunta e o token da sessão. Quem está perguntando sai do
-     JWT do outro lado — nunca da pergunta —, então não há nada a enviar sobre
-     identidade. Ver docs/cerebro/chat-function.ts no repositório do CRM. */
+     na pré-visualização vai também o mentorado escolhido. O servidor confere
+     no banco se o usuário autenticado é administrador antes de aceitar esse
+     alvo. Ver docs/cerebro/chat-function.ts no repositório do CRM. */
   C.data.cerebro = {
-    perguntar: function (pergunta, historico) {
+    perguntar: function (pergunta, historico, memberId) {
       return C.sb.auth.getSession().then(function (r) {
         var token = r.data && r.data.session && r.data.session.access_token;
         if (!token) throw new Error('Sua sessão expirou. Entre de novo.');
         return fetch(C.cfg.supabaseUrl + '/functions/v1/cerebro-chat', {
           method: 'POST',
           headers: { 'Content-Type':'application/json', Authorization: 'Bearer ' + token },
-          body: JSON.stringify({ pergunta: pergunta, historico: historico || [] })
+          body: JSON.stringify({ pergunta: pergunta, historico: historico || [], member_id: memberId })
         });
       }).then(function (resp) {
         return resp.json().catch(function () {
