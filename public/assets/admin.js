@@ -2056,7 +2056,7 @@
       .concat(['Checklist', 'Prazo', '>Ações']);
 
     var corpo = st.demAgrupar === 'projeto'
-      ? gruposPorProjeto(rows).map(linhaGrupo).join('')
+      ? gruposPorProjeto(rows).map(function (g) { return linhaGrupo(g, 0); }).join('')
       : rows.map(function (d) { return linhaDemanda(d, comProjeto); }).join('');
 
     $('listaDemandas').innerHTML = avisoCk + tabela(cols, cabecalhos, corpo, '');
