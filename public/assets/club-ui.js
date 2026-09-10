@@ -412,6 +412,11 @@
 
   var menuEl = null, fechaFora = null;
 
+  function fecharMenuAoRolar(ev) {
+    if (menuEl && ev.target && menuEl.contains(ev.target)) return;
+    fecharMenu();
+  }
+
   function fecharMenu() {
     if (!menuEl) return;
     /* Devolve a célula ao estado normal: sem isto ela ficaria destacada como
@@ -424,7 +429,7 @@
     menuEl.remove();
     menuEl = null;
     document.removeEventListener('mousedown', fechaFora, true);
-    window.removeEventListener('scroll', fecharMenu, true);
+    window.removeEventListener('scroll', fecharMenuAoRolar, true);
     window.removeEventListener('resize', fecharMenu);
   }
   C.fecharMenu = fecharMenu;
@@ -452,6 +457,7 @@
 
     menuEl = document.createElement('div');
     menuEl.className = 'menu';
+    menuEl.style.overscrollBehavior = 'contain';
     menuEl.dataset.dono = anchor.dataset.menuId || '';
     menuEl.setAttribute('role', 'menu');
     menuEl.innerHTML =
@@ -502,7 +508,7 @@
     };
     document.addEventListener('mousedown', fechaFora, true);
     /* Rolar a página deixaria o menu solto longe da célula que o abriu. */
-    window.addEventListener('scroll', fecharMenu, true);
+    window.addEventListener('scroll', fecharMenuAoRolar, true);
     window.addEventListener('resize', fecharMenu);
     document.addEventListener('keydown', function esc(ev) {
       if (ev.key === 'Escape') { fecharMenu(); document.removeEventListener('keydown', esc); }
