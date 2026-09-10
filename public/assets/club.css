@@ -204,7 +204,7 @@ button{font-family:inherit;color:inherit}
   color:var(--gold);font-weight:500}
 
 /* ---------- main ---------- */
-.main{padding:clamp(26px,4vw,44px) clamp(16px,3vw,44px) 80px;max-width:1320px;width:100%}
+.main{padding:clamp(26px,4vw,44px) clamp(16px,3vw,44px) 80px;max-width:1320px;width:100%;min-width:0}
 .view[hidden]{display:none}
 
 .hello{margin-bottom:30px}
@@ -539,6 +539,57 @@ input[type="file"].inp::file-selector-button:hover{background:var(--surface);bor
 .tr:hover .row-acts,.tr:focus-within .row-acts{opacity:1}
 .tbl .btn-sm{padding:5px 8px}
 .tbl-empty{padding:34px 16px;text-align:center;color:var(--faint);font-size:13px}
+
+/* A coluna cresce junto com a tabela; as demais mantêm a largura escolhida. */
+.tbl-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin:0 0 8px;color:var(--faint);font-size:11px}
+.tbl-tools .btn{flex-shrink:0}
+.tbl-tools .btn:disabled{opacity:.35;cursor:default}
+.tbl-resizable .tbl-h>.td{position:relative;align-self:stretch;padding-right:8px;min-height:20px}
+.col-resize{position:absolute;right:-10px;top:-9px;bottom:-9px;width:16px;padding:0;
+  border:0;background:transparent;cursor:col-resize;touch-action:none;z-index:1}
+.col-resize::after{content:"";position:absolute;left:7px;top:8px;bottom:8px;width:2px;
+  background:var(--border);border-radius:2px;transition:background .15s}
+.col-resize:hover::after,.col-resize:focus-visible::after,.col-resize.active::after{background:var(--gold)}
+.resizing-cols,.resizing-cols *{cursor:col-resize!important;user-select:none!important}
+
+/* Títulos abrem uma leitura completa; os controles da linha seguem separados. */
+.demand-open{display:block;flex:1;min-width:0;border:0;padding:4px 0;background:none;
+  color:inherit;font:inherit;text-align:left;cursor:pointer;border-radius:5px}
+.demand-open .tx{display:block}
+.demand-open:hover .tx-t{color:var(--gold);text-decoration:underline;text-underline-offset:3px}
+.demand-detail{min-width:0}
+.demand-context{margin:0 0 7px;color:var(--gold);font-size:12px;overflow-wrap:anywhere}
+.demand-title{margin:0 0 20px;font-size:23px;font-weight:600;line-height:1.4;
+  white-space:pre-wrap;overflow-wrap:anywhere}
+.demand-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 24px;
+  margin:0;padding:20px;background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--r-md)}
+.demand-meta dt{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--faint);margin-bottom:7px}
+.demand-meta dd{margin:0;font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+.demand-meta .dotst{white-space:normal}
+.demand-section{margin:24px 0 0}
+.demand-section h4{margin:0 0 10px;font-size:13px;font-weight:600}
+.demand-section h4 span{margin-left:8px;color:var(--gold);font-size:12px}
+.demand-description{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;
+  line-height:1.7;color:var(--muted)}
+.demand-checklist{list-style:none;padding:0;margin:0;border:1px solid var(--border-soft);
+  border-radius:var(--r-md);overflow:hidden}
+.demand-checklist li+li{border-top:1px solid var(--border-soft)}
+.demand-step{display:flex;align-items:flex-start;gap:12px;width:100%;padding:14px;text-align:left;
+  border:0;background:none;font:inherit;color:var(--text);cursor:pointer}
+.demand-step:hover{background:var(--surface)}
+.demand-step>.ic,.demand-step-icon{flex-shrink:0;color:var(--faint);margin-top:3px}
+.demand-step-icon.done{color:var(--success)}
+.demand-step-body{display:block;flex:1;min-width:0}
+.demand-step-title{display:block;font-size:13px;line-height:1.5;overflow-wrap:anywhere}
+.demand-step-meta{display:block;font-size:11px;line-height:1.6;color:var(--muted);margin-top:5px;overflow-wrap:anywhere}
+.demand-detail-actions{display:flex;justify-content:flex-end;margin-top:22px}
+.demand-parent{display:flex;align-items:flex-start;gap:7px;margin:-8px 0 20px;padding:0;
+  border:0;background:none;color:var(--gold);font:inherit;font-size:12px;line-height:1.5;
+  text-align:left;cursor:pointer;overflow-wrap:anywhere}
+.demand-parent .ic{transform:rotate(180deg);flex-shrink:0;margin-top:2px}
+@media(max-width:520px){.tbl-tools{align-items:flex-start}.tbl-tools>span{max-width:180px}
+  .demand-title{font-size:20px}.demand-meta{grid-template-columns:1fr;gap:16px;padding:16px}}
 
 /* Fila de aprovação do bot: aqui o texto É a decisão. Cortar o comentário e a
    resposta em reticências economiza espaço e obriga a abrir cada linha para
