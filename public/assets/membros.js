@@ -350,11 +350,10 @@
 
   function renderArtifacts() {
     var vazio = Club.empty('box', 'Nenhum artefato liberado ainda.');
-    /* Par "A definir" (tem checklist, nenhuma marca, sem aceite) não aparece:
-       é o que o mentorado não contratou, e mostrar "0/12" ali soaria como
-       atraso nosso. Artefato sem checklist continua aparecendo como antes. */
+    /* Disponibilidade independe de progresso: um artefato liberado aparece
+       mesmo sem aceite ou etapas marcadas para este mentorado. */
     var meus = st.artifacts.filter(function (a) {
-      return !etapasDe(a.id).length || parDe(a).estado !== 'definir';
+      return a.status === 'Disponível' || !etapasDe(a.id).length || parDe(a).estado !== 'definir';
     });
     /* Na aba cheia cabe o checklist inteiro; no resumo da capa só a barra. */
     $('artList').innerHTML = meus.length
