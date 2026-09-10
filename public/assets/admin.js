@@ -23,7 +23,7 @@
              grpFechado: {},
              arvMembro: '', arvFiltro: 'all',
              /* Demanda que está com a linha de nova subtarefa aberta. */
-             novaSub: null, zapEdit: null,
+             novaSub: null, zapEdit: null, edicaoSub: {},
              /* Quais galhos das árvores (membros e demandas) estão abertos.
                 Fica na tela, não no banco: é postura de leitura do momento. */
              abertos: {} };
@@ -1937,6 +1937,9 @@
   function renderDemandas() {
     var quadroAnterior = $('listaDemandas').querySelector('.tblw');
     var scrollAnterior = quadroAnterior ? quadroAnterior.scrollLeft : 0;
+    var ativo = document.activeElement;
+    var focoTitulo = ativo && ativo.matches('[data-sub-titulo]')
+      ? { id:ativo.dataset.subTitulo, inicio:ativo.selectionStart, fim:ativo.selectionEnd } : null;
     if (Club.faltaMigracao) {
       $('statsDemandas').innerHTML = '';
       $('listaDemandas').innerHTML = '<div class="notice">' + ico('alert') +
@@ -2072,6 +2075,13 @@
     if (st.novaSub) {
       var campo = $('listaDemandas').querySelector('[data-sub-inp]');
       if (campo) campo.focus();
+    }
+    if (focoTitulo) {
+      var tituloAtivo = $('listaDemandas').querySelector('[data-sub-titulo="' + focoTitulo.id + '"]');
+      if (tituloAtivo && !tituloAtivo.disabled) {
+        tituloAtivo.focus({ preventScroll:true });
+        tituloAtivo.setSelectionRange(focoTitulo.inicio, focoTitulo.fim);
+      }
     }
     Club.reancorarMenu();
   }
@@ -2283,24 +2293,42 @@
      A única que fica vazia é Checklist — a subtarefa não abre outro nível, e
      nesta coluna a barra da mãe já conta a história dela. */
   function linhaSubtarefa(e, comProjeto) {
-    return '<div class="tr lv1' + (e.feito ? ' feito' : '') + '">' +
+    var edicao = st.edicaoSub[e.id];
+    var nome = edicao
+      ? '<div class="sub-title-editor" aria-busy="' + (!!edicao.salvando) + '">' +
+          '<input class="sub-inp" data-sub-titulo="' + esc(e.id) + '" value="' + esc(edicao.titulo) +
+          '" aria-label="Nome da subtarefa" autocomplete="off"' + (edicao.salvando ? ' disabled' : '') +
+          (edicao.erro ? ' aria-invalid="true" aria-describedby="sub-erro-' + esc(e.id) + '"' : '') + '>' +
+          (edicao.erro ? '<span class="sub-title-error" id="sub-erro-' + esc(e.id) + '" role="alert">' +
+            esc(edicao.erro) + '</span>' : '') +
+          (edicao.salvando ? '<span class="sub-title-hint" role="status">Salvando…</span>' : '') + '</div>'
+      : '<button type="button" class="demand-open" data-detalhe-sub="' + esc(e.id) +
+          '" aria-label="Ver subtarefa: ' + esc(e.titulo) + '">' +
+          '<span class="tx tx-t">' + esc(e.titulo) + '</span></button>';
+    var acoes = edicao
+      ? '<button type="button" class="btn btn-sm btn-ghost" data-sub-salvar="' + esc(e.id) +
+          '" aria-label="Salvar nome da subtarefa" title="Salvar (Enter)"' +
+          (edicao.salvando ? ' disabled' : '') + '>' + ico('check') + '</button>' +
+        '<button type="button" class="btn btn-sm btn-ghost" data-sub-cancelar="' + esc(e.id) +
+          '" aria-label="Cancelar edição do nome" title="Cancelar (Esc)"' +
+          (edicao.salvando ? ' disabled' : '') + '>' + ico('x') + '</button>'
+      : '<button type="button" class="btn btn-sm btn-ghost" data-sub-editar="' + esc(e.id) +
+          '" aria-label="Editar nome da subtarefa" title="Editar nome">' + ico('edit') + '</button>' +
+        '<button type="button" class="btn btn-sm btn-ghost" data-del-sub="' + esc(e.id) +
+          '" aria-label="Remover subtarefa">' + ico('trash') + '</button>';
+    return '<div class="tr lv1' + (e.feito ? ' feito' : '') + (edicao ? ' sub-editing' : '') + '">' +
       '<div class="td nm"><span class="tg void"></span>' +
         '<button class="cbx" data-sub="' + esc(e.id) + '" aria-pressed="' + (!!e.feito) +
           '" title="' + (e.feito && e.feito_em
             ? esc('Feito em ' + Club.fmtDataCurta(e.feito_em))
             : 'Marcar como concluída') + '"' +
           ' aria-label="Marcar subtarefa">' + ico('check') + '</button>' +
-        '<button type="button" class="demand-open" data-detalhe-sub="' + esc(e.id) +
-          '" aria-label="Ver subtarefa: ' + esc(e.titulo) + '">' +
-          '<span class="tx tx-t">' + esc(e.titulo) + '</span></button></div>' +
+        nome + '</div>' +
       colunasDe(e, 's') +
       (comProjeto ? td('') : '') +
       td('') +
       celulaPrazo(e, 's') +
-      '<div class="td end"><div class="row-acts">' +
-        '<button class="btn btn-sm btn-ghost" data-del-sub="' + e.id +
-          '" aria-label="Remover subtarefa">' + ico('trash') + '</button>' +
-      '</div></div>' +
+      '<div class="td end"><div class="row-acts">' + acoes + '</div></div>' +
     '</div>';
   }
 
@@ -2316,8 +2344,8 @@
   /* ── edição na própria linha ───────────────────────────────────────────
      Uma demanda troca de situação, de dono e de prazo o dia inteiro. Abrir o
      formulário para cada troca custa três cliques e tira o time da lista; aqui
-     a coluna é o controle. Título e descrição continuam no formulário: são
-     texto livre, e texto livre pede espaço. */
+     a coluna é o controle. Título e descrição da demanda ficam no formulário;
+     o título da subtarefa também pode ser editado pelo lápis na linha. */
 
   /* A célula não precisa saber de quem é: a chave traz o escopo e o resto é
      igual nas duas alturas — mesmas listas, mesmo salvamento otimista. */
@@ -2521,6 +2549,60 @@
   }
 
   /* ── subtarefas na linha ──────────────────────────────────────────────── */
+
+  function focarTituloSub(id, selecionar) {
+    var campo = $('listaDemandas').querySelector('[data-sub-titulo="' + id + '"]');
+    if (campo && !campo.disabled) {
+      campo.focus();
+      if (selecionar) campo.select();
+    }
+  }
+
+  function focarBotaoSub(id) {
+    var botao = $('listaDemandas').querySelector('[data-sub-editar="' + id + '"]');
+    if (botao && document.activeElement === document.body) botao.focus({ preventScroll:true });
+  }
+
+  function editarTituloSub(id) {
+    var registro = etapa(id);
+    if (!registro) return;
+    st.edicaoSub[id] = st.edicaoSub[id] || { titulo:registro.titulo || '', salvando:false, erro:'' };
+    renderDemandas();
+    focarTituloSub(id, true);
+  }
+
+  function fecharTituloSub(id, salvar) {
+    var edicao = st.edicaoSub[id], registro = etapa(id);
+    if (!edicao || edicao.salvando) return;
+    var titulo = edicao.titulo.trim();
+    if (!salvar || !registro || titulo === registro.titulo) {
+      delete st.edicaoSub[id];
+      renderDemandas();
+      focarBotaoSub(id);
+      return;
+    }
+    if (!titulo) {
+      edicao.erro = 'A subtarefa precisa de um nome.';
+      renderDemandas();
+      focarTituloSub(id);
+      return;
+    }
+    edicao.salvando = true;
+    edicao.erro = '';
+    renderDemandas();
+    /* Atualiza o mesmo registro: só o título viaja, sem recriar o checklist. */
+    Club.data.demandSteps.save({ id:id, titulo:titulo }).then(function (linha) {
+      var atual = etapa(id);
+      if (atual) atual.titulo = linha.titulo;
+      delete st.edicaoSub[id];
+      renderDemandas();
+      focarBotaoSub(id);
+    }).catch(function (err) {
+      edicao.salvando = false;
+      edicao.erro = err.message || 'Não foi possível salvar. Tente novamente.';
+      renderDemandas();
+    });
+  }
 
   function abrirNovaSub(demandId) {
     st.abertos['d:' + demandId] = true;
@@ -2995,6 +3077,13 @@
   /* ── eventos ──────────────────────────────────────────────────────────── */
 
   document.addEventListener('click', function (e) {
+    var editarSub = e.target.closest('[data-sub-editar]');
+    if (editarSub) { editarTituloSub(editarSub.dataset.subEditar); return; }
+    var salvarSub = e.target.closest('[data-sub-salvar]');
+    if (salvarSub) { fecharTituloSub(salvarSub.dataset.subSalvar, true); return; }
+    var cancelarSub = e.target.closest('[data-sub-cancelar]');
+    if (cancelarSub) { fecharTituloSub(cancelarSub.dataset.subCancelar, false); return; }
+
     var detalhe = e.target.closest('[data-detalhe-demanda]');
     if (detalhe) { detalheDemanda(detalhe.dataset.detalheDemanda); return; }
 
@@ -3151,10 +3240,30 @@
     if (sit) { st.arvFiltro = sit.dataset.sit; renderMembers(); return; }
   });
 
+  document.addEventListener('input', function (e) {
+    if (!e.target.matches('[data-sub-titulo]')) return;
+    var edicao = st.edicaoSub[e.target.dataset.subTitulo];
+    if (!edicao || edicao.salvando) return;
+    edicao.titulo = e.target.value;
+    edicao.erro = '';
+    e.target.removeAttribute('aria-invalid');
+    e.target.removeAttribute('aria-describedby');
+    var erro = e.target.parentElement.querySelector('.sub-title-error');
+    if (erro) erro.remove();
+  });
+
   /* Enter salva e o campo continua de pé para o próximo item; Esc desiste;
      sair do campo confirma o que já estava escrito. */
   document.addEventListener('keydown', function (e) {
     if (!e.target.matches) return;
+    if (e.target.matches('[data-sub-titulo]')) {
+      if (e.isComposing) return;
+      if (e.key === 'Enter' || e.key === 'Escape') {
+        e.preventDefault();
+        fecharTituloSub(e.target.dataset.subTitulo, e.key === 'Enter');
+      }
+      return;
+    }
     if (e.target.matches('[data-sub-inp]')) {
       if (e.key === 'Enter')  { e.preventDefault(); fecharNovaSub(true); }
       if (e.key === 'Escape') { e.preventDefault(); fecharNovaSub(false); }
