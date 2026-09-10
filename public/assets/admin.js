@@ -11,7 +11,7 @@
 
   var st = { members: [], tasks: [], events: [], artifacts: [], materials: [],
              demands: [], staff: [], steps: [], progress: [], demandSteps: [],
-             groups: [], artGrupo: '',
+             groups: [], artGrupo: '', progressNotes: [], notasEdit: {},
              view: 'overview', membro: '', status: 'all', igOrdem: 'seguidores',
              matCategoria: '', matMembro: '',
              demResp: '', demMembro: '', demProjeto: '', demAbertas: 'open',
@@ -92,7 +92,8 @@
       Club.data.botRespostas.list(),
       Club.data.instagram.resumo(),
       Club.data.instagram.serie(45),
-      Club.data.groups.list()
+      Club.data.groups.list(),
+      Club.data.progressNotes.list()
     ]).then(function (r) {
       st.members = r[0]; st.tasks = r[1]; st.events = r[2];
       st.artifacts = r[3]; st.materials = r[4];
@@ -101,6 +102,7 @@
       st.botExemplos = r[10]; st.botRespostas = r[11];
       st.igResumo = r[12]; st.igSerie = r[13];
       st.groups = r[14];
+      st.progressNotes = r[15];
       indexar();
       descobrirEu();
     });
@@ -200,10 +202,11 @@
   /* Mapas para a árvore de progresso não varrer os arrays inteiros a cada
      linha desenhada — com 30 mentorados e 10 artefatos isso seria milhares de
      varreduras por render. */
-  var porArtefato = {}, porEtapa = {}, porDemanda = {};
+  var porArtefato = {}, porEtapa = {}, porDemanda = {}, porNota = {};
 
   function indexar() {
-    porArtefato = {}; porEtapa = {}; porDemanda = {};
+    porArtefato = {}; porEtapa = {}; porDemanda = {}; porNota = {};
+    st.progressNotes.forEach(function (n) { porNota[n.member_id + '|' + n.alvo] = n; });
     st.steps.forEach(function (e) {
       (porArtefato[e.artifact_id] = porArtefato[e.artifact_id] || []).push(e);
     });
@@ -382,8 +385,8 @@
      As etapas do artefato são o modelo cadastrado na aba Artefatos; o que está
      marcado é deste mentorado. Ver supabase/progresso.sql. */
 
-  var ARV_COLS = 'minmax(0,2.2fr) 148px 172px 204px 150px';
-  var ARV_HEAD = ['Mentorado · artefato · etapa', 'Situação', 'Progresso',
+  var ARV_COLS = 'minmax(300px,2.2fr) 148px 200px 120px 180px 150px';
+  var ARV_HEAD = ['Mentorado · artefato · etapa', 'Situação', 'Observação', 'Progresso',
                   'Detalhe', '>Ações'];
 
   /* Estado do par (mentorado, artefato): Club.par decide aceite, denominador,
@@ -454,6 +457,11 @@
   }
 
   function renderMembers() {
+    var quadroAnterior = $('listaMembros').querySelector('.tblw');
+    var scrollAnterior = quadroAnterior ? quadroAnterior.scrollLeft : 0;
+    var ativo = document.activeElement;
+    var focoNota = ativo && ativo.matches('[data-nota-texto]')
+      ? { chave:ativo.dataset.notaTexto, inicio:ativo.selectionStart, fim:ativo.selectionEnd } : null;
     $('filtroArvMembro').innerHTML = '<option value="">Todos os mentorados</option>' +
       st.members.map(function (m) {
         return '<option value="' + esc(m.id) + '"' + (m.id === st.arvMembro ? ' selected' : '') +
@@ -494,14 +502,25 @@
       cardStat('NO AR', geral.noar, geral.aceitos + ' pares aceitos no total',
                'Entregues (100% sem rotina) e ativos (100% com a rotina ligada).');
 
-    $('listaMembros').innerHTML = tabela(ARV_COLS, ARV_HEAD,
+    $('listaMembros').innerHTML = (Club.erroObservacoes
+      ? '<div class="notice" role="status">' + ico('alert') + '<div>' + esc(Club.erroObservacoes) +
+        ' Recarregue a página após resolver o problema.</div></div>' : '') + tabela(ARV_COLS, ARV_HEAD,
       membros.map(linhaMentorado).join(''),
       st.arvMembro ? 'Este mentorado não tem nada cadastrado.'
                    : 'Nenhum membro cadastrado ainda.');
+    var quadro = $('listaMembros').querySelector('.tblw');
+    if (quadro) quadro.scrollLeft = scrollAnterior;
 
     if (st.zapEdit) {
       var campo = $('listaMembros').querySelector('[data-zap-inp]');
       if (campo) { campo.focus(); campo.select(); }
+    }
+    if (focoNota) {
+      var notaAtiva = $('listaMembros').querySelector('[data-nota-texto="' + focoNota.chave + '"]');
+      if (notaAtiva && !notaAtiva.disabled) {
+        notaAtiva.focus({ preventScroll:true });
+        notaAtiva.setSelectionRange(focoNota.inicio, focoNota.fim);
+      }
     }
   }
 
@@ -530,6 +549,7 @@
         '<div class="tx tx-s">' + esc([m.turma, m.fase].filter(Boolean).join(' · ') ||
           m.email) + '</div></div></div>' +
       td(situacao) +
+      celulaNota(m, 'mentorado', m.nome) +
       td(barra(c.feitas, c.total)) +
       (st.zapEdit === m.id
         /* Enquanto cola o convite, o campo toma as duas últimas colunas: um
@@ -560,6 +580,7 @@
       '</div></div>') +
     '</div>';
 
+    linha += linhaNota(m, 'mentorado', m.nome);
     if (!aberto || !temFilho) return linha;
 
     /* Faixa por grupo dentro do mentorado: com uma dezena de artefatos por
@@ -633,6 +654,7 @@
           (p.rotinas.length ? ' · com rotina' : '') +
         '</div></div></div>' +
       td(status(s.cor, Club.rotuloPar(p))) +
+      celulaNota(m, 'artefato:' + a.id, a.nome) +
       td(p.total || p.temEtapas ? barra(p.feitas, p.total) : '<span class="tx tx-s">sem checklist</span>') +
       td(etapas.length
         ? '<span class="tx-s">' + esc(detalhePar(p, m)) + '</span>'
@@ -646,6 +668,7 @@
       '</div></div>' +
     '</div>';
 
+    linha += linhaNota(m, 'artefato:' + a.id, a.nome);
     if (!aberto || !etapas.length) return linha;
     return linha + etapas.map(function (e) { return linhaEtapa(m, e, p); }).join('');
   }
@@ -678,11 +701,106 @@
         '<div class="tx"><div class="tx tx-t" title="' + esc(e.titulo) + '">' + esc(e.titulo) + '</div>' +
         (nota ? '<div class="tx tx-s">' + esc(nota) + '</div>' : '') + '</div></div>' +
       td(situacao) +
+      celulaNota(m, 'etapa:' + e.id, e.titulo) +
       td('') +
       td('<span class="tx-s">' + (p && p.feito_em
         ? esc('em ' + Club.fmtDataCurta(p.feito_em)) : '—') + '</span>') +
       '<div class="td end"></div>' +
-    '</div>';
+    '</div>' + linhaNota(m, 'etapa:' + e.id, e.titulo);
+  }
+
+  /* Notas pertencem à linha DESTE mentorado, nunca ao checklist compartilhado.
+     A célula fica curta; o editor se expande abaixo sem esconder o contexto. */
+  function celulaNota(m, alvo, rotulo) {
+    var chave = m.id + '|' + alvo, nota = porNota[chave];
+    var texto = nota ? nota.observacao : '';
+    var aberta = !!st.notasEdit[chave];
+    return '<div class="td"><button type="button" class="progress-note' + (texto ? ' preenchida' : '') +
+      '" data-nota-abrir="' + esc(chave) + '" aria-expanded="' + aberta + '"' +
+      (aberta ? ' aria-controls="nota-painel-' + esc(chave) + '"' : '') +
+      ' aria-label="Observação de ' + esc(rotulo) + ' — ' + esc(m.nome) + '"' +
+      (Club.erroObservacoes ? ' disabled title="Observações indisponíveis"' : '') + '>' +
+      '<span class="tx">' + esc(texto ? texto.replace(/\s+/g, ' ') : 'Adicionar observação') + '</span>' +
+      ico('edit') + '</button></div>';
+  }
+
+  function linhaNota(m, alvo, rotulo) {
+    var chave = m.id + '|' + alvo, edicao = st.notasEdit[chave];
+    if (!edicao) return '';
+    var id = 'nota-' + chave;
+    return '<div class="tr progress-note-row" id="nota-painel-' + esc(chave) + '">' +
+      '<div class="progress-note-panel" role="group" aria-labelledby="' + esc(id) + '-contexto"' +
+        ' aria-busy="' + (!!edicao.salvando) + '">' +
+        '<div class="progress-note-context" id="' + esc(id) + '-contexto">' + esc(m.nome) +
+          (alvo === 'mentorado' ? '' : ' · ' + esc(rotulo)) + '</div>' +
+        '<label for="' + esc(id) + '">Observação interna</label>' +
+        '<textarea class="inp" id="' + esc(id) + '" data-nota-texto="' + esc(chave) +
+          '" rows="3" maxlength="2000" placeholder="Contexto, pendência ou próximo passo…"' +
+          ' aria-describedby="' + esc(id) + '-ajuda' + (edicao.erro ? ' ' + esc(id) + '-erro' : '') + '"' +
+          (edicao.erro ? ' aria-invalid="true"' : '') +
+          (edicao.salvando || Club.erroObservacoes ? ' disabled' : '') + '>' + esc(edicao.texto) + '</textarea>' +
+        '<div class="progress-note-hint" id="' + esc(id) + '-ajuda">Só a equipe vê esta nota. ' +
+          'Até 2.000 caracteres · Ctrl/Cmd+Enter salva · Esc cancela.</div>' +
+        (edicao.erro ? '<div class="progress-note-error" role="alert" id="' + esc(id) + '-erro">' +
+          esc(edicao.erro) + '</div>' : '') +
+        '<div class="progress-note-actions"><span role="status">' + (edicao.salvando ? 'Salvando…' : '') + '</span>' +
+          '<button type="button" class="btn btn-sm" data-nota-cancelar="' + esc(chave) + '"' +
+            (edicao.salvando ? ' disabled' : '') + '>Cancelar</button>' +
+          '<button type="button" class="btn btn-sm btn-primary" data-nota-salvar="' + esc(chave) + '"' +
+            (edicao.salvando || Club.erroObservacoes ? ' disabled' : '') + '>Salvar observação</button>' +
+        '</div></div></div>';
+  }
+
+  function focarNota(chave, editor) {
+    var campo = $('listaMembros').querySelector('[' + (editor ? 'data-nota-texto' : 'data-nota-abrir') +
+      '="' + chave + '"]');
+    if (campo && !campo.disabled && (editor || document.activeElement === document.body)) campo.focus();
+  }
+
+  function abrirNota(chave) {
+    if (Club.erroObservacoes) return;
+    if (!st.notasEdit[chave]) {
+      var nota = porNota[chave];
+      st.notasEdit[chave] = { texto:nota ? nota.observacao : '', salvando:false, erro:'' };
+    }
+    renderMembers();
+    focarNota(chave, true);
+  }
+
+  function fecharNota(chave, salvar) {
+    var edicao = st.notasEdit[chave];
+    if (!edicao || edicao.salvando) return;
+    var texto = edicao.texto.trim(), atual = porNota[chave];
+    if (!salvar || texto === (atual ? atual.observacao : '')) {
+      delete st.notasEdit[chave];
+      renderMembers();
+      focarNota(chave, false);
+      return;
+    }
+    if (texto.length > 2000 || Club.erroObservacoes) {
+      edicao.erro = Club.erroObservacoes || 'Use até 2.000 caracteres.';
+      renderMembers();
+      focarNota(chave, true);
+      return;
+    }
+    edicao.salvando = true;
+    edicao.erro = '';
+    renderMembers();
+    var partes = chave.split('|');
+    Club.data.progressNotes.save(partes[0], partes[1], texto).then(function (nota) {
+      st.progressNotes = st.progressNotes.filter(function (n) {
+        return !(n.member_id === partes[0] && n.alvo === partes[1]);
+      }).concat([nota]);
+      porNota[chave] = nota;
+      delete st.notasEdit[chave];
+      renderMembers();
+      focarNota(chave, false);
+      Club.toast('Observação salva.');
+    }).catch(function (err) {
+      edicao.salvando = false;
+      edicao.erro = (err && err.message) || 'Não foi possível salvar. Tente novamente.';
+      renderMembers();
+    });
   }
 
   /* A marcação vale na tela antes de o banco confirmar: com o checklist aberto
@@ -3077,6 +3195,13 @@
   /* ── eventos ──────────────────────────────────────────────────────────── */
 
   document.addEventListener('click', function (e) {
+    var notaAbrir = e.target.closest('[data-nota-abrir]');
+    if (notaAbrir) { abrirNota(notaAbrir.dataset.notaAbrir); return; }
+    var notaSalvar = e.target.closest('[data-nota-salvar]');
+    if (notaSalvar) { fecharNota(notaSalvar.dataset.notaSalvar, true); return; }
+    var notaCancelar = e.target.closest('[data-nota-cancelar]');
+    if (notaCancelar) { fecharNota(notaCancelar.dataset.notaCancelar, false); return; }
+
     var editarSub = e.target.closest('[data-sub-editar]');
     if (editarSub) { editarTituloSub(editarSub.dataset.subEditar); return; }
     var salvarSub = e.target.closest('[data-sub-salvar]');
@@ -3241,6 +3366,18 @@
   });
 
   document.addEventListener('input', function (e) {
+    if (e.target.matches('[data-nota-texto]')) {
+      var nota = st.notasEdit[e.target.dataset.notaTexto];
+      if (nota && !nota.salvando) {
+        nota.texto = e.target.value;
+        nota.erro = '';
+        e.target.removeAttribute('aria-invalid');
+        e.target.setAttribute('aria-describedby', e.target.id + '-ajuda');
+        var erroNota = e.target.parentElement.querySelector('.progress-note-error');
+        if (erroNota) erroNota.remove();
+      }
+      return;
+    }
     if (!e.target.matches('[data-sub-titulo]')) return;
     var edicao = st.edicaoSub[e.target.dataset.subTitulo];
     if (!edicao || edicao.salvando) return;
@@ -3256,6 +3393,14 @@
      sair do campo confirma o que já estava escrito. */
   document.addEventListener('keydown', function (e) {
     if (!e.target.matches) return;
+    if (e.target.matches('[data-nota-texto]')) {
+      if (e.isComposing) return;
+      if (e.key === 'Escape' || (e.key === 'Enter' && (e.ctrlKey || e.metaKey))) {
+        e.preventDefault();
+        fecharNota(e.target.dataset.notaTexto, e.key !== 'Escape');
+      }
+      return;
+    }
     if (e.target.matches('[data-sub-titulo]')) {
       if (e.isComposing) return;
       if (e.key === 'Enter' || e.key === 'Escape') {

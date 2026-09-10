@@ -213,6 +213,25 @@ apagar a linha apaga o progresso dela junto.
 Não existe tabela de "artefato atribuído ao mentorado": quem já decide isso é
 `artifacts.member_id`, a mesma regra que monta a área do mentorado.
 
+#### Observações internas da Progressão
+
+A coluna **Observação** guarda uma nota por mentorado, artefato ou etapa.
+A célula mostra uma linha resumida; clicar expande o editor abaixo da linha.
+Salvar confirma, Cancelar/Esc descarta o rascunho e Ctrl/Cmd+Enter salva sem
+tirar a possibilidade de usar Enter para uma quebra de linha. Limite: 2.000
+caracteres. Para limpar uma nota, apague o texto e salve.
+
+Antes de publicar esta interface, aplicar `supabase/observacoes-progressao.sql`
+no SQL Editor, depois de `schema.sql` e `progresso.sql`. É uma migração aditiva
+e idempotente: cria `progress_notes`, sem modificar `step_progress` ou os
+checklists. As notas de artefatos/etapas compartilhados continuam específicas
+de cada mentorado; RLS permite leitura e escrita somente a administradores.
+Sem a tabela, ou em caso de falha na leitura, o quadro continua funcionando,
+mas mostra um aviso e bloqueia a edição das notas até recarregar com sucesso.
+O deploy estático não executa essa migração automaticamente.
+
+Testes de regressão sem dependências: `node --test tests/progress-notes.test.cjs`.
+
 A demanda também abre em checklist (`demand_steps`), mas ali a marcação mora na
 própria etapa: ela é de uma demanda só e não é modelo para mais ninguém. O
 quadro é uma lista única com a situação em coluna, ordenada por situação (na
