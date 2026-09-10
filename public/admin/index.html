@@ -8,6 +8,7 @@
 <title>Painel do Admin — Club OftalmoBlack</title>
 <link rel="icon" href="/assets/favicon.png">
 <link rel="stylesheet" href="/assets/club.css">
+<link rel="stylesheet" href="/assets/club-graduacao.css">
 <script src="/assets/club-tema.js"></script>
 </head>
 <body>
@@ -92,6 +93,11 @@
           <svg class="ic"><use href="#i-plus"/></svg>Nova tarefa</button>
       </div>
       <div id="listaTarefas"></div>
+    </div>
+
+    <div class="view" data-view="graduacao" hidden>
+      <div class="hello"><h1>Graduação</h1><p>Quem já atingiu a meta e quem está perto de conquistar mais um grau.</p></div>
+      <div id="graduacaoAdmin"></div>
     </div>
 
     <div class="view" data-view="agenda" hidden>
@@ -213,6 +219,7 @@
 <script src="/assets/club-supabase.js"></script>
 <script src="/assets/club-auth.js"></script>
 <script src="/assets/club-data.js"></script>
+<script src="/assets/club-graduacao.js"></script>
 <script src="/assets/admin.js"></script>
 </body>
 </html>

@@ -152,6 +152,37 @@ Não há nada a mudar no site: a tela pergunta ao servidor se precisa de senha e
 desenha o portão sozinha. A senha que funcionou fica no `localStorage` daquela
 TV, para a tela voltar sozinha depois de uma queda de luz.
 
+### Graduação Black
+
+`/membros/#graduacao` mostra a faixa, os graus, a meta de 50 pontos do trimestre,
+os quatro critérios e os bônus. `/admin/#graduacao` traz o radar da turma, com
+filtros por situação e busca por nome. O atalho de cada linha abre a graduação
+daquele mentorado na pré-visualização.
+
+Esta primeira versão é uma prévia fixa da planilha **SISTEMA DE GRADUAÇÃO BLACK**
+de 10/09/2026. Não consulta a Meta e não altera métricas existentes. Reproduz os
+29 cadastros, os valores por trimestre e os graus calculados no Painel: Cintia
+tem 65,3 pontos em jul–set e dois graus; 11 mentorados estão entre 35 e 49,9.
+O grau do Painel já inclui o trimestre corrente, então a interface não soma
+outro grau quando a meta é atingida. O Histórico Graus ainda não tem datas de
+entrega: isso aparece como pendência de registro, sem criar cerimônias fictícias.
+
+Dados em branco permanecem sem apuração, incluindo indicações. Trimestres
+futuros não exibem zeros como resultado confirmado. Os valores de renovação
+seguem as células do Painel: sua fórmula atual não inclui bônus, embora eles
+entrem no total de cada trimestre. A prévia preserva esse resultado e o rotula
+como pontuação para renovação da planilha.
+
+No projeto Supabase **OftalmoBlack Web** (`zpyxnkuvircukjlfexrv`), aplicar
+`supabase/graduacao.sql` e depois `supabase/graduacao-preview-dados.sql`.
+`member_graduations` tem RLS: mentorado lê somente o próprio registro, admin lê
+a turma e a gravação é reservada ao serviço. Os dados individuais não ficam nos
+arquivos públicos do site. A carga falha se houver nome sem correspondência e
+não sobrescreve registros que já saíram do modo de demonstração.
+
+Verificação: `node --test tests/graduacao.test.mjs`. A fixture reproduz os
+valores da planilha e permite conferir totais, limites e situações do radar.
+
 ### Cérebro: o mentorado pergunta em português
 
 A aba **Cérebro** é uma conversa, não um formulário: o mentorado pergunta sobre o

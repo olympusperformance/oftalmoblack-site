@@ -37,6 +37,7 @@
     { key:'overview', label:'Visão geral', icon:'home' },
     { grupo:'Mentorados', itens: [
       { key:'members',   label:'Progressão', icon:'users' },
+      { key:'graduacao', label:'Graduação', icon:'award' },
       { key:'tasks',     label:'Tarefas',    icon:'check-square' },
       { key:'agenda',    label:'Agenda',     icon:'calendar' },
       { key:'materials', label:'Materiais',  icon:'folder' }
@@ -3339,6 +3340,7 @@
     renderIgMetricas();
     renderBotFila();
     renderBotExemplos();
+    Club.graduacao.mountAdmin($('graduacaoAdmin'), st.members);
   }
 
   function falhou(err) {

@@ -19,6 +19,7 @@
 
   var NAV = [
     { key:'home',      label:'Início',    icon:'home' },
+    { key:'graduacao', label:'Graduação', icon:'award' },
     { key:'tasks',     label:'Tarefas',   icon:'check-square' },
     { key:'artifacts', label:'Artefatos', icon:'box' },
     { key:'materials', label:'Materiais', icon:'folder' },
@@ -584,6 +585,7 @@
     var proxima = renderAgenda();
     renderMateriais();
     renderPerfil();
+    Club.graduacao.mountMember($('graduacaoMembro'), st.membro);
   }
 
   /* ── eventos ──────────────────────────────────────────────────────────── */
@@ -627,7 +629,8 @@
     return carregar().then(function () {
       render();
       renderAvisoAdmin();
-      go('home');
+      var alvoInicial = location.hash.slice(1);
+      go(NAV.some(function (n) { return n.key === alvoInicial; }) ? alvoInicial : 'home');
     });
   }).catch(function (err) {
     document.querySelector('.main').innerHTML =
