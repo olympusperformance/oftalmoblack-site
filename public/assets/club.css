@@ -862,6 +862,14 @@ input[type="file"].inp::file-selector-button:hover{background:var(--surface);bor
 .tg.add:hover{color:var(--gold)}
 .sub-inp{width:100%;background:var(--surface-hi);border:1px solid var(--gold);border-radius:7px;
   color:var(--text);font:inherit;font-size:13px;padding:5px 9px}
+.sub-title-editor{flex:1;min-width:0}
+.sub-title-editor .sub-inp{min-width:0}
+.sub-title-editor .sub-inp[aria-invalid="true"]{border-color:var(--danger)}
+.sub-title-error,.sub-title-hint{display:block;margin-top:5px;font-size:11px;line-height:1.4;overflow-wrap:anywhere}
+.sub-title-error{color:var(--danger)}
+.sub-title-hint{color:var(--muted)}
+.tr.sub-editing .row-acts{opacity:1}
+.tr.sub-editing .row-acts button:disabled{opacity:.4;cursor:wait}
 /* A linha de acrescentar não tem situação nem prazo para mostrar: o nome
    atravessa até a coluna de ações, e o campo ganha espaço de escrever. */
 .tr.nova .nm{grid-column:1/-2}
