@@ -20,6 +20,7 @@
   var NAV = [
     { key:'home',      label:'Início',    icon:'home' },
     { key:'graduacao', label:'Graduação', icon:'award' },
+    { key:'instagram', label:'Instagram', icon:'eye' },
     { key:'tasks',     label:'Tarefas',   icon:'check-square' },
     { key:'artifacts', label:'Artefatos', icon:'box' },
     { key:'materials', label:'Materiais', icon:'folder' },
@@ -586,6 +587,7 @@
     renderMateriais();
     renderPerfil();
     Club.graduacao.mountMember($('graduacaoMembro'), st.membro);
+    Club.instagramMember.mount($('instagramMembro'), st.membro);
   }
 
   /* ── eventos ──────────────────────────────────────────────────────────── */
