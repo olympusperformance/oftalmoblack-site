@@ -634,6 +634,49 @@
     }
   };
 
+  /* Observações ficam fora de step_progress: somente o admin pode lê-las.
+     Paginação evita perder notas quando o quadro passa de 1000 linhas. */
+  var AVISO_NOTAS = 'As observações ainda não foram ativadas no banco. ' +
+    'Aplique supabase/observacoes-progressao.sql antes de usá-las.';
+
+  function notasPaginadas(desde, acc) {
+    return sb().from('progress_notes').select('*').order('member_id').order('alvo')
+      .range(desde, desde + PAGINA - 1).then(function (res) {
+        if (res.error) {
+          var falta = res.error.code === '42P01' || res.error.code === 'PGRST205' ||
+            /does not exist|schema cache/i.test(res.error.message || '');
+          throw new Error(falta ? AVISO_NOTAS : res.error.message);
+        }
+        var rows = res.data || [];
+        acc = acc.concat(rows);
+        return rows.length < PAGINA ? acc : notasPaginadas(desde + PAGINA, acc);
+      });
+  }
+
+  C.data.progressNotes = {
+    list: function () {
+      C.erroObservacoes = '';
+      return Promise.resolve().then(function () { return notasPaginadas(0, []); })
+        .catch(function (err) {
+          /* Uma falha nas notas não derruba a Progressão nem permite gravar
+             por cima de uma nota que não conseguimos carregar. */
+          C.erroObservacoes = (err && err.message) || 'Não foi possível carregar as observações.';
+          return [];
+        });
+    },
+    save: function (memberId, alvo, texto) {
+      if (C.erroObservacoes) return Promise.reject(new Error(C.erroObservacoes));
+      texto = String(texto || '').trim();
+      if (texto.length > 2000) return Promise.reject(new Error('Use até 2.000 caracteres.'));
+      var dados = { member_id:memberId, artifact_id:null, step_id:null, observacao:texto };
+      if (alvo.indexOf('artefato:') === 0) dados.artifact_id = alvo.slice(9);
+      else if (alvo.indexOf('etapa:') === 0) dados.step_id = alvo.slice(6);
+      else if (alvo !== 'mentorado') return Promise.reject(new Error('Linha de observação inválida.'));
+      return sb().from('progress_notes').upsert(dados, { onConflict:'member_id,alvo' })
+        .select('*').single().then(ok);
+    }
+  };
+
   /* ── arquivo ──────────────────────────────────────────────────────────── */
 
   var BUCKET = 'materiais';
