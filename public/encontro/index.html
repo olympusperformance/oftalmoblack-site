@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Encontro Grau Zero</title>
+<script>
+(function(){
+  var alvo = '/encontro-grau-zero/';
+  var q = new URLSearchParams(window.location.search);
+  var def = { utm_source: 'instagram', utm_medium: 'stories', utm_campaign: 'encontro-grau-zero-2409', utm_content: 'link-curto' };
+  if (q.has('c') && !q.has('utm_content')) { q.set('utm_content', q.get('c')); q.delete('c'); }
+  Object.keys(def).forEach(function(k){ if (!q.has(k)) q.set(k, def[k]); });
+  window.location.replace(alvo + '?' + q.toString() + (window.location.hash || ''));
+})();
+</script>
+<noscript><meta http-equiv="refresh" content="0; url=/encontro-grau-zero/?utm_source=instagram&utm_medium=stories&utm_campaign=encontro-grau-zero-2409&utm_content=link-curto"></noscript>
+<style>body{margin:0;background:#000;color:#e8e4dc;font-family:system-ui,sans-serif;display:grid;place-items:center;min-height:100vh}a{color:#f3d98b}</style>
+</head>
+<body>
+<p>Abrindo o Encontro Grau Zero... <a href="/encontro-grau-zero/?utm_source=instagram&utm_medium=stories&utm_campaign=encontro-grau-zero-2409&utm_content=link-curto">Clique aqui se não abrir.</a></p>
+</body>
+</html>

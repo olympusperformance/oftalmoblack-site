@@ -674,7 +674,8 @@ body.cta-on .stickybar{transform:none}
     if (bruto){ try{ antigo = JSON.parse(bruto); }catch(e){} }
     if (antigo && antigo.ts && (now - antigo.ts) > TTL){ window.localStorage.removeItem(K); antigo = null; }
     if (temNovo){ novo.ts = now; window.localStorage.setItem(K, JSON.stringify(novo)); }
-  }catch(e){}
+    window.__axsTrk = temNovo ? novo : (antigo || {});
+  }catch(e){ window.__axsTrk = window.__axsTrk || {}; }
 
   /* -------- clique no grupo: Lead no pixel, grupo_click e generate_lead no GA4 -------- */
   function acharGrupo(no){
@@ -688,7 +689,13 @@ body.cta-on .stickybar{transform:none}
     var a = acharGrupo(ev.target);
     if (!a) return;
     try{
-      window.fbq && window.fbq('track','Lead',{content_name:'encontro_grau_zero',content_category:'clinica_alexsa'});
+      var trk = window.__axsTrk || {};
+      var cd = {content_name:'encontro_grau_zero',content_category:'clinica_alexsa'};
+      if (trk.utm_source){ cd.utm_source = trk.utm_source; }
+      if (trk.utm_medium){ cd.utm_medium = trk.utm_medium; }
+      if (trk.utm_campaign){ cd.utm_campaign = trk.utm_campaign; }
+      if (trk.utm_content){ cd.utm_content = trk.utm_content; }
+      window.fbq && window.fbq('track','Lead',cd);
     }catch(e){}
     try{
       window.gtag && window.gtag('event','grupo_click',{link_url:a.href,page_location:window.location.href,transport_type:'beacon'});
