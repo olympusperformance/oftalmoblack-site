@@ -21,7 +21,7 @@
 
    Chamada:
      POST { }                        → coleta o dia de hoje
-     POST { "dia": "2026-09-01" }    → recoleta um dia (atualiza, não duplica)
+     POST { "dia": "AAAA-MM-DD" }    → recoleta somente o dia atual
      POST { "so_mapear": true }      → só recasa contas com mentorados
 
    Autorização: header `x-metricas-token` igual a METRICAS_TOKEN. Sem o segredo
@@ -38,6 +38,8 @@ const CORS = {
 
 const G = "https://graph.facebook.com/v21.0";
 
+const mensagemErro = (e: unknown) => e instanceof Error ? e.message : String(e);
+
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
     status,
@@ -47,7 +49,7 @@ const json = (body: unknown, status = 200) =>
 async function graph(path: string, params: Record<string, string>) {
   const u = new URL(`${G}/${path}`);
   for (const [k, v] of Object.entries(params)) u.searchParams.set(k, v);
-  const r = await fetch(u.toString());
+  const r = await fetch(u.toString(), { signal: AbortSignal.timeout(15000) });
   const j = await r.json().catch(() => ({}));
   if (!r.ok || (j as any)?.error) {
     const msg = (j as any)?.error?.message ?? `HTTP ${r.status}`;
@@ -112,7 +114,12 @@ Deno.serve(async (req) => {
   }
 
   const body = await req.json().catch(() => ({}));
-  const dia: string = body?.dia ?? new Date().toISOString().slice(0, 10);
+  // O perfil entrega o estoque atual, nunca o total historico de seguidores.
+  // Uma data fixa em uma automacao nao pode sobrescrever um retrato antigo.
+  const dia = new Date().toISOString().slice(0, 10);
+  if (body?.dia != null && body.dia !== dia) {
+    return json({ error: "dia_deve_ser_hoje", dia }, 400);
+  }
   const soMapear: boolean = body?.so_mapear === true;
 
   const db = createClient(
@@ -132,10 +139,11 @@ Deno.serve(async (req) => {
     );
 
     // 2) Casamento com os mentorados.
-    const { data: membros } = await db
+    const { data: membros, error: erroMembros } = await db
       .from("members")
       .select("id, nome, instagram")
       .eq("ativo", true);
+    if (erroMembros) throw new Error(`membros: ${erroMembros.message}`);
 
     const mapeadas: Array<Record<string, unknown>> = alvos.map((p: any) => {
       const ig = p.instagram_business_account;
@@ -174,7 +182,9 @@ Deno.serve(async (req) => {
     const linhas: Array<Record<string, unknown>> = [];
     const falhas: Array<{ username: string; erro: string }> = [];
 
-    for (const p of alvos) {
+    // Limita a concorrencia para concluir a turma dentro do tempo da funcao.
+    for (let inicio = 0; inicio < alvos.length; inicio += 3) {
+      await Promise.all(alvos.slice(inicio, inicio + 3).map(async (p: any) => {
       const ig = p.instagram_business_account;
       const pageToken = p.access_token as string;
       try {
@@ -183,7 +193,7 @@ Deno.serve(async (req) => {
           access_token: pageToken,
         });
 
-        let janela: Record<string, number> = {};
+        const janela: Record<string, number | null> = {};
         try {
           const ins = await graph(`${ig.id}/insights`, {
             metric: "views,reach,total_interactions,accounts_engaged,profile_views",
@@ -198,7 +208,7 @@ Deno.serve(async (req) => {
           }
         } catch (e) {
           // Conta nova ou sem audiência não tem insights — o perfil ainda vale.
-          console.warn(`[instagram-metricas] insights @${ig.username}: ${e.message}`);
+          console.warn(`[instagram-metricas] insights @${ig.username}: ${mensagemErro(e)}`);
         }
 
         let ganhos: number | null = null;
@@ -229,8 +239,9 @@ Deno.serve(async (req) => {
           coletado_em: new Date().toISOString(),
         });
       } catch (e) {
-        falhas.push({ username: ig.username ?? ig.id, erro: String(e.message ?? e) });
+        falhas.push({ username: ig.username ?? ig.id, erro: mensagemErro(e) });
       }
+      }));
     }
 
     if (linhas.length > 0) {
@@ -239,15 +250,15 @@ Deno.serve(async (req) => {
     }
 
     return json({
-      ok: true,
+      ok: linhas.length > 0,
       dia,
       contas: mapeadas.length,
       coletadas: linhas.length,
       sem_mentorado: semMentorado,
       falhas,
-    });
+    }, linhas.length > 0 ? 200 : 502);
   } catch (e) {
     console.error("[instagram-metricas]", e);
-    return json({ error: String(e.message ?? e) }, 500);
+    return json({ error: mensagemErro(e) }, 500);
   }
 });
