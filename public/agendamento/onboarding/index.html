@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Onboarding | Club OftalmoBlack</title>
+<meta name="description" content="Agende sua sessão de onboarding com a coordenação do Club OftalmoBlack.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:ital,wght@0,400;0,500&display=swap">
+<style>
+:root{
+--bg-soft:#0A0A0C;--surface:#101014;
+--gold:#d89d4d;--gold-bright:#e6bd74;--gold-deep:#8a5210;--champagne:#fdf3b5;
+--line:rgba(216,157,77,.18);--text:#ffffff;--muted:rgba(245,240,230,.64);
+--foil:linear-gradient(120deg,#8a5210 0%,#c78039 18%,#e6bd74 32%,#fdf3b5 42%,#d89d4d 55%,#c78039 72%,#8a5210 100%);
+--glass:linear-gradient(150deg,rgba(0,0,0,.72) 0%,rgba(38,25,10,.5) 38%,rgba(140,95,40,.16) 74%,rgba(216,157,77,.24) 100%);
+--sh-sel:inset 0 1px 0 rgba(253,243,181,.42),0 0 26px rgba(216,157,77,.14),0 20px 44px rgba(0,0,0,.4);
+}
+html,body{margin:0;padding:0;background:var(--bg-soft);color:var(--text);-webkit-font-smoothing:antialiased}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',sans-serif;position:relative;min-height:100vh;overflow-x:hidden}
+a{color:var(--gold);text-decoration:underline;text-underline-offset:4px}
+a:hover{color:var(--gold-bright)}
+button{font-family:inherit}
+@keyframes foilShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes obDrape{from{background-position:0 0}to{background-position:14px 0}}
+@keyframes obSwipe{0%{transform:translateX(-130%) skewX(-18deg)}100%{transform:translateX(230%) skewX(-18deg)}}
+@keyframes obUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.grifo{color:#e6bd74;background:var(--foil);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:foilShift 8s ease-in-out infinite;font-style:italic}
+@supports not ((-webkit-background-clip:text) or (background-clip:text)){.grifo{background:none;-webkit-text-fill-color:#e6bd74;color:#e6bd74}}
+.drape{position:absolute;inset:0;z-index:0;pointer-events:none;background:repeating-linear-gradient(90deg,rgba(255,255,255,.016) 0px,rgba(255,255,255,.016) 1px,transparent 1px,transparent 14px);background-size:14px 100%;animation:obDrape 9s linear infinite}
+.glow{position:absolute;top:0;left:0;right:0;height:620px;z-index:0;pointer-events:none;background:radial-gradient(60% 100% at 50% 0%,rgba(216,157,77,.06) 0%,rgba(216,157,77,0) 70%)}
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:56px 32px 140px;display:flex;flex-direction:column;gap:52px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;animation:obUp .4s ease both}
+.logo{display:block;height:104px;width:auto;margin:0 0 34px;filter:drop-shadow(0 6px 24px rgba(0,0,0,.55))}
+.eyebrow{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+.num{font-family:Cinzel,serif;font-style:italic;font-weight:400;font-size:22px;line-height:1;color:var(--gold)}
+.rule{display:block;width:42px;height:1px;background:rgba(216,157,77,.45)}
+.kicker{font-size:11px;font-weight:600;letter-spacing:.4em;text-transform:uppercase;color:rgba(245,240,230,.5)}
+h1{margin:0 0 18px;font-weight:600;letter-spacing:-.02em;font-size:clamp(30px,4.8vw,56px);line-height:1.08;color:#fff;max-width:800px;text-wrap:pretty}
+.sub{margin:0;font-size:16px;line-height:1.5;color:var(--muted);max-width:640px}
+.lang{display:flex;gap:6px;flex:none;padding-top:6px}
+.lang button{background:none;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:8px 12px;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:color .2s,background .2s,border-color .2s}
+.lang button[aria-pressed="true"]{color:#0A0A0C;background:var(--gold-bright);border-color:transparent}
+.lang button:hover{color:var(--gold-bright)}
+.lang button[aria-pressed="true"]:hover{color:#0A0A0C}
+.grid{display:grid;grid-template-columns:minmax(0,560px);gap:18px;animation:obUp .4s ease both .08s}
+.card{position:relative;border-radius:24px;padding:1px;overflow:hidden;background:rgba(216,157,77,.55)}
+.card-in{position:relative;z-index:1;box-sizing:border-box;border-radius:23px;padding:32px 28px;display:flex;flex-direction:column;gap:16px;background:var(--glass);backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);box-shadow:var(--sh-sel)}
+.check{position:absolute;top:24px;right:24px;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--foil)}
+.card-eyebrow{display:flex;align-items:center;gap:12px;padding-right:34px}
+.card-eyebrow .num{font-size:20px}
+.card-eyebrow .rule{width:28px}
+.card-kicker{font-size:12px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:rgba(230,189,116,.9)}
+h2{margin:0;font-size:22px;font-weight:600;color:#fff;letter-spacing:-.01em}
+.card p{margin:0;font-size:14px;line-height:1.5;color:var(--muted)}
+.sep{height:1px;background:var(--line)}
+.card ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.card li{display:flex;align-items:center;gap:10px;font-size:13px;line-height:1.4;color:rgba(245,240,230,.55)}
+.card li::before{content:"";flex:none;width:8px;height:1px;background:var(--gold)}
+.dur{margin-top:auto;padding-top:14px;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:rgba(216,157,77,.6)}
+.cta-wrap{display:flex;flex-direction:column;align-items:flex-start;gap:14px;animation:obUp .4s ease both .16s}
+.cta{position:relative;overflow:hidden;isolation:isolate;border-radius:999px;padding:17px 34px;min-height:56px;font-size:13px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;border:1px solid transparent;color:#0A0A0C;cursor:pointer;background:var(--foil);background-size:300% 100%;box-shadow:0 18px 40px -18px rgba(212,166,83,.5),inset 0 1px 0 rgba(255,255,255,.3);transition:box-shadow .3s ease,transform .25s cubic-bezier(.22,1,.36,1)}
+.cta:hover{transform:translateY(-3px);animation:foilShift 2.2s ease-in-out infinite;box-shadow:0 28px 56px -18px rgba(212,166,83,.75),0 0 26px rgba(216,157,77,.35),inset 0 1px 0 rgba(255,255,255,.4)}
+.cta .sheen{position:absolute;top:0;bottom:0;left:0;width:45%;z-index:0;pointer-events:none;opacity:0;background:linear-gradient(100deg,transparent 0%,rgba(255,255,255,.32) 40%,rgba(253,243,181,.92) 50%,rgba(255,255,255,.32) 60%,transparent 100%)}
+.cta:hover .sheen{opacity:1;animation:obSwipe 1.4s cubic-bezier(.4,0,.6,1) infinite}
+.cta .lbl{position:relative;z-index:1}
+.cta[aria-busy="true"]{cursor:progress;opacity:.85}
+.sup{margin:0;font-size:13px;color:var(--muted);line-height:1.5}
+.foot{margin:0;font-size:13px;color:var(--muted)}
+button:focus-visible,a:focus-visible{outline:1px solid var(--gold);outline-offset:3px}
+@media (max-width:1023px){
+  .wrap{padding:44px 20px 120px;gap:40px}
+  .cta{width:100%}
+  .cta-wrap{align-items:stretch;text-align:center}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition-property:box-shadow,background,border-color,opacity!important}}
+</style>
+</head>
+<body data-page="onboarding-agenda-v1">
+<div class="drape"></div>
+<div class="glow"></div>
+
+<main class="wrap">
+
+  <div class="top">
+    <div>
+      <img class="logo" src="../uploads/OFTALMOBLACK%20-%20LOGO%20-%20VERTICAL.png" alt="Club OftalmoBlack">
+      <div class="eyebrow">
+        <span class="num">01</span>
+        <span class="rule"></span>
+        <span class="kicker" data-i18n="kicker">SUA ENTRADA NO CLUB</span>
+      </div>
+      <h1 data-i18n="h1">Boas-vindas ao Club. <span class="grifo">Vamos começar.</span></h1>
+      <p class="sub" data-i18n="sub">Sua primeira sessão com a coordenação. Escolha o horário e eu te vejo lá.</p>
+    </div>
+    <div class="lang" role="group" aria-label="Idioma / Language">
+      <button type="button" data-lang="pt" aria-pressed="true">PT</button>
+      <button type="button" data-lang="es" aria-pressed="false">ES</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card" role="group" aria-labelledby="ob-h2">
+      <div class="card-in">
+        <div class="check" aria-hidden="true">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2.4 6.2 4.7 8.5 9.6 3.6" stroke="#0A0A0C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        </div>
+        <div class="card-eyebrow">
+          <span class="num">I</span>
+          <span class="rule"></span>
+          <span class="card-kicker" data-i18n="cardKicker">COORDENAÇÃO</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <h2 id="ob-h2" data-i18n="h2">Sessão de Onboarding</h2>
+          <p data-i18n="cardP">Como tudo funciona daqui pra frente, seus acessos e o primeiro passo prático, com Felipe Melo, Diretor de Operações do OftalmoBlack.</p>
+        </div>
+        <div class="sep"></div>
+        <ul>
+          <li data-i18n="b1">Apresentação da equipe e do método de trabalho</li>
+          <li data-i18n="b2">Grupo da sua clínica e primeiros acessos</li>
+          <li data-i18n="b3">Agenda do onboarding técnico e da sessão de Growth</li>
+        </ul>
+        <div class="dur" data-i18n="dur">45 MIN</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-wrap">
+    <button type="button" class="cta" id="cta" aria-busy="false"><span class="sheen"></span><span class="lbl" id="cta-lbl">VER HORÁRIOS · ONBOARDING →</span></button>
+    <p class="sup" id="sup" data-i18n="sup">Duração de 45 min · Google Meet · horário de Brasília, convertido automaticamente para o seu fuso.</p>
+  </div>
+
+  <p class="foot" data-i18n="foot">Alguma dúvida? <a href="https://wa.me/5592981381810" target="_blank" rel="noopener">Fale comigo no WhatsApp</a></p>
+
+</main>
+
+<script>
+// Link da agenda "Onboarding" do Google Calendar (agenda do Felipe, Coordenação).
+// Vazio = a página cai no fallback do WhatsApp (mensagem pré-preenchida pro Felipe).
+const AGENDA_URL = '';
+const WHATSAPP = '5592981381810';
+
+const T = {
+  pt: {
+    title: 'Onboarding | Club OftalmoBlack',
+    kicker: 'SUA ENTRADA NO CLUB',
+    h1: 'Boas-vindas ao Club. <span class="grifo">Vamos começar.</span>',
+    sub: 'Sua primeira sessão com a coordenação. Escolha o horário e eu te vejo lá.',
+    cardKicker: 'COORDENAÇÃO',
+    h2: 'Sessão de Onboarding',
+    cardP: 'Como tudo funciona daqui pra frente, seus acessos e o primeiro passo prático, com Felipe Melo, Diretor de Operações do OftalmoBlack.',
+    b1: 'Apresentação da equipe e do método de trabalho',
+    b2: 'Grupo da sua clínica e primeiros acessos',
+    b3: 'Agenda do onboarding técnico e da sessão de Growth',
+    dur: '45 MIN',
+    cta: 'VER HORÁRIOS · ONBOARDING →',
+    ctaWa: 'ESCOLHER HORÁRIO NO WHATSAPP →',
+    opening: 'ABRINDO AGENDA…',
+    sup: 'Duração de 45 min · Google Meet · horário de Brasília, convertido automaticamente para o seu fuso.',
+    supWa: 'Duração de 45 min · Google Meet · me diga dois ou três horários que funcionam pra você e eu confirmo.',
+    foot: 'Alguma dúvida? <a href="https://wa.me/' + WHATSAPP + '" target="_blank" rel="noopener">Fale comigo no WhatsApp</a>',
+    waText: 'Olá, Felipe! Quero agendar minha sessão de onboarding do Club OftalmoBlack. Tenho disponibilidade em: '
+  },
+  es: {
+    title: 'Onboarding | Club OftalmoBlack',
+    kicker: 'TU ENTRADA AL CLUB',
+    h1: 'Te damos la bienvenida. <span class="grifo">Empecemos.</span>',
+    sub: 'Tu primera sesión con la coordinación. Elige el horario y nos vemos ahí.',
+    cardKicker: 'COORDINACIÓN',
+    h2: 'Sesión de Onboarding',
+    cardP: 'Cómo funciona todo de aquí en adelante, tus accesos y el primer paso práctico, con Felipe Melo, Director de Operaciones de OftalmoBlack.',
+    b1: 'Presentación del equipo y del método de trabajo',
+    b2: 'Grupo de tu clínica y primeros accesos',
+    b3: 'Agenda del onboarding técnico y de la sesión de Growth',
+    dur: '45 MIN',
+    cta: 'VER HORARIOS · ONBOARDING →',
+    ctaWa: 'ELEGIR HORARIO POR WHATSAPP →',
+    opening: 'ABRIENDO AGENDA…',
+    sup: 'Duración de 45 min · Google Meet · horario de Brasilia, convertido automáticamente a tu zona horaria.',
+    supWa: 'Duración de 45 min · Google Meet · dime dos o tres horarios que te funcionen y yo te confirmo.',
+    foot: '¿Alguna duda? <a href="https://wa.me/' + WHATSAPP + '" target="_blank" rel="noopener">Escríbeme por WhatsApp</a>',
+    waText: '¡Hola, Felipe! Quiero agendar mi sesión de onboarding del Club OftalmoBlack. Tengo disponibilidad: '
+  }
+};
+
+let lang = detectLang();
+let opening = false;
+
+function detectLang() {
+  const q = new URLSearchParams(location.search).get('lang');
+  if (q === 'es' || q === 'pt') return q;
+  try { const s = localStorage.getItem('ob-lang'); if (s === 'es' || s === 'pt') return s; } catch (e) {}
+  return (navigator.language || '').toLowerCase().indexOf('es') === 0 ? 'es' : 'pt';
+}
+
+function apply() {
+  const t = T[lang];
+  document.documentElement.lang = lang === 'es' ? 'es' : 'pt-BR';
+  document.title = t.title;
+  document.querySelectorAll('[data-i18n]').forEach(function (el) {
+    const k = el.getAttribute('data-i18n');
+    if (k === 'sup') { el.innerHTML = AGENDA_URL ? t.sup : t.supWa; return; }
+    if (t[k] != null) el.innerHTML = t[k];
+  });
+  document.getElementById('cta-lbl').textContent = opening ? t.opening : (AGENDA_URL ? t.cta : t.ctaWa);
+  document.querySelectorAll('.lang button').forEach(function (b) {
+    b.setAttribute('aria-pressed', b.getAttribute('data-lang') === lang ? 'true' : 'false');
+  });
+}
+
+document.querySelectorAll('.lang button').forEach(function (b) {
+  b.addEventListener('click', function () {
+    lang = b.getAttribute('data-lang');
+    try { localStorage.setItem('ob-lang', lang); } catch (e) {}
+    apply();
+  });
+});
+
+document.getElementById('cta').addEventListener('click', function () {
+  if (opening) return;
+  const t = T[lang];
+  const url = AGENDA_URL || ('https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(t.waText));
+  opening = true;
+  this.setAttribute('aria-busy', 'true');
+  apply();
+  const btn = this;
+  setTimeout(function () {
+    window.open(url, '_blank', 'noopener');
+    opening = false;
+    btn.setAttribute('aria-busy', 'false');
+    apply();
+  }, 800);
+});
+
+apply();
+</script>
+</body>
+</html>
