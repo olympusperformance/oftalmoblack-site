@@ -311,6 +311,39 @@ A chave **secret** (service_role) ignora o RLS e dá controle total do banco.
 Ela não entra no repositório, não entra no `config.js` e não é necessária em
 lugar nenhum deste projeto.
 
+## QR da credencial da Imersão
+
+O verso da credencial da Imersão Grau Zero traz um QR fixo para
+`oftalmoblack.com.br/imersaograuzero/credencial`. O código não muda; o que ele
+abre é decidido no banco, pela aba **QR da credencial** do `/admin/`:
+
+- se alguma linha ativa e dentro da janela estiver marcada **redirecionar**, a
+  página manda o visitante direto para a URL dela (o pitch de um produto);
+- senão, vira um **menu** com as linhas ativas e vigentes (mapa do almoço,
+  fotos, WhatsApp da equipe…).
+
+As janelas `inicio`/`fim` deixam programar a virada com antecedência e são
+digitadas no **horário de São Paulo** (o painel converte; a equipe está em
+Manaus). Cada leitura vira uma linha em `qr_scans` — o painel mostra scans de
+hoje, no total e por destino.
+
+| Peça | Onde |
+|---|---|
+| Página pública | `public/imersaograuzero/credencial/index.html` (HTML único, sem CDN, fala com o PostgREST por `fetch`) |
+| Tabelas e RLS | `supabase/qr-credencial.sql` — rodar uma vez no SQL Editor |
+| Aba do painel | `renderQr`/`modalQr` em `assets/admin.js`, `Club.data.qrLinks` em `assets/club-data.js` |
+| nginx | `location = /imersaograuzero/credencial` serve o arquivo sem barra final e sem cache |
+
+Sem a tabela no banco (ou sem rede), a página cai num **menu de reserva**
+embutido no próprio HTML — o QR nunca abre um erro. `?menu` na URL força a
+lista mesmo com um redirect vigente, para conferir. Os destinos recebem
+`utm_source=credencial` automaticamente, exceto WhatsApp, Maps, redes e Drive.
+
+Os arquivos do QR para a gráfica (SVG e PNGs, correção de erro H) são gerados
+por `CLAUDE/imersao-grau-zero-credencial/gerar-qr.py`, fora deste repositório.
+Nunca imprimir o código invertido (claro sobre fundo escuro): leitores esperam
+módulo escuro em fundo claro e a versão dourada-sobre-preto não decodifica.
+
 ## Integrações externas
 
 O site não tem backend, mas depende de três serviços de fora:

@@ -47,13 +47,15 @@
                      'responsaveis', 'member_id', 'vence_em'],
     bot_exemplos:   ['grupo', 'comentario', 'resposta', 'ativo', 'origem'],
     bot_respostas:  ['comentario', 'usuario', 'grupo', 'resposta', 'comment_id',
-                     'permalink', 'decisao', 'exemplo_id', 'decidido']
+                     'permalink', 'decisao', 'exemplo_id', 'decidido'],
+    qr_links:       ['slug', 'titulo', 'descricao', 'url', 'icone', 'ordem', 'ativo',
+                     'redirecionar', 'inicio', 'fim']
   };
 
   /* Campo de data ou de chave estrangeira vazio precisa virar null; string
      vazia o Postgres recusa. */
   var NULAVEIS = ['vence_em', 'inicia_em', 'member_id', 'publicado_em', 'group_id',
-                  'cadencia_dias'];
+                  'cadencia_dias', 'inicio', 'fim'];
 
   /* Tabelas que só a administração enxerga. Quando ainda não foram criadas no
      banco, a aba avisa em vez de derrubar a página inteira. */
@@ -179,6 +181,32 @@
       },
       save: function (e) { return grava('events', e); },
       remove: function (id) { return apaga('events', id); }
+    },
+
+    /* O QR da credencial da Imersão. A página pública lê a mesma tabela sem
+       login (só as linhas ativas, pelo RLS); aqui o admin vê todas. Ver
+       supabase/qr-credencial.sql. */
+    qrLinks: {
+      list: function () {
+        return tolerante(
+          sb().from('qr_links').select('*')
+            .order('ordem', { ascending: true }).order('criado_em', { ascending: true }),
+          'Falta rodar supabase/qr-credencial.sql no SQL Editor do Supabase para o ' +
+          'QR da credencial ganhar a tabela de destinos.', 'faltaQr');
+      },
+      save: function (r) { return grava('qr_links', r); },
+      remove: function (id) { return apaga('qr_links', id); }
+    },
+
+    /* Só leitura: quem grava é a página pública, a cada scan. Os últimos 5 mil
+       bastam para os números do painel — é um evento de 150 pessoas. */
+    qrScans: {
+      list: function () {
+        return tolerante(
+          sb().from('qr_scans').select('link_id, modo, lido_em')
+            .order('lido_em', { ascending: false }).limit(5000),
+          '', 'faltaQrScans');
+      }
     },
 
     artifacts: {

@@ -193,6 +193,22 @@
       <div id="listaBotExemplos"></div>
     </div>
 
+    <div class="view" data-view="qr" hidden>
+      <div class="hello"><h1>QR da credencial</h1>
+        <p>O código impresso no verso da credencial da Imersão é fixo. O que ele abre é o que está nesta lista — mude aqui e vale no próximo scan, sem deploy.</p></div>
+      <div class="statgrid" id="statsQr"></div>
+      <div class="toolbar">
+        <a class="btn" href="/imersaograuzero/credencial" target="_blank" rel="noopener">
+          <svg class="ic"><use href="#i-eye"/></svg><span class="hide-sm">Abrir como o QR abre</span></a>
+        <a class="btn" href="/imersaograuzero/credencial?menu" target="_blank" rel="noopener">
+          <svg class="ic"><use href="#i-grid"/></svg><span class="hide-sm">Ver o menu</span></a>
+        <span class="sp"></span>
+        <button class="btn btn-primary" data-new="qr">
+          <svg class="ic"><use href="#i-plus"/></svg>Novo destino</button>
+      </div>
+      <div id="listaQr"></div>
+    </div>
+
     <div class="view" data-view="artifacts" hidden>
       <div class="hello"><h1>Artefatos</h1><p>O catálogo do Club: o que existe, em que grupo, quem é o dono e o que precisa acontecer pro 100%.</p></div>
       <div class="toolbar">

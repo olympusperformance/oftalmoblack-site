@@ -12,6 +12,7 @@
   var st = { members: [], tasks: [], events: [], artifacts: [], materials: [],
              demands: [], staff: [], steps: [], progress: [], demandSteps: [],
              groups: [], artGrupo: '', progressNotes: [], notasEdit: {},
+             qrLinks: [], qrScans: [],
              view: 'overview', membro: '', status: 'all', igOrdem: 'seguidores',
              matCategoria: '', matMembro: '',
              demResp: '', demMembro: '', demProjeto: '', demAbertas: 'open',
@@ -50,6 +51,9 @@
     { grupo:'Time', itens: [
       { key:'demands',   label:'Demandas',   icon:'check-circle' },
       { key:'artifacts', label:'Artefatos',  icon:'box' }
+    ] },
+    { grupo:'Imersão', itens: [
+      { key:'qr',        label:'QR da credencial', icon:'link' }
     ] }
   ];
 
@@ -94,7 +98,9 @@
       Club.data.instagram.resumo(),
       Club.data.instagram.serie(45),
       Club.data.groups.list(),
-      Club.data.progressNotes.list()
+      Club.data.progressNotes.list(),
+      Club.data.qrLinks.list(),
+      Club.data.qrScans.list()
     ]).then(function (r) {
       st.members = r[0]; st.tasks = r[1]; st.events = r[2];
       st.artifacts = r[3]; st.materials = r[4];
@@ -104,6 +110,7 @@
       st.igResumo = r[12]; st.igSerie = r[13];
       st.groups = r[14];
       st.progressNotes = r[15];
+      st.qrLinks = r[16]; st.qrScans = r[17];
       indexar();
       descobrirEu();
     });
@@ -1088,6 +1095,171 @@
         Club.data.events.save(d).then(function () {
           Club.modal.close();
           recarregar(e.id ? 'Evento atualizado.' : 'Evento criado.');
+        }).catch(aviso);
+      }
+    });
+  }
+
+  /* ── QR da credencial da Imersão ──────────────────────────────────────────
+     O código impresso é fixo; esta lista é o que ele abre. Uma linha com
+     "redirecionar" vigente manda o visitante direto para a URL; sem nenhuma,
+     a página vira um menu com as linhas ativas e vigentes. As janelas são
+     digitadas e mostradas no horário de São Paulo, onde o evento acontece —
+     a equipe está em Manaus, e o relógio do navegador confundiria em 1 h.
+     Ver supabase/qr-credencial.sql e /imersaograuzero/credencial/. */
+
+  var QR_ICONES = [
+    { value:'link',      label:'Link' },
+    { value:'whatsapp',  label:'WhatsApp' },
+    { value:'map-pin',   label:'Mapa / local' },
+    { value:'coffee',    label:'Almoço / café' },
+    { value:'image',     label:'Fotos' },
+    { value:'calendar',  label:'Programação' },
+    { value:'award',     label:'Mentoria / produto' },
+    { value:'star',      label:'Destaque' },
+    { value:'users',     label:'Grupo / comunidade' },
+    { value:'file-text', label:'Material / PDF' },
+    { value:'video',     label:'Vídeo' },
+    { value:'gift',      label:'Brinde / bônus' },
+    { value:'instagram', label:'Instagram' }
+  ];
+
+  /* São Paulo é -03:00 o ano inteiro: o Brasil não tem horário de verão desde
+     2019, então o deslocamento fixo é exato. */
+  var SP_OFFSET_MS = 3 * 60 * 60 * 1000;
+
+  function spLocal(ts) {
+    if (!ts) return '';
+    var d = new Date(ts);
+    if (isNaN(d.getTime())) return '';
+    return new Date(d.getTime() - SP_OFFSET_MS).toISOString().slice(0, 16);
+  }
+
+  function spIso(local) { return local ? local + ':00-03:00' : null; }
+
+  function fmtSp(ts) {
+    var l = spLocal(ts);
+    return l ? l.slice(8, 10) + '/' + l.slice(5, 7) + ' ' + l.slice(11, 16) : '';
+  }
+
+  function qrVigente(r, agora) {
+    return (!r.inicio || new Date(r.inicio) <= agora) &&
+           (!r.fim    || new Date(r.fim)    >= agora);
+  }
+
+  function proximaOrdem() {
+    return st.qrLinks.reduce(function (m, r) { return Math.max(m, Number(r.ordem) || 0); }, 0) + 10;
+  }
+
+  function renderQr() {
+    if (Club.faltaQr) {
+      $('statsQr').innerHTML = '';
+      $('listaQr').innerHTML = '<div class="notice">' + ico('alert') +
+        '<div>' + esc(Club.faltaQr) + '</div></div>';
+      return;
+    }
+
+    var agora = new Date();
+    var vivos = st.qrLinks.filter(function (r) { return r.ativo && qrVigente(r, agora); });
+    var alvo = vivos.filter(function (r) { return r.redirecionar; })[0];
+    var hoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
+    /* Clique no menu é um segundo evento do mesmo scan; conta à parte. */
+    var leituras = st.qrScans.filter(function (s) { return s.modo !== 'clique'; });
+    var hojeN = leituras.filter(function (s) { return new Date(s.lido_em) >= hoje; }).length;
+    var porLink = {};
+    st.qrScans.forEach(function (s) {
+      if (s.link_id) porLink[s.link_id] = (porLink[s.link_id] || 0) + 1;
+    });
+
+    $('statsQr').innerHTML =
+      cardStat('O QR ABRE AGORA', alvo ? alvo.titulo : 'Menu',
+        alvo ? 'redirecionando direto' :
+          vivos.length + (vivos.length === 1 ? ' botão' : ' botões') + ' no menu') +
+      cardStat('SCANS HOJE', hojeN, 'leituras do código') +
+      cardStat('SCANS NO TOTAL', leituras.length, 'desde a primeira leitura');
+
+    $('listaQr').innerHTML = tabela(
+      'minmax(0,2.2fr) 130px 200px 130px 80px 88px',
+      ['Destino', 'Modo', 'Janela (horário de SP)', 'Situação', 'Scans', '>Ações'],
+      st.qrLinks.map(function (r) {
+        var vivo = r.ativo && qrVigente(r, agora);
+        var abrindo = alvo ? r.id === alvo.id : vivo;
+        var situacao = !r.ativo ? status('var(--muted)', 'Inativo')
+          : !qrVigente(r, agora) ? status('var(--warning)', 'Fora da janela')
+          : abrindo ? status('var(--gold)', alvo ? 'Abrindo agora' : 'No menu agora')
+          : status('var(--muted)', 'Encoberto pelo redirect');
+        var janela = (r.inicio || r.fim)
+          ? (r.inicio ? fmtSp(r.inicio) : 'desde já') + ' → ' + (r.fim ? fmtSp(r.fim) : 'sem fim')
+          : 'sempre';
+        return '<div class="tr' + (vivo ? '' : ' off') + '">' +
+          '<div class="td"><div class="tx">' +
+            '<div class="tx tx-t" title="' + esc(r.titulo) + '">' + esc(r.titulo) + '</div>' +
+            '<div class="tx tx-s" title="' + esc(r.url) + '">' +
+              esc(String(r.url).replace(/^https?:\/\//, '')) + '</div>' +
+          '</div></div>' +
+          td(r.redirecionar
+            ? '<span style="color:var(--gold);font-weight:600">Redireciona</span>'
+            : '<span class="tx-s">Botão do menu</span>') +
+          td('<span class="tx-s">' + esc(janela) + '</span>') +
+          td(situacao) +
+          td(esc(String(porLink[r.id] || 0))) +
+          '<div class="td end">' + acoes('qr', r.id) + '</div>' +
+        '</div>';
+      }).join(''),
+      'Nenhum destino cadastrado — o QR está mostrando o menu de reserva da própria página.');
+  }
+
+  function modalQr(r) {
+    var novo = !r;
+    r = r || { titulo:'', descricao:'', url:'', icone:'link', ordem:proximaOrdem(),
+               ativo:true, redirecionar:false, inicio:null, fim:null };
+    Club.modal.open({
+      title: novo ? 'Novo destino do QR' : 'Editar destino',
+      sub: novo
+        ? 'Entra como botão no menu da credencial — ou, marcando "redirecionar", vira o lugar para onde o QR manda.'
+        : r.titulo,
+      body:
+        Club.field('Título', 'titulo', { value:r.titulo, required:true,
+          placeholder:'Local do almoço' }) +
+        Club.field('URL', 'url', { value:r.url, required:true, type:'url',
+          placeholder:'https://maps.app.goo.gl/…',
+          hint:'Maps, WhatsApp, álbum de fotos, página do produto — qualquer link.' }) +
+        Club.field('Descrição', 'descricao', { value:r.descricao || '',
+          placeholder:'Uma linha embaixo do título. Opcional.' }) +
+        '<div class="fld-row">' +
+          Club.select('Ícone', 'icone', QR_ICONES, r.icone || 'link') +
+          Club.field('Ordem', 'ordem', { value:r.ordem, type:'number', min:0,
+            hint:'Menor aparece primeiro. Entre redirects vigentes, vale o menor.' }) +
+        '</div>' +
+        '<div class="fld-row">' +
+          Club.field('Vale a partir de', 'inicio', { value:spLocal(r.inicio),
+            type:'datetime-local', hint:'Horário de São Paulo. Vazio = desde já.' }) +
+          Club.field('Vale até', 'fim', { value:spLocal(r.fim),
+            type:'datetime-local', hint:'Vazio = sem limite.' }) +
+        '</div>' +
+        Club.checkbox('Ativo', 'ativo', r.ativo) +
+        Club.checkbox('Redirecionar — o QR abre esta URL direto, sem mostrar o menu',
+          'redirecionar', r.redirecionar),
+      onSubmit: function (d) {
+        if (!d.titulo || !d.url) {
+          Club.toast('Título e URL são obrigatórios.', 'alert'); return;
+        }
+        if (!/^https?:\/\/\S+$/i.test(d.url)) {
+          Club.toast('A URL precisa começar com https://', 'alert'); return;
+        }
+        var ini = spIso(d.inicio), fim = spIso(d.fim);
+        if (ini && fim && new Date(fim) <= new Date(ini)) {
+          Club.toast('O fim precisa vir depois do início.', 'alert'); return;
+        }
+        Club.data.qrLinks.save({
+          id: r.id, slug: 'credencial',
+          titulo: d.titulo, descricao: d.descricao || null, url: d.url,
+          icone: d.icone || 'link', ordem: Number(d.ordem) || 0,
+          ativo: !!d.ativo, redirecionar: !!d.redirecionar,
+          inicio: ini, fim: fim
+        }).then(function () {
+          Club.modal.close();
+          recarregar(novo ? 'Destino criado.' : 'Destino atualizado.');
         }).catch(aviso);
       }
     });
@@ -3167,7 +3339,9 @@
     /* Sem esta linha o clique em Editar/Responder morre em silêncio: achar()
        procura o store aqui e estoura antes de o modal abrir. */
     botExemplo: { store:'botExemplos', nome:function (r) { return r.comentario; },
-                  aviso:'' }
+                  aviso:'' },
+    qr:         { store:'qrLinks',     nome:function (r) { return r.titulo; },
+                  aviso:'Os scans registrados nele ficam, sem destino.' }
   };
 
   function achar(tipo, id) {
@@ -3191,7 +3365,7 @@
 
   var MODAIS = { member:modalMembro, task:modalTarefa, event:modalEvento,
                  artifact:modalArtefato, group:modalGrupo, material:modalMaterial,
-                 demand:modalDemanda, botExemplo:modalBotExemplo };
+                 demand:modalDemanda, botExemplo:modalBotExemplo, qr:modalQr };
 
   /* ── eventos ──────────────────────────────────────────────────────────── */
 
@@ -3486,6 +3660,7 @@
     renderBotFila();
     renderBotExemplos();
     Club.graduacao.mountAdmin($('graduacaoAdmin'), st.members);
+    renderQr();
   }
 
   function falhou(err) {
