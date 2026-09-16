@@ -104,6 +104,13 @@ create policy "admin le os scans" on public.qr_scans
 -- O schema.sql revogou tudo de anon em bloco; aqui é a exceção deliberada,
 -- coluna a coluna do que a página pública precisa.
 
+-- Primeiro tira tudo: os "default privileges" do projeto podem ter dado a anon
+-- mais do que o pretendido na hora do create table. Depois devolve só o
+-- necessário. (O RLS já segurava — anon lia qr_scans e recebia [] — mas o
+-- grant tem que dizer a mesma coisa que a política.)
+revoke all on public.qr_links from anon;
+revoke all on public.qr_scans from anon;
+
 grant select on public.qr_links to anon;
 grant select, insert, update, delete on public.qr_links to authenticated;
 
