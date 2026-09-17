@@ -1182,13 +1182,13 @@
       "sourceDate": "2026-09-10",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
-      "grade": 1,
+      "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 127.2,
-      "renewalDiscount": 15000,
-      "renewalPrice": 105000,
-      "vouchers": 1,
+      "annualPoints": 77.2,
+      "renewalDiscount": 0,
+      "renewalPrice": 120000,
+      "vouchers": 0,
       "periods": [
         {
           "id": "2026-T2",
@@ -1220,13 +1220,13 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 89.1,
+          "points": 39.1,
           "scores": {
             "attendance": 10,
             "followers": 20,
             "videos": 9.1
           },
-          "referrals": 1,
+          "referrals": null,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {

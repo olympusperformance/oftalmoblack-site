@@ -7,11 +7,11 @@ const Club = { esc: text => String(text || ''), icon: name => `<i>${name}</i>` }
 vm.runInNewContext(readFileSync(new URL('../public/assets/club-graduacao.js', import.meta.url), 'utf8'), { window:{ Club } });
 const G = Club.graduacao;
 
-test('radar reproduz os 29 mentorados, 2 graduações e 10 na reta final', () => {
+test('radar reproduz os 29 mentorados, 1 graduação e 11 na reta final', () => {
   assert.equal(rows.length, 29);
   const models = rows.map(r => G.model(r.snapshot, '2026-T3'));
-  assert.equal(models.filter(m => m.status === 'ready').length, 2);
-  assert.equal(models.filter(m => m.status === 'near').length, 10);
+  assert.equal(models.filter(m => m.status === 'ready').length, 1);
+  assert.equal(models.filter(m => m.status === 'near').length, 11);
 });
 test('pontuação do trimestre reconcilia participação, indicação e bônus', () => {
   rows.forEach(({ memberName, snapshot }) => snapshot.periods.filter(p => p.state !== 'future').forEach(p => {
@@ -34,8 +34,7 @@ test('trimestres futuros e membros sem apuração não aparecem com zero pontos 
   const future = G.model(rows[0].snapshot, '2026-T4');
   assert.equal(future.points, null); assert.equal(future.status, 'future'); assert.equal(future.missing, null);
   assert.equal(G.model(null, '2026-T3').status, 'missing');
-  const comIndicacao = rows.filter(r => r.snapshot.periods[1].referrals !== null);
-  assert.deepEqual(comIndicacao.map(r => r.memberName), ['Pedro Fábio de Mello Pinese']);
+  assert.ok(rows.every(r => r.snapshot.periods[1].referrals === null));
 });
 test('limiares da régua e dez graus são preservados', () => {
   assert.equal(G.status(19.9), 'starting'); assert.equal(G.status(20), 'progress');
