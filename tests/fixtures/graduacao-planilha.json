@@ -9,7 +9,7 @@
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 83.6,
+      "annualPoints": 84.5,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -37,16 +37,16 @@
           "videos": {
             "count": 34,
             "weeks": 9.86,
-            "credits": 9.66666666666667
+            "credits": 9.666666667
           }
         },
         {
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 37.3,
+          "points": 38.2,
           "scores": {
-            "attendance": 11.1,
+            "attendance": 12,
             "followers": 10,
             "videos": 16.2
           },
@@ -54,8 +54,8 @@
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 5,
-            "eligible": 9
+            "attended": 6,
+            "eligible": 10
           },
           "followers": {
             "growth": 2950
@@ -63,7 +63,7 @@
           "videos": {
             "count": 29,
             "weeks": 10.29,
-            "credits": 8.33333333333333
+            "credits": 8.333333333
           }
         },
         {
@@ -107,7 +107,7 @@
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 79.1,
+      "annualPoints": 80.4,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -135,16 +135,16 @@
           "videos": {
             "count": 5,
             "weeks": 9.86,
-            "credits": 1.66666666666667
+            "credits": 1.666666667
           }
         },
         {
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 39,
+          "points": 40.3,
           "scores": {
-            "attendance": 6.7,
+            "attendance": 8,
             "followers": 20,
             "videos": 12.3
           },
@@ -152,8 +152,8 @@
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 3,
-            "eligible": 9
+            "attended": 4,
+            "eligible": 10
           },
           "followers": {
             "growth": 7007
@@ -161,7 +161,7 @@
           "videos": {
             "count": 24,
             "weeks": 10.29,
-            "credits": 6.33333333333333
+            "credits": 6.333333333
           }
         },
         {
@@ -205,7 +205,7 @@
       "grade": 2,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 113.6,
+      "annualPoints": 111.8,
       "renewalDiscount": 15000,
       "renewalPrice": 105000,
       "vouchers": 0,
@@ -240,9 +240,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 65.3,
+          "points": 63.5,
           "scores": {
-            "attendance": 17.8,
+            "attendance": 16,
             "followers": 20,
             "videos": 17.5
           },
@@ -251,7 +251,7 @@
           "bonusReason": "Palestrante · Imersão de Marketing",
           "attendance": {
             "attended": 8,
-            "eligible": 9
+            "eligible": 10
           },
           "followers": {
             "growth": 7151
@@ -303,7 +303,7 @@
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 56.1,
+      "annualPoints": 57.9,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -338,9 +338,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 22.8,
+          "points": 24.6,
           "scores": {
-            "attendance": 2.2,
+            "attendance": 4,
             "followers": 20,
             "videos": 0.6
           },
@@ -348,8 +348,8 @@
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 1,
-            "eligible": 9
+            "attended": 2,
+            "eligible": 10
           },
           "followers": {
             "growth": 11029
@@ -357,7 +357,7 @@
           "videos": {
             "count": 1,
             "weeks": 10.29,
-            "credits": 0.333333333333333
+            "credits": 0.3333333333
           }
         },
         {
@@ -401,7 +401,7 @@
       "grade": 1,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 94.9,
+      "annualPoints": 94.2,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -436,9 +436,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 44.8,
+          "points": 44.1,
           "scores": {
-            "attendance": 6.7,
+            "attendance": 6,
             "followers": 20,
             "videos": 18.1
           },
@@ -447,7 +447,7 @@
           "bonusReason": null,
           "attendance": {
             "attended": 3,
-            "eligible": 9
+            "eligible": 10
           },
           "followers": {
             "growth": 7217
@@ -455,7 +455,7 @@
           "videos": {
             "count": 111,
             "weeks": 10.29,
-            "credits": 9.33333333333333
+            "credits": 9.333333333
           }
         },
         {
@@ -527,7 +527,7 @@
           "videos": {
             "count": 54,
             "weeks": 9.86,
-            "credits": 10.6666666666667
+            "credits": 10.66666667
           }
         },
         {
@@ -545,7 +545,7 @@
           "bonusReason": null,
           "attendance": {
             "attended": 0,
-            "eligible": 9
+            "eligible": 10
           },
           "followers": {
             "growth": 15498
@@ -597,7 +597,7 @@
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 52.8,
+      "annualPoints": 53.7,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -632,9 +632,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 24.7,
+          "points": 25.6,
           "scores": {
-            "attendance": 11.1,
+            "attendance": 12,
             "followers": 0,
             "videos": 13.6
           },
@@ -642,8 +642,8 @@
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 5,
-            "eligible": 9
+            "attended": 6,
+            "eligible": 10
           },
           "followers": {
             "growth": 2412
@@ -695,7 +695,7 @@
       "grade": 1,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 84.8,
+      "annualPoints": 84.4,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -723,16 +723,16 @@
           "videos": {
             "count": 14,
             "weeks": 9.86,
-            "credits": 3.66666666666667
+            "credits": 3.666666667
           }
         },
         {
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 37.4,
+          "points": 37,
           "scores": {
-            "attendance": 4.4,
+            "attendance": 4,
             "followers": 20,
             "videos": 13
           },
@@ -741,7 +741,7 @@
           "bonusReason": null,
           "attendance": {
             "attended": 2,
-            "eligible": 9
+            "eligible": 10
           },
           "followers": {
             "growth": 5528
@@ -749,7 +749,7 @@
           "videos": {
             "count": 22,
             "weeks": 10.29,
-            "credits": 6.66666666666667
+            "credits": 6.666666667
           }
         },
         {
@@ -793,7 +793,7 @@
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 46.9,
+      "annualPoints": 46.5,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -828,9 +828,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 19.3,
+          "points": 18.9,
           "scores": {
-            "attendance": 4.4,
+            "attendance": 4,
             "followers": 0,
             "videos": 14.9
           },
@@ -839,7 +839,7 @@
           "bonusReason": null,
           "attendance": {
             "attended": 2,
-            "eligible": 9
+            "eligible": 10
           },
           "followers": {
             "growth": 1560
@@ -847,7 +847,7 @@
           "videos": {
             "count": 29,
             "weeks": 10.29,
-            "credits": 7.66666666666667
+            "credits": 7.666666667
           }
         },
         {
@@ -891,7 +891,7 @@
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 66.6,
+      "annualPoints": 67,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -919,16 +919,16 @@
           "videos": {
             "count": 11,
             "weeks": 4.14,
-            "credits": 2.66666666666667
+            "credits": 2.666666667
           }
         },
         {
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 43.7,
+          "points": 44.1,
           "scores": {
-            "attendance": 15.6,
+            "attendance": 16,
             "followers": 0,
             "videos": 18.1
           },
@@ -936,8 +936,8 @@
           "bonus": 10,
           "bonusReason": "Palestrante · Congresso da Sociedade Brasileira de Oftalmologia (LIOs tóricas)",
           "attendance": {
-            "attended": 7,
-            "eligible": 9
+            "attended": 8,
+            "eligible": 10
           },
           "followers": {
             "growth": 742
@@ -945,7 +945,7 @@
           "videos": {
             "count": 52,
             "weeks": 10.29,
-            "credits": 9.33333333333333
+            "credits": 9.333333333
           }
         },
         {
@@ -989,7 +989,7 @@
       "grade": 1,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 99.4,
+      "annualPoints": 99,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -1017,16 +1017,16 @@
           "videos": {
             "count": 110,
             "weeks": 9.86,
-            "credits": 8.33333333333333
+            "credits": 8.333333333
           }
         },
         {
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 42.5,
+          "points": 42.1,
           "scores": {
-            "attendance": 4.4,
+            "attendance": 4,
             "followers": 20,
             "videos": 18.1
           },
@@ -1035,7 +1035,7 @@
           "bonusReason": null,
           "attendance": {
             "attended": 2,
-            "eligible": 9
+            "eligible": 10
           },
           "followers": {
             "growth": 9874
@@ -1043,7 +1043,7 @@
           "videos": {
             "count": 75,
             "weeks": 10.29,
-            "credits": 9.33333333333333
+            "credits": 9.333333333
           }
         },
         {
@@ -1087,7 +1087,7 @@
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 56.7,
+      "annualPoints": 56.9,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -1122,9 +1122,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 45.3,
+          "points": 45.5,
           "scores": {
-            "attendance": 17.8,
+            "attendance": 18,
             "followers": 0,
             "videos": 17.5
           },
@@ -1132,8 +1132,8 @@
           "bonus": 10,
           "bonusReason": "Palestrante — data não localizada",
           "attendance": {
-            "attended": 8,
-            "eligible": 9
+            "attended": 9,
+            "eligible": 10
           },
           "followers": {
             "growth": 453
@@ -1182,13 +1182,13 @@
       "sourceDate": "2026-09-10",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
-      "grade": 0,
+      "grade": 1,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 76.1,
-      "renewalDiscount": 0,
-      "renewalPrice": 120000,
-      "vouchers": 0,
+      "annualPoints": 127.2,
+      "renewalDiscount": 15000,
+      "renewalPrice": 105000,
+      "vouchers": 1,
       "periods": [
         {
           "id": "2026-T2",
@@ -1213,25 +1213,25 @@
           "videos": {
             "count": 2,
             "weeks": 9.86,
-            "credits": 0.666666666666667
+            "credits": 0.6666666667
           }
         },
         {
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 38,
+          "points": 89.1,
           "scores": {
-            "attendance": 8.9,
+            "attendance": 10,
             "followers": 20,
             "videos": 9.1
           },
-          "referrals": null,
+          "referrals": 1,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 4,
-            "eligible": 9
+            "attended": 5,
+            "eligible": 10
           },
           "followers": {
             "growth": 7415
@@ -1239,7 +1239,7 @@
           "videos": {
             "count": 15,
             "weeks": 10.29,
-            "credits": 4.66666666666667
+            "credits": 4.666666667
           }
         },
         {
@@ -1283,7 +1283,7 @@
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 28,
+      "annualPoints": 29.3,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -1311,16 +1311,16 @@
           "videos": {
             "count": 5,
             "weeks": 3.71,
-            "credits": 1.66666666666667
+            "credits": 1.666666667
           }
         },
         {
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 19,
+          "points": 20.3,
           "scores": {
-            "attendance": 6.7,
+            "attendance": 8,
             "followers": 0,
             "videos": 12.3
           },
@@ -1328,8 +1328,8 @@
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 3,
-            "eligible": 9
+            "attended": 4,
+            "eligible": 10
           },
           "followers": {
             "growth": 1221
@@ -1337,7 +1337,7 @@
           "videos": {
             "count": 32,
             "weeks": 10.29,
-            "credits": 6.33333333333333
+            "credits": 6.333333333
           }
         },
         {
@@ -1381,7 +1381,7 @@
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 9.1,
+      "annualPoints": 8.8,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -1416,9 +1416,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 9.1,
+          "points": 8.8,
           "scores": {
-            "attendance": 2.5,
+            "attendance": 2.2,
             "followers": 0,
             "videos": 6.6
           },
@@ -1427,7 +1427,7 @@
           "bonusReason": null,
           "attendance": {
             "attended": 1,
-            "eligible": 8
+            "eligible": 9
           },
           "followers": {
             "growth": 90
@@ -1479,7 +1479,7 @@
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 10.2,
+      "annualPoints": 9.3,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -1514,9 +1514,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 10.2,
+          "points": 9.3,
           "scores": {
-            "attendance": 8.9,
+            "attendance": 8,
             "followers": 0,
             "videos": 1.3
           },
@@ -1525,7 +1525,7 @@
           "bonusReason": null,
           "attendance": {
             "attended": 4,
-            "eligible": 9
+            "eligible": 10
           },
           "followers": {
             "growth": 18
@@ -1533,7 +1533,7 @@
           "videos": {
             "count": 2,
             "weeks": 10.29,
-            "credits": 0.666666666666667
+            "credits": 0.6666666667
           }
         },
         {
@@ -1577,7 +1577,7 @@
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 7.2,
+      "annualPoints": 6.6,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -1612,9 +1612,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 7.2,
+          "points": 6.6,
           "scores": {
-            "attendance": 5,
+            "attendance": 4.4,
             "followers": 0,
             "videos": 2.2
           },
@@ -1623,7 +1623,7 @@
           "bonusReason": null,
           "attendance": {
             "attended": 2,
-            "eligible": 8
+            "eligible": 9
           },
           "followers": {
             "growth": 165
@@ -1675,7 +1675,7 @@
       "grade": 1,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 104,
+      "annualPoints": 105.1,
       "renewalDiscount": 15000,
       "renewalPrice": 105000,
       "vouchers": 0,
@@ -1703,16 +1703,16 @@
           "videos": {
             "count": 20,
             "weeks": 7.29,
-            "credits": 6.66666666666667
+            "credits": 6.666666667
           }
         },
         {
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 45.7,
+          "points": 46.8,
           "scores": {
-            "attendance": 8.9,
+            "attendance": 10,
             "followers": 20,
             "videos": 16.8
           },
@@ -1720,8 +1720,8 @@
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 4,
-            "eligible": 9
+            "attended": 5,
+            "eligible": 10
           },
           "followers": {
             "growth": 6520
@@ -1729,7 +1729,7 @@
           "videos": {
             "count": 27,
             "weeks": 10.29,
-            "credits": 8.66666666666667
+            "credits": 8.666666667
           }
         },
         {
@@ -1801,7 +1801,7 @@
           "videos": {
             "count": 5,
             "weeks": 4,
-            "credits": 1.66666666666667
+            "credits": 1.666666667
           }
         },
         {
@@ -1819,7 +1819,7 @@
           "bonusReason": null,
           "attendance": {
             "attended": 0,
-            "eligible": 9
+            "eligible": 10
           },
           "followers": {
             "growth": 153
@@ -1871,7 +1871,7 @@
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 4.4,
+      "annualPoints": 4,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -1906,9 +1906,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 4.4,
+          "points": 4,
           "scores": {
-            "attendance": 4.4,
+            "attendance": 4,
             "followers": 0,
             "videos": 0
           },
@@ -1917,7 +1917,7 @@
           "bonusReason": null,
           "attendance": {
             "attended": 2,
-            "eligible": 9
+            "eligible": 10
           },
           "followers": {
             "growth": 44
@@ -1969,7 +1969,7 @@
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 35.2,
+      "annualPoints": 36.1,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -2004,9 +2004,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 22.4,
+          "points": 23.3,
           "scores": {
-            "attendance": 11.1,
+            "attendance": 12,
             "followers": 0,
             "videos": 1.3
           },
@@ -2014,8 +2014,8 @@
           "bonus": 10,
           "bonusReason": "Palestrante — data não localizada",
           "attendance": {
-            "attended": 5,
-            "eligible": 9
+            "attended": 6,
+            "eligible": 10
           },
           "followers": {
             "growth": 1351
@@ -2023,7 +2023,7 @@
           "videos": {
             "count": 2,
             "weeks": 10.29,
-            "credits": 0.666666666666667
+            "credits": 0.6666666667
           }
         },
         {
@@ -2067,7 +2067,7 @@
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 8.9,
+      "annualPoints": 10,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -2102,9 +2102,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 8.9,
+          "points": 10,
           "scores": {
-            "attendance": 8.9,
+            "attendance": 10,
             "followers": 0,
             "videos": 0
           },
@@ -2112,8 +2112,8 @@
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 4,
-            "eligible": 9
+            "attended": 5,
+            "eligible": 10
           },
           "followers": {
             "growth": 4
@@ -2165,7 +2165,7 @@
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 30,
+      "annualPoints": 29.3,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -2193,16 +2193,16 @@
           "videos": {
             "count": 10,
             "weeks": 9.86,
-            "credits": 3.33333333333333
+            "credits": 3.333333333
           }
         },
         {
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 9.9,
+          "points": 9.2,
           "scores": {
-            "attendance": 6.7,
+            "attendance": 6,
             "followers": 0,
             "videos": 3.2
           },
@@ -2211,7 +2211,7 @@
           "bonusReason": null,
           "attendance": {
             "attended": 3,
-            "eligible": 9
+            "eligible": 10
           },
           "followers": {
             "growth": 782
@@ -2219,7 +2219,7 @@
           "videos": {
             "count": 5,
             "weeks": 10.29,
-            "credits": 1.66666666666667
+            "credits": 1.666666667
           }
         },
         {
@@ -2263,7 +2263,7 @@
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 27.6,
+      "annualPoints": 28.5,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -2298,9 +2298,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 17.6,
+          "points": 18.5,
           "scores": {
-            "attendance": 11.1,
+            "attendance": 12,
             "followers": 0,
             "videos": 6.5
           },
@@ -2308,8 +2308,8 @@
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 5,
-            "eligible": 9
+            "attended": 6,
+            "eligible": 10
           },
           "followers": {
             "growth": 56
@@ -2317,7 +2317,7 @@
           "videos": {
             "count": 10,
             "weeks": 10.29,
-            "credits": 3.33333333333333
+            "credits": 3.333333333
           }
         },
         {
@@ -2361,7 +2361,7 @@
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 24.9,
+      "annualPoints": 23.6,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -2389,16 +2389,16 @@
           "videos": {
             "count": 1,
             "weeks": 6.57,
-            "credits": 0.333333333333333
+            "credits": 0.3333333333
           }
         },
         {
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 13.9,
+          "points": 12.6,
           "scores": {
-            "attendance": 13.3,
+            "attendance": 12,
             "followers": 0,
             "videos": 0.6
           },
@@ -2407,7 +2407,7 @@
           "bonusReason": null,
           "attendance": {
             "attended": 6,
-            "eligible": 9
+            "eligible": 10
           },
           "followers": {
             "growth": 62
@@ -2415,7 +2415,7 @@
           "videos": {
             "count": 1,
             "weeks": 10.29,
-            "credits": 0.333333333333333
+            "credits": 0.3333333333
           }
         },
         {
@@ -2459,7 +2459,7 @@
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 21.5,
+      "annualPoints": 21.1,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -2494,9 +2494,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 11.5,
+          "points": 11.1,
           "scores": {
-            "attendance": 4.4,
+            "attendance": 4,
             "followers": 0,
             "videos": 7.1
           },
@@ -2505,7 +2505,7 @@
           "bonusReason": null,
           "attendance": {
             "attended": 2,
-            "eligible": 9
+            "eligible": 10
           },
           "followers": {
             "growth": 38
@@ -2513,7 +2513,7 @@
           "videos": {
             "count": 14,
             "weeks": 10.29,
-            "credits": 3.66666666666667
+            "credits": 3.666666667
           }
         },
         {
@@ -2557,7 +2557,7 @@
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 15.4,
+      "annualPoints": 14.5,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -2592,9 +2592,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 15.4,
+          "points": 14.5,
           "scores": {
-            "attendance": 8.9,
+            "attendance": 8,
             "followers": 0,
             "videos": 6.5
           },
@@ -2603,7 +2603,7 @@
           "bonusReason": null,
           "attendance": {
             "attended": 4,
-            "eligible": 9
+            "eligible": 10
           },
           "followers": {
             "growth": 72
@@ -2611,7 +2611,7 @@
           "videos": {
             "count": 13,
             "weeks": 10.29,
-            "credits": 3.33333333333333
+            "credits": 3.333333333
           }
         },
         {
@@ -2655,7 +2655,7 @@
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 80,
+      "annualPoints": 79.3,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -2690,9 +2690,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 46.7,
+          "points": 46,
           "scores": {
-            "attendance": 6.7,
+            "attendance": 6,
             "followers": 10,
             "videos": 20
           },
@@ -2701,7 +2701,7 @@
           "bonusReason": "Palestrante — data não localizada",
           "attendance": {
             "attended": 3,
-            "eligible": 9
+            "eligible": 10
           },
           "followers": {
             "growth": 3494
@@ -2709,7 +2709,7 @@
           "videos": {
             "count": 107,
             "weeks": 10.29,
-            "credits": 10.3333333333333
+            "credits": 10.33333333
           }
         },
         {
@@ -2753,7 +2753,7 @@
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 2.2,
+      "annualPoints": 4,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -2788,9 +2788,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 2.2,
+          "points": 4,
           "scores": {
-            "attendance": 2.2,
+            "attendance": 4,
             "followers": 0,
             "videos": 0
           },
@@ -2798,8 +2798,8 @@
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 1,
-            "eligible": 9
+            "attended": 2,
+            "eligible": 10
           },
           "followers": {
             "growth": 50
