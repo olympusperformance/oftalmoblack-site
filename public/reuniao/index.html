@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clínica Oftalmológica Premium</title>
+<script>
+(function(){
+  var alvo = '/workshop/';
+  var q = new URLSearchParams(window.location.search);
+  var def = { utm_source: 'ig', utm_medium: 'stories', utm_campaign: 'workshop-0110', utm_content: 'link-curto' };
+  if (q.has('c') && !q.has('utm_content')) { q.set('utm_content', q.get('c')); q.delete('c'); }
+  Object.keys(def).forEach(function(k){ if (!q.has(k)) q.set(k, def[k]); });
+  window.location.replace(alvo + '?' + q.toString() + (window.location.hash || ''));
+})();
+</script>
+<noscript><meta http-equiv="refresh" content="0; url=/workshop/?utm_source=ig&utm_medium=stories&utm_campaign=workshop-0110&utm_content=link-curto"></noscript>
+<style>body{margin:0;background:#0a0a0a;color:#f5f0e6;font-family:system-ui,sans-serif;display:grid;place-items:center;min-height:100vh}a{color:#e6bd74}</style>
+</head>
+<body>
+<p>Abrindo a página da aula... <a href="/workshop/?utm_source=ig&utm_medium=stories&utm_campaign=workshop-0110&utm_content=link-curto">Clique aqui se não abrir.</a></p>
+</body>
+</html>
