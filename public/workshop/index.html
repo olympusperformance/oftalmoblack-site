@@ -161,8 +161,55 @@ em{font-style:italic}
 .when .d{font-family:var(--serif);font-weight:700;font-size:clamp(23px,3.3vw,30px);line-height:1.1;color:var(--paper);white-space:nowrap}
 .when .t{margin-top:3px;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
 .when .h{font-family:var(--serif);font-weight:700;font-size:clamp(23px,3.3vw,30px);line-height:1.1;white-space:nowrap}
-.hero-cta{display:flex;flex-wrap:wrap;flex-direction:column;align-items:flex-start;gap:12px;margin-top:clamp(26px,3vw,34px)}
 .under{font-size:14px;letter-spacing:.02em;color:var(--dim)}
+
+/* formulário do hero */
+.hero-form{
+  position:relative;display:flex;flex-direction:column;margin:clamp(22px,2.6vw,30px) 0 0;
+  padding:clamp(18px,2.2vw,26px) clamp(16px,2vw,24px) clamp(20px,2.2vw,26px);
+  border:1px solid var(--line);border-radius:16px;overflow:hidden;
+  background:linear-gradient(150deg,#17140f,#0d0c0b 62%);
+  box-shadow:0 22px 50px rgba(0,0,0,.42);
+}
+.hero-form::before{
+  content:"";position:absolute;left:0;right:0;top:0;height:1px;
+  background:linear-gradient(90deg,rgba(216,157,77,.7),rgba(216,157,77,.1) 58%,rgba(216,157,77,0));
+}
+.hf-grid{display:grid;gap:17px}
+.hero-form label{display:grid;gap:6px;min-width:0}
+.hero-form label span{
+  font-size:11px;line-height:1.3;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-light);
+}
+.hero-form input{
+  width:100%;min-height:52px;padding:13px 15px;border-radius:12px;
+  border:1px solid rgba(216,157,77,.26);background:rgba(6,6,5,.72);
+  font-family:var(--sans);font-weight:400;font-size:16px;line-height:1.3;color:var(--paper);
+  box-shadow:inset 0 1px 0 rgba(0,0,0,.45);
+  -webkit-appearance:none;appearance:none;
+  transition:border-color .25s ease,box-shadow .25s ease,background-color .25s ease;
+}
+.hero-form input::placeholder{color:rgba(245,240,230,.55);opacity:1}
+.hero-form input:focus{
+  outline:none;border-color:var(--gold);background:rgba(10,9,7,.9);
+  box-shadow:inset 0 1px 0 rgba(0,0,0,.45),0 0 0 3px rgba(216,157,77,.18);
+}
+.hero-form label:focus-within span{color:var(--cream)}
+.hero-form input.hf-bad{
+  border-color:rgba(217,122,122,.7);
+  box-shadow:inset 0 1px 0 rgba(0,0,0,.45),0 0 0 3px rgba(217,122,122,.14);
+}
+.hero-form .cta{
+  width:100%;min-width:0;margin-top:clamp(16px,1.8vw,20px);
+  padding-left:18px;padding-right:18px;letter-spacing:.1em;font-size:clamp(11.5px,3.1vw,13.5px);
+}
+.hero-form .cta[disabled]{opacity:.8;cursor:default;transform:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+.hero-form .under{order:1;margin-top:12px;color:var(--muted);font-size:13px;line-height:1.5;max-width:48ch}
+.hf-erro{margin-top:13px;font-size:14px;line-height:1.5;color:var(--red)}
+.hf-fallback{order:2;margin-top:10px;font-size:13.5px;line-height:1.5;color:var(--gold-light)}
+.hf-erro[hidden],.hf-fallback[hidden]{display:none}
+@media (min-width:560px){
+  .hf-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+}
 .proof{
   margin-top:clamp(24px,3vw,32px);padding-top:16px;border-top:1px solid var(--line-soft);
   font-size:13.5px;letter-spacing:.04em;color:var(--dim);
@@ -361,12 +408,12 @@ footer{padding:clamp(34px,4vw,48px) 0 clamp(40px,5vw,56px);border-top:1px solid 
   .strip div,.hero h1 .foil{animation:none}
   .cta{transition:none}
   .dock{transition:none}
+  .hero-form input{transition:none}
 }
 
 /* ---------- breakpoints ---------- */
 @media (min-width:600px){
-  .hero-cta{flex-direction:row;align-items:center;gap:20px}
-  .under{max-width:16em;font-size:13.5px;line-height:1.5}
+  .under{font-size:13.5px;line-height:1.5}
   .myths{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
   .stats{grid-template-columns:repeat(4,minmax(0,1fr))}
   .gal{grid-template-columns:1.5fr 1fr .72fr}
@@ -391,6 +438,12 @@ footer{padding:clamp(34px,4vw,48px) 0 clamp(40px,5vw,56px);border-top:1px solid 
 @media (min-width:1080px){
   .hero{padding-top:clamp(40px,4vw,64px)}
   .myth{padding:30px 28px}
+}
+/* telas muito estreitas (<=359px): trava o transbordo herdado da v1 */
+@media (max-width:359px){
+  .label span{white-space:normal}
+  .offer{grid-template-columns:minmax(0,1fr)}
+  .cta--lg,.video-sec .cta{padding-left:17px;padding-right:17px;font-size:11.5px;letter-spacing:.1em}
 }
 </style>
 
@@ -465,7 +518,7 @@ FORM: split editorial assimetrico com espinha numerada. VARIANCE 6 / MOTION 4 / 
   </a>
   <div class="top-right">
     <span class="chip"><b>1º de outubro</b> · 20h, horário de Brasília</span>
-    <a class="cta cta--sm js-checkout" href="https://payfast.greenn.com.br/pre-checkout/j6ut7g4" target="_blank" rel="noopener">Garantir meu ingresso</a>
+    <a class="cta cta--sm js-to-form" href="#cadastro">Garantir meu ingresso</a>
   </div>
 </header>
 
@@ -502,10 +555,19 @@ FORM: split editorial assimetrico com espinha numerada. VARIANCE 6 / MOTION 4 / 
             <p class="d" style="font-size:clamp(17px,2vw,21px);padding-top:4px">Online<br>e ao vivo</p>
           </div>
         </div>
-        <div class="hero-cta" data-rv>
-          <a class="cta cta--lg js-checkout" href="https://payfast.greenn.com.br/pre-checkout/j6ut7g4" target="_blank" rel="noopener">Garantir meu ingresso · R$97</a>
-          <p class="under">À vista, Pix ou cartão · Garantia de 7 dias · Online e ao vivo</p>
-        </div>
+        <form id="cadastro" class="hero-form" novalidate autocomplete="on" data-rv>
+          <div class="hf-grid">
+            <label><span>Nome completo</span><input name="nome" type="text" required autocomplete="name" minlength="5" placeholder="Como está no CRM"></label>
+            <label><span>WhatsApp</span><input name="whatsapp" type="tel" required autocomplete="tel-national" inputmode="numeric" placeholder="(92) 99999-9999"></label>
+            <label><span>E-mail</span><input name="email" type="email" required autocomplete="email" placeholder="seu@email.com"></label>
+            <label><span>CRM / UF</span><input name="crm" type="text" required placeholder="12345 / AM" autocomplete="off"></label>
+          </div>
+          <input name="site" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">
+          <button type="submit" class="cta cta--lg">Garantir meu ingresso · R$97</button>
+          <p class="under">Em seguida você vai pro pagamento seguro (Pix ou cartão) · Garantia de 7 dias · Aula ao vivo, sem replay</p>
+          <p class="hf-erro" role="alert" hidden></p>
+          <p class="hf-fallback" hidden>Se o pagamento não abrir, <a href="#" rel="noopener">clique aqui</a>.</p>
+        </form>
         <p class="proof" data-rv>Dr. Alex Sá · <b>CRM-AM 7516</b> · <b>RQE 3514</b></p>
       </div>
 
@@ -545,7 +607,7 @@ FORM: split editorial assimetrico com espinha numerada. VARIANCE 6 / MOTION 4 / 
         <p class="small video-note" data-rv>1 minuto e 25 segundos com o Dr. Alex Sá explicando o que ele vai abrir na aula.</p>
       </div>
       <div style="display:flex;justify-content:center;margin-top:clamp(30px,4vw,44px)" data-rv>
-        <a class="cta js-checkout" href="https://payfast.greenn.com.br/pre-checkout/j6ut7g4" target="_blank" rel="noopener">Garantir meu ingresso · R$97</a>
+        <a class="cta js-to-form" href="#cadastro">Garantir meu ingresso · R$97</a>
       </div>
     </div>
   </section>
@@ -777,7 +839,7 @@ FORM: split editorial assimetrico com espinha numerada. VARIANCE 6 / MOTION 4 / 
           <div class="price"><b>R$ 97</b><small>à vista</small></div>
           <p class="small" style="margin-top:10px;color:var(--paper)">Pix ou cartão · acesso imediato ao grupo</p>
           <div style="margin-top:clamp(22px,2.6vw,28px)">
-            <a class="cta cta--lg js-checkout" href="https://payfast.greenn.com.br/pre-checkout/j6ut7g4" target="_blank" rel="noopener" style="width:100%">Garantir meu ingresso</a>
+            <a class="cta cta--lg js-to-form" href="#cadastro" style="width:100%">Garantir meu ingresso</a>
           </div>
           <p class="warranty">Garantia de 7 dias: não gostou, devolvemos os R$97.</p>
         </div>
@@ -827,7 +889,7 @@ FORM: split editorial assimetrico com espinha numerada. VARIANCE 6 / MOTION 4 / 
         Aula online e ao vivo, de cerca de 2 horas, só pra oftalmologistas. Ingresso de R$97, à vista, no Pix ou no cartão, com garantia de 7 dias.
       </p>
       <div style="margin-top:clamp(26px,3.2vw,38px)" data-rv>
-        <a class="cta cta--lg js-checkout" href="https://payfast.greenn.com.br/pre-checkout/j6ut7g4" target="_blank" rel="noopener">Garantir meu ingresso · R$97</a>
+        <a class="cta cta--lg js-to-form" href="#cadastro">Garantir meu ingresso · R$97</a>
       </div>
       <p class="disclaimer" data-rv>Aula educacional destinada a médicos oftalmologistas. Não há promessa de resultado financeiro ou clínico.</p>
     </div>
@@ -849,35 +911,196 @@ FORM: split editorial assimetrico com espinha numerada. VARIANCE 6 / MOTION 4 / 
     <b>1º/10 · 20h, horário de Brasília</b>
     <span>Aula privada ao vivo · R$97</span>
   </div>
-  <a class="cta js-checkout" href="https://payfast.greenn.com.br/pre-checkout/j6ut7g4" target="_blank" rel="noopener">Garantir ingresso</a>
+  <a class="cta js-to-form" href="#cadastro">Garantir ingresso</a>
 </div>
 
 <script>
 /* ===== checkout: fonte única do link ===== */
 var CHECKOUT_URL='https://payfast.greenn.com.br/pre-checkout/j6ut7g4';
-(function(){
-  var links=document.querySelectorAll('a.js-checkout');
-  [].forEach.call(links,function(a){a.setAttribute('href',CHECKOUT_URL)});
+var FORM_ENDPOINT='https://script.google.com/macros/s/AKfycbxg1Kgjg07mwdGwZgeIUOJdqruEoOhPoOetMWaWuX8Zq2_wzK-SOu2D_X-f6-k7vJar/exec'; /* Apps Script (conta Olympus); vazio = só redireciona */
 
-  function decorate(a){
-    try{
-      var u=new URL(a.getAttribute('href')||CHECKOUT_URL,location.href);
-      var p=window.obTrk?window.obTrk():{};
-      Object.keys(p).forEach(function(k){if(!u.searchParams.get(k))u.searchParams.set(k,p[k])});
-      if(!u.searchParams.get('src'))u.searchParams.set('src','lp-workshop');
-      a.href=u.toString();
-    }catch(e){}
+/* ===== cadastro do hero: valida, grava e leva ao pagamento ===== */
+(function(){
+  var META={content_name:'workshop_clinica_premium',content_category:'oftalmoblack_b2b',value:97,currency:'BRL'};
+  var form=document.getElementById('cadastro');
+  var reduz=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* --- todos os CTAs levam ao formulário --- */
+  function irPraForm(){
+    if(!form)return;
+    var topo=document.querySelector('.top');
+    var folga=(topo?Math.round(topo.getBoundingClientRect().height):0)+22;
+    var y=form.getBoundingClientRect().top+(window.pageYOffset||document.documentElement.scrollTop||0)-folga;
+    if(y<0)y=0;
+    try{window.scrollTo({top:y,behavior:reduz?'auto':'smooth'})}catch(e){window.scrollTo(0,y)}
+    var nome=form.querySelector('[name="nome"]');
+    if(!nome)return;
+    var feito=false;
+    function foca(){if(feito)return;feito=true;try{nome.focus()}catch(e){}}
+    if(reduz){foca();return}
+    /* só foca quando a rolagem assentar: o foco não deve interromper o scroll suave */
+    var voltas=0,anterior=-1,paradas=0,andou=false,melhor=Infinity;
+    function espera(){
+      var agora=window.pageYOffset||document.documentElement.scrollTop||0;
+      var d=Math.abs(agora-y);
+      if(d<4){foca();return}
+      if(d>melhor+120)return; /* quem rolou pra longe no meio do caminho não é puxado de volta */
+      if(d<melhor)melhor=d;
+      if(agora!==anterior){andou=true;paradas=0}else{paradas++}
+      anterior=agora;
+      if((andou&&paradas>=3)||voltas>240){foca();return}
+      voltas++;
+      if(window.requestAnimationFrame)requestAnimationFrame(espera);else setTimeout(espera,16);
+    }
+    espera();
   }
-  function onAct(e){
-    if(e.type==='auxclick'&&e.button!==1)return;
-    var a=e.target&&e.target.closest?e.target.closest('a.js-checkout'):null;
+  document.addEventListener('click',function(e){
+    var a=e.target&&e.target.closest?e.target.closest('a.js-to-form'):null;
     if(!a)return;
-    decorate(a);
-    try{fbq('trackCustom','ClickCheckout',{content_name:'workshop_clinica_premium',content_category:'oftalmoblack_b2b',value:97,currency:'BRL'})}catch(e2){}
-    try{gtag('event','begin_checkout',{currency:'BRL',value:97,transport_type:'beacon',items:[{item_id:'workshop-clinica-premium',item_name:'Workshop Clínica Oftalmológica Premium',price:97}]})}catch(e3){}
+    e.preventDefault();
+    irPraForm();
+  },true);
+
+  if(!form)return;
+
+  var campo={
+    nome:form.querySelector('[name="nome"]'),
+    tel:form.querySelector('[name="whatsapp"]'),
+    email:form.querySelector('[name="email"]'),
+    crm:form.querySelector('[name="crm"]'),
+    isca:form.querySelector('[name="site"]')
+  };
+  var btn=form.querySelector('button[type="submit"]');
+  var aviso=form.querySelector('.hf-erro');
+  var plano=form.querySelector('.hf-fallback');
+  var planoLink=plano?plano.querySelector('a'):null;
+  var enviando=false;
+
+  function dig(v){return String(v==null?'':v).replace(/\D+/g,'')}
+  function formata(v){
+    var d=dig(v).slice(0,11);
+    if(!d)return '';
+    if(d.length<3)return '('+d;
+    if(d.length<=6)return '('+d.slice(0,2)+') '+d.slice(2);
+    if(d.length<=10)return '('+d.slice(0,2)+') '+d.slice(2,6)+'-'+d.slice(6);
+    return '('+d.slice(0,2)+') '+d.slice(2,7)+'-'+d.slice(7);
   }
-  document.addEventListener('click',onAct,true);
-  document.addEventListener('auxclick',onAct,true);
+  function limpa(el){
+    if(el){el.classList.remove('hf-bad');el.removeAttribute('aria-invalid')}
+    if(aviso&&!aviso.hidden){aviso.hidden=true;aviso.textContent=''}
+  }
+  function acusa(el,msg){
+    if(aviso){aviso.textContent=msg;aviso.hidden=false}
+    if(el){el.classList.add('hf-bad');el.setAttribute('aria-invalid','true');try{el.focus()}catch(e){}}
+  }
+
+  /* --- form_start: 1x no primeiro toque em qualquer campo --- */
+  var abriu=false;
+  function comecou(e){
+    if(abriu)return;
+    var t=e&&e.target;
+    if(!t||t.tagName!=='INPUT'||t.name==='site')return;
+    abriu=true;
+    try{gtag('event','form_start',{form_id:'cadastro'})}catch(e2){}
+  }
+  form.addEventListener('focus',comecou,true);
+  form.addEventListener('input',comecou,true);
+
+  /* --- máscara leve do WhatsApp --- */
+  if(campo.tel){
+    campo.tel.addEventListener('input',function(){
+      var fim=this.selectionStart>=this.value.length;
+      this.value=formata(this.value);
+      if(fim){try{this.setSelectionRange(this.value.length,this.value.length)}catch(e){}}
+    });
+  }
+  ['nome','tel','email','crm'].forEach(function(k){
+    if(campo[k])campo[k].addEventListener('input',function(){limpa(this)});
+  });
+
+  function confere(){
+    var nome=String(campo.nome&&campo.nome.value||'').trim().replace(/\s+/g,' ');
+    if(nome.split(' ').length<2||nome.length<5)return {el:campo.nome,msg:'Escreva seu nome completo, com sobrenome.'};
+    var d=dig(campo.tel&&campo.tel.value);
+    if(d.length<10||d.length>11)return {el:campo.tel,msg:'Confira o número de WhatsApp, com DDD.'};
+    var em=String(campo.email&&campo.email.value||'').trim().toLowerCase();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em))return {el:campo.email,msg:'Confira o e-mail: precisa ter @ e um domínio, como seu@email.com.'};
+    if(dig(campo.crm&&campo.crm.value).length<3)return {el:campo.crm,msg:'Informe o número do CRM e a UF, assim: 12345 / AM.'};
+    return null;
+  }
+
+  function novoLid(){
+    try{if(window.crypto&&crypto.randomUUID)return crypto.randomUUID()}catch(e){}
+    return Date.now().toString(36)+Math.random().toString(36).slice(2,10);
+  }
+  function fone(v){var d=dig(v);return (d.length===10||d.length===11)?'55'+d:d}
+  function posta(dados){
+    try{
+      var r=fetch(FORM_ENDPOINT,{method:'POST',mode:'no-cors',keepalive:true,headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify(dados)});
+      return (r&&r.catch)?r.catch(function(){}):Promise.resolve();
+    }catch(e){return Promise.resolve()}
+  }
+  function prazo(p,ms){
+    return Promise.race([p,new Promise(function(ok){setTimeout(ok,ms)})]);
+  }
+  function destino(email,ph,lid,trk){
+    try{
+      var u=new URL(CHECKOUT_URL);
+      u.searchParams.set('email',email);
+      u.searchParams.set('ph',ph);
+      u.searchParams.set('lid',lid);
+      Object.keys(trk).forEach(function(k){if(!u.searchParams.get(k))u.searchParams.set(k,trk[k])});
+      if(!u.searchParams.get('src'))u.searchParams.set('src','lp-workshop');
+      return u.toString();
+    }catch(e){return CHECKOUT_URL}
+  }
+
+  form.addEventListener('submit',function(ev){
+    ev.preventDefault();
+    if(enviando)return;
+    var erro=confere();
+    if(erro){acusa(erro.el,erro.msg);return}
+    if(aviso){aviso.hidden=true;aviso.textContent=''}
+    enviando=true;
+
+    var lid=novoLid();
+    var ph=fone(campo.tel.value);
+    var email=String(campo.email.value||'').trim().toLowerCase();
+    var ts=new Date().toISOString();
+    var trk={};
+    try{trk=window.obTrk?window.obTrk():{}}catch(e){trk={}}
+
+    var dados={
+      nome:String(campo.nome.value||'').trim().replace(/\s+/g,' '),
+      whatsapp:ph,
+      email:email,
+      crm:String(campo.crm.value||'').trim(),
+      lid:lid,
+      origem:'lp-workshop',
+      ts:ts,
+      page:location.href,
+      referrer:document.referrer||''
+    };
+    Object.keys(trk).forEach(function(k){if(dados[k]===undefined)dados[k]=trk[k]});
+
+    var robo=!!(campo.isca&&campo.isca.value);
+    var gravou=(FORM_ENDPOINT&&!robo)?prazo(posta(dados),1200):Promise.resolve();
+
+    try{fbq('track','CompleteRegistration',META)}catch(e){}
+    try{fbq('trackCustom','CadastroWorkshop',META)}catch(e){}
+    try{fbq('trackCustom','ClickCheckout',META)}catch(e){}
+    try{gtag('event','generate_lead',{currency:'BRL',value:97,transport_type:'beacon'})}catch(e){}
+    try{gtag('event','begin_checkout',{currency:'BRL',value:97,transport_type:'beacon',items:[{item_id:'workshop-clinica-premium',item_name:'Workshop Clínica Oftalmológica Premium',price:97}]})}catch(e){}
+
+    var url=destino(email,ph,lid,trk);
+    if(btn){btn.disabled=true;btn.textContent='Abrindo o pagamento...'}
+    try{localStorage.setItem('ob_cad',JSON.stringify({lid:lid,ts:ts}))}catch(e){}
+    if(planoLink)planoLink.setAttribute('href',url);
+    setTimeout(function(){if(plano)plano.hidden=false},2500);
+
+    function vai(){try{location.assign(url)}catch(e){location.href=url}}
+    gravou.then(vai,vai);
+  });
 })();
 
 /* ===== reveal na entrada da seção ===== */

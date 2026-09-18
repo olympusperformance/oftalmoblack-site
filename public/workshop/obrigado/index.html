@@ -215,6 +215,7 @@ var GROUP_URL='https://chat.whatsapp.com/I1VmQ3lCEE4KgkEiE64Nu7';
   a.textContent='Entrar no grupo da aula';
   a.addEventListener('click',function(){
     try{gtag('event','entrar_grupo',{page_path:location.pathname})}catch(e){}
+    try{fbq('trackCustom','EntrarGrupo',{content_name:'workshop_clinica_premium',content_category:'oftalmoblack_b2b'})}catch(e){}
   });
   alvo.appendChild(a);
 })();
