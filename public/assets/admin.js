@@ -15,15 +15,15 @@
              qrLinks: [], qrScans: [],
              view: 'overview', membro: '', status: 'all', igOrdem: 'seguidores',
              matCategoria: '', matMembro: '',
-             demResp: '', demMembro: '', demProjeto: '', demAbertas: 'open',
+             demResp: '', demMembro: '', demFrente: '', demAbertas: 'open',
              /* Recorte aberto por um cartão do painel (atrasadas, sem dono…).
                 Não é leitura guardada: é um mergulho, e mora na URL. */
              demFoco: '',
              /* "Minhas" é a leitura padrão do quadro: quem abre vê o que é seu,
-                agrupado por projeto. "eu" é a pessoa da equipe ligada ao login
+                agrupado por frente. "eu" é a pessoa da equipe ligada ao login
                 (staff.user_id) ou, enquanto a migração não roda, a escolhida no
                 próprio botão e guardada neste navegador. */
-             demVisao: 'minhas', demAgrupar: 'projeto', eu: null, temProjeto: true,
+             demVisao: 'minhas', demAgrupar: 'frente', eu: null,
              grpFechado: {},
              arvMembro: '', arvFiltro: 'all',
              /* Demanda que está com a linha de nova subtarefa aberta. */
@@ -129,16 +129,14 @@
   /* ── quem sou eu no quadro ─────────────────────────────────────────────
      Primeiro pelo vínculo do banco (staff.user_id = login). Sem vínculo, vale a
      escolha feita no botão "Minhas" e guardada no localStorage: é o que deixa o
-     quadro funcionar hoje, antes de o SQL de 02/09 rodar. A coluna "projeto"
-     segue a mesma regra: se o banco ainda não a tem, o painel agrupa só por
-     mentorado e esconde o campo, em vez de quebrar a gravação. */
+     quadro funcionar hoje, antes de o SQL de 02/09 rodar. */
   var CHAVE_EU = 'ob-admin-eu';
 
   /* Leitura da aba Demandas guardada no navegador, por login: visão, agrupamento,
      filtros e quais grupos estão fechados. Quem volta ao quadro encontra a
      leitura que deixou, sem mexer em filtro de novo (pedido da equipe 02/09). */
   var CHAVE_DEM = 'ob-admin-dem';
-  var PREFS_DEM = ['demVisao', 'demAgrupar', 'demAbertas', 'demResp', 'demMembro', 'demProjeto', 'grpFechado'];
+  var PREFS_DEM = ['demVisao', 'demAgrupar', 'demAbertas', 'demResp', 'demMembro', 'demFrente', 'grpFechado'];
 
   function chaveDem() {
     return CHAVE_DEM + ':' + (sessao && sessao.email ? String(sessao.email).toLowerCase() : 'anon');
@@ -152,6 +150,8 @@
       var p = JSON.parse(raw);
       PREFS_DEM.forEach(function (k) { if (k in p && p[k] !== undefined) st[k] = p[k]; });
     } catch (err) { /* guardado velho ou corrompido: ignora */ }
+    /* Preferência gravada antes da fase 3: "por projeto" virou "por frente". */
+    if (st.demAgrupar === 'projeto') st.demAgrupar = 'frente';
     if (!st.grpFechado || typeof st.grpFechado !== 'object') st.grpFechado = {};
     if (!st.eu) st.demVisao = 'todas';
   }
@@ -174,7 +174,6 @@
   };
 
   function descobrirEu() {
-    st.temProjeto = !!st.demands.length && ('projeto' in st.demands[0]);
     var porLogin = st.staff.filter(function (p) {
       return p.user_id && sessao && p.user_id === sessao.userId;
     })[0];
@@ -2187,96 +2186,71 @@
     return !!(st.eu && d.responsaveis && d.responsaveis.indexOf(st.eu.id) !== -1);
   }
 
-  /* Projeto é o eixo de leitura: demanda de mentorado se agrupa por ele;
-     interna, pelo texto livre em `projeto`; sem nada, vai para "Sem projeto". */
-  /* Sem a coluna no banco, o projeto mora no começo do título: "[SDR IA Marina]
-     Migrar pra Sonnet 5". A tela lê e escreve a tag; o resto do sistema (TV,
-     Hermes) enxerga o título inteiro e não precisa saber da convenção. Quando a
-     coluna existir, ela manda e a tag deixa de ser escrita. */
-  var TAG = /^\s*\[([^\]]+)\]\s*/;
+  /* ── frente: o eixo de leitura do quadro ──────────────────────────────
+     A demanda aponta para a frente (demands.artifact_id): um artefato do
+     mentorado ou uma frente interna da equipe, sempre dentro de uma área da
+     jornada. Demanda de mentorado sem frente ainda se agrupa por ele; sem
+     mentorado e sem frente vai para "Sem frente", que é onde a triagem
+     acontece. projeto_legado é o texto antigo, só para leitura. */
 
-  function lerProjeto(d) {
-    if (st.temProjeto && d.projeto) return String(d.projeto).trim();
-    var m = TAG.exec(d.titulo || '');
-    return m ? m[1].trim() : '';
+  function frenteDe(d) {
+    if (!d || !d.artifact_id) return null;
+    return st.artifacts.filter(function (a) { return a.id === d.artifact_id; })[0] || null;
   }
 
-  function tituloSemTag(t) { return String(t || '').replace(TAG, ''); }
-
-  function comTag(projeto, titulo) {
-    var base = tituloSemTag(titulo);
-    return projeto ? '[' + projeto + '] ' + base : base;
+  function rotuloFrente(a) {
+    var g = grupoDe(a);
+    return (g ? g.nome + ' · ' : '') + a.nome + (a.member_id ? ' (' + (membro(a.member_id) || 'mentorado') + ')' : '');
   }
 
-  /* O que gravar ao trocar o projeto: coluna, ou o título reescrito. Com a
-     coluna no banco, a tag antiga sai do título na mesma gravação — senão a TV
-     e o Hermes seguiriam lendo um projeto que já não é o da coluna. */
-  function patchProjeto(r, v) {
-    v = (v || '').trim();
-    if (st.temProjeto) {
-      var p = { projeto: v || null };
-      if (TAG.test(r.titulo || '')) p.titulo = tituloSemTag(r.titulo);
-      return p;
-    }
-    return { titulo: comTag(v, r.titulo) };
+  function contextoDe(d) {
+    var a = frenteDe(d);
+    if (a) return { key:'f:' + a.id, nome:a.nome, tipo:'frente', area:grupoDe(a) };
+    if (d.member_id) return { key:'m:' + d.member_id, nome:membro(d.member_id) || 'Mentorado removido', tipo:'mentorado', area:null };
+    return { key:'z:', nome:'Sem frente', tipo:'vazio', area:null };
   }
 
-  function projetoDe(d) {
-    if (d.member_id) return { key:'m:' + d.member_id, nome:membro(d.member_id) || 'Mentorado removido', tipo:'mentorado' };
-    var p = lerProjeto(d);
-    if (p) return { key:'p:' + p.toLowerCase(), nome:p, tipo:'projeto' };
-    return { key:'z:', nome:'Sem projeto', tipo:'vazio' };
-  }
-
-  function projetosExistentes() {
-    var vistos = {};
-    st.demands.forEach(function (d) {
-      if (d.member_id) return;
-      var p = lerProjeto(d);
-      if (p) vistos[p.toLowerCase()] = p;
+  /* Áreas na ordem cadastrada (as da equipe vêm depois por ordem, e por
+     garantia por `interna`), frentes na ordem da área. */
+  function areasOrdenadas() {
+    return st.groups.slice().sort(function (a, b) {
+      return ((a.interna ? 1 : 0) - (b.interna ? 1 : 0)) || ((a.ordem || 0) - (b.ordem || 0)) ||
+        String(a.nome).localeCompare(String(b.nome), 'pt-BR');
     });
-    return Object.keys(vistos).sort().map(function (k) { return vistos[k]; });
   }
 
-  /* Projeto em dois níveis, sem coluna nova: "Olympus / Imersão Grau Zero" é a
-     frente "Imersão Grau Zero" dentro do pai "Olympus". Fechado na reunião de
-     equipe de 02/09: Clínica Dr. Alex e Olympus são pais; cada mentorado segue
-     no topo, como grupo próprio; projeto sem barra também fica no topo. */
-  var SEP_PROJETO = ' / ';
-
-  function partesProjeto(nome) {
-    var i = String(nome || '').indexOf(SEP_PROJETO);
-    if (i === -1) return { pai: null, frente: String(nome || '').trim() };
-    return { pai: nome.slice(0, i).trim(), frente: nome.slice(i + SEP_PROJETO.length).trim() };
-  }
-
-  /* Opções do filtro de projeto: cada pai (lendo o guarda-chuva inteiro), as
-     frentes dele indentadas, e por fim os projetos soltos. */
-  function opcoesProjeto() {
-    var nomes = projetosExistentes(), pais = {}, lista = [];
-    nomes.forEach(function (n) {
-      var pp = partesProjeto(n);
-      if (pp.pai) pais[pp.pai.toLowerCase()] = pp.pai;
+  function frentesOrdenadas() {
+    var ordemArea = {};
+    areasOrdenadas().forEach(function (g, i) { ordemArea[g.id] = i; });
+    return st.artifacts.slice().sort(function (a, b) {
+      var ga = ordemArea[a.group_id], gb = ordemArea[b.group_id];
+      if (ga === undefined) ga = 999; if (gb === undefined) gb = 999;
+      return (ga - gb) || ((a.ordem || 0) - (b.ordem || 0)) ||
+        String(a.nome).localeCompare(String(b.nome), 'pt-BR');
     });
-    Object.keys(pais).sort().forEach(function (k) {
-      lista.push({ value: pais[k], label: pais[k] + ' (tudo)' });
-      nomes.forEach(function (n) {
-        var pp = partesProjeto(n);
-        if (pp.pai && pp.pai.toLowerCase() === k) lista.push({ value: n, label: '    ' + pp.frente });
+  }
+
+  /* Opções do filtro: a área inteira ("a:<id>") e, indentadas, as frentes dela. */
+  function opcoesFrente() {
+    var lista = [];
+    areasOrdenadas().forEach(function (g) {
+      var frentes = frentesOrdenadas().filter(function (a) { return a.group_id === g.id; });
+      if (!frentes.length) return;
+      lista.push({ value:'a:' + g.id, label:g.nome + ' (tudo)' });
+      frentes.forEach(function (a) {
+        lista.push({ value:a.id, label:'    ' + a.nome + (a.member_id ? ' (' + (membro(a.member_id) || 'mentorado') + ')' : '') });
       });
-    });
-    nomes.forEach(function (n) {
-      if (!partesProjeto(n).pai) lista.push({ value: n, label: n });
     });
     return lista;
   }
 
-  /* O filtro casa o nome inteiro (uma frente) ou só o pai (todas as frentes). */
-  function casaProjeto(d, alvo) {
-    var p = projetoDe(d);
-    if (p.tipo !== 'projeto') return false;
-    var n = p.nome.toLowerCase(); alvo = String(alvo || '').toLowerCase();
-    return n === alvo || n.indexOf(alvo + SEP_PROJETO.toLowerCase()) === 0;
+  /* O filtro casa a frente exata ou a área inteira. */
+  function casaFrente(d, alvo) {
+    var a = frenteDe(d);
+    if (!a) return false;
+    alvo = String(alvo || '');
+    if (alvo.indexOf('a:') === 0) return a.group_id === alvo.slice(2);
+    return a.id === alvo;
   }
 
   function estaFechada(d) { return Club.DEM_ABERTOS.indexOf(d.status) === -1; }
@@ -2300,7 +2274,9 @@
     atencao:   { nome:'Pedindo atenção', vazio:'Nada em risco nem aguardando retorno.',
       testa:function (d) { return d.status === 'Em risco' || d.status === 'Aguardando retorno'; } },
     semdono:   { nome:'Sem responsável', vazio:'Todas as abertas têm dono.',
-      testa:function (d) { return aberta(d) && (!d.responsaveis || !d.responsaveis.length); } }
+      testa:function (d) { return aberta(d) && (!d.responsaveis || !d.responsaveis.length); } },
+    semfrente: { nome:'Sem frente', vazio:'Todas as abertas têm frente.',
+      testa:function (d) { return aberta(d) && !d.artifact_id; } }
   };
 
   /* O cartão "Em aberto" não é recorte: é a lista inteira das abertas, o ponto
@@ -2309,7 +2285,7 @@
     if (foco === 'abertas' || st.demFoco === foco) st.demFoco = '';
     else if (FOCOS[foco]) st.demFoco = foco;
     st.demAbertas = 'open';
-    st.demResp = ''; st.demMembro = ''; st.demProjeto = '';
+    st.demResp = ''; st.demMembro = ''; st.demFrente = '';
     sincronizarHash();
     renderDemandas();
   }
@@ -2378,7 +2354,7 @@
       if (st.demFoco && FOCOS[st.demFoco] && !FOCOS[st.demFoco].testa(d)) return false;
       if (st.demResp && (!d.responsaveis || d.responsaveis.indexOf(st.demResp) === -1)) return false;
       if (st.demMembro && d.member_id !== st.demMembro) return false;
-      if (st.demProjeto && !casaProjeto(d, st.demProjeto)) return false;
+      if (st.demFrente && !casaFrente(d, st.demFrente)) return false;
       return true;
     });
   }
@@ -2403,7 +2379,7 @@
 
     /* Trocar visão ou filtro é virar a página: as fechadas há pouco saem daqui
        e passam a valer só em "Todas", como qualquer concluída. */
-    var assinatura = [st.demVisao, st.demAbertas, st.demResp, st.demMembro, st.demProjeto].join('|');
+    var assinatura = [st.demVisao, st.demAbertas, st.demResp, st.demMembro, st.demFrente].join('|');
     if (assinatura !== assinaturaFiltros) st.recemFechadas = {};
     assinaturaFiltros = assinatura;
 
@@ -2419,14 +2395,11 @@
           '>' + esc(m.nome) + '</option>';
       }).join('');
 
-    var opProj = opcoesProjeto();
-    if (st.demProjeto && !opProj.some(function (o) { return o.value.toLowerCase() === st.demProjeto.toLowerCase(); })) {
-      st.demProjeto = '';
-    }
-    $('filtroProjetoDem').innerHTML = '<option value="">Qualquer projeto</option>' +
-      opProj.map(function (o) {
-        return '<option value="' + esc(o.value) + '"' +
-          (o.value.toLowerCase() === String(st.demProjeto || '').toLowerCase() ? ' selected' : '') +
+    var opFrente = opcoesFrente();
+    if (st.demFrente && !opFrente.some(function (o) { return o.value === st.demFrente; })) st.demFrente = '';
+    $('filtroFrenteDem').innerHTML = '<option value="">Qualquer frente</option>' +
+      opFrente.map(function (o) {
+        return '<option value="' + esc(o.value) + '"' + (o.value === st.demFrente ? ' selected' : '') +
           '>' + esc(o.label) + '</option>';
       }).join('');
 
@@ -2460,6 +2433,7 @@
     var semDono = abertas.filter(function (d) {
       return !d.responsaveis || !d.responsaveis.length;
     });
+    var semFrente = abertas.filter(function (d) { return !d.artifact_id; });
 
     if (st.demVisao === 'minhas') {
       /* Na leitura pessoal os cartões são a agenda: o que venceu, o que vence
@@ -2479,7 +2453,8 @@
         cardStat('EM ABERTO', abertas.length, st.demands.length + ' no total', null, 'abertas') +
         cardStat('ATRASADAS', atrasadas.length, atrasadas.length ? 'passaram do prazo' : 'tudo dentro do prazo', null, 'atrasadas') +
         cardStat('PEDINDO ATENÇÃO', risco.length, 'em risco ou aguardando retorno', null, 'atencao') +
-        cardStat('SEM RESPONSÁVEL', semDono.length, semDono.length ? 'ninguém tocando' : 'todas com dono', null, 'semdono');
+        cardStat('SEM RESPONSÁVEL', semDono.length, semDono.length ? 'ninguém tocando' : 'todas com dono', null, 'semdono') +
+        cardStat('SEM FRENTE', semFrente.length, semFrente.length ? 'esperando triagem' : 'todas com frente', null, 'semfrente');
     }
 
     var rows = demandasVisiveis();
@@ -2501,9 +2476,9 @@
     if (!rows.length) {
       $('listaDemandas').innerHTML = avisoCk + faixa + Club.empty('check-circle',
         st.demVisao === 'minhas' && !st.eu ? 'Clique em "Minhas" e diga quem você é no quadro.'
-        : st.demFoco && (st.demResp || st.demMembro || st.demProjeto) ? 'Nenhuma demanda com este filtro.'
+        : st.demFoco && (st.demResp || st.demMembro || st.demFrente) ? 'Nenhuma demanda com este filtro.'
         : st.demFoco ? FOCOS[st.demFoco].vazio
-        : st.demResp || st.demMembro || st.demProjeto ? 'Nenhuma demanda com este filtro.'
+        : st.demResp || st.demMembro || st.demFrente ? 'Nenhuma demanda com este filtro.'
         : st.demVisao === 'minhas' ? 'Nada em aberto no seu nome. Aproveite.'
         : 'Nenhuma demanda em aberto. Aproveite.');
       atualizarDetalhes();
@@ -2512,21 +2487,21 @@
 
     /* Duas leituras da mesma tabela. "Por demanda": uma linha embaixo da outra,
        na ordem do banco (situação → prioridade → prazo, ver byDemanda), com a
-       coluna Projeto pra filtrar. "Por projeto": as linhas se juntam sob o
-       projeto (mentorado, ou pai → frente pra interna), o grupo que tem atraso
-       vem primeiro e, dentro dele, quem vence antes. A coluna Projeto só
-       aparece na lista: no agrupado ela é o cabeçalho. */
-    var comProjeto = st.demAgrupar === 'lista';
-    var larguras = [230, 132, 96, 140, 124].concat(comProjeto ? [128] : [])
+       coluna Frente pra filtrar. "Por frente": as linhas se juntam sob a
+       frente, dentro da área (mentorado sem frente fica no topo, pelo nome),
+       o grupo que tem atraso vem primeiro e, dentro dele, quem vence antes. A
+       coluna Frente só aparece na lista: no agrupado ela é o cabeçalho. */
+    var comFrente = st.demAgrupar === 'lista';
+    var larguras = [230, 132, 96, 140, 124].concat(comFrente ? [180] : [])
       .concat([116, 116, 104]);
     var cols = 'minmax(230px,2fr) ' + larguras.slice(1).map(function (n) { return n + 'px'; }).join(' ');
     var cabecalhos = ['Demanda', 'Situação', 'Prioridade', 'Responsáveis', 'Mentorado']
-      .concat(comProjeto ? ['Projeto'] : [])
+      .concat(comFrente ? ['Frente'] : [])
       .concat(['Checklist', 'Prazo', '>Ações']);
 
-    var corpo = st.demAgrupar === 'projeto'
-      ? gruposPorProjeto(rows).map(function (g) { return linhaGrupo(g, 0); }).join('')
-      : rows.map(function (d) { return linhaDemanda(d, comProjeto); }).join('');
+    var corpo = st.demAgrupar === 'frente'
+      ? gruposPorFrente(rows).map(function (g) { return linhaGrupo(g, 0); }).join('')
+      : rows.map(function (d) { return linhaDemanda(d, comFrente); }).join('');
 
     $('listaDemandas').innerHTML = avisoCk + faixa + tabela(cols, cabecalhos, corpo, '');
     Club.ajustarColunas($('listaDemandas'), {
@@ -2583,39 +2558,47 @@
     if (a.hoje !== b.hoje) return b.hoje - a.hoje;
     if (a.proximo !== b.proximo) return a.proximo < b.proximo ? -1 : 1;
     if (a.tipo !== b.tipo) return a.tipo === 'vazio' ? 1 : b.tipo === 'vazio' ? -1 : 0;
+    if (a.tipo === 'pai' && b.tipo === 'pai' && !!a.interna !== !!b.interna) return a.interna ? 1 : -1;
     return a.nome.localeCompare(b.nome);
   }
 
-  function gruposPorProjeto(rows) {
+  /* Área → frente. A demanda de mentorado sem frente fica no topo, pelo
+     mentorado, como antes; sem nada vai para "Sem frente", no fim. A área é
+     uma linha-pai que abre e fecha as frentes dela e soma os números. */
+  function gruposPorFrente(rows) {
     var mapa = {};
     rows.forEach(function (d) {
-      var p = projetoDe(d);
-      var g = mapa[p.key] = mapa[p.key] || { key:p.key, nome:p.nome, tipo:p.tipo, itens:[], filhos:[] };
+      var c = contextoDe(d);
+      var g = mapa[c.key] = mapa[c.key] || { key:c.key, nome:c.nome, tipo:c.tipo, area:c.area, itens:[], filhos:[] };
       g.itens.push(d);
     });
     var grupos = Object.keys(mapa).map(function (k) { return mapa[k]; });
-    grupos.forEach(function (g) { g.itens.sort(porPrazo); contarGrupo(g, g.itens); });
+    grupos.forEach(function (g) { g.itens.sort(porMentoradoPrazo); contarGrupo(g, g.itens); });
 
-    /* Projeto "Pai / Frente" sobe pro pai: o pai é uma linha que abre e fecha
-       as frentes dele e soma os números delas. Mentorado e projeto sem barra
-       ficam no topo, como antes. */
     var pais = {}, topo = [];
     grupos.forEach(function (g) {
-      var pp = g.tipo === 'projeto' ? partesProjeto(g.nome) : { pai: null };
-      if (!pp.pai) { topo.push(g); return; }
-      var pk = 'pai:' + pp.pai.toLowerCase();
-      var pai = pais[pk] = pais[pk] || { key:pk, nome:pp.pai, tipo:'pai', itens:[], filhos:[] };
-      g.nome = pp.frente;
+      if (g.tipo !== 'frente' || !g.area) { topo.push(g); return; }
+      var pk = 'pai:' + g.area.id;
+      var pai = pais[pk] = pais[pk] || { key:pk, nome:g.area.nome, tipo:'pai', ordem:g.area.ordem, interna:!!g.area.interna, itens:[], filhos:[] };
       pai.filhos.push(g);
     });
+    var ordemFrente = {};
+    frentesOrdenadas().forEach(function (a, i) { ordemFrente['f:' + a.id] = i; });
     Object.keys(pais).forEach(function (k) {
       var pai = pais[k];
-      pai.filhos.sort(ordemGrupo);
+      pai.filhos.sort(function (a, b) { return (ordemFrente[a.key] || 0) - (ordemFrente[b.key] || 0); });
       contarGrupo(pai, pai.filhos.reduce(function (acc, f) { return acc.concat(f.itens); }, []));
       topo.push(pai);
     });
     topo.sort(ordemGrupo);
     return topo;
+  }
+
+  /* Dentro da frente: quem tem mentorado primeiro, por nome; depois prazo. */
+  function porMentoradoPrazo(a, b) {
+    var ma = a.member_id ? (membro(a.member_id) || '') : '', mb = b.member_id ? (membro(b.member_id) || '') : '';
+    if (ma !== mb) return ma.localeCompare(mb, 'pt-BR');
+    return porPrazo(a, b);
   }
 
   function linhaGrupo(g, nivel) {
@@ -2625,13 +2608,13 @@
     var meta = '<b>' + g.abertas + '</b> em aberto' +
       (g.atrasadas ? ' · <span class="late"><b>' + g.atrasadas + '</b> atrasada' + (g.atrasadas > 1 ? 's' : '') + '</span>' : '') +
       (g.hoje ? ' · <span class="today"><b>' + g.hoje + '</b> hoje</span>' : '');
-    var rotulo = g.tipo === 'mentorado' ? 'mentorado'
-      : g.tipo === 'pai' ? g.filhos.length + (g.filhos.length === 1 ? ' frente' : ' frentes')
-      : g.tipo === 'projeto' ? (nivel ? 'frente' : 'projeto') : '';
+    var rotulo = g.tipo === 'mentorado' ? 'mentorado sem frente'
+      : g.tipo === 'pai' ? (g.interna ? 'área da equipe · ' : 'área · ') + g.filhos.length + (g.filhos.length === 1 ? ' frente' : ' frentes')
+      : g.tipo === 'frente' ? 'frente' : '';
     var cab = '<div class="tr grp' + (nivel ? ' sub' : '') + (g.tipo === 'pai' ? ' pai' : '') +
       '" data-grupo="' + esc(chave) + '">' +
       '<div class="grp-t"><button class="tg" aria-expanded="' + (!fechado) +
-        '" aria-label="Abrir ou fechar projeto">' + ico('chevron-right') + '</button>' +
+        '" aria-label="Abrir ou fechar grupo">' + ico('chevron-right') + '</button>' +
         '<span class="grp-n">' + esc(g.nome) + '</span>' +
         '<span class="grp-k">' + rotulo + '</span>' +
       '</div><div class="grp-m">' + meta + '</div></div>';
@@ -2641,7 +2624,7 @@
       g.itens.map(function (d) { return linhaDemanda(d, false); }).join('');
   }
 
-  function linhaDemanda(d, comProjeto) {
+  function linhaDemanda(d, comFrente) {
     var cor = Club.DEM_COR[d.status];
     var fechada = Club.DEM_ABERTOS.indexOf(d.status) === -1;
 
@@ -2651,7 +2634,7 @@
     /* De onde veio e o que é: as duas linhas curtas cabem juntas embaixo do
        título e liberam a coluna para o checklist. */
     var sub = [d.origem, d.descricao].filter(Boolean).join(' · ');
-    var titulo = d.member_id ? d.titulo : tituloSemTag(d.titulo);
+    var titulo = d.titulo;
 
     var linha = '<div class="tr' + (fechada ? ' off' : '') + '"' +
       ' style="box-shadow:inset 3px 0 0 ' + cor + '">' +
@@ -2662,7 +2645,7 @@
           (sub ? '<span class="tx tx-s">' + esc(sub) + '</span>' : '') +
         '</button></div>' +
       colunasDe(d, 'd') +
-      (comProjeto ? celulaProjeto(d) : '') +
+      (comFrente ? celulaFrente(d) : '') +
       td(etapas.length ? barra(feitas, etapas.length)
                        : '<span class="tx-s">sem checklist</span>') +
       celulaPrazo(d, 'd') +
@@ -2683,18 +2666,33 @@
        primeira subtarefa nasce, e sem isto o campo não teria onde aparecer. */
     if (st.novaSub !== d.id && (!st.abertos[chave] || !etapas.length)) return linha;
     var filhos = st.abertos[chave] ? etapas.map(function (e) {
-      return linhaSubtarefa(e, comProjeto);
+      return linhaSubtarefa(e, comFrente);
     }).join('') : '';
     return linha + filhos + linhaNovaSub(d.id);
   }
 
-  /* Texto livre, mas com memória: o menu lista os projetos que já existem e
-     deixa criar um novo. Demanda de mentorado não tem projeto: o mentorado é
-     o projeto dela. */
-  function celulaProjeto(d) {
-    if (d.member_id) return tdCel('<span class="tx tx-s">' + esc(membro(d.member_id) || '—') + '</span>');
-    var p = lerProjeto(d);
-    return tdCel(celula('d.projeto', d.id, '<span class="tx">' + esc(p || 'sem projeto') + '</span>', !p));
+  /* A frente é menu: lista todas, por área, e deixa tirar. Trocar a frente
+     zera a etapa, que era da frente antiga. */
+  function celulaFrente(d) {
+    var a = frenteDe(d);
+    return tdCel(celula('d.frente', d.id, '<span class="tx">' + esc(a ? rotuloFrente(a) : 'sem frente') + '</span>', !a));
+  }
+
+  function itensMenuFrente(atual) {
+    var itens = [{ value:'', label:'Sem frente', checked:!atual }];
+    areasOrdenadas().forEach(function (g) {
+      frentesOrdenadas().filter(function (a) { return a.group_id === g.id; }).forEach(function (a) {
+        itens.push({ value:a.id, label:rotuloFrente(a), checked:a.id === atual });
+      });
+    });
+    return itens;
+  }
+
+  function itensMenuEtapa(artifactId, atual) {
+    var etapas = Club.ordenaEtapas(etapasDe(artifactId));
+    return [{ value:'', label:'Sem etapa', checked:!atual }].concat(etapas.map(function (e) {
+      return { value:e.id, label:e.titulo + ' · ' + Club.STEP_TIPO_ROTULO[Club.tipoEtapa(e)], checked:e.id === atual };
+    }));
   }
 
   /* Célula que abre menu no clique. Fica invisível como controle até o mouse
@@ -2762,7 +2760,7 @@
   /* Subtarefa da demanda: mesmas colunas, mesmas listas, mesmo jeito de trocar.
      A única que fica vazia é Checklist — a subtarefa não abre outro nível, e
      nesta coluna a barra da mãe já conta a história dela. */
-  function linhaSubtarefa(e, comProjeto) {
+  function linhaSubtarefa(e, comFrente) {
     var edicao = st.edicaoSub[e.id];
     var nome = edicao
       ? '<div class="sub-title-editor" aria-busy="' + (!!edicao.salvando) + '">' +
@@ -2795,7 +2793,7 @@
           ' aria-label="Marcar subtarefa">' + ico('check') + '</button>' +
         nome + '</div>' +
       colunasDe(e, 's') +
-      (comProjeto ? td('') : '') +
+      (comFrente ? td('') : '') +
       td('') +
       celulaPrazo(e, 's') +
       '<div class="td end"><div class="row-acts">' + acoes + '</div></div>' +
@@ -2844,20 +2842,17 @@
       return;
     }
 
-    if (par[1] === 'projeto') {
-      var atual = lerProjeto(r);
-      var itens = [{ value:'', label:'Sem projeto', checked:!atual }]
-        .concat(projetosExistentes().map(function (p) {
-          return { value:p, label:p, checked:p.toLowerCase() === atual.toLowerCase() };
-        }))
-        .concat([{ value:'__novo', label:'Novo projeto…' }]);
-      Club.menu(el, itens, { titulo:'Projeto', onPick:function (v) {
-        if (v === '__novo') {
-          var nome = window.prompt('Nome do projeto', atual);
-          if (nome === null) return;
-          v = nome.trim();
-        }
-        salvar(r.id, patchProjeto(r, v));
+    if (par[1] === 'frente') {
+      Club.menu(el, itensMenuFrente(r.artifact_id), { titulo:'Frente', onPick:function (v) {
+        salvar(r.id, { artifact_id: v || null, step_id: null });
+      } });
+      return;
+    }
+
+    if (par[1] === 'etapa') {
+      if (!r.artifact_id) { Club.toast('Escolha a frente antes da etapa.', 'alert'); return; }
+      Club.menu(el, itensMenuEtapa(r.artifact_id, r.step_id), { titulo:'Etapa do checklist', onPick:function (v) {
+        salvar(r.id, { step_id: v || null });
       } });
       return;
     }
@@ -4359,8 +4354,8 @@
     renderDemandas();
   });
 
-  $('filtroProjetoDem').addEventListener('change', function () {
-    st.demProjeto = this.value;
+  $('filtroFrenteDem').addEventListener('change', function () {
+    st.demFrente = this.value;
     renderDemandas();
   });
 
