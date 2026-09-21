@@ -34,8 +34,10 @@
     artifact_groups: ['nome', 'ordem', 'responsaveis', 'interna'],
     materials: ['titulo', 'descricao', 'categoria', 'visivel_para', 'arquivo_path',
                 'arquivo_nome', 'arquivo_tipo', 'arquivo_bytes', 'publicado_em'],
+    /* artifact_id e step_id chegam com supabase/areas.sql; projeto virou
+       projeto_legado em frentes-internas.sql e a UI só lê, nunca grava. */
     demands:   ['titulo', 'descricao', 'status', 'prioridade', 'responsaveis',
-                'member_id', 'origem', 'vence_em', 'projeto'],
+                'member_id', 'origem', 'vence_em', 'artifact_id', 'step_id'],
     staff:     ['nome', 'apelido', 'ativo', 'user_id'],
     /* tipo e cadencia_dias também vêm de frentes.sql; steps.sync só os manda
        quando a coluna existe (C.temTipo). */
@@ -55,7 +57,7 @@
   /* Campo de data ou de chave estrangeira vazio precisa virar null; string
      vazia o Postgres recusa. */
   var NULAVEIS = ['vence_em', 'inicia_em', 'member_id', 'publicado_em', 'group_id',
-                  'cadencia_dias', 'inicio', 'fim'];
+                  'cadencia_dias', 'inicio', 'fim', 'artifact_id', 'step_id'];
 
   /* Tabelas que só a administração enxerga. Quando ainda não foram criadas no
      banco, a aba avisa em vez de derrubar a página inteira. */

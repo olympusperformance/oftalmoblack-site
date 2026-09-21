@@ -15,15 +15,15 @@
              qrLinks: [], qrScans: [],
              view: 'overview', membro: '', status: 'all', igOrdem: 'seguidores',
              matCategoria: '', matMembro: '',
-             demResp: '', demMembro: '', demProjeto: '', demAbertas: 'open',
+             demResp: '', demMembro: '', demFrente: '', demAbertas: 'open',
              /* Recorte aberto por um cartão do painel (atrasadas, sem dono…).
                 Não é leitura guardada: é um mergulho, e mora na URL. */
              demFoco: '',
              /* "Minhas" é a leitura padrão do quadro: quem abre vê o que é seu,
-                agrupado por projeto. "eu" é a pessoa da equipe ligada ao login
+                agrupado por frente. "eu" é a pessoa da equipe ligada ao login
                 (staff.user_id) ou, enquanto a migração não roda, a escolhida no
                 próprio botão e guardada neste navegador. */
-             demVisao: 'minhas', demAgrupar: 'projeto', eu: null, temProjeto: true,
+             demVisao: 'minhas', demAgrupar: 'frente', eu: null,
              grpFechado: {},
              arvMembro: '', arvFiltro: 'all',
              /* Demanda que está com a linha de nova subtarefa aberta. */
@@ -129,16 +129,14 @@
   /* ── quem sou eu no quadro ─────────────────────────────────────────────
      Primeiro pelo vínculo do banco (staff.user_id = login). Sem vínculo, vale a
      escolha feita no botão "Minhas" e guardada no localStorage: é o que deixa o
-     quadro funcionar hoje, antes de o SQL de 02/09 rodar. A coluna "projeto"
-     segue a mesma regra: se o banco ainda não a tem, o painel agrupa só por
-     mentorado e esconde o campo, em vez de quebrar a gravação. */
+     quadro funcionar hoje, antes de o SQL de 02/09 rodar. */
   var CHAVE_EU = 'ob-admin-eu';
 
   /* Leitura da aba Demandas guardada no navegador, por login: visão, agrupamento,
      filtros e quais grupos estão fechados. Quem volta ao quadro encontra a
      leitura que deixou, sem mexer em filtro de novo (pedido da equipe 02/09). */
   var CHAVE_DEM = 'ob-admin-dem';
-  var PREFS_DEM = ['demVisao', 'demAgrupar', 'demAbertas', 'demResp', 'demMembro', 'demProjeto', 'grpFechado'];
+  var PREFS_DEM = ['demVisao', 'demAgrupar', 'demAbertas', 'demResp', 'demMembro', 'demFrente', 'grpFechado'];
 
   function chaveDem() {
     return CHAVE_DEM + ':' + (sessao && sessao.email ? String(sessao.email).toLowerCase() : 'anon');
@@ -152,6 +150,8 @@
       var p = JSON.parse(raw);
       PREFS_DEM.forEach(function (k) { if (k in p && p[k] !== undefined) st[k] = p[k]; });
     } catch (err) { /* guardado velho ou corrompido: ignora */ }
+    /* Preferência gravada antes da fase 3: "por projeto" virou "por frente". */
+    if (st.demAgrupar === 'projeto') st.demAgrupar = 'frente';
     if (!st.grpFechado || typeof st.grpFechado !== 'object') st.grpFechado = {};
     if (!st.eu) st.demVisao = 'todas';
   }
@@ -174,7 +174,6 @@
   };
 
   function descobrirEu() {
-    st.temProjeto = !!st.demands.length && ('projeto' in st.demands[0]);
     var porLogin = st.staff.filter(function (p) {
       return p.user_id && sessao && p.user_id === sessao.userId;
     })[0];
@@ -326,6 +325,8 @@
       if (st.eu) st.eu = st.staff.filter(function (p) { return p.id === st.eu.id; })[0] || null;
       indexar();
       renderDemandas();
+      /* O contador de demandas da etapa, na Progressão, lê o mesmo quadro. */
+      renderMembers();
       if (msg) Club.toast(msg);
     });
   }
@@ -724,9 +725,49 @@
 
   /* Cada tipo de etapa se lê diferente: aceite é o "sim" dele, trava espera
      ato dele, opcional só conta quando marcada, rotina liga e desliga. */
+  /* A demanda que nasce da etapa já vem endereçada: título da etapa, frente,
+     etapa, mentorado e dono. Trava é ato do mentorado — quem cobra é a CS. */
+  function prefillDaEtapa(m, e, a) {
+    var cs = st.staff.filter(function (p) { return p.apelido === 'KK' && p.ativo; }).map(function (p) { return p.id; });
+    var g = grupoDe(a);
+    var dono = (a.responsaveis && a.responsaveis.length) ? a.responsaveis : ((g && g.responsaveis) || []);
+    var hoje = new Date();
+    return {
+      titulo: e.titulo,
+      member_id: m.id,
+      artifact_id: a.id,
+      step_id: e.id,
+      responsaveis: Club.tipoEtapa(e) === 'trava' && cs.length ? cs : dono,
+      origem: 'Progressão · ' + a.nome + ' · ' + Club.fmtDataCurta(hoje.getFullYear() + '-' +
+        String(hoje.getMonth() + 1).padStart(2, '0') + '-' + String(hoje.getDate()).padStart(2, '0'))
+    };
+  }
+
+  function demandasAbertasDaEtapa(memberId, stepId) {
+    return st.demands.filter(function (d) {
+      return d.step_id === stepId && d.member_id === memberId && aberta(d);
+    });
+  }
+
+  function abrirDemandaDaEtapa(memberId, stepId) {
+    var m = st.members.filter(function (x) { return x.id === memberId; })[0];
+    var e = st.steps.filter(function (x) { return x.id === stepId; })[0];
+    var a = e && st.artifacts.filter(function (x) { return x.id === e.artifact_id; })[0];
+    if (!m || !e || !a) return;
+    modalDemanda(null, prefillDaEtapa(m, e, a));
+  }
+
+  function verDemandasDaEtapa(memberId, artifactId) {
+    st.demVisao = 'todas'; st.demFoco = ''; st.demAbertas = 'open';
+    st.demResp = ''; st.demMembro = memberId; st.demFrente = artifactId;
+    go('demands');
+    renderDemandas();
+  }
+
   function linhaEtapa(m, e, par) {
     var p = marcada(m.id, e.id);
     var t = Club.tipoEtapa(e);
+    var abertas = demandasAbertasDaEtapa(m.id, e.id);
     var situacao, nota = '';
     if (t === 'aceite') {
       situacao = p ? status('var(--success)', 'Aceito') : status('var(--faint)', 'Sem aceite');
@@ -752,9 +793,16 @@
       td(situacao) +
       celulaNota(m, 'etapa:' + e.id, e.titulo) +
       td('') +
-      td('<span class="tx-s">' + (p && p.feito_em
-        ? esc('em ' + Club.fmtDataCurta(p.feito_em)) : '—') + '</span>') +
-      '<div class="td end"></div>' +
+      td(abertas.length
+        ? '<button type="button" class="btn btn-sm btn-ghost" data-ver-demandas="' + esc(m.id) + '|' + esc(e.artifact_id) +
+            '" title="Ver no quadro">' + ico('check-square') + abertas.length + ' demanda' + (abertas.length === 1 ? '' : 's') + '</button>'
+        : '<span class="tx-s">' + (p && p.feito_em ? esc('em ' + Club.fmtDataCurta(p.feito_em)) : '—') + '</span>') +
+      '<div class="td end"><div class="row-acts">' +
+        (!p && t !== 'aceite'
+          ? '<button class="btn btn-sm btn-ghost" data-abrir-demanda="' + esc(m.id) + '|' + esc(e.id) +
+              '" aria-label="Abrir demanda desta etapa" title="Abrir demanda">' + ico('plus') + '</button>'
+          : '') +
+      '</div></div>' +
     '</div>' + linhaNota(m, 'etapa:' + e.id, e.titulo);
   }
 
@@ -2187,96 +2235,71 @@
     return !!(st.eu && d.responsaveis && d.responsaveis.indexOf(st.eu.id) !== -1);
   }
 
-  /* Projeto é o eixo de leitura: demanda de mentorado se agrupa por ele;
-     interna, pelo texto livre em `projeto`; sem nada, vai para "Sem projeto". */
-  /* Sem a coluna no banco, o projeto mora no começo do título: "[SDR IA Marina]
-     Migrar pra Sonnet 5". A tela lê e escreve a tag; o resto do sistema (TV,
-     Hermes) enxerga o título inteiro e não precisa saber da convenção. Quando a
-     coluna existir, ela manda e a tag deixa de ser escrita. */
-  var TAG = /^\s*\[([^\]]+)\]\s*/;
+  /* ── frente: o eixo de leitura do quadro ──────────────────────────────
+     A demanda aponta para a frente (demands.artifact_id): um artefato do
+     mentorado ou uma frente interna da equipe, sempre dentro de uma área da
+     jornada. Demanda de mentorado sem frente ainda se agrupa por ele; sem
+     mentorado e sem frente vai para "Sem frente", que é onde a triagem
+     acontece. projeto_legado é o texto antigo, só para leitura. */
 
-  function lerProjeto(d) {
-    if (st.temProjeto && d.projeto) return String(d.projeto).trim();
-    var m = TAG.exec(d.titulo || '');
-    return m ? m[1].trim() : '';
+  function frenteDe(d) {
+    if (!d || !d.artifact_id) return null;
+    return st.artifacts.filter(function (a) { return a.id === d.artifact_id; })[0] || null;
   }
 
-  function tituloSemTag(t) { return String(t || '').replace(TAG, ''); }
-
-  function comTag(projeto, titulo) {
-    var base = tituloSemTag(titulo);
-    return projeto ? '[' + projeto + '] ' + base : base;
+  function rotuloFrente(a) {
+    var g = grupoDe(a);
+    return (g ? g.nome + ' · ' : '') + a.nome + (a.member_id ? ' (' + (membro(a.member_id) || 'mentorado') + ')' : '');
   }
 
-  /* O que gravar ao trocar o projeto: coluna, ou o título reescrito. Com a
-     coluna no banco, a tag antiga sai do título na mesma gravação — senão a TV
-     e o Hermes seguiriam lendo um projeto que já não é o da coluna. */
-  function patchProjeto(r, v) {
-    v = (v || '').trim();
-    if (st.temProjeto) {
-      var p = { projeto: v || null };
-      if (TAG.test(r.titulo || '')) p.titulo = tituloSemTag(r.titulo);
-      return p;
-    }
-    return { titulo: comTag(v, r.titulo) };
+  function contextoDe(d) {
+    var a = frenteDe(d);
+    if (a) return { key:'f:' + a.id, nome:a.nome, tipo:'frente', area:grupoDe(a) };
+    if (d.member_id) return { key:'m:' + d.member_id, nome:membro(d.member_id) || 'Mentorado removido', tipo:'mentorado', area:null };
+    return { key:'z:', nome:'Sem frente', tipo:'vazio', area:null };
   }
 
-  function projetoDe(d) {
-    if (d.member_id) return { key:'m:' + d.member_id, nome:membro(d.member_id) || 'Mentorado removido', tipo:'mentorado' };
-    var p = lerProjeto(d);
-    if (p) return { key:'p:' + p.toLowerCase(), nome:p, tipo:'projeto' };
-    return { key:'z:', nome:'Sem projeto', tipo:'vazio' };
-  }
-
-  function projetosExistentes() {
-    var vistos = {};
-    st.demands.forEach(function (d) {
-      if (d.member_id) return;
-      var p = lerProjeto(d);
-      if (p) vistos[p.toLowerCase()] = p;
+  /* Áreas na ordem cadastrada (as da equipe vêm depois por ordem, e por
+     garantia por `interna`), frentes na ordem da área. */
+  function areasOrdenadas() {
+    return st.groups.slice().sort(function (a, b) {
+      return ((a.interna ? 1 : 0) - (b.interna ? 1 : 0)) || ((a.ordem || 0) - (b.ordem || 0)) ||
+        String(a.nome).localeCompare(String(b.nome), 'pt-BR');
     });
-    return Object.keys(vistos).sort().map(function (k) { return vistos[k]; });
   }
 
-  /* Projeto em dois níveis, sem coluna nova: "Olympus / Imersão Grau Zero" é a
-     frente "Imersão Grau Zero" dentro do pai "Olympus". Fechado na reunião de
-     equipe de 02/09: Clínica Dr. Alex e Olympus são pais; cada mentorado segue
-     no topo, como grupo próprio; projeto sem barra também fica no topo. */
-  var SEP_PROJETO = ' / ';
-
-  function partesProjeto(nome) {
-    var i = String(nome || '').indexOf(SEP_PROJETO);
-    if (i === -1) return { pai: null, frente: String(nome || '').trim() };
-    return { pai: nome.slice(0, i).trim(), frente: nome.slice(i + SEP_PROJETO.length).trim() };
-  }
-
-  /* Opções do filtro de projeto: cada pai (lendo o guarda-chuva inteiro), as
-     frentes dele indentadas, e por fim os projetos soltos. */
-  function opcoesProjeto() {
-    var nomes = projetosExistentes(), pais = {}, lista = [];
-    nomes.forEach(function (n) {
-      var pp = partesProjeto(n);
-      if (pp.pai) pais[pp.pai.toLowerCase()] = pp.pai;
+  function frentesOrdenadas() {
+    var ordemArea = {};
+    areasOrdenadas().forEach(function (g, i) { ordemArea[g.id] = i; });
+    return st.artifacts.slice().sort(function (a, b) {
+      var ga = ordemArea[a.group_id], gb = ordemArea[b.group_id];
+      if (ga === undefined) ga = 999; if (gb === undefined) gb = 999;
+      return (ga - gb) || ((a.ordem || 0) - (b.ordem || 0)) ||
+        String(a.nome).localeCompare(String(b.nome), 'pt-BR');
     });
-    Object.keys(pais).sort().forEach(function (k) {
-      lista.push({ value: pais[k], label: pais[k] + ' (tudo)' });
-      nomes.forEach(function (n) {
-        var pp = partesProjeto(n);
-        if (pp.pai && pp.pai.toLowerCase() === k) lista.push({ value: n, label: '    ' + pp.frente });
+  }
+
+  /* Opções do filtro: a área inteira ("a:<id>") e, indentadas, as frentes dela. */
+  function opcoesFrente() {
+    var lista = [];
+    areasOrdenadas().forEach(function (g) {
+      var frentes = frentesOrdenadas().filter(function (a) { return a.group_id === g.id; });
+      if (!frentes.length) return;
+      lista.push({ value:'a:' + g.id, label:g.nome + ' (tudo)' });
+      frentes.forEach(function (a) {
+        lista.push({ value:a.id, label:'    ' + a.nome + (a.member_id ? ' (' + (membro(a.member_id) || 'mentorado') + ')' : '') });
       });
-    });
-    nomes.forEach(function (n) {
-      if (!partesProjeto(n).pai) lista.push({ value: n, label: n });
     });
     return lista;
   }
 
-  /* O filtro casa o nome inteiro (uma frente) ou só o pai (todas as frentes). */
-  function casaProjeto(d, alvo) {
-    var p = projetoDe(d);
-    if (p.tipo !== 'projeto') return false;
-    var n = p.nome.toLowerCase(); alvo = String(alvo || '').toLowerCase();
-    return n === alvo || n.indexOf(alvo + SEP_PROJETO.toLowerCase()) === 0;
+  /* O filtro casa a frente exata ou a área inteira. */
+  function casaFrente(d, alvo) {
+    var a = frenteDe(d);
+    if (!a) return false;
+    alvo = String(alvo || '');
+    if (alvo.indexOf('a:') === 0) return a.group_id === alvo.slice(2);
+    return a.id === alvo;
   }
 
   function estaFechada(d) { return Club.DEM_ABERTOS.indexOf(d.status) === -1; }
@@ -2300,7 +2323,9 @@
     atencao:   { nome:'Pedindo atenção', vazio:'Nada em risco nem aguardando retorno.',
       testa:function (d) { return d.status === 'Em risco' || d.status === 'Aguardando retorno'; } },
     semdono:   { nome:'Sem responsável', vazio:'Todas as abertas têm dono.',
-      testa:function (d) { return aberta(d) && (!d.responsaveis || !d.responsaveis.length); } }
+      testa:function (d) { return aberta(d) && (!d.responsaveis || !d.responsaveis.length); } },
+    semfrente: { nome:'Sem frente', vazio:'Todas as abertas têm frente.',
+      testa:function (d) { return aberta(d) && !d.artifact_id; } }
   };
 
   /* O cartão "Em aberto" não é recorte: é a lista inteira das abertas, o ponto
@@ -2309,7 +2334,7 @@
     if (foco === 'abertas' || st.demFoco === foco) st.demFoco = '';
     else if (FOCOS[foco]) st.demFoco = foco;
     st.demAbertas = 'open';
-    st.demResp = ''; st.demMembro = ''; st.demProjeto = '';
+    st.demResp = ''; st.demMembro = ''; st.demFrente = '';
     sincronizarHash();
     renderDemandas();
   }
@@ -2378,7 +2403,7 @@
       if (st.demFoco && FOCOS[st.demFoco] && !FOCOS[st.demFoco].testa(d)) return false;
       if (st.demResp && (!d.responsaveis || d.responsaveis.indexOf(st.demResp) === -1)) return false;
       if (st.demMembro && d.member_id !== st.demMembro) return false;
-      if (st.demProjeto && !casaProjeto(d, st.demProjeto)) return false;
+      if (st.demFrente && !casaFrente(d, st.demFrente)) return false;
       return true;
     });
   }
@@ -2403,7 +2428,7 @@
 
     /* Trocar visão ou filtro é virar a página: as fechadas há pouco saem daqui
        e passam a valer só em "Todas", como qualquer concluída. */
-    var assinatura = [st.demVisao, st.demAbertas, st.demResp, st.demMembro, st.demProjeto].join('|');
+    var assinatura = [st.demVisao, st.demAbertas, st.demResp, st.demMembro, st.demFrente].join('|');
     if (assinatura !== assinaturaFiltros) st.recemFechadas = {};
     assinaturaFiltros = assinatura;
 
@@ -2419,14 +2444,11 @@
           '>' + esc(m.nome) + '</option>';
       }).join('');
 
-    var opProj = opcoesProjeto();
-    if (st.demProjeto && !opProj.some(function (o) { return o.value.toLowerCase() === st.demProjeto.toLowerCase(); })) {
-      st.demProjeto = '';
-    }
-    $('filtroProjetoDem').innerHTML = '<option value="">Qualquer projeto</option>' +
-      opProj.map(function (o) {
-        return '<option value="' + esc(o.value) + '"' +
-          (o.value.toLowerCase() === String(st.demProjeto || '').toLowerCase() ? ' selected' : '') +
+    var opFrente = opcoesFrente();
+    if (st.demFrente && !opFrente.some(function (o) { return o.value === st.demFrente; })) st.demFrente = '';
+    $('filtroFrenteDem').innerHTML = '<option value="">Qualquer frente</option>' +
+      opFrente.map(function (o) {
+        return '<option value="' + esc(o.value) + '"' + (o.value === st.demFrente ? ' selected' : '') +
           '>' + esc(o.label) + '</option>';
       }).join('');
 
@@ -2460,6 +2482,7 @@
     var semDono = abertas.filter(function (d) {
       return !d.responsaveis || !d.responsaveis.length;
     });
+    var semFrente = abertas.filter(function (d) { return !d.artifact_id; });
 
     if (st.demVisao === 'minhas') {
       /* Na leitura pessoal os cartões são a agenda: o que venceu, o que vence
@@ -2479,7 +2502,8 @@
         cardStat('EM ABERTO', abertas.length, st.demands.length + ' no total', null, 'abertas') +
         cardStat('ATRASADAS', atrasadas.length, atrasadas.length ? 'passaram do prazo' : 'tudo dentro do prazo', null, 'atrasadas') +
         cardStat('PEDINDO ATENÇÃO', risco.length, 'em risco ou aguardando retorno', null, 'atencao') +
-        cardStat('SEM RESPONSÁVEL', semDono.length, semDono.length ? 'ninguém tocando' : 'todas com dono', null, 'semdono');
+        cardStat('SEM RESPONSÁVEL', semDono.length, semDono.length ? 'ninguém tocando' : 'todas com dono', null, 'semdono') +
+        cardStat('SEM FRENTE', semFrente.length, semFrente.length ? 'esperando triagem' : 'todas com frente', null, 'semfrente');
     }
 
     var rows = demandasVisiveis();
@@ -2501,9 +2525,9 @@
     if (!rows.length) {
       $('listaDemandas').innerHTML = avisoCk + faixa + Club.empty('check-circle',
         st.demVisao === 'minhas' && !st.eu ? 'Clique em "Minhas" e diga quem você é no quadro.'
-        : st.demFoco && (st.demResp || st.demMembro || st.demProjeto) ? 'Nenhuma demanda com este filtro.'
+        : st.demFoco && (st.demResp || st.demMembro || st.demFrente) ? 'Nenhuma demanda com este filtro.'
         : st.demFoco ? FOCOS[st.demFoco].vazio
-        : st.demResp || st.demMembro || st.demProjeto ? 'Nenhuma demanda com este filtro.'
+        : st.demResp || st.demMembro || st.demFrente ? 'Nenhuma demanda com este filtro.'
         : st.demVisao === 'minhas' ? 'Nada em aberto no seu nome. Aproveite.'
         : 'Nenhuma demanda em aberto. Aproveite.');
       atualizarDetalhes();
@@ -2512,21 +2536,21 @@
 
     /* Duas leituras da mesma tabela. "Por demanda": uma linha embaixo da outra,
        na ordem do banco (situação → prioridade → prazo, ver byDemanda), com a
-       coluna Projeto pra filtrar. "Por projeto": as linhas se juntam sob o
-       projeto (mentorado, ou pai → frente pra interna), o grupo que tem atraso
-       vem primeiro e, dentro dele, quem vence antes. A coluna Projeto só
-       aparece na lista: no agrupado ela é o cabeçalho. */
-    var comProjeto = st.demAgrupar === 'lista';
-    var larguras = [230, 132, 96, 140, 124].concat(comProjeto ? [128] : [])
+       coluna Frente pra filtrar. "Por frente": as linhas se juntam sob a
+       frente, dentro da área (mentorado sem frente fica no topo, pelo nome),
+       o grupo que tem atraso vem primeiro e, dentro dele, quem vence antes. A
+       coluna Frente só aparece na lista: no agrupado ela é o cabeçalho. */
+    var comFrente = st.demAgrupar === 'lista';
+    var larguras = [230, 132, 96, 140, 124].concat(comFrente ? [180] : [])
       .concat([116, 116, 104]);
     var cols = 'minmax(230px,2fr) ' + larguras.slice(1).map(function (n) { return n + 'px'; }).join(' ');
     var cabecalhos = ['Demanda', 'Situação', 'Prioridade', 'Responsáveis', 'Mentorado']
-      .concat(comProjeto ? ['Projeto'] : [])
+      .concat(comFrente ? ['Frente'] : [])
       .concat(['Checklist', 'Prazo', '>Ações']);
 
-    var corpo = st.demAgrupar === 'projeto'
-      ? gruposPorProjeto(rows).map(function (g) { return linhaGrupo(g, 0); }).join('')
-      : rows.map(function (d) { return linhaDemanda(d, comProjeto); }).join('');
+    var corpo = st.demAgrupar === 'frente'
+      ? gruposPorFrente(rows).map(function (g) { return linhaGrupo(g, 0); }).join('')
+      : rows.map(function (d) { return linhaDemanda(d, comFrente); }).join('');
 
     $('listaDemandas').innerHTML = avisoCk + faixa + tabela(cols, cabecalhos, corpo, '');
     Club.ajustarColunas($('listaDemandas'), {
@@ -2583,39 +2607,47 @@
     if (a.hoje !== b.hoje) return b.hoje - a.hoje;
     if (a.proximo !== b.proximo) return a.proximo < b.proximo ? -1 : 1;
     if (a.tipo !== b.tipo) return a.tipo === 'vazio' ? 1 : b.tipo === 'vazio' ? -1 : 0;
+    if (a.tipo === 'pai' && b.tipo === 'pai' && !!a.interna !== !!b.interna) return a.interna ? 1 : -1;
     return a.nome.localeCompare(b.nome);
   }
 
-  function gruposPorProjeto(rows) {
+  /* Área → frente. A demanda de mentorado sem frente fica no topo, pelo
+     mentorado, como antes; sem nada vai para "Sem frente", no fim. A área é
+     uma linha-pai que abre e fecha as frentes dela e soma os números. */
+  function gruposPorFrente(rows) {
     var mapa = {};
     rows.forEach(function (d) {
-      var p = projetoDe(d);
-      var g = mapa[p.key] = mapa[p.key] || { key:p.key, nome:p.nome, tipo:p.tipo, itens:[], filhos:[] };
+      var c = contextoDe(d);
+      var g = mapa[c.key] = mapa[c.key] || { key:c.key, nome:c.nome, tipo:c.tipo, area:c.area, itens:[], filhos:[] };
       g.itens.push(d);
     });
     var grupos = Object.keys(mapa).map(function (k) { return mapa[k]; });
-    grupos.forEach(function (g) { g.itens.sort(porPrazo); contarGrupo(g, g.itens); });
+    grupos.forEach(function (g) { g.itens.sort(porMentoradoPrazo); contarGrupo(g, g.itens); });
 
-    /* Projeto "Pai / Frente" sobe pro pai: o pai é uma linha que abre e fecha
-       as frentes dele e soma os números delas. Mentorado e projeto sem barra
-       ficam no topo, como antes. */
     var pais = {}, topo = [];
     grupos.forEach(function (g) {
-      var pp = g.tipo === 'projeto' ? partesProjeto(g.nome) : { pai: null };
-      if (!pp.pai) { topo.push(g); return; }
-      var pk = 'pai:' + pp.pai.toLowerCase();
-      var pai = pais[pk] = pais[pk] || { key:pk, nome:pp.pai, tipo:'pai', itens:[], filhos:[] };
-      g.nome = pp.frente;
+      if (g.tipo !== 'frente' || !g.area) { topo.push(g); return; }
+      var pk = 'pai:' + g.area.id;
+      var pai = pais[pk] = pais[pk] || { key:pk, nome:g.area.nome, tipo:'pai', ordem:g.area.ordem, interna:!!g.area.interna, itens:[], filhos:[] };
       pai.filhos.push(g);
     });
+    var ordemFrente = {};
+    frentesOrdenadas().forEach(function (a, i) { ordemFrente['f:' + a.id] = i; });
     Object.keys(pais).forEach(function (k) {
       var pai = pais[k];
-      pai.filhos.sort(ordemGrupo);
+      pai.filhos.sort(function (a, b) { return (ordemFrente[a.key] || 0) - (ordemFrente[b.key] || 0); });
       contarGrupo(pai, pai.filhos.reduce(function (acc, f) { return acc.concat(f.itens); }, []));
       topo.push(pai);
     });
     topo.sort(ordemGrupo);
     return topo;
+  }
+
+  /* Dentro da frente: quem tem mentorado primeiro, por nome; depois prazo. */
+  function porMentoradoPrazo(a, b) {
+    var ma = a.member_id ? (membro(a.member_id) || '') : '', mb = b.member_id ? (membro(b.member_id) || '') : '';
+    if (ma !== mb) return ma.localeCompare(mb, 'pt-BR');
+    return porPrazo(a, b);
   }
 
   function linhaGrupo(g, nivel) {
@@ -2625,13 +2657,13 @@
     var meta = '<b>' + g.abertas + '</b> em aberto' +
       (g.atrasadas ? ' · <span class="late"><b>' + g.atrasadas + '</b> atrasada' + (g.atrasadas > 1 ? 's' : '') + '</span>' : '') +
       (g.hoje ? ' · <span class="today"><b>' + g.hoje + '</b> hoje</span>' : '');
-    var rotulo = g.tipo === 'mentorado' ? 'mentorado'
-      : g.tipo === 'pai' ? g.filhos.length + (g.filhos.length === 1 ? ' frente' : ' frentes')
-      : g.tipo === 'projeto' ? (nivel ? 'frente' : 'projeto') : '';
+    var rotulo = g.tipo === 'mentorado' ? 'mentorado sem frente'
+      : g.tipo === 'pai' ? (g.interna ? 'área da equipe · ' : 'área · ') + g.filhos.length + (g.filhos.length === 1 ? ' frente' : ' frentes')
+      : g.tipo === 'frente' ? 'frente' : '';
     var cab = '<div class="tr grp' + (nivel ? ' sub' : '') + (g.tipo === 'pai' ? ' pai' : '') +
       '" data-grupo="' + esc(chave) + '">' +
       '<div class="grp-t"><button class="tg" aria-expanded="' + (!fechado) +
-        '" aria-label="Abrir ou fechar projeto">' + ico('chevron-right') + '</button>' +
+        '" aria-label="Abrir ou fechar grupo">' + ico('chevron-right') + '</button>' +
         '<span class="grp-n">' + esc(g.nome) + '</span>' +
         '<span class="grp-k">' + rotulo + '</span>' +
       '</div><div class="grp-m">' + meta + '</div></div>';
@@ -2641,7 +2673,7 @@
       g.itens.map(function (d) { return linhaDemanda(d, false); }).join('');
   }
 
-  function linhaDemanda(d, comProjeto) {
+  function linhaDemanda(d, comFrente) {
     var cor = Club.DEM_COR[d.status];
     var fechada = Club.DEM_ABERTOS.indexOf(d.status) === -1;
 
@@ -2651,7 +2683,7 @@
     /* De onde veio e o que é: as duas linhas curtas cabem juntas embaixo do
        título e liberam a coluna para o checklist. */
     var sub = [d.origem, d.descricao].filter(Boolean).join(' · ');
-    var titulo = d.member_id ? d.titulo : tituloSemTag(d.titulo);
+    var titulo = d.titulo;
 
     var linha = '<div class="tr' + (fechada ? ' off' : '') + '"' +
       ' style="box-shadow:inset 3px 0 0 ' + cor + '">' +
@@ -2662,7 +2694,7 @@
           (sub ? '<span class="tx tx-s">' + esc(sub) + '</span>' : '') +
         '</button></div>' +
       colunasDe(d, 'd') +
-      (comProjeto ? celulaProjeto(d) : '') +
+      (comFrente ? celulaFrente(d) : '') +
       td(etapas.length ? barra(feitas, etapas.length)
                        : '<span class="tx-s">sem checklist</span>') +
       celulaPrazo(d, 'd') +
@@ -2683,18 +2715,33 @@
        primeira subtarefa nasce, e sem isto o campo não teria onde aparecer. */
     if (st.novaSub !== d.id && (!st.abertos[chave] || !etapas.length)) return linha;
     var filhos = st.abertos[chave] ? etapas.map(function (e) {
-      return linhaSubtarefa(e, comProjeto);
+      return linhaSubtarefa(e, comFrente);
     }).join('') : '';
     return linha + filhos + linhaNovaSub(d.id);
   }
 
-  /* Texto livre, mas com memória: o menu lista os projetos que já existem e
-     deixa criar um novo. Demanda de mentorado não tem projeto: o mentorado é
-     o projeto dela. */
-  function celulaProjeto(d) {
-    if (d.member_id) return tdCel('<span class="tx tx-s">' + esc(membro(d.member_id) || '—') + '</span>');
-    var p = lerProjeto(d);
-    return tdCel(celula('d.projeto', d.id, '<span class="tx">' + esc(p || 'sem projeto') + '</span>', !p));
+  /* A frente é menu: lista todas, por área, e deixa tirar. Trocar a frente
+     zera a etapa, que era da frente antiga. */
+  function celulaFrente(d) {
+    var a = frenteDe(d);
+    return tdCel(celula('d.frente', d.id, '<span class="tx">' + esc(a ? rotuloFrente(a) : 'sem frente') + '</span>', !a));
+  }
+
+  function itensMenuFrente(atual) {
+    var itens = [{ value:'', label:'Sem frente', checked:!atual }];
+    areasOrdenadas().forEach(function (g) {
+      frentesOrdenadas().filter(function (a) { return a.group_id === g.id; }).forEach(function (a) {
+        itens.push({ value:a.id, label:rotuloFrente(a), checked:a.id === atual });
+      });
+    });
+    return itens;
+  }
+
+  function itensMenuEtapa(artifactId, atual) {
+    var etapas = Club.ordenaEtapas(etapasDe(artifactId));
+    return [{ value:'', label:'Sem etapa', checked:!atual }].concat(etapas.map(function (e) {
+      return { value:e.id, label:e.titulo + ' · ' + Club.STEP_TIPO_ROTULO[Club.tipoEtapa(e)], checked:e.id === atual };
+    }));
   }
 
   /* Célula que abre menu no clique. Fica invisível como controle até o mouse
@@ -2762,7 +2809,7 @@
   /* Subtarefa da demanda: mesmas colunas, mesmas listas, mesmo jeito de trocar.
      A única que fica vazia é Checklist — a subtarefa não abre outro nível, e
      nesta coluna a barra da mãe já conta a história dela. */
-  function linhaSubtarefa(e, comProjeto) {
+  function linhaSubtarefa(e, comFrente) {
     var edicao = st.edicaoSub[e.id];
     var nome = edicao
       ? '<div class="sub-title-editor" aria-busy="' + (!!edicao.salvando) + '">' +
@@ -2795,7 +2842,7 @@
           ' aria-label="Marcar subtarefa">' + ico('check') + '</button>' +
         nome + '</div>' +
       colunasDe(e, 's') +
-      (comProjeto ? td('') : '') +
+      (comFrente ? td('') : '') +
       td('') +
       celulaPrazo(e, 's') +
       '<div class="td end"><div class="row-acts">' + acoes + '</div></div>' +
@@ -2830,7 +2877,7 @@
       Club.menu(el, Club.DEM_STATUS.map(function (v) {
         return { value:v, label:v, color:Club.DEM_COR[v], checked:v === r.status };
       }), { titulo:'Situação', onPick:function (v) {
-        salvar(r.id, { status:v });
+        if (!sub && v === 'Concluída') mudarStatus(r.id, v); else salvar(r.id, { status:v });
       } });
       return;
     }
@@ -2844,20 +2891,17 @@
       return;
     }
 
-    if (par[1] === 'projeto') {
-      var atual = lerProjeto(r);
-      var itens = [{ value:'', label:'Sem projeto', checked:!atual }]
-        .concat(projetosExistentes().map(function (p) {
-          return { value:p, label:p, checked:p.toLowerCase() === atual.toLowerCase() };
-        }))
-        .concat([{ value:'__novo', label:'Novo projeto…' }]);
-      Club.menu(el, itens, { titulo:'Projeto', onPick:function (v) {
-        if (v === '__novo') {
-          var nome = window.prompt('Nome do projeto', atual);
-          if (nome === null) return;
-          v = nome.trim();
-        }
-        salvar(r.id, patchProjeto(r, v));
+    if (par[1] === 'frente') {
+      Club.menu(el, itensMenuFrente(r.artifact_id), { titulo:'Frente', onPick:function (v) {
+        salvar(r.id, { artifact_id: v || null, step_id: null });
+      } });
+      return;
+    }
+
+    if (par[1] === 'etapa') {
+      if (!r.artifact_id) { Club.toast('Escolha a frente antes da etapa.', 'alert'); return; }
+      Club.menu(el, itensMenuEtapa(r.artifact_id, r.step_id), { titulo:'Etapa do checklist', onPick:function (v) {
+        salvar(r.id, { step_id: v || null });
       } });
       return;
     }
@@ -2940,6 +2984,8 @@
     if (patch.status !== undefined) marcarFechamento(d);
     st.demands = ordenarDemandas(st.demands);
     renderDemandas();
+    /* O contador de demandas da etapa, na Progressão, lê o mesmo quadro. */
+    if ('step_id' in patch || 'member_id' in patch || 'status' in patch) renderMembers();
 
     Club.data.demands.save(Object.assign({ id:id }, patch)).then(function (linha) {
       /* Concluir e reabrir em seguida manda duas gravações; a resposta da
@@ -3175,8 +3221,10 @@
 
   function corpoDetalhe(d, r, subId) {
     var escopo = subId ? 's' : 'd';
-    var projeto = projetoDe(d);
-    var titulo = subId || d.member_id ? r.titulo : tituloSemTag(r.titulo);
+    var ctxo = contextoDe(d), frente = frenteDe(d);
+    var etapaLigada = d.step_id
+      ? etapasDe(d.artifact_id).filter(function (e) { return e.id === d.step_id; })[0] : null;
+    var titulo = r.titulo;
     var etapas = subId ? [] : etapasDaDemanda(d.id);
     var feitas = etapas.filter(function (e) { return e.feito; }).length;
     var chave = function (tipo) { return escopo + '.' + tipo + ':' + r.id + ':det'; };
@@ -3187,11 +3235,12 @@
     var atrasada = n !== null && n < 0 && !estaFechada(r);
 
     return '<article class="demand-detail">' +
-      '<p class="demand-context">' + esc(projeto.nome) + '</p>' +
+      '<p class="demand-context">' + esc(frente ? rotuloFrente(frente) + (etapaLigada ? ' · ' + etapaLigada.titulo : '')
+        : ctxo.tipo === 'mentorado' ? ctxo.nome : 'Sem frente') + '</p>' +
       '<h3 class="demand-title">' + esc(titulo) + '</h3>' +
       (subId ? '<button type="button" class="demand-parent" data-detalhe-demanda="' + esc(d.id) +
         '">' + ico('chevron-right') + '<span>Demanda principal: ' +
-        esc(d.member_id ? d.titulo : tituloSemTag(d.titulo)) + '</span></button>' : '') +
+        esc(d.titulo) + '</span></button>' : '') +
       '<dl class="demand-meta">' +
         campo('Situação', celula(escopo + '.status', r.id,
           status(Club.DEM_COR[r.status] || 'var(--faint)', r.status || 'Não informada'), false, chave('status'))) +
@@ -3206,6 +3255,12 @@
         campo('Mentorado', celula(escopo + '.membro', r.id, '<span class="tx">' +
           esc(r.member_id ? membro(r.member_id) || 'Mentorado removido' : 'Demanda interna') + '</span>',
           !r.member_id, chave('membro'))) +
+        (!subId ? campo('Frente', celula('d.frente', r.id, '<span class="tx">' +
+          esc(frente ? rotuloFrente(frente) : 'Sem frente') + '</span>', !frente, chave('frente'))) : '') +
+        (!subId && frente ? campo('Etapa', celula('d.etapa', r.id, '<span class="tx">' +
+          esc(etapaLigada ? etapaLigada.titulo : 'Sem etapa') + '</span>', !etapaLigada, chave('etapa'))) : '') +
+        (!subId && d.projeto_legado ? campo('Projeto (legado)', '<span class="tx tx-s" style="color:var(--faint)">' +
+          esc(d.projeto_legado) + '</span>') : '') +
         (!subId ? campo('Origem', esc(r.origem || 'Não informada')) : '') +
       '</dl>' +
       (!subId ? '<section class="demand-section"><h4>Descrição</h4><p class="demand-description">' +
@@ -3412,7 +3467,7 @@
   }
 
   /* ── formulário da demanda ─────────────────────────────────────────────
-     Mesma hierarquia da tela de detalhes: contexto (projeto ou mentorado) e
+     Mesma hierarquia da tela de detalhes: contexto (frente ou mentorado) e
      título no topo, o cartão de situação, prioridade, dono e prazo, a
      descrição e o checklist. Os seletores são os mesmos menus das células da
      linha — o <select> nativo abre branco no branco no Windows — e o valor
@@ -3559,10 +3614,19 @@
     return Promise.all(acoes);
   }
 
-  function modalDemanda(d) {
-    var novo = !d;
-    d = d || { titulo:'', descricao:'', status:'A fazer', prioridade:'Média',
-               responsaveis:[], member_id:null, origem:'', vence_em:'', projeto:'' };
+  /* O que vai para o banco. Etapa só faz sentido dentro da frente. */
+  function registroDemanda(base, memberId, artifactId, stepId) {
+    var r = Object.assign({}, base, { member_id: memberId || null, artifact_id: artifactId || null });
+    r.step_id = r.artifact_id ? (stepId || null) : null;
+    return r;
+  }
+
+  function modalDemanda(d, prefill) {
+    var novo = !d || !d.id;
+    prefill = prefill || {};
+    d = Object.assign({ titulo:'', descricao:'', status:'A fazer', prioridade:'Média',
+               responsaveis:[], member_id:null, origem:'', vence_em:'', artifact_id:null, step_id:null },
+               novo ? prefill : {}, d || {});
     var subAtuais = d.id ? etapasDaDemanda(d.id) : [];
     /* Quem veio da janela de detalhes volta para ela depois de salvar. Com o
        painel de pé não precisa: ele se redesenha sozinho. */
@@ -3570,27 +3634,25 @@
     var equipe = st.staff.filter(function (p) { return p.ativo; })
       .map(function (p) { return { value:p.id, label:p.nome }; });
     var ativos = st.members.filter(function (m) { return m.ativo; });
-    var projetoAtual = d.id ? lerProjeto(d) : '';
 
     function corDe(mapa, v, padrao) { return mapa[v] || padrao; }
 
     Club.modal.open({
       title: novo ? 'Nova demanda' : 'Editar demanda',
       sub: novo ? 'Quadro interno da equipe. Nenhum mentorado vê demandas — nem as ligadas a ele.'
-                : (d.member_id ? d.titulo : tituloSemTag(d.titulo)),
+                : d.titulo,
       largura: 780,
       submitLabel: novo ? 'Criar demanda' : 'Salvar',
       body:
         '<div class="demand-form">' +
-          '<div class="fld' + (d.member_id ? ' desligado' : '') + '" id="fldProjeto">' +
-            '<label>Projeto</label><div id="pkProjeto"></div>' +
-            '<input type="hidden" name="projeto" value="' + esc(projetoAtual) + '">' +
-            '<input class="inp" name="projeto_novo" id="projetoNovo" placeholder="Nome do novo projeto — ' +
-              'use &quot;Pai / Frente&quot; para agrupar, como Olympus / Comercial" autocomplete="off" hidden>' +
-            '<span class="hint">Só a demanda interna tem projeto; a de mentorado se agrupa por ele.</span>' +
+          '<div class="demand-form-meta">' +
+            campoPick('Frente', 'artifact_id', 'pkFrente', d.artifact_id || '',
+              'Área da jornada onde a demanda vive. Mentorado + frente = trabalho daquele artefato para ele.') +
+            campoPick('Etapa do checklist', 'step_id', 'pkEtapa', d.step_id || '',
+              'Opcional. Só as etapas da frente escolhida.') +
           '</div>' +
           '<div class="demand-form-title">' +
-            Club.field('O que precisa ser feito', 'titulo', { value:tituloSemTag(d.titulo), required:true,
+            Club.field('O que precisa ser feito', 'titulo', { value:d.titulo, required:true,
               placeholder:'Conectar o WhatsApp da clínica do Arthur' }) +
           '</div>' +
           '<div class="demand-form-meta">' +
@@ -3603,7 +3665,7 @@
                 '<input type="hidden" name="responsaveis" value=""></div>') +
             Club.field('Prazo', 'vence_em', { value:d.vence_em || '', type:'date' }) +
             (novo
-              ? campoPick('Para quais mentorados', 'membros', 'pkMembros', '')
+              ? campoPick('Para quais mentorados', 'membros', 'pkMembros', d.member_id || '')
               : campoPick('Mentorado', 'member_id', 'pkMembro', d.member_id || '')) +
             Club.field('Origem', 'origem', { value:d.origem || '', placeholder:'Reunião 30/07',
               hint:'De onde a demanda nasceu.' }) +
@@ -3637,38 +3699,28 @@
           : [dados.member_id || null];
         if (!alvos.length) alvos = [null];
 
-        var proj = dados.projeto === '__novo'
-          ? String(dados.projeto_novo || '').trim()
-          : String(dados.projeto || '').trim();
         var base = {
           titulo:titulo, descricao:dados.descricao, status:dados.status, prioridade:dados.prioridade,
           responsaveis:String(dados.responsaveis || '').split(',').filter(Boolean),
           origem:dados.origem, vence_em:dados.vence_em
         };
-        /* Projeto só vale para a interna; a de mentorado se agrupa por ele.
-           Sem a coluna no banco, o projeto continua indo como tag no título. */
-        function registro(memberId) {
-          var r = Object.assign({}, base, { member_id:memberId || null });
-          var p = memberId ? '' : proj;
-          if (st.temProjeto) { r.projeto = p || null; r.titulo = tituloSemTag(r.titulo); }
-          else { r.titulo = comTag(p, r.titulo); }
-          return r;
-        }
         var itens = lerChecklistForm();
         var botao = document.querySelector('.modal-f .btn-primary');
         if (botao) botao.disabled = true;
 
         var fluxo;
         if (!novo) {
-          fluxo = Club.data.demands.save(Object.assign({ id:d.id }, registro(alvos[0])))
+          fluxo = Club.data.demands.save(Object.assign({ id:d.id }, registroDemanda(base, alvos[0], dados.artifact_id, dados.step_id)))
             .then(function (salva) { return sincronizarChecklist(salva.id, itens, subAtuais, salva.member_id); });
         } else if (alvos.length === 1) {
-          fluxo = Club.data.demands.save(registro(alvos[0]))
+          fluxo = Club.data.demands.save(registroDemanda(base, alvos[0], dados.artifact_id, dados.step_id))
             .then(function (salva) { return sincronizarChecklist(salva.id, itens, [], salva.member_id); });
         } else {
           /* Em lote: um insert com todas as demandas, outro com todos os
              checklists. Duas idas ao banco, não sessenta. */
-          fluxo = Club.data.demands.saveMany(alvos.map(registro)).then(function (salvas) {
+          fluxo = Club.data.demands.saveMany(alvos.map(function (m) {
+            return registroDemanda(base, m, dados.artifact_id, dados.step_id);
+          })).then(function (salvas) {
             var passos = [];
             salvas.forEach(function (s) {
               itens.forEach(function (it, i) {
@@ -3709,35 +3761,34 @@
         { titulo:'Responsáveis', vazio:'Ninguém ainda' });
     }
 
-    /* Com mentorado, o projeto só esmaece — não some. Esconder o campo
-       mudaria a altura do formulário e o scroll fecharia o menu que a pessoa
-       ainda está usando. */
-    var fldProjeto = $('fldProjeto'), projetoNovo = $('projetoNovo');
-    function mostrarProjeto(temMentorado) {
-      if (!fldProjeto) return;
-      fldProjeto.classList.toggle('desligado', !!temMentorado);
-      var b = fldProjeto.querySelector('.pick-b');
-      if (b) b.disabled = !!temMentorado;
-      if (projetoNovo) projetoNovo.disabled = !!temMentorado;
+    /* Frente e etapa: a etapa depende da frente, então trocar a frente
+       redesenha o menu de etapas e zera a escolhida. */
+    var etapaOculta = campoOculto('step_id');
+    function montarEtapas(artifactId, stepId) {
+      var host = $('pkEtapa');
+      if (!host) return;
+      host.innerHTML = '';
+      if (etapaOculta) etapaOculta.value = stepId || '';
+      if (!artifactId || !etapasDe(artifactId).length) {
+        host.innerHTML = '<span class="hint">' + (artifactId ? 'Esta frente não tem checklist.' : 'Escolha a frente primeiro.') + '</span>';
+        return;
+      }
+      pickSimples('pkEtapa', 'step_id', itensMenuEtapa(artifactId, stepId).map(function (i) {
+        return { value:i.value, label:i.label };
+      }), stepId || '', { titulo:'Etapa do checklist' });
     }
-    pickSimples('pkProjeto', 'projeto',
-      [{ value:'', label:'Sem projeto' }]
-        .concat(projetosExistentes().map(function (p) { return { value:p, label:p }; }))
-        .concat([{ value:'__novo', label:'Novo projeto…' }]),
-      projetoAtual, { titulo:'Projeto', onPick:function (v) {
-        if (!projetoNovo) return;
-        projetoNovo.hidden = v !== '__novo';
-        if (v === '__novo') projetoNovo.focus();
-      } });
+    pickSimples('pkFrente', 'artifact_id', itensMenuFrente(d.artifact_id).map(function (i) {
+      return { value:i.value, label:i.label };
+    }), d.artifact_id || '', { titulo:'Frente', onPick:function (v) { montarEtapas(v, ''); } });
+    montarEtapas(d.artifact_id, d.step_id);
 
     if (novo) {
       var membros = ativos.map(function (m) { return { value:m.id, label:m.nome }; });
       var todos = campoOculto('todos');
-      var pickM = pickVarios('pkMembros', 'membros', membros, [],
+      var pickM = pickVarios('pkMembros', 'membros', membros, d.member_id ? [d.member_id] : [],
         { titulo:'Para quais mentorados', vazio:'Nenhum — demanda interna', onPick:atualizarLote });
       function atualizarLote() {
         var n = todos && todos.checked ? ativos.length : (pickM ? pickM.valores().length : 0);
-        mostrarProjeto(n > 0);
         if (pickM) pickM.travar(todos && todos.checked);
         var botao = document.querySelector('.modal-f .btn-primary');
         if (botao) botao.textContent = n > 1 ? 'Criar ' + n + ' demandas' : 'Criar demanda';
@@ -3747,9 +3798,8 @@
       pickSimples('pkMembro', 'member_id',
         [{ value:'', label:'Nenhum — demanda interna' }].concat(st.members.map(function (m) {
           return { value:m.id, label:m.nome };
-        })), d.member_id || '', { titulo:'Sobre qual mentorado', onPick:function (v) { mostrarProjeto(!!v); } });
+        })), d.member_id || '', { titulo:'Sobre qual mentorado' });
     }
-    mostrarProjeto(!!d.member_id);
 
     var campoTitulo = document.querySelector('#modalForm [name="titulo"]');
     if (campoTitulo) campoTitulo.focus();
@@ -3759,10 +3809,32 @@
      reler o painel inteiro. Antes, cada conclusão esperava dezoito consultas
      voltarem para a tela reagir — e a linha sumia sem aviso quando o filtro
      "Em aberto" estava ligado. */
+  /* Concluir a demanda que nasceu de uma etapa é, quase sempre, concluir a
+     etapa. Quase: por isso pergunta, não marca sozinha. */
+  function etapaParaMarcar(d) {
+    if (!d || !d.member_id || !d.step_id) return null;
+    if (marcada(d.member_id, d.step_id)) return null;
+    return { memberId:d.member_id, stepId:d.step_id };
+  }
+
   function mudarStatus(id, status) {
-    if (!achar('demand', id)) return;
+    var d = achar('demand', id);
+    if (!d) return;
     salvarDemanda(id, { status: status });
     if (status !== 'Concluída') { Club.toast('Demanda reaberta.'); return; }
+    var alvo = etapaParaMarcar(d);
+    if (alvo) {
+      var e = etapasDe(d.artifact_id).filter(function (x) { return x.id === alvo.stepId; })[0];
+      /* Não é Club.modal.confirm: aquele é o diálogo de apagar, com botão
+         vermelho "Remover". Aqui a ação afirmativa é marcar. */
+      Club.modal.open({
+        title:'Marcar a etapa também?',
+        body:'<p>A demanda veio da etapa "' + esc(e ? e.titulo : 'do checklist') + '" de ' +
+          esc(membro(alvo.memberId) || 'mentorado') + '. Marcar como feita na Progressão?</p>',
+        submitLabel:'Marcar etapa',
+        onSubmit:function () { Club.modal.close(); marcarEtapa(alvo.memberId, alvo.stepId); }
+      });
+    }
     Club.toast(st.demAbertas === 'open'
       ? 'Demanda concluída. Ela fica aqui até você trocar o filtro; depois, em "Todas".'
       : 'Demanda concluída.');
@@ -4195,6 +4267,12 @@
       return;
     }
 
+    var abrirDem = e.target.closest('[data-abrir-demanda]');
+    if (abrirDem) { var pd = abrirDem.dataset.abrirDemanda.split('|'); abrirDemandaDaEtapa(pd[0], pd[1]); return; }
+
+    var verDem = e.target.closest('[data-ver-demandas]');
+    if (verDem) { var pv = verDem.dataset.verDemandas.split('|'); verDemandasDaEtapa(pv[0], pv[1]); return; }
+
     var etapaBotao = e.target.closest('[data-etapa]');
     if (etapaBotao) {
       var par = etapaBotao.dataset.etapa.split('|');
@@ -4359,8 +4437,8 @@
     renderDemandas();
   });
 
-  $('filtroProjetoDem').addEventListener('change', function () {
-    st.demProjeto = this.value;
+  $('filtroFrenteDem').addEventListener('change', function () {
+    st.demFrente = this.value;
     renderDemandas();
   });
 
