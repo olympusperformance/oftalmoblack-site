@@ -25,7 +25,7 @@
                'whatsapp_url', 'ativo'],
     events:    ['member_id', 'titulo', 'mentor', 'inicia_em', 'formato', 'link'],
     /* tipo e interna chegam com supabase/areas.sql (fase 1 da taxonomia).
-       pilar saiu da UI; a coluna só cai do banco na fase 4. */
+       pilar saiu da UI na fase 2 e do banco na fase 4 (limpeza.sql). */
     artifacts: ['member_id', 'nome', 'subtitulo', 'icone', 'status', 'meta', 'url',
                 'group_id', 'ordem', 'responsaveis', 'tipo'],
     artifact_groups: ['nome', 'ordem', 'responsaveis', 'interna'],

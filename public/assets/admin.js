@@ -13,7 +13,7 @@
              demands: [], staff: [], steps: [], progress: [], demandSteps: [],
              groups: [], artGrupo: '', progressNotes: [], notasEdit: {},
              qrLinks: [], qrScans: [],
-             view: 'overview', membro: '', status: 'all', igOrdem: 'seguidores',
+             view: 'overview', igOrdem: 'seguidores',
              matCategoria: '', matMembro: '',
              demResp: '', demMembro: '', demFrente: '', demAbertas: 'open',
              /* Recorte aberto por um cartão do painel (atrasadas, sem dono…).
@@ -323,8 +323,10 @@
       if (st.eu) st.eu = st.staff.filter(function (p) { return p.id === st.eu.id; })[0] || null;
       indexar();
       renderDemandas();
-      /* O contador de demandas da etapa, na Progressão, lê o mesmo quadro. */
+      /* O contador de demandas da etapa (Progressão) e os cartões da visão
+         geral leem o mesmo quadro. */
       renderMembers();
+      renderOverview();
       if (msg) Club.toast(msg);
     });
   }
@@ -2883,6 +2885,7 @@
     renderDemandas();
     /* O contador de demandas da etapa, na Progressão, lê o mesmo quadro. */
     if ('step_id' in patch || 'member_id' in patch || 'status' in patch) renderMembers();
+    renderOverview();
 
     Club.data.demands.save(Object.assign({ id:id }, patch)).then(function (linha) {
       /* Concluir e reabrir em seguida manda duas gravações; a resposta da
@@ -3757,10 +3760,10 @@
           }).then(voltarAoDetalhe).catch(aviso);
         }
       });
-      return;
     }
 
-    var alvo = etapaParaMarcar(d);
+    /* Rotina já pediu a próxima ocorrência; não pergunta também "marcar a etapa". */
+    var alvo = etapa && Club.tipoEtapa(etapa) === 'rotina' ? null : etapaParaMarcar(d);
     if (alvo) {
       /* Não é Club.modal.confirm: aquele é o diálogo de apagar, com botão
          vermelho "Remover". Aqui a ação afirmativa é marcar. */

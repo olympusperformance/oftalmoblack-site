@@ -15,7 +15,7 @@ test('limpeza.sql existe e só dropa o que a fase 4 manda', () => {
   assert.ok(drops.length >= 1);
   drops.forEach(d => assert.ok(/public\.tasks/.test(d), 'único drop table permitido é tasks: ' + d));
   assert.ok(!/drop\s+column\s+if\s+exists\s+projeto_legado/i.test(sql), 'projeto_legado fica nesta fase');
-  assert.ok(!/(delete\s+from|update|truncate|drop\s+table)\s+(public\.)?(artifact_steps|step_progress)/i.test(sql),
+  assert.ok(!/(delete\s+from|insert\s+into|update|alter\s+table|truncate|drop\s+table)\s+(public\.)?(artifact_steps|step_progress)/i.test(sql),
     'não escreve em etapa nem progresso (ler em select pode)');
   assert.equal((sql.match(/\ncommit;/g) || []).length, 1, 'um commit só');
   assert.ok(!/\\b/.test(sql), 'em regex do Postgres \\b é backspace');
@@ -23,9 +23,11 @@ test('limpeza.sql existe e só dropa o que a fase 4 manda', () => {
 
 test('snapshot de tasks nasce trancado antes do drop', () => {
   const sql = fs.readFileSync(file, 'utf8');
-  const cria = sql.indexOf('create table if not exists public._bkp_20260922_tasks as select * from public.tasks;');
-  const rls = sql.indexOf('alter table public._bkp_20260922_tasks enable row level security;');
-  const rev = sql.indexOf('revoke all on public._bkp_20260922_tasks from anon, authenticated;');
+  const guarda = sql.indexOf("if to_regclass('public.tasks') is not null and to_regclass('public._bkp_20260922_tasks') is null then");
+  const cria = sql.indexOf("execute 'create table public._bkp_20260922_tasks as select * from public.tasks';");
+  const rls = sql.indexOf("execute 'alter table public._bkp_20260922_tasks enable row level security';");
+  const rev = sql.indexOf("execute 'revoke all on public._bkp_20260922_tasks from anon, authenticated';");
+  assert.ok(guarda >= 0 && guarda < cria, 'snapshot só roda se tasks ainda existe e o snapshot não');
   const drop = sql.indexOf('drop table if exists public.tasks;');
   assert.ok(cria >= 0 && rls > cria && rev > rls && drop > rev, 'ordem: cria → RLS → revoke → drop');
 });

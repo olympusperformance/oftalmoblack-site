@@ -28,9 +28,17 @@ begin;
 
 -- ── 1. tarefas do mentorado ─────────────────────────────────────────────────
 
-create table if not exists public._bkp_20260922_tasks as select * from public.tasks;
-alter table public._bkp_20260922_tasks enable row level security;
-revoke all on public._bkp_20260922_tasks from anon, authenticated;
+-- Guardado num DO: depois do primeiro run, tasks já não existe, e um
+-- "create table ... as select" solto seria analisado antes do IF NOT EXISTS
+-- e abortaria a transação inteira no segundo run.
+do $$
+begin
+  if to_regclass('public.tasks') is not null and to_regclass('public._bkp_20260922_tasks') is null then
+    execute 'create table public._bkp_20260922_tasks as select * from public.tasks';
+    execute 'alter table public._bkp_20260922_tasks enable row level security';
+    execute 'revoke all on public._bkp_20260922_tasks from anon, authenticated';
+  end if;
+end $$;
 
 -- A função devolve o tipo da tabela: sai antes dela.
 drop function if exists public.toggle_task(uuid);
