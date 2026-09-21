@@ -27,7 +27,11 @@
              novaSub: null, zapEdit: null, edicaoSub: {},
              /* Quais galhos das árvores (membros e demandas) estão abertos.
                 Fica na tela, não no banco: é postura de leitura do momento. */
-             abertos: {} };
+             abertos: {},
+             /* Demandas fechadas nesta leitura. Continuam na lista mesmo com o
+                filtro "Em aberto", até a pessoa trocar visão ou filtro: quem
+                conclui precisa ver que concluiu — e poder reabrir no mesmo lugar. */
+             recemFechadas: {} };
 
   /* A navegação é uma árvore de um nível: quem é solto fica solto, quem tem
      'itens' vira um grupo com título. Agenda e Materiais moram em Mentorados
@@ -295,6 +299,25 @@
   function recarregar(msg) {
     return carregar().then(function () {
       render();
+      if (msg) Club.toast(msg);
+    });
+  }
+
+  /* Mexer numa demanda não precisa reler o painel inteiro (são dezoito
+     consultas, Instagram incluído): só o quadro e a equipe voltam do banco.
+     Galhos abertos, scroll e as fechadas há pouco continuam de pé. */
+  function recarregarDemandas(msg) {
+    return Promise.all([
+      Club.data.demands.list(),
+      Club.data.demandSteps.list(),
+      Club.data.staff.list()
+    ]).then(function (r) {
+      st.demands = r[0];
+      st.demandSteps = r[1];
+      st.staff = r[2];
+      if (st.eu) st.eu = st.staff.filter(function (p) { return p.id === st.eu.id; })[0] || null;
+      indexar();
+      renderDemandas();
       if (msg) Club.toast(msg);
     });
   }
@@ -2214,10 +2237,32 @@
     return n === alvo || n.indexOf(alvo + SEP_PROJETO.toLowerCase()) === 0;
   }
 
+  function estaFechada(d) { return Club.DEM_ABERTOS.indexOf(d.status) === -1; }
+
+  /* Fechou agora: fica na lista e no lugar. Reabriu: volta a ser uma aberta comum. */
+  function marcarFechamento(d) {
+    if (estaFechada(d)) st.recemFechadas[d.id] = true;
+    else delete st.recemFechadas[d.id];
+  }
+
+  /* A ordem do banco manda (situação → prioridade → prazo), mas a demanda
+     fechada há pouco não pula para o fim: fica no índice em que estava, para
+     a pessoa ver a própria conclusão sem ter que procurar. */
+  function ordenarDemandas(rows) {
+    var fixas = {}, soltas = [];
+    rows.forEach(function (d, i) {
+      if (st.recemFechadas[d.id]) fixas[i] = d; else soltas.push(d);
+    });
+    soltas = Club.data.demands.ordenar(soltas);
+    var out = [], j = 0;
+    for (var i = 0; i < rows.length; i++) out.push(fixas[i] || soltas[j++]);
+    return out;
+  }
+
   function demandasVisiveis() {
     return st.demands.filter(function (d) {
       if (st.demVisao === 'minhas' && !minha(d)) return false;
-      if (st.demAbertas === 'open' && Club.DEM_ABERTOS.indexOf(d.status) === -1) return false;
+      if (st.demAbertas === 'open' && estaFechada(d) && !st.recemFechadas[d.id]) return false;
       if (st.demResp && (!d.responsaveis || d.responsaveis.indexOf(st.demResp) === -1)) return false;
       if (st.demMembro && d.member_id !== st.demMembro) return false;
       if (st.demProjeto && !casaProjeto(d, st.demProjeto)) return false;
@@ -2237,6 +2282,12 @@
         '<div>' + esc(Club.faltaMigracao) + '</div></div>';
       return;
     }
+
+    /* Trocar visão ou filtro é virar a página: as fechadas há pouco saem daqui
+       e passam a valer só em "Todas", como qualquer concluída. */
+    var assinatura = [st.demVisao, st.demAbertas, st.demResp, st.demMembro, st.demProjeto].join('|');
+    if (assinatura !== assinaturaFiltros) st.recemFechadas = {};
+    assinaturaFiltros = assinatura;
 
     $('filtroResponsavel').innerHTML = '<option value="">Todos os responsáveis</option>' +
       st.staff.map(function (p) {
@@ -2377,11 +2428,16 @@
     Club.reancorarMenu();
   }
 
-  /* Prazo mais próximo primeiro; sem prazo por último; empate = prioridade. */
+  /* Filtros do último desenho; ver renderDemandas. */
+  var assinaturaFiltros = null;
+
+  /* Prazo mais próximo primeiro; sem prazo por último; empate = prioridade.
+     A fechada há pouco ainda se ordena como aberta: é assim que ela fica onde
+     estava dentro do grupo. */
   var PESO_PRIO = { 'Alta':0, 'Média':1, 'Baixa':2 };
   function porPrazo(a, b) {
-    var fa = Club.DEM_ABERTOS.indexOf(a.status) === -1;
-    var fb = Club.DEM_ABERTOS.indexOf(b.status) === -1;
+    var fa = estaFechada(a) && !st.recemFechadas[a.id];
+    var fb = estaFechada(b) && !st.recemFechadas[b.id];
     if (fa !== fb) return fa ? 1 : -1;
     var pa = a.vence_em || '9999', pb = b.vence_em || '9999';
     if (pa !== pb) return pa < pb ? -1 : 1;
@@ -2755,18 +2811,27 @@
     var antes = {};
     Object.keys(patch).forEach(function (k) { antes[k] = d[k]; });
     Object.assign(d, patch);
-    st.demands = Club.data.demands.ordenar(st.demands);
+    if (patch.status !== undefined) marcarFechamento(d);
+    st.demands = ordenarDemandas(st.demands);
     renderDemandas();
 
     Club.data.demands.save(Object.assign({ id:id }, patch)).then(function (linha) {
-      st.demands = Club.data.demands.ordenar(st.demands.map(function (x) {
+      /* Concluir e reabrir em seguida manda duas gravações; a resposta da
+         primeira não pode desfazer a segunda na tela. Se a linha já mudou de
+         novo, quem mudou traz a versão certa. */
+      var atual = achar('demand', id);
+      var superada = !atual || Object.keys(patch).some(function (k) {
+        return String(atual[k]) !== String(patch[k]);
+      });
+      if (superada) return;
+      st.demands = ordenarDemandas(st.demands.map(function (x) {
         return x.id === id ? linha : x;
       }));
       renderDemandas();
-      renderOverview();
     }).catch(function (err) {
       Object.assign(d, antes);
-      st.demands = Club.data.demands.ordenar(st.demands);
+      if (patch.status !== undefined) marcarFechamento(d);
+      st.demands = ordenarDemandas(st.demands);
       renderDemandas();
       Club.toast(err.message || 'Não foi possível salvar.', 'alert');
     });
@@ -3076,7 +3141,7 @@
           return Club.data.demandSteps.sync(salva.id, titulos, subAtuais);
         }).then(function () {
           Club.modal.close();
-          recarregar(novo ? 'Demanda criada.' : 'Demanda atualizada.');
+          recarregarDemandas(novo ? 'Demanda criada.' : 'Demanda atualizada.');
         }).catch(aviso);
       }
     });
@@ -3092,10 +3157,17 @@
     }
   }
 
+  /* O ✓ da linha é atalho para a coluna Situação: mesma gravação otimista, sem
+     reler o painel inteiro. Antes, cada conclusão esperava dezoito consultas
+     voltarem para a tela reagir — e a linha sumia sem aviso quando o filtro
+     "Em aberto" estava ligado. */
   function mudarStatus(id, status) {
-    Club.data.demands.save({ id: id, status: status })
-      .then(function () { recarregar(status === 'Concluída' ? 'Demanda concluída.' : 'Demanda reaberta.'); })
-      .catch(aviso);
+    if (!achar('demand', id)) return;
+    salvarDemanda(id, { status: status });
+    if (status !== 'Concluída') { Club.toast('Demanda reaberta.'); return; }
+    Club.toast(st.demAbertas === 'open'
+      ? 'Demanda concluída. Ela fica aqui até você trocar o filtro; depois, em "Todas".'
+      : 'Demanda concluída.');
   }
 
   /* ── equipe ───────────────────────────────────────────────────────────── */
@@ -3125,7 +3197,7 @@
       onSubmit: function (dados) {
         if (!dados.nome) { Club.modal.close(); return; }
         Club.data.staff.save({ nome: dados.nome, apelido: Club.initials(dados.nome), ativo: true })
-          .then(function () { Club.modal.close(); recarregar('Pessoa adicionada.'); })
+          .then(function () { Club.modal.close(); recarregarDemandas('Pessoa adicionada.'); })
           .catch(aviso);
       }
     });
@@ -3332,10 +3404,11 @@
                 } },
     material:  { store:'materials',  nome:function (r) { return r.titulo; },
                  aviso:'O arquivo sai do servidor junto.' },
+    /* `recarregar` é opcional: quem mora na aba Demandas relê só o quadro. */
     demand:    { store:'demands',    nome:function (r) { return r.titulo; },
-                 aviso:'As subtarefas dela saem junto.' },
+                 aviso:'As subtarefas dela saem junto.', recarregar:recarregarDemandas },
     staff:     { store:'staff',      nome:function (r) { return r.nome; },
-                 aviso:'As demandas dele continuam, sem responsável.' },
+                 aviso:'As demandas dele continuam, sem responsável.', recarregar:recarregarDemandas },
     /* Sem esta linha o clique em Editar/Responder morre em silêncio: achar()
        procura o store aqui e estoura antes de o modal abrir. */
     botExemplo: { store:'botExemplos', nome:function (r) { return r.comentario; },
@@ -3358,7 +3431,7 @@
         .filter(Boolean).join(' '),
       function () {
         Club.data[t.store].remove(id)
-          .then(function () { recarregar('Removido.'); })
+          .then(function () { (t.recarregar || recarregar)('Removido.'); })
           .catch(aviso);
       });
   }
