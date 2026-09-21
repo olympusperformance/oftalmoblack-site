@@ -241,7 +241,7 @@ Toda execução no banco só com autorização explícita do Felipe, script idem
 |---|---|
 | 0 | Snapshot: `_bkp_20260921_artifact_groups`, `_artifacts`, `_artifact_steps`, `_step_progress`, `_demands`, `_demand_steps` (`create table ... as select *`). |
 | 1 | DDL do §3: `interna`, `tipo`, `artifact_id`, `step_id`, índices, trigger `step_id → artifact_id`. |
-| 2 | Áreas: "SEO / Site" → "Presença e conteúdo" (ordem 3); "Conteúdo" → artefatos movidos para Presença e conteúdo e grupo vazio apagado; "Tráfego" → "Geração de demanda" (ordem 4); "Sistema Black" → "Tecnologia e dados" (ordem 2). Criar "Onboarding" (1) e "Comercial da clínica" (5). |
+| 2 | Áreas: "SEO / Site" → "Presença e conteúdo" (ordem 3); "Tráfego" → "Geração de demanda" (ordem 4); "Sistema Black" → "Tecnologia e dados" (ordem 2). Criar "Onboarding" (1) e "Comercial da clínica" (5). "Conteúdo" esvazia no passo 3 (Linha e Fábrica → Presença; Automação IG e Agente → Geração) e é apagado depois. |
 | 3 | Artefatos: `group_id` de Trackeamento → Tecnologia; SDR IA → Comercial da clínica; Automação Instagram e Agente de comentários → Geração de demanda; Linha Editorial e Fábrica → Presença e conteúdo. Rename Trackeamento → "Tracker Black". Reordenar `ordem` dentro de cada área. |
 | 4 | Criar Onboarding, AEO, Treinamento comercial com os checklists do §5, `status = 'Em produção'`, `responsaveis` por sigla. |
 | 5 | RLS do §3. |
