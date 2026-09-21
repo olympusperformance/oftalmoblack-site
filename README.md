@@ -18,7 +18,7 @@ public/                # tudo que vai pro ar
   robots.txt
   sitemap.xml
 docker-entrypoint.d/   # scripts que a imagem nginx roda no boot
-supabase/              # SQL do banco: tabelas, RLS, acervo, demandas, progresso
+supabase/              # SQL do banco: tabelas, RLS, acervo, demandas, progresso, áreas (areas.sql)
   functions/           # Edge Functions (a que serve o quadro da TV)
 Dockerfile             # nginx alpine servindo public/
 nginx.conf             # gzip, cache de assets, headers de segurança
@@ -377,3 +377,12 @@ Para migrar apontando só o site e **preservando o e-mail**, alterar apenas o
 registro **A** (e o `www`) para o IP do VPS. O **MX** deve continuar apontando
 para o servidor antigo enquanto houver caixas ativas no domínio — A e MX são
 independentes.
+
+## Áreas dos artefatos (21/09/2026)
+
+`supabase/areas.sql` reorganiza o catálogo em áreas da jornada do mentorado e
+prepara `demands.artifact_id`/`step_id`. Roda depois de `frentes.sql` e
+`demandas.sql`, com o admin fechado; o bloco PROVA no fim do arquivo diz o que
+conferir. Spec e plano em `docs/superpowers/`.
+
+Testes de regressão: `node --test tests/graduacao.test.mjs tests/progress-notes.test.cjs tests/cerebro-preview.test.mjs tests/areas-admin.test.cjs tests/areas-membros.test.cjs`
