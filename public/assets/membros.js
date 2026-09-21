@@ -13,15 +13,13 @@
   var esc = Club.esc, ico = Club.icon;
   var $ = function (id) { return document.getElementById(id); };
 
-  var st = { membro:null, tasks:[], events:[], artifacts:[], materials:[],
-             steps:[], progress:[], groups:[],
-             status:'pending', categoria:'', matCategoria:'' };
+  var st = { membro:null, events:[], artifacts:[], materials:[],
+             steps:[], progress:[], groups:[], matCategoria:'' };
 
   var NAV = [
     { key:'home',      label:'Início',    icon:'home' },
     { key:'graduacao', label:'Graduação', icon:'award' },
     { key:'instagram', label:'Instagram', icon:'eye' },
-    { key:'tasks',     label:'Tarefas',   icon:'check-square' },
     { key:'artifacts', label:'Artefatos', icon:'box' },
     { key:'materials', label:'Materiais', icon:'folder' },
     { key:'agenda',    label:'Agenda',    icon:'calendar' },
@@ -54,7 +52,6 @@
       if (!m) throw new Error('Nenhum membro cadastrado ainda.');
       st.membro = m;
       return Promise.all([
-        Club.data.tasks.list({ memberId: m.id }),
         Club.data.events.list({ memberId: m.id }),
         Club.data.artifacts.list({ memberId: m.id }),
         Club.data.materials.list({ memberId: m.id }),
@@ -65,8 +62,8 @@
         Club.data.groups.list()
       ]);
     }).then(function (r) {
-      st.tasks = r[0]; st.events = r[1]; st.artifacts = r[2]; st.materials = r[3];
-      st.steps = r[4]; st.progress = r[5]; st.groups = r[6] || [];
+      st.events = r[0]; st.artifacts = r[1]; st.materials = r[2];
+      st.steps = r[3]; st.progress = r[4]; st.groups = r[5] || [];
     });
   }
 
@@ -208,73 +205,6 @@
         onPick: function (v) { location.search = '?membro=' + v; }
       });
     });
-  }
-
-  /* ── tarefas ──────────────────────────────────────────────────────────── */
-
-  function cartaoTarefa(t) {
-    var done = t.status === 'done';
-    var tint = Club.TINT[t.categoria] || 'var(--muted)';
-    var prog = '';
-    if (t.progresso_total > 0) {
-      var w = Math.min(100, (t.progresso_atual / t.progresso_total) * 100);
-      prog = '<span class="task-p"><span class="track"><span class="fill" style="width:' + w +
-        '%"></span></span><span class="n">' + t.progresso_atual + '/' + t.progresso_total + '</span></span>';
-    }
-    return '<button class="task' + (done ? ' done' : '') + '" data-id="' + t.id +
-      '" aria-pressed="' + done + '">' +
-      '<span class="task-in">' +
-        '<span class="check">' + ico('check') + '</span>' +
-        '<span class="task-b">' +
-          '<span class="tagrow">' +
-            '<span class="tag" style="color:' + tint + '">' +
-              '<span class="dot"></span>' + esc(t.categoria) + '</span>' +
-            '<span class="cad">' + esc(t.cadencia) + '</span>' +
-          '</span>' +
-          '<span class="task-t" style="display:block">' + esc(t.titulo) + '</span>' +
-          '<span class="task-d" style="display:block">' + esc(t.descricao) + '</span>' +
-          prog +
-          '<span class="task-f">' +
-            '<span class="f-open"' + (Club.isLate(t) ? ' style="color:var(--danger)"' : '') + '>' +
-              ico('clock') + esc(Club.fmtDue(t.vence_em)) + '</span>' +
-            '<span class="f-done">' + ico('check-circle') + 'Concluída</span>' +
-          '</span>' +
-        '</span>' +
-      '</span></button>';
-  }
-
-  function renderTasks() {
-    var abertas = st.tasks.filter(function (t) { return t.status !== 'done'; });
-    $('taskList').innerHTML = st.tasks.length
-      ? st.tasks.slice(0, 4).map(cartaoTarefa).join('')
-      : Club.empty('check-square', 'Nenhuma tarefa por enquanto. Aproveite.');
-
-    Club.pick('filtroCategoria', Club.CATEGORIAS.map(function (c) {
-      return { value: c, label: c, color: Club.TINT[c] };
-    }), st.categoria, {
-      vazio: 'Todas as categorias',
-      titulo: 'Categoria',
-      onPick: function (v) { st.categoria = v; renderTasks(); }
-    });
-
-    Array.prototype.forEach.call($('filtroStatus').children, function (b) {
-      b.setAttribute('aria-selected', String(b.dataset.st === st.status));
-    });
-
-    var rows = st.tasks.filter(function (t) {
-      if (st.categoria && t.categoria !== st.categoria) return false;
-      if (st.status === 'pending') return t.status !== 'done';
-      if (st.status === 'done') return t.status === 'done';
-      return true;
-    });
-
-    $('taskListFull').innerHTML = rows.length
-      ? rows.map(cartaoTarefa).join('')
-      : Club.empty('check-square', st.status === 'done'
-          ? 'Você ainda não concluiu nenhuma tarefa com este filtro.'
-          : 'Nada em aberto com este filtro.');
-
-    return abertas;
   }
 
   /* ── artefatos ────────────────────────────────────────────────────────── */
@@ -623,7 +553,6 @@
     renderIdentidade();
     renderGrupo();
     renderChat();
-    renderTasks();
     var disponiveis = renderArtifacts();
     var proxima = renderAgenda();
     renderMateriais();
@@ -642,26 +571,9 @@
     var nav = e.target.closest('[data-nav]');
     if (nav) { go(nav.dataset.nav); return; }
 
-    var stat = e.target.closest('#filtroStatus button');
-    if (stat) { st.status = stat.dataset.st; renderTasks(); return; }
-
     var down = e.target.closest('[data-baixar]');
     if (down) { baixar(down.dataset.baixar); return; }
 
-    var tarefa = e.target.closest('.task');
-    if (tarefa) {
-      /* Marcar concluída grava de verdade; a lista é recarregada porque a
-         ordenação muda quando o status muda. */
-      Club.data.tasks.toggle(tarefa.dataset.id).catch(function (err) {
-        Club.toast(err.message || 'Não foi possível atualizar a tarefa.', 'alert');
-        throw err;
-      }).then(function () {
-        return Club.data.tasks.list({ memberId: st.membro.id });
-      }).then(function (rows) {
-        st.tasks = rows;
-        renderTasks();
-      }).catch(function () { /* já avisado acima */ });
-    }
   });
 
   /* ── partida ──────────────────────────────────────────────────────────── */

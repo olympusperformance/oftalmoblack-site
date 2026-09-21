@@ -1,7 +1,7 @@
 /* ============================================================================
    Club OftalmoBlack — painel do administrador
 
-   Cadastra membros, tarefas, agenda e artefatos. Tudo passa por Club.data, que
+   Cadastra membros, agenda, artefatos e demandas. Tudo passa por Club.data, que
    na Etapa 2 troca o localStorage pelo Supabase sem mexer neste arquivo.
    ========================================================================= */
 (function () {
@@ -9,7 +9,7 @@
 
   var sessao = null;
 
-  var st = { members: [], tasks: [], events: [], artifacts: [], materials: [],
+  var st = { members: [], events: [], artifacts: [], materials: [],
              demands: [], staff: [], steps: [], progress: [], demandSteps: [],
              groups: [], artGrupo: '', progressNotes: [], notasEdit: {},
              qrLinks: [], qrScans: [],
@@ -49,7 +49,6 @@
     { grupo:'Mentorados', itens: [
       { key:'members',   label:'Progressão', icon:'users' },
       { key:'graduacao', label:'Graduação', icon:'award' },
-      { key:'tasks',     label:'Tarefas',    icon:'check-square' },
       { key:'agenda',    label:'Agenda',     icon:'calendar' },
       { key:'materials', label:'Materiais',  icon:'folder' }
     ] },
@@ -94,7 +93,6 @@
   function carregar() {
     return Promise.all([
       Club.data.members.list(),
-      Club.data.tasks.list(),
       Club.data.events.list(),
       Club.data.artifacts.list(),
       Club.data.materials.list(),
@@ -112,15 +110,15 @@
       Club.data.qrLinks.list(),
       Club.data.qrScans.list()
     ]).then(function (r) {
-      st.members = r[0]; st.tasks = r[1]; st.events = r[2];
-      st.artifacts = r[3]; st.materials = r[4];
-      st.demands = r[5]; st.staff = r[6];
-      st.steps = r[7]; st.progress = r[8]; st.demandSteps = r[9];
-      st.botExemplos = r[10]; st.botRespostas = r[11];
-      st.igResumo = r[12]; st.igSerie = r[13];
-      st.groups = r[14];
-      st.progressNotes = r[15];
-      st.qrLinks = r[16]; st.qrScans = r[17];
+      st.members = r[0]; st.events = r[1];
+      st.artifacts = r[2]; st.materials = r[3];
+      st.demands = r[4]; st.staff = r[5];
+      st.steps = r[6]; st.progress = r[7]; st.demandSteps = r[8];
+      st.botExemplos = r[9]; st.botRespostas = r[10];
+      st.igResumo = r[11]; st.igSerie = r[12];
+      st.groups = r[13];
+      st.progressNotes = r[14];
+      st.qrLinks = r[15]; st.qrScans = r[16];
       indexar();
       descobrirEu();
     });
@@ -355,8 +353,8 @@
           n.itens.map(function (f) { return botao(f, true); }).join('');
       }).join('') +
       '<div class="rail-foot"><div class="k">' + st.members.length + ' MEMBROS</div>' +
-      '<div class="v">' + st.tasks.filter(function (t) { return t.status !== 'done'; }).length +
-      ' tarefas em aberto agora.</div></div>';
+      '<div class="v">' + st.demands.filter(function (d) { return Club.DEM_ABERTOS.indexOf(d.status) !== -1; }).length +
+      ' demandas em aberto agora.</div></div>';
 
     $('navm').innerHTML = navPlano().map(function (n) {
       return '<button class="chip" role="tab" data-nav="' + n.key + '" aria-selected="' +
@@ -383,8 +381,10 @@
 
   function renderOverview() {
     var ativos = st.members.filter(function (m) { return m.ativo; }).length;
-    var abertas = st.tasks.filter(function (t) { return t.status !== 'done'; }).length;
-    var atrasadas = st.tasks.filter(Club.isLate);
+    var abertas = st.demands.filter(function (d) { return Club.DEM_ABERTOS.indexOf(d.status) !== -1; });
+    var atrasadas = abertas.filter(function (d) {
+      var n = Club.diffDays(d.vence_em); return n !== null && n < 0;
+    });
     var futuros = st.events.filter(function (e) {
       return Club.parseDate(e.inicia_em) >= new Date();
     });
@@ -393,14 +393,32 @@
 
     $('stats').innerHTML =
       cardStat('MEMBROS ATIVOS', ativos, st.members.length - ativos + ' inativos') +
-      cardStat('TAREFAS EM ABERTO', abertas, atrasadas.length + ' atrasadas') +
+      cardStat('DEMANDAS EM ABERTO', abertas.length, atrasadas.length + ' atrasadas') +
       cardStat('PRÓXIMO ENCONTRO', prox ? Club.fmtDate(prox.inicia_em) : '—',
                prox ? prox.titulo : 'Nada agendado') +
       cardStat('ARTEFATOS EM PRODUÇÃO', producao, st.artifacts.length + ' cadastrados no total');
 
     $('atrasadas').innerHTML = atrasadas.length
-      ? tabelaTarefas(atrasadas)
-      : Club.empty('check-circle', 'Nenhuma tarefa atrasada. A turma está em dia.');
+      ? tabelaDemandasAtrasadas(atrasadas)
+      : Club.empty('check-circle', 'Nenhuma demanda atrasada. O time está em dia.');
+  }
+
+  /* Resumo das atrasadas na visão geral: título (abre o detalhe), contexto
+     (área · frente, ou o mentorado), dono e prazo. O resto mora no quadro. */
+  function tabelaDemandasAtrasadas(rows) {
+    rows = rows.slice().sort(function (a, b) { return String(a.vence_em).localeCompare(String(b.vence_em)); });
+    return tabela('minmax(0,2.2fr) minmax(0,1.4fr) 160px 120px',
+      ['Demanda', 'Frente ou mentorado', 'Responsáveis', 'Prazo'],
+      rows.map(function (d) {
+        var c = contextoDe(d);
+        return '<div class="tr">' +
+          '<div class="td"><button type="button" class="demand-open" data-detalhe-demanda="' + esc(d.id) +
+            '" aria-label="Ver demanda: ' + esc(d.titulo) + '"><span class="tx tx-t">' + esc(d.titulo) + '</span></button></div>' +
+          td('<span class="tx-s">' + esc(c.tipo === 'frente' && c.area ? c.area.nome + ' · ' + c.nome : c.nome) + '</span>') +
+          td('<span class="tx-s">' + esc(responsaveisDe(d) || '—') + '</span>') +
+          td('<span style="color:var(--danger)">' + esc(Club.fmtDue(d.vence_em)) + '</span>') +
+        '</div>';
+      }).join(''), 'Nada por aqui.');
   }
 
   /* `dica` é opcional: quando existe, o cartão explica ao passar o mouse o que
@@ -419,7 +437,7 @@
 
   /* ── membros ──────────────────────────────────────────────────────────── */
   /* Uma tela só. O mentorado é a linha-mãe e abre no que está combinado com
-     ele: os artefatos, que abrem no próprio checklist, e as tarefas. Cadastro
+     ele: os artefatos, que abrem no próprio checklist. Cadastro
      e progresso eram a mesma pergunta — "como está fulano?" — feita em dois
      lugares diferentes, e responder exigia ir e voltar entre as duas abas.
 
@@ -428,10 +446,8 @@
        Mentorado
          └ Artefato → etapa do checklist (padrão do artefato)
 
-     Tarefa não entra aqui: ela é assunto da aba Tarefas e tem outro ciclo — o
-     mentorado é quem marca a dele, enquanto a etapa do artefato é entrega do
-     Club. Misturar as duas na mesma árvore faria a mesma coluna significar
-     coisas diferentes de linha para linha.
+     Tarefa do mentorado não existe mais (fase 4 da taxonomia): a ação dele é
+     etapa trava do artefato, cobrada por demanda da CS no quadro.
 
      As etapas do artefato são o modelo cadastrado na aba Artefatos; o que está
      marcado é deste mentorado. Ver supabase/progresso.sql. */
@@ -996,136 +1012,6 @@
         Club.data.members.save(d).then(function () {
           Club.modal.close();
           recarregar(m.id ? 'Membro atualizado.' : 'Membro cadastrado.');
-        }).catch(aviso);
-      }
-    });
-  }
-
-  /* ── tarefas ──────────────────────────────────────────────────────────── */
-
-  function tarefasVisiveis() {
-    return st.tasks.filter(function (t) {
-      if (st.membro && t.member_id !== st.membro) return false;
-      if (st.status === 'pending') return t.status !== 'done';
-      if (st.status === 'done') return t.status === 'done';
-      return true;
-    });
-  }
-
-  function renderTasks() {
-    var sel = $('filtroMembro');
-    sel.innerHTML = '<option value="">Todos os membros</option>' +
-      st.members.map(function (m) {
-        return '<option value="' + esc(m.id) + '"' + (m.id === st.membro ? ' selected' : '') +
-          '>' + esc(m.nome) + '</option>';
-      }).join('');
-
-    Array.prototype.forEach.call($('filtroStatus').children, function (b) {
-      b.setAttribute('aria-selected', String(b.dataset.st === st.status));
-    });
-
-    $('listaTarefas').innerHTML = tabelaTarefas(tarefasVisiveis(), st.membro
-      ? 'Nenhuma tarefa para este membro com o filtro atual.'
-      : 'Nenhuma tarefa cadastrada ainda.');
-  }
-
-  function tabelaTarefas(rows, vazio) {
-    return tabela(
-      'minmax(0,2.2fr) 146px 118px 100px 132px 104px 88px',
-      ['Tarefa', 'Mentorado', 'Categoria', 'Cadência', 'Prazo', 'Entregas', '>Ações'],
-      rows.map(linhaTarefa).join(''),
-      vazio || 'Nada por aqui.');
-  }
-
-  function linhaTarefa(t) {
-    var tint = Club.TINT[t.categoria] || 'var(--muted)';
-    var atrasada = Club.isLate(t);
-    var feita = t.status === 'done';
-    return '<div class="tr' + (feita ? ' off feito' : '') + '">' +
-      '<div class="td"><div class="tx">' +
-        '<div class="tx tx-t" title="' + esc(t.titulo) + '">' + esc(t.titulo) + '</div>' +
-        (t.descricao ? '<div class="tx tx-s">' + esc(t.descricao) + '</div>' : '') +
-      '</div></div>' +
-      td(esc(membro(t.member_id) || '—')) +
-      td(status(tint, t.categoria || '—')) +
-      td('<span class="tx-s">' + esc(t.cadencia || '—') + '</span>') +
-      td(feita
-        ? status('var(--success)', 'Concluída')
-        : '<span style="color:' + (atrasada ? 'var(--danger)' : 'inherit') + '">' +
-          esc(Club.fmtDue(t.vence_em)) + '</span>') +
-      td(t.progresso_total > 0
-        ? barra(t.progresso_atual, t.progresso_total)
-        : '<span class="tx-s">—</span>', 'num') +
-      '<div class="td end">' + acoes('task', t.id) + '</div>' +
-    '</div>';
-  }
-
-  function modalTarefa(t) {
-    var novo = !t;
-    t = t || { member_id:st.membro || (st.members[0] || {}).id,
-               titulo:'', descricao:'',
-               categoria:'Conteúdo', cadencia:'Semanal', vence_em:'',
-               progresso_atual:0, progresso_total:0, status:'pending' };
-
-    if (!st.members.length) {
-      Club.toast('Cadastre um membro antes de criar tarefas.', 'alert');
-      return;
-    }
-
-    /* Ao criar, dá para mandar a mesma tarefa para vários mentorados de uma vez;
-       ao editar, a tarefa pertence a um só. */
-    var campoMembro = novo
-      ? Club.select('Para quem', 'membros', opcoesMembro(false), t.member_id,
-          { multiple:true, hint:'Segure Ctrl (ou Cmd) para escolher mais de um.' })
-      : Club.select('Para quem', 'member_id', opcoesMembro(false), t.member_id);
-
-    Club.modal.open({
-      title: novo ? 'Nova tarefa' : 'Editar tarefa',
-      sub: novo ? 'Ela aparece na área do mentorado assim que você salvar.' : t.titulo,
-      body:
-        campoMembro +
-        Club.field('Título', 'titulo', { value:t.titulo, required:true,
-          placeholder:'Gravar 1 vídeo para o Instagram' }) +
-        Club.field('Descrição', 'descricao', { value:t.descricao, textarea:true,
-          placeholder:'O que exatamente precisa ser feito.' }) +
-        '<div class="fld-row">' +
-          Club.select('Categoria', 'categoria', Club.CATEGORIAS, t.categoria) +
-          Club.select('Cadência', 'cadencia', Club.CADENCIAS, t.cadencia) +
-        '</div>' +
-        '<div class="fld-row">' +
-          Club.field('Vence em', 'vence_em', { value:t.vence_em, type:'date' }) +
-          Club.field('Meta de entregas', 'progresso_total', { value:t.progresso_total,
-            type:'number', min:0, hint:'0 esconde a barra de progresso.' }) +
-        '</div>' +
-        (novo ? '' : '<div class="fld-row">' +
-          Club.field('Já entregues', 'progresso_atual', { value:t.progresso_atual,
-            type:'number', min:0 }) +
-          Club.select('Situação', 'status',
-            [{ value:'pending', label:'Em aberto' }, { value:'done', label:'Concluída' }],
-            t.status) +
-        '</div>'),
-      onSubmit: function (d) {
-        if (!d.titulo) { Club.toast('A tarefa precisa de um título.', 'alert'); return; }
-
-        var alvos = novo ? (d.membros || []) : [d.member_id];
-        if (!alvos.length) { Club.toast('Escolha ao menos um membro.', 'alert'); return; }
-
-        var base = {
-          titulo:d.titulo, descricao:d.descricao, categoria:d.categoria,
-          cadencia:d.cadencia, vence_em:d.vence_em,
-          progresso_total: Number(d.progresso_total) || 0,
-          progresso_atual: novo ? 0 : Number(d.progresso_atual) || 0,
-          status: novo ? 'pending' : d.status
-        };
-
-        Promise.all(alvos.map(function (id) {
-          return Club.data.tasks.save(Object.assign({}, base,
-            { id: novo ? undefined : t.id, member_id: id }));
-        })).then(function () {
-          Club.modal.close();
-          recarregar(novo
-            ? (alvos.length > 1 ? 'Tarefa criada para ' + alvos.length + ' membros.' : 'Tarefa criada.')
-            : 'Tarefa atualizada.');
         }).catch(aviso);
       }
     });
@@ -4056,8 +3942,7 @@
 
   var TIPOS = {
     member:   { store:'members',   nome:function (r) { return r.nome; },
-                aviso:'As tarefas e os artefatos que eram só dele saem junto.' },
-    task:     { store:'tasks',     nome:function (r) { return r.titulo; }, aviso:'' },
+                aviso:'Os artefatos que eram só dele saem junto.' },
     event:    { store:'events',    nome:function (r) { return r.titulo; }, aviso:'' },
     /* O cascade leva etapas e o progresso de todo mundo; o aviso diz quanto. */
     artifact: { store:'artifacts', nome:function (r) { return r.nome; },
@@ -4106,7 +3991,7 @@
       });
   }
 
-  var MODAIS = { member:modalMembro, task:modalTarefa, event:modalEvento,
+  var MODAIS = { member:modalMembro, event:modalEvento,
                  artifact:modalArtefato, group:modalGrupo, material:modalMaterial,
                  demand:modalDemanda, botExemplo:modalBotExemplo, qr:modalQr };
 
@@ -4211,9 +4096,6 @@
 
     var bat = e.target.closest('[data-bot-ativo]');
     if (bat) { alternarExemplo(bat.dataset.botAtivo); return; }
-
-    var stat = e.target.closest('#filtroStatus button');
-    if (stat) { st.status = stat.dataset.st; renderTasks(); return; }
 
     var down = e.target.closest('[data-baixar]');
     if (down) { baixar(down.dataset.baixar); return; }
@@ -4457,10 +4339,6 @@
     renderMaterials();
   });
 
-  $('filtroMembro').addEventListener('change', function () {
-    st.membro = this.value;
-    renderTasks();
-  });
 
   /* ── partida ──────────────────────────────────────────────────────────── */
 
@@ -4468,7 +4346,6 @@
     renderNav();
     renderOverview();
     renderMembers();
-    renderTasks();
     renderAgenda();
     renderArtifacts();
     renderMaterials();
