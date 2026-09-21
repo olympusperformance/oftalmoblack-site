@@ -256,9 +256,11 @@
 
   /* Artefato sem dono vale para a turma inteira — é a mesma regra que decide o
      que aparece na área do mentorado. */
+  /* Frente interna (tipo 'interna') é da equipe: só agrupa demandas. Não
+     entra na Progressão nem nas contas, mesmo estando em st.artifacts. */
   function artefatosDe(memberId) {
     return st.artifacts.filter(function (a) {
-      return !a.member_id || a.member_id === memberId;
+      return a.tipo !== 'interna' && (!a.member_id || a.member_id === memberId);
     });
   }
 
@@ -631,7 +633,7 @@
     linha += linhaNota(m, 'mentorado', m.nome);
     if (!aberto || !temFilho) return linha;
 
-    /* Faixa por grupo dentro do mentorado: com uma dezena de artefatos por
+    /* Faixa por área dentro do mentorado: com uma dezena de artefatos por
        pessoa, a lista não se lê sem agrupar. É cabeçalho, não nível: sem
        toggle, sem chave nova em abrirTudo. */
     var saida = '', grupoAtual;
@@ -659,8 +661,7 @@
     var pct = pcts.length ? Math.round(pcts.reduce(function (s, x) { return s + x; }, 0) / pcts.length) : null;
     var s = Club.PAR_ST[pior];
     return '<div class="tr grp sub">' +
-      '<span class="grp-n">' + esc(g ? g.nome : 'Sem grupo') +
-        (g && g.pilar ? ' <span class="tx-s">· ' + esc(String(g.pilar).split(' ')[0]) + '</span>' : '') + '</span>' +
+      '<span class="grp-n">' + esc(g ? g.nome : 'Sem área') + '</span>' +
       '<span class="tx-s">' + (pct === null ? 'nada aceito' : status(s.cor, s.label) + ' · ' + pct + '%') + '</span>' +
     '</div>';
   }
@@ -1890,7 +1891,7 @@
   }
 
   /* ── artefatos: o catálogo ────────────────────────────────────────────── */
-  /* Papel desta aba: o que o Club entrega, em que grupo, com que dono e com
+  /* Papel desta aba: o que o Club entrega, em que área, com que dono e com
      que critério de 100%. Acompanhar mentorado é na Progressão. */
 
   function siglas(ids) {
@@ -1949,27 +1950,33 @@
   function linhaCatalogo(a) {
     var s = Club.ART_ST[a.status] || Club.ART_ST['Bloqueado'];
     var etapas = etapasDe(a.id);
-    return '<div class="tr">' +
+    var interna = a.tipo === 'interna';
+    return '<div class="tr' + (interna ? ' interna' : '') + '">' +
       '<div class="td"><span class="art-i" style="width:28px;height:28px;border-radius:8px;' +
         'font-size:14px;margin:0;flex-shrink:0">' + ico(a.icone || 'box') + '</span>' +
         '<div class="tx"><div class="tx tx-t" title="' + esc(a.nome) + '">' + esc(a.nome) + '</div>' +
         '<div class="tx tx-s">' + esc([a.subtitulo, a.member_id ? 'só ' + escopo(a.member_id) : null,
           siglas(a.responsaveis) ? 'dono ' + siglas(a.responsaveis) : null].filter(Boolean).join(' · ')) +
         '</div></div></div>' +
-      '<div class="td"><div class="tx">' + criterioDe(etapas) + '</div></div>' +
-      td('<span class="tx-s">' + esc(tipoArtefato(etapas)) + '</span>') +
-      '<div class="td"><div class="tx">' + adocaoDe(a) + '</div></div>' +
+      '<div class="td"><div class="tx">' + (interna
+        ? '<span class="tx-s">frente interna · só agrupa demandas</span>' : criterioDe(etapas)) + '</div></div>' +
+      td('<span class="tx-s">' + esc(interna ? 'Interna' : tipoArtefato(etapas)) + '</span>') +
+      '<div class="td"><div class="tx">' + (interna ? '<span class="tx-s">—</span>' : adocaoDe(a)) + '</div></div>' +
       td(status(s.color, a.status)) +
       '<div class="td end">' + acoes('artifact', a.id) + '</div>' +
     '</div>';
   }
 
+  /* Cabeçalho de uma área na aba Artefatos. Área da equipe (interna) só
+     agrupa demandas: o rótulo "equipe" e a classe .interna dizem isso. */
   function cabecalhoGrupo(g, n) {
+    var interna = !!(g && g.interna);
+    var qtd = n + (interna ? ' frente' : ' artefato') + (n === 1 ? '' : 's');
     var sub = g
-      ? [g.pilar, siglas(g.responsaveis), n + ' artefato' + (n === 1 ? '' : 's')].filter(Boolean).join(' · ')
-      : n + ' artefato' + (n === 1 ? '' : 's') + ' sem grupo';
-    return '<div class="tr grp pai">' +
-      '<span class="grp-n">' + esc(g ? g.nome : 'Sem grupo') +
+      ? [interna ? 'equipe' : null, siglas(g.responsaveis), qtd].filter(Boolean).join(' · ')
+      : qtd + ' sem área';
+    return '<div class="tr grp pai' + (interna ? ' interna' : '') + '">' +
+      '<span class="grp-n">' + esc(g ? g.nome : 'Sem área') +
         ' <span class="tx-s" style="font-weight:400">' + esc(sub) + '</span></span>' +
       (g ? '<span>' + acoes('group', g.id) + '</span>' : '<span></span>') +
     '</div>';
@@ -1977,14 +1984,14 @@
 
   function renderArtifacts() {
     var grupos = st.groups.slice().concat([null]);
-    $('filtroArtGrupo').innerHTML = '<option value="">Todos os grupos</option>' +
+    $('filtroArtGrupo').innerHTML = '<option value="">Todas as áreas</option>' +
       st.groups.map(function (g) {
         return '<option value="' + esc(g.id) + '"' + (g.id === st.artGrupo ? ' selected' : '') + '>' +
           esc(g.nome) + '</option>';
-      }).join('') + '<option value="sem"' + (st.artGrupo === 'sem' ? ' selected' : '') + '>Sem grupo</option>';
+      }).join('') + '<option value="sem"' + (st.artGrupo === 'sem' ? ' selected' : '') + '>Sem área</option>';
 
     var semCriterio = st.artifacts.filter(function (a) { return !etapasDe(a.id).length; }).length;
-    $('artResumo').textContent = st.artifacts.length + ' artefatos · ' + st.groups.length + ' grupos' +
+    $('artResumo').textContent = st.artifacts.length + ' frentes · ' + st.groups.length + ' áreas' +
       (semCriterio ? ' · ' + semCriterio + ' sem critério' : '');
     $('avisoGrupos').innerHTML = Club.faltaGrupos
       ? '<div class="notice">' + ico('alert') + '<div>' + esc(Club.faltaGrupos) + '</div></div>' : '';
@@ -1995,7 +2002,7 @@
       var arts = st.artifacts.filter(function (a) {
         return (g ? a.group_id === g.id : !a.group_id);
       }).sort(porGrupoOrdem);
-      /* "Sem grupo" some quando está vazia: seria uma seção sem assunto. */
+      /* "Sem área" some quando está vazia: seria uma seção sem assunto. */
       if (!arts.length && !g) return '';
       return cabecalhoGrupo(g, arts.length) + arts.map(linhaCatalogo).join('');
     }).join('');
@@ -2023,28 +2030,27 @@
   }
 
   function modalGrupo(g) {
-    g = g || { nome:'', pilar:'', ordem: st.groups.length + 1, responsaveis:[] };
+    g = g || { nome:'', ordem: st.groups.length + 1, responsaveis:[], interna:false };
     Club.modal.open({
-      title: g.id ? 'Editar grupo' : 'Novo grupo',
-      sub: g.id ? g.nome : 'O bloco que o Club vende: reúne os artefatos que fazem parte da mesma entrega.',
+      title: g.id ? 'Editar área' : 'Nova área',
+      sub: g.id ? g.nome : 'Uma área da jornada do mentorado, ou uma área da equipe que só agrupa demandas.',
       body:
-        Club.field('Nome', 'nome', { value:g.nome, required:true, placeholder:'Tráfego' }) +
-        '<div class="fld-row">' +
-          Club.select('Pilar do método', 'pilar', [{ value:'', label:'—' }].concat(
-            Club.PILARES.map(function (p) { return { value:p, label:p }; })), g.pilar || '') +
-          Club.field('Ordem', 'ordem', { value:g.ordem, type:'number' }) +
-        '</div>' +
+        Club.field('Nome', 'nome', { value:g.nome, required:true, placeholder:'Geração de demanda' }) +
+        Club.field('Ordem', 'ordem', { value:g.ordem, type:'number' }) +
+        Club.checkbox('Área da equipe (interna): não aparece para o mentorado nem na Progressão',
+          'interna', !!g.interna) +
         (opcoesEquipe().length
           ? Club.select('Responsáveis', 'responsaveis', opcoesEquipe(), (g.responsaveis || [])[0],
-              { multiple:true, hint:'Quem responde pelo grupo. Segure Ctrl (ou Cmd) para mais de um.' })
+              { multiple:true, hint:'Quem responde pela área. Segure Ctrl (ou Cmd) para mais de um.' })
           : ''),
       onSubmit: function (d) {
-        if (!d.nome) { Club.toast('O grupo precisa de um nome.', 'alert'); return; }
+        if (!d.nome) { Club.toast('A área precisa de um nome.', 'alert'); return; }
         d.id = g.id;
         d.responsaveis = d.responsaveis || [];
+        d.interna = !!d.interna;
         Club.data.groups.save(d).then(function () {
           Club.modal.close();
-          recarregar(g.id ? 'Grupo atualizado.' : 'Grupo criado.');
+          recarregar(g.id ? 'Área atualizada.' : 'Área criada.');
         }).catch(aviso);
       }
     });
@@ -2054,7 +2060,7 @@
   function modalArtefato(a) {
     a = a || { nome:'', subtitulo:'', icone:'box', status:'Em produção', meta:'',
                url:'', member_id:null, group_id: st.artGrupo && st.artGrupo !== 'sem' ? st.artGrupo : null,
-               ordem:0, responsaveis:[] };
+               ordem:0, responsaveis:[], tipo:'artefato' };
     var etapasAtuais = a.id ? etapasDe(a.id) : [];
     var comGrupos = !Club.faltaGrupos;
     Club.modal.open({
@@ -2067,19 +2073,24 @@
           placeholder:'Página de vídeo de vendas' }) +
         (comGrupos
           ? '<div class="fld-row">' +
-              Club.select('Grupo', 'group_id', [{ value:'', label:'Sem grupo' }].concat(
-                st.groups.map(function (g) { return { value:g.id, label:g.nome }; })), a.group_id || '') +
-              Club.field('Ordem no grupo', 'ordem', { value:a.ordem || 0, type:'number' }) +
+              Club.select('Área', 'group_id', [{ value:'', label:'Sem área' }].concat(
+                st.groups.map(function (g) { return { value:g.id, label:g.nome + (g.interna ? ' (equipe)' : '') }; })), a.group_id || '') +
+              Club.field('Ordem na área', 'ordem', { value:a.ordem || 0, type:'number' }) +
             '</div>' +
             (opcoesEquipe().length
               ? Club.select('Dono', 'responsaveis', opcoesEquipe(), (a.responsaveis || [])[0],
-                  { multiple:true, hint:'Quem move este artefato. Sem dono, vale o do grupo.' })
+                  { multiple:true, hint:'Quem move esta frente. Sem dono, vale o da área.' })
               : '')
           : '') +
         '<div class="fld-row">' +
           Club.select('Situação', 'status', Club.ART_STATUS, a.status) +
           Club.select('Ícone', 'icone', Club.ART_ICONES, a.icone) +
         '</div>' +
+        Club.select('Tipo', 'tipo', [
+            { value:'artefato', label:'Artefato do mentorado (checklist e progresso)' },
+            { value:'interna',  label:'Frente interna (só agrupa demandas)' }
+          ], a.tipo || 'artefato',
+          { hint:'Frente interna nunca aparece para o mentorado nem na Progressão. Use só em área da equipe.' }) +
         Club.field('Observação', 'meta', { value:a.meta,
           placeholder:'Entrega em 6 dias', hint:'Linha pequena que aparece embaixo do status.' }) +
         Club.select('Para quem', 'member_id', opcoesMembro(true), a.member_id || '',
@@ -2096,10 +2107,12 @@
       onSubmit: function (d) {
         if (!d.nome) { Club.toast('O artefato precisa de um nome.', 'alert'); return; }
         d.id = a.id;
-        d.member_id = d.member_id || null;
+        d.tipo = d.tipo === 'interna' ? 'interna' : 'artefato';
+        /* Frente interna é da equipe: não é de mentorado nenhum e não tem checklist. */
+        d.member_id = d.tipo === 'interna' ? null : (d.member_id || null);
         if (comGrupos) { d.group_id = d.group_id || null; d.responsaveis = d.responsaveis || []; }
 
-        var titulos = String(d.etapas || '').split('\n')
+        var titulos = d.tipo === 'interna' ? [] : String(d.etapas || '').split('\n')
           .map(function (l) { return l.trim(); })
           .filter(Boolean);
 
@@ -2108,12 +2121,18 @@
            mundo para a etapa errada, em silêncio. Renomear no lugar é seguro;
            linha nova entra no fim. Apagar linha com marca também para aqui:
            o cascade levaria o progresso junto sem aviso. */
-        var trava = guardaPosicao(etapasAtuais, titulos);
+        var trava = d.tipo === 'interna' ? null : guardaPosicao(etapasAtuais, titulos);
         if (trava) { Club.toast(trava, 'alert'); return; }
+        if (d.tipo === 'interna' && etapasAtuais.length) {
+          Club.toast('Frente interna não tem checklist. Apague as etapas antes de trocar o tipo.', 'alert');
+          return;
+        }
 
         Club.data.artifacts.save(d).then(function (salvo) {
           /* O artefato novo só ganha id ao ser gravado, e a etapa precisa dele
-             para saber de quem é — daí o checklist ir na sequência, não junto. */
+             para saber de quem é — daí o checklist ir na sequência, não junto.
+             Frente interna não tem checklist: nada a sincronizar. */
+          if (d.tipo === 'interna') return null;
           return Club.data.steps.sync(salvo.id, titulos, etapasAtuais);
         }).then(function () {
           Club.modal.close();
@@ -3979,7 +3998,7 @@
     group:    { store:'groups',    nome:function (r) { return r.nome; },
                 aviso:function (r) {
                   var n = st.artifacts.filter(function (a) { return a.group_id === r.id; }).length;
-                  return n ? 'Os ' + n + ' artefatos dele ficam "Sem grupo"; nada de progresso muda.' : '';
+                  return n ? 'As ' + n + ' frentes dela ficam "Sem área"; nada de progresso muda.' : '';
                 } },
     material:  { store:'materials',  nome:function (r) { return r.titulo; },
                  aviso:'O arquivo sai do servidor junto.' },

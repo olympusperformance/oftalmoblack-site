@@ -297,6 +297,7 @@ button{font-family:inherit;color:inherit}
 
 /* ---------- artifacts ---------- */
 .artgrid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.art-area+.art-area{margin-top:32px}
 .art{border-radius:var(--r-lg);border:1px solid var(--border);padding:20px;min-height:186px;
   display:flex;flex-direction:column;cursor:pointer;
   background:linear-gradient(140deg,rgba(var(--gold-rgb),.09),var(--surface-lo));

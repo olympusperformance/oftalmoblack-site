@@ -27,11 +27,11 @@
     tasks:     ['member_id', 'titulo', 'descricao', 'categoria', 'cadencia', 'vence_em',
                 'progresso_atual', 'progresso_total', 'status'],
     events:    ['member_id', 'titulo', 'mentor', 'inicia_em', 'formato', 'link'],
-    /* group_id, ordem e responsaveis chegam com supabase/frentes.sql. Antes do
-       SQL rodar, artifacts.save corta os três (ver C.faltaGrupos). */
+    /* tipo e interna chegam com supabase/areas.sql (fase 1 da taxonomia).
+       pilar saiu da UI; a coluna só cai do banco na fase 4. */
     artifacts: ['member_id', 'nome', 'subtitulo', 'icone', 'status', 'meta', 'url',
-                'group_id', 'ordem', 'responsaveis'],
-    artifact_groups: ['nome', 'pilar', 'ordem', 'responsaveis'],
+                'group_id', 'ordem', 'responsaveis', 'tipo'],
+    artifact_groups: ['nome', 'ordem', 'responsaveis', 'interna'],
     materials: ['titulo', 'descricao', 'categoria', 'visivel_para', 'arquivo_path',
                 'arquivo_nome', 'arquivo_tipo', 'arquivo_bytes', 'publicado_em'],
     demands:   ['titulo', 'descricao', 'status', 'prioridade', 'responsaveis',
@@ -254,9 +254,12 @@
       remove: function (id) { return apaga('artifacts', id); }
     },
 
-    /* Grupo acima do artefato (SEO / Site, Conteúdo, Tráfego, Sistema Black).
-       Tabela artifact_groups, criada por supabase/frentes.sql. Enquanto não
-       existe, a aba Artefatos fica plana e avisa. */
+    /* Área acima do artefato (Onboarding, Tecnologia e dados, Presença e
+       conteúdo, Geração de demanda, Comercial da clínica). Tabela
+       artifact_groups, criada por supabase/frentes.sql e estendida por
+       supabase/areas.sql. `interna` marca área da equipe, que só agrupa
+       demandas e nunca chega ao mentorado. Enquanto a tabela não existe, a
+       aba Artefatos fica plana e avisa. */
     groups: {
       list: function () {
         C.faltaGrupos = null;
@@ -266,6 +269,7 @@
       save: function (g) {
         var reg = Object.assign({}, g);
         if ('ordem' in reg) reg.ordem = parseInt(reg.ordem, 10) || 0;
+        reg.interna = !!reg.interna;
         return grava('artifact_groups', reg);
       },
       remove: function (id) { return apaga('artifact_groups', id); }

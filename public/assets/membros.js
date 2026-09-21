@@ -14,7 +14,7 @@
   var $ = function (id) { return document.getElementById(id); };
 
   var st = { membro:null, tasks:[], events:[], artifacts:[], materials:[],
-             steps:[], progress:[],
+             steps:[], progress:[], groups:[],
              status:'pending', categoria:'', matCategoria:'' };
 
   var NAV = [
@@ -59,11 +59,14 @@
         Club.data.artifacts.list({ memberId: m.id }),
         Club.data.materials.list({ memberId: m.id }),
         Club.data.steps.list(),
-        Club.data.progress.list({ memberId: m.id })
+        Club.data.progress.list({ memberId: m.id }),
+        /* Áreas da jornada, para agrupar os cartões. O RLS só entrega as que
+           não são da equipe (supabase/areas.sql). */
+        Club.data.groups.list()
       ]);
     }).then(function (r) {
       st.tasks = r[0]; st.events = r[1]; st.artifacts = r[2]; st.materials = r[3];
-      st.steps = r[4]; st.progress = r[5];
+      st.steps = r[4]; st.progress = r[5]; st.groups = r[6] || [];
     });
   }
 
@@ -350,19 +353,58 @@
       : '<div class="art' + (locked ? ' locked' : '') + '">' + corpo + '</div>';
   }
 
+  /* ── artefatos por área ───────────────────────────────────────────────── */
+  /* Uma seção por área, na ordem das áreas; artefato sem área vai por último.
+     Frente interna (tipo 'interna') nunca chega aqui: o RLS a segura, e o
+     filtro repete a regra por garantia. Área sem artefato visível não vira
+     seção vazia. */
+  function agruparPorArea(artefatos, grupos) {
+    var porNome = function (a, b) { return String(a.nome).localeCompare(String(b.nome), 'pt-BR'); };
+    var visiveis = artefatos.filter(function (a) { return a.tipo !== 'interna'; });
+    var secoes = grupos.slice()
+      .sort(function (a, b) { return ((a.ordem || 0) - (b.ordem || 0)) || porNome(a, b); })
+      .map(function (g) {
+        return { grupo:g, itens: visiveis
+          .filter(function (a) { return a.group_id === g.id; })
+          .sort(function (a, b) { return ((a.ordem || 0) - (b.ordem || 0)) || porNome(a, b); }) };
+      });
+    var soltos = visiveis.filter(function (a) {
+      return !grupos.some(function (g) { return g.id === a.group_id; });
+    }).sort(porNome);
+    if (soltos.length) secoes.push({ grupo:null, itens:soltos });
+    return secoes.filter(function (s) { return s.itens.length; });
+  }
+
   function renderArtifacts() {
     var vazio = Club.empty('box', 'Nenhum artefato liberado ainda.');
     /* Disponibilidade independe de progresso: um artefato liberado aparece
-       mesmo sem aceite ou etapas marcadas para este mentorado. */
+       mesmo sem aceite ou etapas marcadas para este mentorado. Frente interna
+       é da equipe e nunca aparece. */
     var meus = st.artifacts.filter(function (a) {
-      return a.status === 'Disponível' || !etapasDe(a.id).length || parDe(a).estado !== 'definir';
+      return a.tipo !== 'interna' &&
+        (a.status === 'Disponível' || !etapasDe(a.id).length || parDe(a).estado !== 'definir');
     });
-    /* Na aba cheia cabe o checklist inteiro; no resumo da capa só a barra. */
-    $('artList').innerHTML = meus.length
-      ? meus.map(function (a) { return cartaoArtefato(a, false); }).join('') : vazio;
-    $('artListFull').innerHTML = meus.length
-      ? meus.map(function (a) { return cartaoArtefato(a, true); }).join('') : vazio;
-    return meus.filter(function (a) { return a.status === 'Disponível'; }).length;
+    var secoes = agruparPorArea(meus, st.groups);
+    var ordenados = secoes.reduce(function (acc, s) { return acc.concat(s.itens); }, []);
+
+    /* Na capa cabe uma grade só, na ordem das áreas; na aba cheia, uma seção
+       por área com o checklist inteiro. */
+    $('artList').innerHTML = ordenados.length
+      ? ordenados.map(function (a) { return cartaoArtefato(a, false); }).join('') : vazio;
+    $('artListFull').innerHTML = secoes.length
+      ? secoes.map(function (s) {
+          return '<section class="art-area">' +
+            '<div class="sec"><div class="sec-g">' +
+              '<div class="sec-eb"><span class="sec-dash"></span><span>ÁREA</span></div>' +
+              '<h2 class="sec-t">' + esc(s.grupo ? s.grupo.nome : 'Outros') + '</h2>' +
+            '</div></div>' +
+            '<div class="artgrid">' +
+              s.itens.map(function (a) { return cartaoArtefato(a, true); }).join('') +
+            '</div>' +
+          '</section>';
+        }).join('')
+      : vazio;
+    return ordenados.filter(function (a) { return a.status === 'Disponível'; }).length;
   }
 
   /* ── agenda ───────────────────────────────────────────────────────────── */
