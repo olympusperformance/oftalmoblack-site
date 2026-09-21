@@ -1005,3 +1005,34 @@ input[type="file"].inp::file-selector-button:hover{background:var(--surface);bor
 .foco-bar .ic{color:var(--gold);flex-shrink:0}
 .foco-bar b{color:var(--gold);font-weight:600}
 .foco-bar .sp{flex:1}
+
+/* Formulário da demanda: mesma hierarquia da tela de detalhes. */
+.demand-form{min-width:0}
+.demand-form-title .inp{font-size:18px;font-weight:600;padding:13px 14px}
+.demand-form-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 20px;
+  padding:18px 20px 4px;margin-bottom:8px;background:var(--surface);border:1px solid var(--border-soft);
+  border-radius:var(--r-md)}
+.demand-form-meta .fld{margin-bottom:14px}
+/* Campo que não vale neste contexto (projeto de demanda de mentorado): fica
+   no lugar, esmaecido, em vez de sumir e mexer na altura do formulário. */
+.fld.desligado{opacity:.45}
+.fld.desligado .pick-b,.fld.desligado .inp{cursor:default}
+.demand-form .check-line{padding:6px 0 12px}
+.demand-form .demand-section .hint{display:block;margin-top:10px;font-size:11.5px;color:var(--faint);line-height:1.45}
+.demand-form textarea.inp{min-height:96px}
+.pick-b:disabled{opacity:.5;cursor:default}
+.ck-editor{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.ck-editor:empty{margin-bottom:0}
+.ck-item{display:flex;align-items:center;gap:10px;min-width:0}
+.ck-item.feito .ck-inp{color:var(--muted);text-decoration:line-through}
+.ck-dot{width:8px;height:8px;border-radius:4px;flex-shrink:0}
+.ck-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.ck-inp{padding:9px 11px;font-size:13.5px}
+.ck-meta{font-size:11px;color:var(--muted);line-height:1.4;padding-left:2px;overflow-wrap:anywhere}
+.ck-item.confirmando>.ck-dot,.ck-item.confirmando>.ck-body,.ck-item.confirmando>[data-ck-remover]{display:none}
+.ck-confirm{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;flex:1;padding:11px 13px;
+  background:var(--warn-bg);border:1px solid var(--warn-bd);border-radius:var(--r-sm);
+  font-size:12.5px;color:var(--warning-tx);line-height:1.5}
+.ck-confirm .ic{color:var(--warning);flex-shrink:0}
+.ck-confirm span{flex:1;min-width:160px}
+@media(max-width:520px){.demand-form-meta{grid-template-columns:1fr;padding:14px 14px 0}}

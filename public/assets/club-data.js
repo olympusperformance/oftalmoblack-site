@@ -139,6 +139,14 @@
     return sb().from(tabela).delete().eq('id', id).then(function (res) { ok(res); });
   }
 
+  /* Várias linhas novas num insert só: é o que a demanda em lote (uma por
+     mentorado) e os checklists dela precisam. Devolve as linhas gravadas. */
+  function gravaVarios(tabela, regs) {
+    if (!regs || !regs.length) return Promise.resolve([]);
+    return sb().from(tabela).insert(regs.map(function (r) { return limpa(tabela, r); }))
+      .select().then(lista);
+  }
+
   /* ── interface ────────────────────────────────────────────────────────── */
 
   C.data = {
@@ -393,6 +401,7 @@
         .then(function (rows) { return rows.sort(byDemanda); });
     },
     save: function (d) { return grava('demands', d); },
+    saveMany: function (rows) { return gravaVarios('demands', rows); },
     remove: function (id) { return apaga('demands', id); },
     /* A tela troca a situação de uma demanda sem recarregar a lista inteira, e
        precisa reordenar com a mesma regra do carregamento. */
@@ -477,6 +486,12 @@
       });
     },
     remove: function (id) { return apaga('demand_steps', id); },
+    saveMany: function (rows) {
+      return gravaVarios('demand_steps', rows).catch(function (err) {
+        if (/does not exist|schema cache/i.test(err.message || '')) throw new Error(AVISO_DEM_CK);
+        throw err;
+      });
+    },
 
     /* Mesma regra do checklist do artefato: casa por posição, para renomear
        um passo não apagar a marcação de quem já o cumpriu. */

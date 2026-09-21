@@ -2183,10 +2183,16 @@
     return projeto ? '[' + projeto + '] ' + base : base;
   }
 
-  /* O que gravar ao trocar o projeto: coluna, ou o título reescrito. */
+  /* O que gravar ao trocar o projeto: coluna, ou o título reescrito. Com a
+     coluna no banco, a tag antiga sai do título na mesma gravação — senão a TV
+     e o Hermes seguiriam lendo um projeto que já não é o da coluna. */
   function patchProjeto(r, v) {
     v = (v || '').trim();
-    if (st.temProjeto) return { projeto: v || null };
+    if (st.temProjeto) {
+      var p = { projeto: v || null };
+      if (TAG.test(r.titulo || '')) p.titulo = tituloSemTag(r.titulo);
+      return p;
+    }
     return { titulo: comTag(v, r.titulo) };
   }
 
@@ -3154,86 +3160,341 @@
     });
   }
 
+  /* ── formulário da demanda ─────────────────────────────────────────────
+     Mesma hierarquia da tela de detalhes: contexto (projeto ou mentorado) e
+     título no topo, o cartão de situação, prioridade, dono e prazo, a
+     descrição e o checklist. Os seletores são os mesmos menus das células da
+     linha — o <select> nativo abre branco no branco no Windows — e o valor
+     escolhido viaja num campo oculto, porque o formulário coleta por name. */
+
+  function campoPick(label, name, hostId, valor, hint) {
+    return '<div class="fld"><label>' + esc(label) + '</label><div id="' + hostId + '"></div>' +
+      '<input type="hidden" name="' + name + '" value="' + esc(valor == null ? '' : valor) + '">' +
+      (hint ? '<span class="hint">' + esc(hint) + '</span>' : '') + '</div>';
+  }
+
+  function campoOculto(campo) {
+    return document.querySelector('#modalForm [name="' + campo + '"]');
+  }
+
+  function pickSimples(hostId, campo, itens, valor, opts) {
+    var host = $(hostId), hidden = campoOculto(campo);
+    if (!host || !hidden) return;
+    opts = opts || {};
+    Club.pick(host, itens, valor, { titulo:opts.titulo, vazio:opts.vazio, onPick:function (v, item) {
+      hidden.value = v;
+      if (opts.onPick) opts.onPick(v, item);
+    } });
+  }
+
+  /* Vários de uma vez, num botão que se recolhe: o rótulo lista quem está
+     marcado e o menu fica de pé enquanto a pessoa marca — o mesmo menu da
+     coluna Responsáveis da linha. */
+  function pickVarios(hostId, campo, itens, valores, opts) {
+    var host = $(hostId), hidden = campoOculto(campo);
+    if (!host || !hidden) return null;
+    opts = opts || {};
+    var marcados = (valores || []).slice();
+    host.classList.add('pick');
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'inp pick-b';
+    btn.dataset.menuId = 'pickm-' + campo;
+    btn.setAttribute('aria-haspopup', 'listbox');
+    btn.setAttribute('aria-expanded', 'false');
+    btn.innerHTML = '<span class="pick-l"></span><span class="pick-c">' + ico('chevron-down') + '</span>';
+    host.appendChild(btn);
+
+    function rotulo() {
+      var nomes = itens.filter(function (i) { return marcados.indexOf(i.value) !== -1; })
+        .map(function (i) { return i.label; });
+      var l = btn.querySelector('.pick-l');
+      l.textContent = nomes.length ? nomes.join(', ') : (opts.vazio || 'Ninguém');
+      l.classList.toggle('is-ph', !nomes.length);
+      hidden.value = marcados.join(',');
+    }
+    rotulo();
+
+    btn.addEventListener('click', function () {
+      Club.menu(btn, itens.map(function (i) {
+        return { value:i.value, label:i.label, checked:marcados.indexOf(i.value) !== -1 };
+      }), { titulo:opts.titulo, multi:true, largura:btn.offsetWidth, onPick:function (v, item) {
+        var i = marcados.indexOf(v);
+        if (item.checked && i === -1) marcados.push(v);
+        if (!item.checked && i !== -1) marcados.splice(i, 1);
+        rotulo();
+        if (opts.onPick) opts.onPick(marcados.slice());
+      } });
+    });
+    return {
+      valores:function () { return marcados.slice(); },
+      travar:function (sim) { btn.disabled = !!sim; if (sim) Club.fecharMenu(); }
+    };
+  }
+
+  /* Uma linha do checklist no formulário. A existente mostra a situação, o
+     dono e o prazo que carrega, para ninguém apagar às cegas; a nova é só o
+     nome. O id fica no elemento: é ele que casa a linha com o banco, e não a
+     posição — renomear ou inserir no meio não troca as marcas de lugar. */
+  function linhaChecklistForm(e) {
+    var meta = e ? [e.status || (e.feito ? 'Concluída' : 'A fazer'), responsaveisDe(e),
+      e.vence_em ? Club.fmtDataCurta(e.vence_em) : 'Sem prazo'].join(' · ') : '';
+    var cor = e ? (Club.DEM_COR[e.status] || 'var(--faint)') : 'var(--faint)';
+    return '<div class="ck-item' + (e && e.feito ? ' feito' : '') + '" data-ck-id="' + esc(e ? e.id : '') + '">' +
+      '<span class="ck-dot" style="background:' + cor + '"></span>' +
+      '<div class="ck-body"><input class="inp ck-inp" data-ck-titulo value="' + esc(e ? e.titulo : '') +
+        '" placeholder="O que falta fazer? Enter acrescenta outra." autocomplete="off" aria-label="Nome da subtarefa">' +
+        (meta ? '<span class="ck-meta">' + esc(meta) + '</span>' : '') + '</div>' +
+      '<button type="button" class="btn btn-sm btn-ghost" data-ck-remover aria-label="Remover subtarefa">' +
+        ico('trash') + '</button>' +
+    '</div>';
+  }
+
+  function atualizarTotalCk() {
+    var t = $('ckTotal');
+    if (t) t.textContent = document.querySelectorAll('#ckEditor .ck-item').length;
+  }
+
+  function acrescentarLinhaCk(depoisDe) {
+    var editor = $('ckEditor');
+    if (!editor) return;
+    var tpl = document.createElement('div');
+    tpl.innerHTML = linhaChecklistForm(null);
+    var nova = tpl.firstChild;
+    if (depoisDe && depoisDe.parentElement === editor) depoisDe.insertAdjacentElement('afterend', nova);
+    else editor.appendChild(nova);
+    atualizarTotalCk();
+    nova.querySelector('[data-ck-titulo]').focus();
+  }
+
+  /* Remover subtarefa que já existe no banco pede um segundo clique, dizendo
+     o que vai junto. A que acabou de ser digitada sai na hora. */
+  function removerLinhaCk(item) {
+    if (!item.dataset.ckId) { item.remove(); atualizarTotalCk(); return; }
+    if (item.classList.contains('confirmando')) return;
+    var titulo = item.querySelector('[data-ck-titulo]').value.trim();
+    item.classList.add('confirmando');
+    item.insertAdjacentHTML('beforeend', '<div class="ck-confirm">' + ico('alert') +
+      '<span>Remover <b>' + esc(titulo || 'esta subtarefa') + '</b>? Saem junto a situação, o dono ' +
+      'e o prazo dela. Vale ao salvar; não dá para desfazer depois.</span>' +
+      '<button type="button" class="btn btn-sm btn-danger" data-ck-confirmar>Remover</button>' +
+      '<button type="button" class="btn btn-sm" data-ck-manter>Manter</button></div>');
+  }
+
+  function lerChecklistForm() {
+    return Array.prototype.map.call(document.querySelectorAll('#ckEditor .ck-item'), function (item) {
+      return { id:item.dataset.ckId || null, titulo:item.querySelector('[data-ck-titulo]').value.trim() };
+    }).filter(function (it) { return it.titulo; });
+  }
+
+  /* Casa pelo id, não pela posição: renomear atualiza a mesma linha, inserir
+     no meio só empurra a ordem, e apagar apaga só a que saiu — com a situação,
+     o dono e o prazo que ela carregava, e mais nada. */
+  function sincronizarChecklist(demandId, itens, atuais, memberId) {
+    var porId = {};
+    (atuais || []).forEach(function (a) { porId[a.id] = a; });
+    var acoes = [], novos = [];
+    itens.forEach(function (it, i) {
+      var a = it.id ? porId[it.id] : null;
+      if (!a) { novos.push({ demand_id:demandId, titulo:it.titulo, ordem:i, member_id:memberId || null }); return; }
+      if (a.titulo !== it.titulo || a.ordem !== i) {
+        acoes.push(Club.data.demandSteps.save({ id:a.id, titulo:it.titulo, ordem:i }));
+      }
+    });
+    (atuais || []).forEach(function (a) {
+      if (!itens.some(function (it) { return it.id === a.id; })) acoes.push(Club.data.demandSteps.remove(a.id));
+    });
+    if (novos.length) acoes.push(Club.data.demandSteps.saveMany(novos));
+    return Promise.all(acoes);
+  }
+
   function modalDemanda(d) {
     var novo = !d;
     d = d || { titulo:'', descricao:'', status:'A fazer', prioridade:'Média',
                responsaveis:[], member_id:null, origem:'', vence_em:'', projeto:'' };
     var subAtuais = d.id ? etapasDaDemanda(d.id) : [];
-
-    var opcoesEquipe = st.staff.filter(function (p) { return p.ativo; })
+    var equipe = st.staff.filter(function (p) { return p.ativo; })
       .map(function (p) { return { value:p.id, label:p.nome }; });
+    var ativos = st.members.filter(function (m) { return m.ativo; });
+    var projetoAtual = d.id ? lerProjeto(d) : '';
+
+    function corDe(mapa, v, padrao) { return mapa[v] || padrao; }
 
     Club.modal.open({
       title: novo ? 'Nova demanda' : 'Editar demanda',
-      sub: novo ? 'Operação interna — o mentorado não enxerga isto.' : d.titulo,
+      sub: novo ? 'Quadro interno da equipe. Nenhum mentorado vê demandas — nem as ligadas a ele.'
+                : (d.member_id ? d.titulo : tituloSemTag(d.titulo)),
+      largura: 780,
+      submitLabel: novo ? 'Criar demanda' : 'Salvar',
       body:
-        Club.field('O que precisa ser feito', 'titulo', { value:tituloSemTag(d.titulo), required:true,
-          placeholder:'Conectar o WhatsApp da clínica do Arthur' }) +
-        Club.field('Detalhe', 'descricao', { value:d.descricao, textarea:true,
-          placeholder:'Contexto, links, o que já foi tentado.' }) +
-        '<div class="fld-row">' +
-          Club.select('Situação', 'status', Club.DEM_STATUS, d.status) +
-          Club.select('Prioridade', 'prioridade', Club.DEM_PRIORIDADES, d.prioridade) +
-        '</div>' +
-        '<div class="fld-row">' +
-          Club.field('Origem', 'origem', { value:d.origem,
-            placeholder:'Reunião 30/07', hint:'De onde a demanda nasceu.' }) +
-          Club.field('Prazo', 'vence_em', { value:d.vence_em, type:'date' }) +
-        '</div>' +
-        (opcoesEquipe.length
-          ? Club.select('Responsáveis', 'responsaveis', opcoesEquipe,
-              (d.responsaveis || [])[0], { multiple:true,
-                hint:'Segure Ctrl (ou Cmd) para escolher mais de um.' })
-          : '<div class="notice">' + ico('alert') +
-            '<div>Nenhuma pessoa na equipe ainda. Use o botão Equipe para cadastrar.</div></div>') +
-        Club.select('Sobre qual mentorado', 'member_id',
-          [{ value:'', label:'Nenhum — demanda interna' }].concat(
-            st.members.map(function (m) { return { value:m.id, label:m.nome }; })),
-          d.member_id || '') +
-        Club.field('Projeto', 'projeto', { value:d.id ? lerProjeto(d) : '',
-          placeholder:'SDR IA Marina, Tráfego B2C Dr. Alex, Sistema Black…',
-          hint:'Só para demanda interna; a de mentorado se agrupa por ele. ' +
-               (projetosExistentes().length ? 'Existem: ' + projetosExistentes().join(', ') + '.' : '') }) +
-        Club.field('Subtarefas', 'subtarefas', { value:subAtuais.map(function (e) {
-            return e.titulo; }).join('\n'), textarea:true,
-          placeholder:'Número liberado pela operadora\nAPI conectada\nFluxo testado',
-          hint:'Uma por linha. Elas viram o checklist que abre dentro da demanda, ' +
-               'para o time marcar o que já saiu. Renomear uma linha mantém a marca; ' +
-               'apagar a linha apaga a marca junto.' }),
+        '<div class="demand-form">' +
+          '<div class="fld' + (d.member_id ? ' desligado' : '') + '" id="fldProjeto">' +
+            '<label>Projeto</label><div id="pkProjeto"></div>' +
+            '<input type="hidden" name="projeto" value="' + esc(projetoAtual) + '">' +
+            '<input class="inp" name="projeto_novo" id="projetoNovo" placeholder="Nome do novo projeto — ' +
+              'use &quot;Pai / Frente&quot; para agrupar, como Olympus / Comercial" autocomplete="off" hidden>' +
+            '<span class="hint">Só a demanda interna tem projeto; a de mentorado se agrupa por ele.</span>' +
+          '</div>' +
+          '<div class="demand-form-title">' +
+            Club.field('O que precisa ser feito', 'titulo', { value:tituloSemTag(d.titulo), required:true,
+              placeholder:'Conectar o WhatsApp da clínica do Arthur' }) +
+          '</div>' +
+          '<div class="demand-form-meta">' +
+            campoPick('Situação', 'status', 'pkStatus', d.status) +
+            campoPick('Prioridade', 'prioridade', 'pkPrio', d.prioridade) +
+            (equipe.length
+              ? campoPick('Responsáveis', 'responsaveis', 'pkResp', (d.responsaveis || []).join(','))
+              : '<div class="fld"><label>Responsáveis</label><div class="notice" style="margin:0">' + ico('alert') +
+                '<div>Ninguém na equipe ainda. Cadastre pelo botão Equipe.</div></div>' +
+                '<input type="hidden" name="responsaveis" value=""></div>') +
+            Club.field('Prazo', 'vence_em', { value:d.vence_em || '', type:'date' }) +
+            (novo
+              ? campoPick('Para quais mentorados', 'membros', 'pkMembros', '')
+              : campoPick('Mentorado', 'member_id', 'pkMembro', d.member_id || '')) +
+            Club.field('Origem', 'origem', { value:d.origem || '', placeholder:'Reunião 30/07',
+              hint:'De onde a demanda nasceu.' }) +
+          '</div>' +
+          /* O aviso do lote é fixo de propósito: mostrar e esconder blocos com o
+             menu de mentorados aberto rola o formulário, e rolar fecha o menu. */
+          (novo
+            ? Club.checkbox('Criar para todos os mentorados ativos (' + ativos.length + ')', 'todos', false) +
+              '<div class="notice" id="avisoLote">' + ico('users') + '<div style="flex:1;min-width:0">Vazio = demanda interna. Um mentorado = ' +
+              'uma demanda dele. Vários = uma demanda por mentorado, independentes entre si: concluir ou editar ' +
+              'uma não muda as outras.</div></div>'
+            : '') +
+          '<div class="demand-section"><h4>Descrição</h4>' +
+            '<textarea name="descricao" class="inp" placeholder="Contexto, links, o que já foi tentado.">' +
+            esc(d.descricao || '') + '</textarea></div>' +
+          '<div class="demand-section"><h4>Checklist <span id="ckTotal">' + subAtuais.length + '</span></h4>' +
+            '<div class="ck-editor" id="ckEditor">' + subAtuais.map(linhaChecklistForm).join('') + '</div>' +
+            '<button type="button" class="add-sub" data-ck-add>' + ico('plus') + 'Acrescentar subtarefa</button>' +
+            '<span class="hint">Cada linha vira um item do checklist da demanda. Situação, dono e prazo de ' +
+              'cada item se ajustam na própria lista, depois de salvar.</span>' +
+          '</div>' +
+        '</div>',
 
       onSubmit: function (dados) {
-        if (!dados.titulo) { Club.toast('A demanda precisa de um título.', 'alert'); return; }
-        dados.id = d.id;
-        dados.member_id = dados.member_id || null;
-        dados.responsaveis = dados.responsaveis || [];
-        var proj = dados.member_id ? '' : String(dados.projeto || '').trim();
-        if (st.temProjeto) { dados.projeto = proj || null; dados.titulo = tituloSemTag(dados.titulo); }
-        else { delete dados.projeto; dados.titulo = comTag(proj, dados.titulo); }
+        var titulo = String(dados.titulo || '').trim();
+        if (!titulo) { Club.toast('A demanda precisa de um título.', 'alert'); return; }
 
-        var titulos = String(dados.subtarefas || '').split('\n')
-          .map(function (l) { return l.trim(); })
-          .filter(Boolean);
+        var alvos = novo
+          ? (dados.todos ? ativos.map(function (m) { return m.id; })
+                         : String(dados.membros || '').split(',').filter(Boolean))
+          : [dados.member_id || null];
+        if (!alvos.length) alvos = [null];
 
-        Club.data.demands.save(dados).then(function (salva) {
-          /* A demanda nova só ganha id ao ser gravada, e a subtarefa precisa
-             dele para saber de quem é. */
-          return Club.data.demandSteps.sync(salva.id, titulos, subAtuais);
-        }).then(function () {
+        var proj = dados.projeto === '__novo'
+          ? String(dados.projeto_novo || '').trim()
+          : String(dados.projeto || '').trim();
+        var base = {
+          titulo:titulo, descricao:dados.descricao, status:dados.status, prioridade:dados.prioridade,
+          responsaveis:String(dados.responsaveis || '').split(',').filter(Boolean),
+          origem:dados.origem, vence_em:dados.vence_em
+        };
+        /* Projeto só vale para a interna; a de mentorado se agrupa por ele.
+           Sem a coluna no banco, o projeto continua indo como tag no título. */
+        function registro(memberId) {
+          var r = Object.assign({}, base, { member_id:memberId || null });
+          var p = memberId ? '' : proj;
+          if (st.temProjeto) { r.projeto = p || null; r.titulo = tituloSemTag(r.titulo); }
+          else { r.titulo = comTag(p, r.titulo); }
+          return r;
+        }
+        var itens = lerChecklistForm();
+        var botao = document.querySelector('.modal-f .btn-primary');
+        if (botao) botao.disabled = true;
+
+        var fluxo;
+        if (!novo) {
+          fluxo = Club.data.demands.save(Object.assign({ id:d.id }, registro(alvos[0])))
+            .then(function (salva) { return sincronizarChecklist(salva.id, itens, subAtuais, salva.member_id); });
+        } else if (alvos.length === 1) {
+          fluxo = Club.data.demands.save(registro(alvos[0]))
+            .then(function (salva) { return sincronizarChecklist(salva.id, itens, [], salva.member_id); });
+        } else {
+          /* Em lote: um insert com todas as demandas, outro com todos os
+             checklists. Duas idas ao banco, não sessenta. */
+          fluxo = Club.data.demands.saveMany(alvos.map(registro)).then(function (salvas) {
+            var passos = [];
+            salvas.forEach(function (s) {
+              itens.forEach(function (it, i) {
+                passos.push({ demand_id:s.id, titulo:it.titulo, ordem:i, member_id:s.member_id });
+              });
+            });
+            return Club.data.demandSteps.saveMany(passos);
+          });
+        }
+
+        fluxo.then(function () {
           Club.modal.close();
-          recarregarDemandas(novo ? 'Demanda criada.' : 'Demanda atualizada.');
+          var n = alvos.length;
+          var msg = !novo ? 'Demanda atualizada.'
+            : n > 1 ? n + ' demandas criadas, uma por mentorado.' : 'Demanda criada.';
+          /* Quem cria para outra pessoa não vê a demanda em "Minhas". */
+          if (novo && st.demVisao === 'minhas' && (!st.eu || base.responsaveis.indexOf(st.eu.id) === -1)) {
+            msg += ' Aparece' + (n > 1 ? 'm' : '') + ' em "Todas".';
+          }
+          recarregarDemandas(msg);
         }).catch(aviso);
       }
     });
 
-    /* O select múltiplo só reflete o array inteiro depois de estar no DOM. */
-    if ((d.responsaveis || []).length > 1) {
-      var campo = document.querySelector('#modalForm [name="responsaveis"]');
-      if (campo) {
-        Array.prototype.forEach.call(campo.options, function (o) {
-          o.selected = d.responsaveis.indexOf(o.value) !== -1;
-        });
-      }
+    /* Os seletores só existem depois que o formulário está no DOM. */
+    pickSimples('pkStatus', 'status', Club.DEM_STATUS.map(function (v) {
+      return { value:v, label:v, color:corDe(Club.DEM_COR, v, 'var(--faint)') };
+    }), d.status, { titulo:'Situação' });
+    pickSimples('pkPrio', 'prioridade', Club.DEM_PRIORIDADES.map(function (v) {
+      return { value:v, label:v, color:corDe(Club.DEM_PRIO_COR, v, 'var(--faint)') };
+    }), d.prioridade, { titulo:'Prioridade' });
+    if (equipe.length) {
+      pickVarios('pkResp', 'responsaveis', equipe, d.responsaveis || [],
+        { titulo:'Responsáveis', vazio:'Ninguém ainda' });
     }
+
+    /* Com mentorado, o projeto só esmaece — não some. Esconder o campo
+       mudaria a altura do formulário e o scroll fecharia o menu que a pessoa
+       ainda está usando. */
+    var fldProjeto = $('fldProjeto'), projetoNovo = $('projetoNovo');
+    function mostrarProjeto(temMentorado) {
+      if (!fldProjeto) return;
+      fldProjeto.classList.toggle('desligado', !!temMentorado);
+      var b = fldProjeto.querySelector('.pick-b');
+      if (b) b.disabled = !!temMentorado;
+      if (projetoNovo) projetoNovo.disabled = !!temMentorado;
+    }
+    pickSimples('pkProjeto', 'projeto',
+      [{ value:'', label:'Sem projeto' }]
+        .concat(projetosExistentes().map(function (p) { return { value:p, label:p }; }))
+        .concat([{ value:'__novo', label:'Novo projeto…' }]),
+      projetoAtual, { titulo:'Projeto', onPick:function (v) {
+        if (!projetoNovo) return;
+        projetoNovo.hidden = v !== '__novo';
+        if (v === '__novo') projetoNovo.focus();
+      } });
+
+    if (novo) {
+      var membros = ativos.map(function (m) { return { value:m.id, label:m.nome }; });
+      var todos = campoOculto('todos');
+      var pickM = pickVarios('pkMembros', 'membros', membros, [],
+        { titulo:'Para quais mentorados', vazio:'Nenhum — demanda interna', onPick:atualizarLote });
+      function atualizarLote() {
+        var n = todos && todos.checked ? ativos.length : (pickM ? pickM.valores().length : 0);
+        mostrarProjeto(n > 0);
+        if (pickM) pickM.travar(todos && todos.checked);
+        var botao = document.querySelector('.modal-f .btn-primary');
+        if (botao) botao.textContent = n > 1 ? 'Criar ' + n + ' demandas' : 'Criar demanda';
+      }
+      if (todos) todos.addEventListener('change', atualizarLote);
+    } else {
+      pickSimples('pkMembro', 'member_id',
+        [{ value:'', label:'Nenhum — demanda interna' }].concat(st.members.map(function (m) {
+          return { value:m.id, label:m.nome };
+        })), d.member_id || '', { titulo:'Sobre qual mentorado', onPick:function (v) { mostrarProjeto(!!v); } });
+    }
+    mostrarProjeto(!!d.member_id);
+
+    var campoTitulo = document.querySelector('#modalForm [name="titulo"]');
+    if (campoTitulo) campoTitulo.focus();
   }
 
   /* O ✓ da linha é atalho para a coluna Situação: mesma gravação otimista, sem
@@ -3536,6 +3797,21 @@
     var cancelarSub = e.target.closest('[data-sub-cancelar]');
     if (cancelarSub) { fecharTituloSub(cancelarSub.dataset.subCancelar, false); return; }
 
+    /* Checklist dentro do formulário da demanda. */
+    var ckAdd = e.target.closest('[data-ck-add]');
+    if (ckAdd) { acrescentarLinhaCk(null); return; }
+    var ckRemover = e.target.closest('[data-ck-remover]');
+    if (ckRemover) { removerLinhaCk(ckRemover.closest('.ck-item')); return; }
+    var ckConfirmar = e.target.closest('[data-ck-confirmar]');
+    if (ckConfirmar) { ckConfirmar.closest('.ck-item').remove(); atualizarTotalCk(); return; }
+    var ckManter = e.target.closest('[data-ck-manter]');
+    if (ckManter) {
+      var itemCk = ckManter.closest('.ck-item');
+      itemCk.classList.remove('confirmando');
+      itemCk.querySelector('.ck-confirm').remove();
+      return;
+    }
+
     var detalhe = e.target.closest('[data-detalhe-demanda]');
     if (detalhe) { detalheDemanda(detalhe.dataset.detalheDemanda); return; }
 
@@ -3722,6 +3998,29 @@
     if (erro) erro.remove();
   });
 
+  /* Com um menu de pé dentro do formulário, Esc fecha só o menu: sem isto o
+     mesmo Esc fecharia o formulário junto e levaria o que já estava digitado. */
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape' || !document.querySelector('.menu')) return;
+    e.stopPropagation();
+    Club.fecharMenu();
+  }, true);
+
+  /* Mesma regra para o mouse: o clique fora que derruba o menu (marcar vários
+     responsáveis e clicar em qualquer lugar para sair) não pode cair no fundo
+     escuro e fechar também o formulário. */
+  var cliqueDerrubouMenu = false;
+  document.addEventListener('mousedown', function (e) {
+    var menu = document.querySelector('.menu');
+    cliqueDerrubouMenu = !!(menu && !menu.contains(e.target) &&
+      !(e.target.closest && e.target.closest('[data-menu-id]')));
+  }, true);
+  document.addEventListener('click', function (e) {
+    if (!cliqueDerrubouMenu) return;
+    cliqueDerrubouMenu = false;
+    if (e.target.classList && e.target.classList.contains('modal')) e.stopPropagation();
+  }, true);
+
   /* Enter salva e o campo continua de pé para o próximo item; Esc desiste;
      sair do campo confirma o que já estava escrito. */
   document.addEventListener('keydown', function (e) {
@@ -3745,6 +4044,13 @@
     if (e.target.matches('[data-sub-inp]')) {
       if (e.key === 'Enter')  { e.preventDefault(); fecharNovaSub(true); }
       if (e.key === 'Escape') { e.preventDefault(); fecharNovaSub(false); }
+    }
+    /* No checklist do formulário, Enter abre a próxima linha em vez de
+       enviar o formulário: quem cadastra checklist cadastra vários de uma vez. */
+    if (e.target.matches('[data-ck-titulo]') && e.key === 'Enter') {
+      e.preventDefault();
+      if (e.isComposing) return;
+      acrescentarLinhaCk(e.target.closest('.ck-item'));
     }
     if (e.target.matches('[data-zap-inp]')) {
       if (e.key === 'Enter')  { e.preventDefault(); fecharGrupo(true); }
