@@ -1891,7 +1891,7 @@
   }
 
   /* ── artefatos: o catálogo ────────────────────────────────────────────── */
-  /* Papel desta aba: o que o Club entrega, em que grupo, com que dono e com
+  /* Papel desta aba: o que o Club entrega, em que área, com que dono e com
      que critério de 100%. Acompanhar mentorado é na Progressão. */
 
   function siglas(ids) {
@@ -3998,7 +3998,7 @@
     group:    { store:'groups',    nome:function (r) { return r.nome; },
                 aviso:function (r) {
                   var n = st.artifacts.filter(function (a) { return a.group_id === r.id; }).length;
-                  return n ? 'Os ' + n + ' artefatos dele ficam "Sem grupo"; nada de progresso muda.' : '';
+                  return n ? 'As ' + n + ' frentes dela ficam "Sem área"; nada de progresso muda.' : '';
                 } },
     material:  { store:'materials',  nome:function (r) { return r.titulo; },
                  aviso:'O arquivo sai do servidor junto.' },
