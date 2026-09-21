@@ -21,3 +21,37 @@ test('COLUNAS aceita tipo do artefato e interna da área, e esquece o pilar', ()
   assert.ok(ctx.COLUNAS.artifact_groups.includes('interna'));
   assert.ok(!ctx.COLUNAS.artifact_groups.includes('pilar'));
 });
+
+function contextoCatalogo() {
+  return vm.createContext({
+    esc: s => String(s == null ? '' : s),
+    siglas: ids => (ids || []).join(','),
+    acoes: (tipo, id) => '<acts ' + tipo + ':' + id + '/>'
+  });
+}
+
+test('cabeçalho da área não mostra pilar e marca área da equipe', () => {
+  const code = extract('public/assets/admin.js', '  function cabecalhoGrupo(', '  function renderArtifacts(');
+  const ctx = contextoCatalogo();
+  vm.runInContext(code + '\nthis.cabecalhoGrupo = cabecalhoGrupo;', ctx);
+  const mentorado = ctx.cabecalhoGrupo({ id:'g1', nome:'Geração de demanda', pilar:'P07 Máquina Black de Tráfego', responsaveis:['TA'], interna:false }, 6);
+  assert.ok(mentorado.includes('Geração de demanda'));
+  assert.ok(mentorado.includes('6 artefatos'));
+  assert.ok(!mentorado.includes('P07'), 'pilar não pode aparecer');
+  assert.ok(!mentorado.includes('equipe'));
+  const equipe = ctx.cabecalhoGrupo({ id:'g2', nome:'Operação Olympus', responsaveis:[], interna:true }, 1);
+  assert.ok(equipe.includes('equipe'));
+  assert.ok(equipe.includes('1 frente'));
+  assert.ok(equipe.includes('class="tr grp pai interna"'));
+  const sem = ctx.cabecalhoGrupo(null, 2);
+  assert.ok(sem.includes('Sem área'));
+  assert.ok(!sem.includes('grupo'));
+});
+
+test('nenhum código lê pilar ou PILARES', () => {
+  for (const file of ['public/assets/admin.js', 'public/assets/club-ui.js', 'public/assets/club-data.js', 'public/assets/membros.js']) {
+    const src = source(file);
+    assert.ok(!/PILARES/.test(src), file + ' ainda cita PILARES');
+    assert.ok(!/\.pilar\b/.test(src), file + ' ainda lê .pilar');
+  }
+});
