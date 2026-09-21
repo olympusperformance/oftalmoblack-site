@@ -18,7 +18,7 @@ public/                # tudo que vai pro ar
   robots.txt
   sitemap.xml
 docker-entrypoint.d/   # scripts que a imagem nginx roda no boot
-supabase/              # SQL do banco: tabelas, RLS, acervo, demandas, progresso, áreas (areas.sql)
+supabase/              # SQL do banco: tabelas, RLS, acervo, demandas, progresso, áreas (areas.sql), frentes internas (frentes-internas.sql)
   functions/           # Edge Functions (a que serve o quadro da TV)
 Dockerfile             # nginx alpine servindo public/
 nginx.conf             # gzip, cache de assets, headers de segurança
@@ -385,4 +385,9 @@ prepara `demands.artifact_id`/`step_id`. Roda depois de `frentes.sql` e
 `demandas.sql`, com o admin fechado; o bloco PROVA no fim do arquivo diz o que
 conferir. Spec e plano em `docs/superpowers/`.
 
-Testes de regressão: `node --test tests/graduacao.test.mjs tests/progress-notes.test.cjs tests/cerebro-preview.test.mjs tests/areas-admin.test.cjs tests/areas-membros.test.cjs tests/areas-sql.test.cjs`
+`supabase/frentes-internas.sql` (fase 3, 21/09/2026) semeia as áreas da equipe e as
+frentes internas, cria o Encontro Grau Zero do Alex, renomeia `demands.projeto`
+para `projeto_legado` e liga as demandas às frentes. Roda com o admin fechado e
+o deploy da UI nova sai logo depois.
+
+Testes de regressão: `node --test tests/graduacao.test.mjs tests/progress-notes.test.cjs tests/cerebro-preview.test.mjs tests/areas-admin.test.cjs tests/areas-membros.test.cjs tests/areas-sql.test.cjs tests/frentes-demandas.test.cjs tests/frentes-sql.test.cjs`

@@ -14,7 +14,7 @@
 
 - **Estado do banco hoje:** `demands.artifact_id`, `demands.step_id` e o trigger `demands_herda_artefato` existem (fase 1). `demands.projeto` ainda existe com texto livre. Áreas: Onboarding(1) · Tecnologia e dados(2) · Presença e conteúdo(3) · Geração de demanda(4) · Comercial da clínica(5), todas `interna = false`. 16 artefatos, todos `tipo = 'artefato'`, `member_id null`. Snapshots `_bkp_20260921_*` trancados (RLS + revoke).
 - **Nomes exatos** das áreas internas e ordem: `Fechamento` (6) · `Club e eventos` (7) · `Operação Olympus` (8), `interna = true`. Frentes internas (`tipo = 'interna'`, `member_id null`, sem etapas): `Comercial Olympus` → Fechamento; `Club OftalmoBlack` e `Imersão Grau Zero` → Club e eventos; `Olympus OS` e `Coordenação` → Operação Olympus. `Encontro Grau Zero` → `tipo = 'artefato'`, `member_id = (select id from members where nome = 'Alex Sá')`, área Geração de demanda, ordem 7, `status = 'Em produção'`, `icone = 'zap'`.
-- **Decisões do Felipe (22/09):** Alex Sá é tratado como mentorado (a clínica dele). Demandas "Clínica Dr. Alex / X" recebem `member_id = Alex Sá`. Demandas cujo `projeto` mapeia para um artefato migram direto para o artefato; caso ambíguo (título sem palavra-chave) fica `artifact_id null` e cai no cartão "Sem frente". **Não há lista de revisão prévia**; a triagem é pela UI.
+- **Decisões do Felipe (21/09, manhã):** Alex Sá é tratado como mentorado (a clínica dele). Demandas "Clínica Dr. Alex / X" recebem `member_id = Alex Sá`. Demandas cujo `projeto` mapeia para um artefato migram direto para o artefato; caso ambíguo (título sem palavra-chave) fica `artifact_id null` e cai no cartão "Sem frente". **Não há lista de revisão prévia**; a triagem é pela UI.
 - **Nenhum `artifact_steps.id` muda; nenhuma etapa é apagada.** `step_progress` intocado. Snapshot novo `_bkp_20260922_demands` (só demands, trancado na criação) antes do rename/backfill.
 - **Tabela nova em `public` nasce exposta ao PostgREST**: todo `create table` neste plano vem seguido de `enable row level security` + `revoke all ... from anon, authenticated` (lição da fase 1).
 - **Ordem do deploy:** rodar o SQL e, em seguida, fazer merge em `main` (auto-deploy EasyPanel). Entre um e outro a UI velha mostra "Sem projeto" em tudo por alguns minutos; a UI nova não lê `projeto`, lê `artifact_id` e, só para exibição, `projeto_legado`.
@@ -263,11 +263,13 @@ update public.demands d
      when d.titulo ~* '(vsl)'                                                                then 'Funil VSL'
      when d.titulo ~* '(quiz|link da bio|\mbio\M)'                                           then 'Quiz'
      when d.titulo ~* '(tracking|traqueamento|trackeamento|rastre|capi|utm|carimbo|vigia)'   then 'Tracker Black'
-     when d.titulo ~* '(sistema black|crm|meagenda|minha agenda|importa|exporta|migra)'      then 'Sistema Black'
+     when d.titulo ~* '(sistema black|crm|meagenda|me agenda|minha agenda|importa|exporta|migra)' then 'Sistema Black'
      when d.titulo ~* '(site|dom[íi]nio|hospedagem|artigo)'                                  then 'Site Institucional'
      when d.titulo ~* '(linha editorial|roteiro|script|conte[úu]do)'                         then 'Linha Editorial'
-     when d.titulo ~* '(meta ads|campanha|ctwa|otimiza|criativo|tr[áa]fego|an[úu]ncio|conta de an)' then 'Meta Ads'
-     when d.titulo ~* '(onboarding|growth|imers[ãa]o|convidado)'                             then 'Onboarding'
+     when d.titulo ~* '(meta ads|campanha|ctwa|otimiza|criativo|tr[áa]fego|an[úu]ncio|conta de an|quinzenal|auditoria)' then 'Meta Ads'
+     when d.titulo ~* '(imers[ãa]o|convidado)'                                                then 'Imersão Grau Zero'
+     when d.titulo ~* '(onboarding|growth|contrato|plataformas)'                              then 'Onboarding'
+     when d.titulo ~* '(lenize|treinamento)'                                                  then 'Treinamento comercial'
      else null end;
 
 notify pgrst, 'reload schema';
@@ -332,7 +334,7 @@ supabase/              # SQL do banco: tabelas, RLS, acervo, demandas, progresso
 Na seção "Áreas dos artefatos (21/09/2026)", acrescente antes da linha "Testes de regressão":
 
 ```markdown
-`supabase/frentes-internas.sql` (fase 3, 22/09/2026) semeia as áreas da equipe e as
+`supabase/frentes-internas.sql` (fase 3, 21/09/2026) semeia as áreas da equipe e as
 frentes internas, cria o Encontro Grau Zero do Alex, renomeia `demands.projeto`
 para `projeto_legado` e liga as demandas às frentes. Roda com o admin fechado e
 o deploy da UI nova sai logo depois.
