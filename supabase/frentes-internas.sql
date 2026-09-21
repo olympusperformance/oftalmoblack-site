@@ -5,8 +5,10 @@
 -- Spec: docs/superpowers/specs/2026-09-21-taxonomia-artefatos-demandas-design.md
 -- Roda DEPOIS de areas.sql, inteiro, com o admin fechado; o deploy da UI nova
 -- (PR da fase 3) sai logo em seguida. Idempotente: rodar duas vezes deixa o
--- banco igual. Rodar meses depois NÃO refaz o backfill (só preenche
--- artifact_id vazio) e não renova o snapshot.
+-- banco igual. Rodar meses depois NÃO refaz o backfill: só preenche
+-- artifact_id vazio e, na heurística por título, só demanda criada antes de
+-- 22/09/2026 — a que a equipe deixou "Sem frente" de propósito fica quieta.
+-- Não renova o snapshot.
 --
 -- O que muda:
 --   1. Snapshot de demands (_bkp_20260922_demands), trancado na criação.
@@ -128,7 +130,7 @@ update public.demands d
  where d.projeto_legado = 'Clínica Dr. Alex / Tráfego B2C'
    and d.artifact_id is null
    and a.member_id is null
-   and a.nome = case when d.titulo ~* '(carimbo|vigia|track|click_token|alexsa_trk|\mtrk\M|capi|rastre)'
+   and a.nome = case when d.titulo ~* '(carimbo|vigia|track|click_token|alexsa_trk|\mtrk\M|\mcapi\M|rastre)'
                      then 'Tracker Black' else 'Meta Ads' end;
 
 -- Conteúdo mentorados: Doxa é Fábrica; o resto, Linha Editorial.
@@ -150,6 +152,7 @@ update public.demands d
   from public.artifacts a
  where d.member_id is not null
    and d.artifact_id is null
+   and d.criado_em < '2026-09-22'
    and a.member_id is null
    and a.nome = case
      when d.titulo ~* '(sdr|luiza|luzia|marina|atende sozinho|fora do hor)'                 then 'SDR IA'
@@ -159,9 +162,9 @@ update public.demands d
      when d.titulo ~* '(google ads|\mgoogle\M)'                                              then 'Google Ads'
      when d.titulo ~* '(vsl)'                                                                then 'Funil VSL'
      when d.titulo ~* '(quiz|link da bio|\mbio\M)'                                           then 'Quiz'
-     when d.titulo ~* '(tracking|traqueamento|trackeamento|rastre|capi|utm|carimbo|vigia)'   then 'Tracker Black'
-     when d.titulo ~* '(sistema black|crm|meagenda|me agenda|minha agenda|importa|exporta|migra)' then 'Sistema Black'
-     when d.titulo ~* '(site|dom[íi]nio|hospedagem|artigo)'                                  then 'Site Institucional'
+     when d.titulo ~* '(tracking|traqueamento|trackeamento|rastre|\mcapi\M|utm|carimbo|vigia)' then 'Tracker Black'
+     when d.titulo ~* '(sistema black|crm|meagenda|me agenda|minha agenda|\mimporta|\mexporta|\mmigra)' then 'Sistema Black'
+     when d.titulo ~* '(\msite\M|dom[íi]nio|hospedagem|artigo)'                             then 'Site Institucional'
      when d.titulo ~* '(linha editorial|roteiro|script|conte[úu]do)'                         then 'Linha Editorial'
      when d.titulo ~* '(meta ads|campanha|ctwa|otimiza|criativo|tr[áa]fego|an[úu]ncio|conta de an|quinzenal|auditoria)' then 'Meta Ads'
      when d.titulo ~* '(imers[ãa]o|convidado)'                                                then 'Imersão Grau Zero'

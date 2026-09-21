@@ -13,6 +13,7 @@ test('frentes-internas.sql existe e não mexe em etapa de artefato', () => {
   assert.ok(!/drop\s+table/i.test(sql), 'não pode dropar tabela');
   assert.ok(!/truncate/i.test(sql), 'não pode truncar');
   assert.equal((sql.match(/\ncommit;/g) || []).length, 1, 'um commit só');
+  assert.ok(!/\\b/.test(sql), 'em regex do Postgres \\b é backspace, não borda de palavra: use \\m e \\M');
 });
 
 test('snapshot de demands nasce trancado', () => {

@@ -731,13 +731,15 @@
     var cs = st.staff.filter(function (p) { return p.apelido === 'KK' && p.ativo; }).map(function (p) { return p.id; });
     var g = grupoDe(a);
     var dono = (a.responsaveis && a.responsaveis.length) ? a.responsaveis : ((g && g.responsaveis) || []);
+    var hoje = new Date();
     return {
       titulo: e.titulo,
       member_id: m.id,
       artifact_id: a.id,
       step_id: e.id,
       responsaveis: Club.tipoEtapa(e) === 'trava' && cs.length ? cs : dono,
-      origem: 'Progressão · ' + a.nome + ' · ' + Club.fmtDataCurta(new Date().toISOString().slice(0, 10))
+      origem: 'Progressão · ' + a.nome + ' · ' + Club.fmtDataCurta(hoje.getFullYear() + '-' +
+        String(hoje.getMonth() + 1).padStart(2, '0') + '-' + String(hoje.getDate()).padStart(2, '0'))
     };
   }
 
@@ -2875,7 +2877,7 @@
       Club.menu(el, Club.DEM_STATUS.map(function (v) {
         return { value:v, label:v, color:Club.DEM_COR[v], checked:v === r.status };
       }), { titulo:'Situação', onPick:function (v) {
-        if (sub) salvar(r.id, { status:v }); else mudarStatus(r.id, v);
+        if (!sub && v === 'Concluída') mudarStatus(r.id, v); else salvar(r.id, { status:v });
       } });
       return;
     }
@@ -2982,6 +2984,8 @@
     if (patch.status !== undefined) marcarFechamento(d);
     st.demands = ordenarDemandas(st.demands);
     renderDemandas();
+    /* O contador de demandas da etapa, na Progressão, lê o mesmo quadro. */
+    if ('step_id' in patch || 'member_id' in patch || 'status' in patch) renderMembers();
 
     Club.data.demands.save(Object.assign({ id:id }, patch)).then(function (linha) {
       /* Concluir e reabrir em seguida manda duas gravações; a resposta da
@@ -3463,7 +3467,7 @@
   }
 
   /* ── formulário da demanda ─────────────────────────────────────────────
-     Mesma hierarquia da tela de detalhes: contexto (projeto ou mentorado) e
+     Mesma hierarquia da tela de detalhes: contexto (frente ou mentorado) e
      título no topo, o cartão de situação, prioridade, dono e prazo, a
      descrição e o checklist. Os seletores são os mesmos menus das células da
      linha — o <select> nativo abre branco no branco no Windows — e o valor
@@ -3821,10 +3825,15 @@
     var alvo = etapaParaMarcar(d);
     if (alvo) {
       var e = etapasDe(d.artifact_id).filter(function (x) { return x.id === alvo.stepId; })[0];
-      Club.modal.confirm('Marcar a etapa também?',
-        'A demanda veio da etapa "' + (e ? e.titulo : 'do checklist') + '" de ' + (membro(alvo.memberId) || 'mentorado') +
-        '. Marcar como feita na Progressão?',
-        function () { marcarEtapa(alvo.memberId, alvo.stepId); });
+      /* Não é Club.modal.confirm: aquele é o diálogo de apagar, com botão
+         vermelho "Remover". Aqui a ação afirmativa é marcar. */
+      Club.modal.open({
+        title:'Marcar a etapa também?',
+        body:'<p>A demanda veio da etapa "' + esc(e ? e.titulo : 'do checklist') + '" de ' +
+          esc(membro(alvo.memberId) || 'mentorado') + '. Marcar como feita na Progressão?</p>',
+        submitLabel:'Marcar etapa',
+        onSubmit:function () { Club.modal.close(); marcarEtapa(alvo.memberId, alvo.stepId); }
+      });
     }
     Club.toast(st.demAbertas === 'open'
       ? 'Demanda concluída. Ela fica aqui até você trocar o filtro; depois, em "Todas".'
