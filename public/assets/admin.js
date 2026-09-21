@@ -256,9 +256,11 @@
 
   /* Artefato sem dono vale para a turma inteira — é a mesma regra que decide o
      que aparece na área do mentorado. */
+  /* Frente interna (tipo 'interna') é da equipe: só agrupa demandas. Não
+     entra na Progressão nem nas contas, mesmo estando em st.artifacts. */
   function artefatosDe(memberId) {
     return st.artifacts.filter(function (a) {
-      return !a.member_id || a.member_id === memberId;
+      return a.tipo !== 'interna' && (!a.member_id || a.member_id === memberId);
     });
   }
 
@@ -631,7 +633,7 @@
     linha += linhaNota(m, 'mentorado', m.nome);
     if (!aberto || !temFilho) return linha;
 
-    /* Faixa por grupo dentro do mentorado: com uma dezena de artefatos por
+    /* Faixa por área dentro do mentorado: com uma dezena de artefatos por
        pessoa, a lista não se lê sem agrupar. É cabeçalho, não nível: sem
        toggle, sem chave nova em abrirTudo. */
     var saida = '', grupoAtual;
@@ -659,8 +661,7 @@
     var pct = pcts.length ? Math.round(pcts.reduce(function (s, x) { return s + x; }, 0) / pcts.length) : null;
     var s = Club.PAR_ST[pior];
     return '<div class="tr grp sub">' +
-      '<span class="grp-n">' + esc(g ? g.nome : 'Sem grupo') +
-        (g && g.pilar ? ' <span class="tx-s">· ' + esc(String(g.pilar).split(' ')[0]) + '</span>' : '') + '</span>' +
+      '<span class="grp-n">' + esc(g ? g.nome : 'Sem área') + '</span>' +
       '<span class="tx-s">' + (pct === null ? 'nada aceito' : status(s.cor, s.label) + ' · ' + pct + '%') + '</span>' +
     '</div>';
   }
