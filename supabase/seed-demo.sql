@@ -1,3 +1,6 @@
+-- OBSOLETO EM PARTE (21/09/2026): public.tasks foi removida por supabase/limpeza.sql.
+-- O bloco que insere em public.tasks (e o delete comentado no fim) não roda mais;
+-- rode só o restante ou apague esse bloco antes de usar este seed.
 -- ============================================================================
 -- Club OftalmoBlack — dados de demonstração (tarefas e agenda)
 --

@@ -1,7 +1,7 @@
 /* ============================================================================
    Club OftalmoBlack — painel do administrador
 
-   Cadastra membros, tarefas, agenda e artefatos. Tudo passa por Club.data, que
+   Cadastra membros, agenda, artefatos e demandas. Tudo passa por Club.data, que
    na Etapa 2 troca o localStorage pelo Supabase sem mexer neste arquivo.
    ========================================================================= */
 (function () {
@@ -9,11 +9,11 @@
 
   var sessao = null;
 
-  var st = { members: [], tasks: [], events: [], artifacts: [], materials: [],
+  var st = { members: [], events: [], artifacts: [], materials: [],
              demands: [], staff: [], steps: [], progress: [], demandSteps: [],
              groups: [], artGrupo: '', progressNotes: [], notasEdit: {},
              qrLinks: [], qrScans: [],
-             view: 'overview', membro: '', status: 'all', igOrdem: 'seguidores',
+             view: 'overview', igOrdem: 'seguidores',
              matCategoria: '', matMembro: '',
              demResp: '', demMembro: '', demFrente: '', demAbertas: 'open',
              /* Recorte aberto por um cartão do painel (atrasadas, sem dono…).
@@ -49,7 +49,6 @@
     { grupo:'Mentorados', itens: [
       { key:'members',   label:'Progressão', icon:'users' },
       { key:'graduacao', label:'Graduação', icon:'award' },
-      { key:'tasks',     label:'Tarefas',    icon:'check-square' },
       { key:'agenda',    label:'Agenda',     icon:'calendar' },
       { key:'materials', label:'Materiais',  icon:'folder' }
     ] },
@@ -94,7 +93,6 @@
   function carregar() {
     return Promise.all([
       Club.data.members.list(),
-      Club.data.tasks.list(),
       Club.data.events.list(),
       Club.data.artifacts.list(),
       Club.data.materials.list(),
@@ -112,15 +110,15 @@
       Club.data.qrLinks.list(),
       Club.data.qrScans.list()
     ]).then(function (r) {
-      st.members = r[0]; st.tasks = r[1]; st.events = r[2];
-      st.artifacts = r[3]; st.materials = r[4];
-      st.demands = r[5]; st.staff = r[6];
-      st.steps = r[7]; st.progress = r[8]; st.demandSteps = r[9];
-      st.botExemplos = r[10]; st.botRespostas = r[11];
-      st.igResumo = r[12]; st.igSerie = r[13];
-      st.groups = r[14];
-      st.progressNotes = r[15];
-      st.qrLinks = r[16]; st.qrScans = r[17];
+      st.members = r[0]; st.events = r[1];
+      st.artifacts = r[2]; st.materials = r[3];
+      st.demands = r[4]; st.staff = r[5];
+      st.steps = r[6]; st.progress = r[7]; st.demandSteps = r[8];
+      st.botExemplos = r[9]; st.botRespostas = r[10];
+      st.igResumo = r[11]; st.igSerie = r[12];
+      st.groups = r[13];
+      st.progressNotes = r[14];
+      st.qrLinks = r[15]; st.qrScans = r[16];
       indexar();
       descobrirEu();
     });
@@ -325,8 +323,10 @@
       if (st.eu) st.eu = st.staff.filter(function (p) { return p.id === st.eu.id; })[0] || null;
       indexar();
       renderDemandas();
-      /* O contador de demandas da etapa, na Progressão, lê o mesmo quadro. */
+      /* O contador de demandas da etapa (Progressão) e os cartões da visão
+         geral leem o mesmo quadro. */
       renderMembers();
+      renderOverview();
       if (msg) Club.toast(msg);
     });
   }
@@ -355,8 +355,8 @@
           n.itens.map(function (f) { return botao(f, true); }).join('');
       }).join('') +
       '<div class="rail-foot"><div class="k">' + st.members.length + ' MEMBROS</div>' +
-      '<div class="v">' + st.tasks.filter(function (t) { return t.status !== 'done'; }).length +
-      ' tarefas em aberto agora.</div></div>';
+      '<div class="v">' + st.demands.filter(function (d) { return Club.DEM_ABERTOS.indexOf(d.status) !== -1; }).length +
+      ' demandas em aberto agora.</div></div>';
 
     $('navm').innerHTML = navPlano().map(function (n) {
       return '<button class="chip" role="tab" data-nav="' + n.key + '" aria-selected="' +
@@ -383,8 +383,10 @@
 
   function renderOverview() {
     var ativos = st.members.filter(function (m) { return m.ativo; }).length;
-    var abertas = st.tasks.filter(function (t) { return t.status !== 'done'; }).length;
-    var atrasadas = st.tasks.filter(Club.isLate);
+    var abertas = st.demands.filter(function (d) { return Club.DEM_ABERTOS.indexOf(d.status) !== -1; });
+    var atrasadas = abertas.filter(function (d) {
+      var n = Club.diffDays(d.vence_em); return n !== null && n < 0;
+    });
     var futuros = st.events.filter(function (e) {
       return Club.parseDate(e.inicia_em) >= new Date();
     });
@@ -393,14 +395,32 @@
 
     $('stats').innerHTML =
       cardStat('MEMBROS ATIVOS', ativos, st.members.length - ativos + ' inativos') +
-      cardStat('TAREFAS EM ABERTO', abertas, atrasadas.length + ' atrasadas') +
+      cardStat('DEMANDAS EM ABERTO', abertas.length, atrasadas.length + ' atrasadas') +
       cardStat('PRÓXIMO ENCONTRO', prox ? Club.fmtDate(prox.inicia_em) : '—',
                prox ? prox.titulo : 'Nada agendado') +
       cardStat('ARTEFATOS EM PRODUÇÃO', producao, st.artifacts.length + ' cadastrados no total');
 
     $('atrasadas').innerHTML = atrasadas.length
-      ? tabelaTarefas(atrasadas)
-      : Club.empty('check-circle', 'Nenhuma tarefa atrasada. A turma está em dia.');
+      ? tabelaDemandasAtrasadas(atrasadas)
+      : Club.empty('check-circle', 'Nenhuma demanda atrasada. O time está em dia.');
+  }
+
+  /* Resumo das atrasadas na visão geral: título (abre o detalhe), contexto
+     (área · frente, ou o mentorado), dono e prazo. O resto mora no quadro. */
+  function tabelaDemandasAtrasadas(rows) {
+    rows = rows.slice().sort(function (a, b) { return String(a.vence_em).localeCompare(String(b.vence_em)); });
+    return tabela('minmax(0,2.2fr) minmax(0,1.4fr) 160px 120px',
+      ['Demanda', 'Frente ou mentorado', 'Responsáveis', 'Prazo'],
+      rows.map(function (d) {
+        var c = contextoDe(d);
+        return '<div class="tr">' +
+          '<div class="td"><button type="button" class="demand-open" data-detalhe-demanda="' + esc(d.id) +
+            '" aria-label="Ver demanda: ' + esc(d.titulo) + '"><span class="tx tx-t">' + esc(d.titulo) + '</span></button></div>' +
+          td('<span class="tx-s">' + esc(c.tipo === 'frente' && c.area ? c.area.nome + ' · ' + c.nome : c.nome) + '</span>') +
+          td('<span class="tx-s">' + esc(responsaveisDe(d) || '—') + '</span>') +
+          td('<span style="color:var(--danger)">' + esc(Club.fmtDue(d.vence_em)) + '</span>') +
+        '</div>';
+      }).join(''), 'Nada por aqui.');
   }
 
   /* `dica` é opcional: quando existe, o cartão explica ao passar o mouse o que
@@ -419,7 +439,7 @@
 
   /* ── membros ──────────────────────────────────────────────────────────── */
   /* Uma tela só. O mentorado é a linha-mãe e abre no que está combinado com
-     ele: os artefatos, que abrem no próprio checklist, e as tarefas. Cadastro
+     ele: os artefatos, que abrem no próprio checklist. Cadastro
      e progresso eram a mesma pergunta — "como está fulano?" — feita em dois
      lugares diferentes, e responder exigia ir e voltar entre as duas abas.
 
@@ -428,10 +448,8 @@
        Mentorado
          └ Artefato → etapa do checklist (padrão do artefato)
 
-     Tarefa não entra aqui: ela é assunto da aba Tarefas e tem outro ciclo — o
-     mentorado é quem marca a dele, enquanto a etapa do artefato é entrega do
-     Club. Misturar as duas na mesma árvore faria a mesma coluna significar
-     coisas diferentes de linha para linha.
+     Tarefa do mentorado não existe mais (fase 4 da taxonomia): a ação dele é
+     etapa trava do artefato, cobrada por demanda da CS no quadro.
 
      As etapas do artefato são o modelo cadastrado na aba Artefatos; o que está
      marcado é deste mentorado. Ver supabase/progresso.sql. */
@@ -731,16 +749,22 @@
     var cs = st.staff.filter(function (p) { return p.apelido === 'KK' && p.ativo; }).map(function (p) { return p.id; });
     var g = grupoDe(a);
     var dono = (a.responsaveis && a.responsaveis.length) ? a.responsaveis : ((g && g.responsaveis) || []);
-    var hoje = new Date();
     return {
       titulo: e.titulo,
       member_id: m.id,
       artifact_id: a.id,
       step_id: e.id,
       responsaveis: Club.tipoEtapa(e) === 'trava' && cs.length ? cs : dono,
-      origem: 'Progressão · ' + a.nome + ' · ' + Club.fmtDataCurta(hoje.getFullYear() + '-' +
-        String(hoje.getMonth() + 1).padStart(2, '0') + '-' + String(hoje.getDate()).padStart(2, '0'))
+      origem: 'Progressão · ' + a.nome + ' · ' + Club.fmtDataCurta(hojeISO())
     };
+  }
+
+  /* Data de hoje no fuso do navegador, em YYYY-MM-DD. toISOString() daria a
+     data em UTC, que em Manaus vira amanhã depois das 20h. */
+  function hojeISO() {
+    var hoje = new Date();
+    return hoje.getFullYear() + '-' + String(hoje.getMonth() + 1).padStart(2, '0') + '-' +
+      String(hoje.getDate()).padStart(2, '0');
   }
 
   function demandasAbertasDaEtapa(memberId, stepId) {
@@ -793,10 +817,11 @@
       td(situacao) +
       celulaNota(m, 'etapa:' + e.id, e.titulo) +
       td('') +
-      td(abertas.length
+      td((abertas.length
         ? '<button type="button" class="btn btn-sm btn-ghost" data-ver-demandas="' + esc(m.id) + '|' + esc(e.artifact_id) +
-            '" title="Ver no quadro">' + ico('check-square') + abertas.length + ' demanda' + (abertas.length === 1 ? '' : 's') + '</button>'
-        : '<span class="tx-s">' + (p && p.feito_em ? esc('em ' + Club.fmtDataCurta(p.feito_em)) : '—') + '</span>') +
+            '" title="Ver no quadro">' + ico('check-square') + abertas.length + ' demanda' + (abertas.length === 1 ? '' : 's') + '</button> '
+        : '') +
+        '<span class="tx-s">' + (p && p.feito_em ? esc('em ' + Club.fmtDataCurta(p.feito_em)) : (abertas.length ? '' : '—')) + '</span>') +
       '<div class="td end"><div class="row-acts">' +
         (!p && t !== 'aceite'
           ? '<button class="btn btn-sm btn-ghost" data-abrir-demanda="' + esc(m.id) + '|' + esc(e.id) +
@@ -996,136 +1021,6 @@
         Club.data.members.save(d).then(function () {
           Club.modal.close();
           recarregar(m.id ? 'Membro atualizado.' : 'Membro cadastrado.');
-        }).catch(aviso);
-      }
-    });
-  }
-
-  /* ── tarefas ──────────────────────────────────────────────────────────── */
-
-  function tarefasVisiveis() {
-    return st.tasks.filter(function (t) {
-      if (st.membro && t.member_id !== st.membro) return false;
-      if (st.status === 'pending') return t.status !== 'done';
-      if (st.status === 'done') return t.status === 'done';
-      return true;
-    });
-  }
-
-  function renderTasks() {
-    var sel = $('filtroMembro');
-    sel.innerHTML = '<option value="">Todos os membros</option>' +
-      st.members.map(function (m) {
-        return '<option value="' + esc(m.id) + '"' + (m.id === st.membro ? ' selected' : '') +
-          '>' + esc(m.nome) + '</option>';
-      }).join('');
-
-    Array.prototype.forEach.call($('filtroStatus').children, function (b) {
-      b.setAttribute('aria-selected', String(b.dataset.st === st.status));
-    });
-
-    $('listaTarefas').innerHTML = tabelaTarefas(tarefasVisiveis(), st.membro
-      ? 'Nenhuma tarefa para este membro com o filtro atual.'
-      : 'Nenhuma tarefa cadastrada ainda.');
-  }
-
-  function tabelaTarefas(rows, vazio) {
-    return tabela(
-      'minmax(0,2.2fr) 146px 118px 100px 132px 104px 88px',
-      ['Tarefa', 'Mentorado', 'Categoria', 'Cadência', 'Prazo', 'Entregas', '>Ações'],
-      rows.map(linhaTarefa).join(''),
-      vazio || 'Nada por aqui.');
-  }
-
-  function linhaTarefa(t) {
-    var tint = Club.TINT[t.categoria] || 'var(--muted)';
-    var atrasada = Club.isLate(t);
-    var feita = t.status === 'done';
-    return '<div class="tr' + (feita ? ' off feito' : '') + '">' +
-      '<div class="td"><div class="tx">' +
-        '<div class="tx tx-t" title="' + esc(t.titulo) + '">' + esc(t.titulo) + '</div>' +
-        (t.descricao ? '<div class="tx tx-s">' + esc(t.descricao) + '</div>' : '') +
-      '</div></div>' +
-      td(esc(membro(t.member_id) || '—')) +
-      td(status(tint, t.categoria || '—')) +
-      td('<span class="tx-s">' + esc(t.cadencia || '—') + '</span>') +
-      td(feita
-        ? status('var(--success)', 'Concluída')
-        : '<span style="color:' + (atrasada ? 'var(--danger)' : 'inherit') + '">' +
-          esc(Club.fmtDue(t.vence_em)) + '</span>') +
-      td(t.progresso_total > 0
-        ? barra(t.progresso_atual, t.progresso_total)
-        : '<span class="tx-s">—</span>', 'num') +
-      '<div class="td end">' + acoes('task', t.id) + '</div>' +
-    '</div>';
-  }
-
-  function modalTarefa(t) {
-    var novo = !t;
-    t = t || { member_id:st.membro || (st.members[0] || {}).id,
-               titulo:'', descricao:'',
-               categoria:'Conteúdo', cadencia:'Semanal', vence_em:'',
-               progresso_atual:0, progresso_total:0, status:'pending' };
-
-    if (!st.members.length) {
-      Club.toast('Cadastre um membro antes de criar tarefas.', 'alert');
-      return;
-    }
-
-    /* Ao criar, dá para mandar a mesma tarefa para vários mentorados de uma vez;
-       ao editar, a tarefa pertence a um só. */
-    var campoMembro = novo
-      ? Club.select('Para quem', 'membros', opcoesMembro(false), t.member_id,
-          { multiple:true, hint:'Segure Ctrl (ou Cmd) para escolher mais de um.' })
-      : Club.select('Para quem', 'member_id', opcoesMembro(false), t.member_id);
-
-    Club.modal.open({
-      title: novo ? 'Nova tarefa' : 'Editar tarefa',
-      sub: novo ? 'Ela aparece na área do mentorado assim que você salvar.' : t.titulo,
-      body:
-        campoMembro +
-        Club.field('Título', 'titulo', { value:t.titulo, required:true,
-          placeholder:'Gravar 1 vídeo para o Instagram' }) +
-        Club.field('Descrição', 'descricao', { value:t.descricao, textarea:true,
-          placeholder:'O que exatamente precisa ser feito.' }) +
-        '<div class="fld-row">' +
-          Club.select('Categoria', 'categoria', Club.CATEGORIAS, t.categoria) +
-          Club.select('Cadência', 'cadencia', Club.CADENCIAS, t.cadencia) +
-        '</div>' +
-        '<div class="fld-row">' +
-          Club.field('Vence em', 'vence_em', { value:t.vence_em, type:'date' }) +
-          Club.field('Meta de entregas', 'progresso_total', { value:t.progresso_total,
-            type:'number', min:0, hint:'0 esconde a barra de progresso.' }) +
-        '</div>' +
-        (novo ? '' : '<div class="fld-row">' +
-          Club.field('Já entregues', 'progresso_atual', { value:t.progresso_atual,
-            type:'number', min:0 }) +
-          Club.select('Situação', 'status',
-            [{ value:'pending', label:'Em aberto' }, { value:'done', label:'Concluída' }],
-            t.status) +
-        '</div>'),
-      onSubmit: function (d) {
-        if (!d.titulo) { Club.toast('A tarefa precisa de um título.', 'alert'); return; }
-
-        var alvos = novo ? (d.membros || []) : [d.member_id];
-        if (!alvos.length) { Club.toast('Escolha ao menos um membro.', 'alert'); return; }
-
-        var base = {
-          titulo:d.titulo, descricao:d.descricao, categoria:d.categoria,
-          cadencia:d.cadencia, vence_em:d.vence_em,
-          progresso_total: Number(d.progresso_total) || 0,
-          progresso_atual: novo ? 0 : Number(d.progresso_atual) || 0,
-          status: novo ? 'pending' : d.status
-        };
-
-        Promise.all(alvos.map(function (id) {
-          return Club.data.tasks.save(Object.assign({}, base,
-            { id: novo ? undefined : t.id, member_id: id }));
-        })).then(function () {
-          Club.modal.close();
-          recarregar(novo
-            ? (alvos.length > 1 ? 'Tarefa criada para ' + alvos.length + ' membros.' : 'Tarefa criada.')
-            : 'Tarefa atualizada.');
         }).catch(aviso);
       }
     });
@@ -2038,7 +1933,7 @@
           esc(g.nome) + '</option>';
       }).join('') + '<option value="sem"' + (st.artGrupo === 'sem' ? ' selected' : '') + '>Sem área</option>';
 
-    var semCriterio = st.artifacts.filter(function (a) { return !etapasDe(a.id).length; }).length;
+    var semCriterio = st.artifacts.filter(function (a) { return a.tipo !== 'interna' && !etapasDe(a.id).length; }).length;
     $('artResumo').textContent = st.artifacts.length + ' frentes · ' + st.groups.length + ' áreas' +
       (semCriterio ? ' · ' + semCriterio + ' sem critério' : '');
     $('avisoGrupos').innerHTML = Club.faltaGrupos
@@ -2727,10 +2622,14 @@
     return tdCel(celula('d.frente', d.id, '<span class="tx">' + esc(a ? rotuloFrente(a) : 'sem frente') + '</span>', !a));
   }
 
-  function itensMenuFrente(atual) {
+  /* Artefato exclusivo de um mentorado (member_id) só aparece para demanda
+     desse mentorado; demanda interna ou de outro não o vê. */
+  function itensMenuFrente(atual, memberId) {
     var itens = [{ value:'', label:'Sem frente', checked:!atual }];
     areasOrdenadas().forEach(function (g) {
-      frentesOrdenadas().filter(function (a) { return a.group_id === g.id; }).forEach(function (a) {
+      frentesOrdenadas().filter(function (a) {
+        return a.group_id === g.id && (!a.member_id || a.member_id === memberId);
+      }).forEach(function (a) {
         itens.push({ value:a.id, label:rotuloFrente(a), checked:a.id === atual });
       });
     });
@@ -2892,7 +2791,7 @@
     }
 
     if (par[1] === 'frente') {
-      Club.menu(el, itensMenuFrente(r.artifact_id), { titulo:'Frente', onPick:function (v) {
+      Club.menu(el, itensMenuFrente(r.artifact_id, r.member_id), { titulo:'Frente', onPick:function (v) {
         salvar(r.id, { artifact_id: v || null, step_id: null });
       } });
       return;
@@ -2986,6 +2885,7 @@
     renderDemandas();
     /* O contador de demandas da etapa, na Progressão, lê o mesmo quadro. */
     if ('step_id' in patch || 'member_id' in patch || 'status' in patch) renderMembers();
+    renderOverview();
 
     Club.data.demands.save(Object.assign({ id:id }, patch)).then(function (linha) {
       /* Concluir e reabrir em seguida manda duas gravações; a resposta da
@@ -3648,8 +3548,7 @@
           '<div class="demand-form-meta">' +
             campoPick('Frente', 'artifact_id', 'pkFrente', d.artifact_id || '',
               'Área da jornada onde a demanda vive. Mentorado + frente = trabalho daquele artefato para ele.') +
-            campoPick('Etapa do checklist', 'step_id', 'pkEtapa', d.step_id || '',
-              'Opcional. Só as etapas da frente escolhida.') +
+            campoPick('Etapa do checklist', 'step_id', 'pkEtapa', d.step_id || '') +
           '</div>' +
           '<div class="demand-form-title">' +
             Club.field('O que precisa ser feito', 'titulo', { value:d.titulo, required:true,
@@ -3777,7 +3676,7 @@
         return { value:i.value, label:i.label };
       }), stepId || '', { titulo:'Etapa do checklist' });
     }
-    pickSimples('pkFrente', 'artifact_id', itensMenuFrente(d.artifact_id).map(function (i) {
+    pickSimples('pkFrente', 'artifact_id', itensMenuFrente(d.artifact_id, d.member_id).map(function (i) {
       return { value:i.value, label:i.label };
     }), d.artifact_id || '', { titulo:'Frente', onPick:function (v) { montarEtapas(v, ''); } });
     montarEtapas(d.artifact_id, d.step_id);
@@ -3809,6 +3708,23 @@
      reler o painel inteiro. Antes, cada conclusão esperava dezoito consultas
      voltarem para a tela reagir — e a linha sumia sem aviso quando o filtro
      "Em aberto" estava ligado. */
+  /* Demanda de rotina concluída: a próxima ocorrência nasce igual, com o
+     prazo empurrado pela cadência da etapa a partir do maior entre o prazo
+     atual e hoje. Sem cadência na etapa, vale uma semana. */
+  function proximaOcorrencia(d, e, hojeISO) {
+    var dias = e && e.cadencia_dias ? e.cadencia_dias : 7;
+    var base = new Date((d.vence_em && d.vence_em > hojeISO ? d.vence_em : hojeISO) + 'T12:00:00');
+    base.setDate(base.getDate() + dias);
+    var iso = base.getFullYear() + '-' + String(base.getMonth() + 1).padStart(2, '0') + '-' +
+      String(base.getDate()).padStart(2, '0');
+    return {
+      titulo: d.titulo, descricao: d.descricao || '', status: 'A fazer',
+      prioridade: d.prioridade || 'Média', responsaveis: (d.responsaveis || []).slice(),
+      member_id: d.member_id || null, artifact_id: d.artifact_id || null, step_id: d.step_id || null,
+      origem: 'Rotina · ' + (e && e.titulo ? e.titulo : 'etapa'), vence_em: iso
+    };
+  }
+
   /* Concluir a demanda que nasceu de uma etapa é, quase sempre, concluir a
      etapa. Quase: por isso pergunta, não marca sozinha. */
   function etapaParaMarcar(d) {
@@ -3822,17 +3738,41 @@
     if (!d) return;
     salvarDemanda(id, { status: status });
     if (status !== 'Concluída') { Club.toast('Demanda reaberta.'); return; }
-    var alvo = etapaParaMarcar(d);
+    var etapa = d.step_id ? etapasDe(d.artifact_id).filter(function (x) { return x.id === d.step_id; })[0] : null;
+    /* Quem concluiu de dentro da janela de detalhes volta para ela depois. */
+    var det = st.detalheModal;
+    function voltarAoDetalhe() { if (det && achar('demand', det.id)) detalheDemanda(det.id, det.subId); }
+
+    if (etapa && Club.tipoEtapa(etapa) === 'rotina') {
+      /* Rotina concluída pede a próxima ocorrência, não "marcar a etapa":
+         marcar rotina é ligar ou desligar o acompanhamento, não concluir. */
+      var prox = proximaOcorrencia(d, etapa, hojeISO());
+      var cad = etapa.cadencia_dias ? Club.cadenciaRotulo(etapa.cadencia_dias).toLowerCase() : 'a cada 7 dias';
+      Club.modal.open({
+        title:'Criar a próxima ocorrência?',
+        body:'<p>Rotina "' + esc(etapa.titulo) + '" · ' + esc(cad) + '. A próxima demanda nasce para ' +
+          esc(Club.fmtDataCurta(prox.vence_em)) + ', com os mesmos responsáveis.</p>',
+        submitLabel:'Criar a próxima',
+        onSubmit:function () {
+          Club.modal.close();
+          Club.data.demands.save(prox).then(function () {
+            return recarregarDemandas('Próxima ocorrência criada para ' + Club.fmtDataCurta(prox.vence_em) + '.');
+          }).then(voltarAoDetalhe).catch(aviso);
+        }
+      });
+    }
+
+    /* Rotina já pediu a próxima ocorrência; não pergunta também "marcar a etapa". */
+    var alvo = etapa && Club.tipoEtapa(etapa) === 'rotina' ? null : etapaParaMarcar(d);
     if (alvo) {
-      var e = etapasDe(d.artifact_id).filter(function (x) { return x.id === alvo.stepId; })[0];
       /* Não é Club.modal.confirm: aquele é o diálogo de apagar, com botão
          vermelho "Remover". Aqui a ação afirmativa é marcar. */
       Club.modal.open({
         title:'Marcar a etapa também?',
-        body:'<p>A demanda veio da etapa "' + esc(e ? e.titulo : 'do checklist') + '" de ' +
+        body:'<p>A demanda veio da etapa "' + esc(etapa ? etapa.titulo : 'do checklist') + '" de ' +
           esc(membro(alvo.memberId) || 'mentorado') + '. Marcar como feita na Progressão?</p>',
         submitLabel:'Marcar etapa',
-        onSubmit:function () { Club.modal.close(); marcarEtapa(alvo.memberId, alvo.stepId); }
+        onSubmit:function () { Club.modal.close(); marcarEtapa(alvo.memberId, alvo.stepId); voltarAoDetalhe(); }
       });
     }
     Club.toast(st.demAbertas === 'open'
@@ -4056,8 +3996,7 @@
 
   var TIPOS = {
     member:   { store:'members',   nome:function (r) { return r.nome; },
-                aviso:'As tarefas e os artefatos que eram só dele saem junto.' },
-    task:     { store:'tasks',     nome:function (r) { return r.titulo; }, aviso:'' },
+                aviso:'Os artefatos que eram só dele saem junto.' },
     event:    { store:'events',    nome:function (r) { return r.titulo; }, aviso:'' },
     /* O cascade leva etapas e o progresso de todo mundo; o aviso diz quanto. */
     artifact: { store:'artifacts', nome:function (r) { return r.nome; },
@@ -4106,7 +4045,7 @@
       });
   }
 
-  var MODAIS = { member:modalMembro, task:modalTarefa, event:modalEvento,
+  var MODAIS = { member:modalMembro, event:modalEvento,
                  artifact:modalArtefato, group:modalGrupo, material:modalMaterial,
                  demand:modalDemanda, botExemplo:modalBotExemplo, qr:modalQr };
 
@@ -4211,9 +4150,6 @@
 
     var bat = e.target.closest('[data-bot-ativo]');
     if (bat) { alternarExemplo(bat.dataset.botAtivo); return; }
-
-    var stat = e.target.closest('#filtroStatus button');
-    if (stat) { st.status = stat.dataset.st; renderTasks(); return; }
 
     var down = e.target.closest('[data-baixar]');
     if (down) { baixar(down.dataset.baixar); return; }
@@ -4457,10 +4393,6 @@
     renderMaterials();
   });
 
-  $('filtroMembro').addEventListener('change', function () {
-    st.membro = this.value;
-    renderTasks();
-  });
 
   /* ── partida ──────────────────────────────────────────────────────────── */
 
@@ -4468,7 +4400,6 @@
     renderNav();
     renderOverview();
     renderMembers();
-    renderTasks();
     renderAgenda();
     renderArtifacts();
     renderMaterials();

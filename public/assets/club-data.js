@@ -4,7 +4,6 @@
    Interface única consumida por /admin/ e /membros/:
 
      Club.data.members.list()             → Promise<Array>
-     Club.data.tasks.list({memberId})     → Promise<Array>
      Club.data.events.list({memberId})    → Promise<Array>
      Club.data.artifacts.list({memberId}) → Promise<Array>
      ...save(registro) / ...remove(id)    → Promise
@@ -24,11 +23,9 @@
   var COLUNAS = {
     members:   ['nome', 'email', 'iniciais', 'turma', 'fase', 'tier', 'instagram',
                'whatsapp_url', 'ativo'],
-    tasks:     ['member_id', 'titulo', 'descricao', 'categoria', 'cadencia', 'vence_em',
-                'progresso_atual', 'progresso_total', 'status'],
     events:    ['member_id', 'titulo', 'mentor', 'inicia_em', 'formato', 'link'],
     /* tipo e interna chegam com supabase/areas.sql (fase 1 da taxonomia).
-       pilar saiu da UI; a coluna só cai do banco na fase 4. */
+       pilar saiu da UI na fase 2 e do banco na fase 4 (limpeza.sql). */
     artifacts: ['member_id', 'nome', 'subtitulo', 'icone', 'status', 'meta', 'url',
                 'group_id', 'ordem', 'responsaveis', 'tipo'],
     artifact_groups: ['nome', 'ordem', 'responsaveis', 'interna'],
@@ -100,12 +97,6 @@
   /* ── ordenações ───────────────────────────────────────────────────────── */
 
   function byName(a, b) { return String(a.nome).localeCompare(String(b.nome), 'pt-BR'); }
-
-  function byDue(a, b) {
-    /* Pendentes primeiro, depois por vencimento; sem prazo vai para o fim. */
-    if ((a.status === 'done') !== (b.status === 'done')) return a.status === 'done' ? 1 : -1;
-    return String(a.vence_em || '9999').localeCompare(String(b.vence_em || '9999'));
-  }
 
   function byStart(a, b) {
     return String(a.inicia_em || '').localeCompare(String(b.inicia_em || ''));
@@ -179,25 +170,9 @@
       },
       save: function (m) { return grava('members', m); },
       remove: function (id) {
-        /* As tarefas e os artefatos só dele saem junto por ON DELETE CASCADE,
+        /* Os artefatos só dele saem junto por ON DELETE CASCADE,
            declarado no schema.sql. */
         return apaga('members', id);
-      }
-    },
-
-    tasks: {
-      list: function (o) {
-        var q = sb().from('tasks').select('*');
-        var m = opt(o, 'memberId');
-        if (m !== undefined) q = q.eq('member_id', m);
-        return q.then(lista).then(function (r) { return r.sort(byDue); });
-      },
-      save: function (t) { return grava('tasks', t); },
-      remove: function (id) { return apaga('tasks', id); },
-      toggle: function (id) {
-        /* Função no banco: o mentorado não tem UPDATE nas tarefas, só o direito
-           de virar o próprio status. Ver toggle_task no schema.sql. */
-        return sb().rpc('toggle_task', { p_task_id: id }).then(ok);
       }
     },
 

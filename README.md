@@ -18,7 +18,7 @@ public/                # tudo que vai pro ar
   robots.txt
   sitemap.xml
 docker-entrypoint.d/   # scripts que a imagem nginx roda no boot
-supabase/              # SQL do banco: tabelas, RLS, acervo, demandas, progresso, áreas (areas.sql), frentes internas (frentes-internas.sql)
+supabase/              # SQL do banco: tabelas, RLS, acervo, demandas, progresso, áreas (areas.sql), frentes internas (frentes-internas.sql), limpeza (limpeza.sql)
   functions/           # Edge Functions (a que serve o quadro da TV)
 Dockerfile             # nginx alpine servindo public/
 nginx.conf             # gzip, cache de assets, headers de segurança
@@ -74,7 +74,7 @@ Quatro telas, todas no mesmo visual (`assets/club.css`, extraído do protótipo)
 | Rota | O quê |
 |---|---|
 | `/entrar/` | Login por e-mail e senha (Supabase Auth) |
-| `/admin/` | Demandas, membros, tarefas, agenda, materiais e artefatos |
+| `/admin/` | Demandas, membros, agenda, materiais e artefatos |
 | `/membros/` | O que o mentorado enxerga; o admin pode espiar com `?membro=<id>` |
 | `/demandas/` | O quadro de demandas na TV do escritório, sem login |
 
@@ -88,7 +88,7 @@ definição e, sozinha, não abre nada.
 | Quem | Enxerga | Escreve |
 |---|---|---|
 | Sem login | nada | nada |
-| Mentorado | o próprio cadastro, as próprias tarefas, e os eventos e artefatos dele mais os de `member_id` nulo (turma inteira) | só marcar a própria tarefa como concluída, pela função `toggle_task` |
+| Mentorado | o próprio cadastro e os eventos e artefatos dele mais os de `member_id` nulo (turma inteira) | nada: quem marca etapa é a administração |
 | Admin | tudo | tudo |
 
 Ser admin não é algo que o navegador afirma: vem da tabela `app_admins`, lida
@@ -232,10 +232,9 @@ Mentorado
       └ Etapa         (o checklist padrão do artefato)
 ```
 
-Tarefa não entra na árvore: ela vive só na aba **Tarefas**. A etapa do artefato
-é entrega do Club e quem marca é a administração; a tarefa é do mentorado e é
-ele quem a conclui. São ciclos diferentes, e juntá-los na mesma coluna faria a
-mesma palavra significar duas coisas.
+Tarefa do mentorado não existe mais (fase 4 da taxonomia, 21/09/2026): a ação
+dele é etapa **trava** do artefato, e quem cobra é a CS, por demanda no quadro.
+A etapa do artefato é entrega do Club e quem marca é a administração.
 
 O checklist é do artefato, cadastrado uma vez no campo **Etapas padrão** da aba
 Artefatos — uma etapa por linha — e vale para todo mentorado que recebe aquele
@@ -390,4 +389,8 @@ frentes internas, cria o Encontro Grau Zero do Alex, renomeia `demands.projeto`
 para `projeto_legado` e liga as demandas às frentes. Roda com o admin fechado e
 o deploy da UI nova sai logo depois.
 
-Testes de regressão: `node --test tests/graduacao.test.mjs tests/progress-notes.test.cjs tests/cerebro-preview.test.mjs tests/areas-admin.test.cjs tests/areas-membros.test.cjs tests/areas-sql.test.cjs tests/frentes-demandas.test.cjs tests/frentes-sql.test.cjs`
+`supabase/limpeza.sql` (fase 4, 21/09/2026) tira `tasks`/`toggle_task` e
+`artifact_groups.pilar`, deixa o trigger da demanda tolerante e cria o guard
+"área da equipe só recebe frente interna". Roda DEPOIS do deploy da UI da fase 4.
+
+Testes de regressão: `node --test tests/graduacao.test.mjs tests/progress-notes.test.cjs tests/cerebro-preview.test.mjs tests/areas-admin.test.cjs tests/areas-membros.test.cjs tests/areas-sql.test.cjs tests/frentes-demandas.test.cjs tests/frentes-sql.test.cjs tests/limpeza-sql.test.cjs`
