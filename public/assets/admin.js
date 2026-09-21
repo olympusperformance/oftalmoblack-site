@@ -16,6 +16,9 @@
              view: 'overview', membro: '', status: 'all', igOrdem: 'seguidores',
              matCategoria: '', matMembro: '',
              demResp: '', demMembro: '', demProjeto: '', demAbertas: 'open',
+             /* Recorte aberto por um cartão do painel (atrasadas, sem dono…).
+                Não é leitura guardada: é um mergulho, e mora na URL. */
+             demFoco: '',
              /* "Minhas" é a leitura padrão do quadro: quem abre vê o que é seu,
                 agrupado por projeto. "eu" é a pessoa da equipe ligada ao login
                 (staff.user_id) ou, enquanto a migração não roda, a escolhida no
@@ -361,6 +364,9 @@
       v.hidden = v.dataset.view !== key;
     });
     renderNav();
+    /* Só o quadro escreve na URL: #demandas já era o atalho do favorito, e o
+       recorte vai junto dele. As outras abas seguem sem endereço. */
+    sincronizarHash();
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
@@ -389,12 +395,17 @@
   }
 
   /* `dica` é opcional: quando existe, o cartão explica ao passar o mouse o que
-     aquele número quer dizer. Número sem definição vira discussão na reunião. */
-  function cardStat(k, v, d, dica) {
-    return '<div class="stat' + (dica ? ' tem-dica' : '') + '"' +
-      (dica ? ' data-dica="' + esc(dica) + '"' : '') + '>' +
+     aquele número quer dizer. Número sem definição vira discussão na reunião.
+     `foco` também: com ele o cartão vira botão e o clique abre a lista que o
+     número resume (ver FOCOS, na aba Demandas). */
+  function cardStat(k, v, d, dica, foco) {
+    var tag = foco ? 'button' : 'div';
+    return '<' + tag + ' class="stat' + (dica ? ' tem-dica' : '') + (foco ? ' foco' : '') + '"' +
+      (dica ? ' data-dica="' + esc(dica) + '"' : '') +
+      (foco ? ' type="button" data-foco="' + esc(foco) + '" aria-pressed="' + (st.demFoco === foco) +
+        '" title="Ver esta lista"' : '') + '>' +
       '<div class="k">' + esc(k) + '</div>' +
-      '<div class="v">' + esc(v) + '</div><div class="d">' + esc(d) + '</div></div>';
+      '<div class="v">' + esc(v) + '</div><div class="d">' + esc(d) + '</div></' + tag + '>';
   }
 
   /* ── membros ──────────────────────────────────────────────────────────── */
@@ -2239,6 +2250,70 @@
 
   function estaFechada(d) { return Club.DEM_ABERTOS.indexOf(d.status) === -1; }
 
+  /* Para os recortes, a fechada há pouco ainda conta como aberta: é o que a
+     mantém na lista depois do ✓. */
+  function aberta(d) { return !estaFechada(d) || !!st.recemFechadas[d.id]; }
+
+  /* Os recortes que os cartões do painel abrem. Cada um responde se a demanda
+     entra, como se chama na faixa e o que dizer quando não sobra nada. Todos
+     partem das abertas: prazo passado de coisa concluída não é atraso. */
+  var FOCOS = {
+    atrasadas: { nome:'Atrasadas', vazio:'Nenhuma demanda atrasada. Aproveite.',
+      testa:function (d) { var n = Club.diffDays(d.vence_em); return aberta(d) && n !== null && n < 0; } },
+    hoje:      { nome:'Vencem hoje', vazio:'Nada vence hoje.',
+      testa:function (d) { return aberta(d) && Club.diffDays(d.vence_em) === 0; } },
+    semana:    { nome:'Vencem esta semana', vazio:'Nada vence nos próximos 6 dias.',
+      testa:function (d) { var n = Club.diffDays(d.vence_em); return aberta(d) && n !== null && n > 0 && n <= 6; } },
+    semprazo:  { nome:'Sem prazo', vazio:'Todas as abertas têm prazo.',
+      testa:function (d) { return aberta(d) && !d.vence_em; } },
+    atencao:   { nome:'Pedindo atenção', vazio:'Nada em risco nem aguardando retorno.',
+      testa:function (d) { return d.status === 'Em risco' || d.status === 'Aguardando retorno'; } },
+    semdono:   { nome:'Sem responsável', vazio:'Todas as abertas têm dono.',
+      testa:function (d) { return aberta(d) && (!d.responsaveis || !d.responsaveis.length); } }
+  };
+
+  /* O cartão "Em aberto" não é recorte: é a lista inteira das abertas, o ponto
+     de partida. Clicar nele limpa recorte e filtros e volta a essa leitura. */
+  function aplicarFoco(foco) {
+    if (foco === 'abertas' || st.demFoco === foco) st.demFoco = '';
+    else if (FOCOS[foco]) st.demFoco = foco;
+    st.demAbertas = 'open';
+    st.demResp = ''; st.demMembro = ''; st.demProjeto = '';
+    sincronizarHash();
+    renderDemandas();
+  }
+
+  /* O recorte mora na URL: #demandas?foco=atrasadas abre direto na lista, e o
+     endereço se copia para quem precisa ver o mesmo. */
+  function lerHash() {
+    var h = (location.hash || '').replace(/^#/, '');
+    var i = h.indexOf('?');
+    var secao = i === -1 ? h : h.slice(0, i);
+    var foco = '';
+    if (i !== -1) {
+      var m = /(?:^|&)foco=([^&]*)/.exec(h.slice(i + 1));
+      foco = m ? decodeURIComponent(m[1]) : '';
+    }
+    return { secao:secao, foco:FOCOS[foco] ? foco : '' };
+  }
+
+  function sincronizarHash() {
+    if (st.view !== 'demands') return;
+    var novo = '#demandas' + (st.demFoco ? '?foco=' + encodeURIComponent(st.demFoco) : '');
+    if (location.hash !== novo) history.replaceState(null, '', novo);
+  }
+
+  /* A faixa acima da lista diz qual recorte está valendo e devolve a leitura
+     inteira num clique. */
+  function faixaFoco(rows) {
+    var f = FOCOS[st.demFoco];
+    if (!f) return '';
+    return '<div class="foco-bar" role="status">' + ico('search') +
+      '<span>Mostrando <b>' + esc(f.nome.toLowerCase()) + '</b> · ' + rows.length +
+      (rows.length === 1 ? ' demanda' : ' demandas') + '</span><span class="sp"></span>' +
+      '<button type="button" class="btn btn-sm" data-foco-limpar>Ver todas as abertas</button></div>';
+  }
+
   /* Fechou agora: fica na lista e no lugar. Reabriu: volta a ser uma aberta comum. */
   function marcarFechamento(d) {
     if (estaFechada(d)) st.recemFechadas[d.id] = true;
@@ -2263,6 +2338,7 @@
     return st.demands.filter(function (d) {
       if (st.demVisao === 'minhas' && !minha(d)) return false;
       if (st.demAbertas === 'open' && estaFechada(d) && !st.recemFechadas[d.id]) return false;
+      if (st.demFoco && FOCOS[st.demFoco] && !FOCOS[st.demFoco].testa(d)) return false;
       if (st.demResp && (!d.responsaveis || d.responsaveis.indexOf(st.demResp) === -1)) return false;
       if (st.demMembro && d.member_id !== st.demMembro) return false;
       if (st.demProjeto && !casaProjeto(d, st.demProjeto)) return false;
@@ -2352,19 +2428,20 @@
       });
       var semPrazo = abertas.filter(function (d) { return !d.vence_em; });
       $('statsDemandas').innerHTML =
-        cardStat('ATRASADAS', atrasadas.length, atrasadas.length ? 'passaram do prazo' : 'nada atrasado') +
-        cardStat('HOJE', hoje.length, hoje.length ? 'vencem hoje' : 'nada vence hoje') +
-        cardStat('ESTA SEMANA', semana.length, 'vencem nos próximos 6 dias') +
-        cardStat('SEM PRAZO', semPrazo.length, abertas.length + ' em aberto no total');
+        cardStat('ATRASADAS', atrasadas.length, atrasadas.length ? 'passaram do prazo' : 'nada atrasado', null, 'atrasadas') +
+        cardStat('HOJE', hoje.length, hoje.length ? 'vencem hoje' : 'nada vence hoje', null, 'hoje') +
+        cardStat('ESTA SEMANA', semana.length, 'vencem nos próximos 6 dias', null, 'semana') +
+        cardStat('SEM PRAZO', semPrazo.length, abertas.length + ' em aberto no total', null, 'semprazo');
     } else {
       $('statsDemandas').innerHTML =
-        cardStat('EM ABERTO', abertas.length, st.demands.length + ' no total') +
-        cardStat('ATRASADAS', atrasadas.length, atrasadas.length ? 'passaram do prazo' : 'tudo dentro do prazo') +
-        cardStat('PEDINDO ATENÇÃO', risco.length, 'em risco ou aguardando retorno') +
-        cardStat('SEM RESPONSÁVEL', semDono.length, semDono.length ? 'ninguém tocando' : 'todas com dono');
+        cardStat('EM ABERTO', abertas.length, st.demands.length + ' no total', null, 'abertas') +
+        cardStat('ATRASADAS', atrasadas.length, atrasadas.length ? 'passaram do prazo' : 'tudo dentro do prazo', null, 'atrasadas') +
+        cardStat('PEDINDO ATENÇÃO', risco.length, 'em risco ou aguardando retorno', null, 'atencao') +
+        cardStat('SEM RESPONSÁVEL', semDono.length, semDono.length ? 'ninguém tocando' : 'todas com dono', null, 'semdono');
     }
 
     var rows = demandasVisiveis();
+    var faixa = faixaFoco(rows);
 
     /* A migração do checklist é posterior ao resto do quadro: quem atualizou o
        site e ainda não rodou o SQL precisa saber por que a coluna está vazia. */
@@ -2380,8 +2457,10 @@
     }) ? 'Abrir tudo' : 'Fechar tudo';
 
     if (!rows.length) {
-      $('listaDemandas').innerHTML = avisoCk + Club.empty('check-circle',
+      $('listaDemandas').innerHTML = avisoCk + faixa + Club.empty('check-circle',
         st.demVisao === 'minhas' && !st.eu ? 'Clique em "Minhas" e diga quem você é no quadro.'
+        : st.demFoco && (st.demResp || st.demMembro || st.demProjeto) ? 'Nenhuma demanda com este filtro.'
+        : st.demFoco ? FOCOS[st.demFoco].vazio
         : st.demResp || st.demMembro || st.demProjeto ? 'Nenhuma demanda com este filtro.'
         : st.demVisao === 'minhas' ? 'Nada em aberto no seu nome. Aproveite.'
         : 'Nenhuma demanda em aberto. Aproveite.');
@@ -2406,7 +2485,7 @@
       ? gruposPorProjeto(rows).map(function (g) { return linhaGrupo(g, 0); }).join('')
       : rows.map(function (d) { return linhaDemanda(d, comProjeto); }).join('');
 
-    $('listaDemandas').innerHTML = avisoCk + tabela(cols, cabecalhos, corpo, '');
+    $('listaDemandas').innerHTML = avisoCk + faixa + tabela(cols, cabecalhos, corpo, '');
     Club.ajustarColunas($('listaDemandas'), {
       chave:chaveDem() + ':colunas:' + st.demAgrupar, minimos:larguras
     });
@@ -3534,6 +3613,12 @@
     var eq = e.target.closest('[data-equipe]');
     if (eq) { modalEquipe(); return; }
 
+    var foco = e.target.closest('[data-foco]');
+    if (foco) { aplicarFoco(foco.dataset.foco); return; }
+
+    var focoLimpar = e.target.closest('[data-foco-limpar]');
+    if (focoLimpar) { st.demFoco = ''; sincronizarHash(); renderDemandas(); return; }
+
     var ab = e.target.closest('#filtroAbertas button');
     if (ab) { st.demAbertas = ab.dataset.ab; renderDemandas(); return; }
 
@@ -3747,10 +3832,22 @@
     sessao = s;
     aplicarIdentidade();
     return carregar().then(function () {
+      /* #demandas na URL abre direto no quadro: é o atalho que vai no favorito.
+         #demandas?foco=atrasadas abre já no recorte. */
+      var h = lerHash();
+      st.demFoco = h.foco;
       render();
-      /* #demandas na URL abre direto no quadro: é o atalho que vai no favorito. */
-      var alvo = (location.hash || '').replace('#', '');
-      go(alvo === 'demandas' ? 'demands' : alvo && document.querySelector('.view[data-view="' + alvo + '"]') ? alvo : 'overview');
+      go(h.secao === 'demandas' ? 'demands' : h.secao && document.querySelector('.view[data-view="' + h.secao + '"]') ? h.secao : 'overview');
     });
   }).catch(falhou);
+
+  /* Colar outro endereço do quadro na mesma aba, sem recarregar. */
+  window.addEventListener('hashchange', function () {
+    if (!sessao) return;
+    var h = lerHash();
+    if (h.secao !== 'demandas' || h.foco === st.demFoco) return;
+    st.demFoco = h.foco;
+    renderDemandas();
+    if (st.view !== 'demands') go('demands');
+  });
 })();

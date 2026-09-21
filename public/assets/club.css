@@ -991,3 +991,17 @@ input[type="file"].inp::file-selector-button:hover{background:var(--surface);bor
   box-shadow:0 0 0 3px var(--elevated,#17151d);pointer-events:none}
 
 .stat.tem-dica{cursor:help}
+
+/* Cartões da aba Demandas que abrem a lista que resumem. O botão herda o
+   visual do cartão; o dourado diz qual recorte está valendo. */
+.stat.foco{cursor:pointer;text-align:left;font:inherit;color:inherit;width:100%;appearance:none;
+  transition:border-color .15s,background .15s}
+.stat.foco:hover{border-color:var(--border)}
+.stat.foco[aria-pressed="true"]{border-color:var(--gold);background:var(--surface-hi)}
+.stat.foco:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.foco-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-bottom:14px;
+  padding:10px 14px;border:1px solid var(--gold-deep);border-radius:var(--r-sm);
+  background:var(--surface);font-size:13px;color:var(--muted);line-height:1.4}
+.foco-bar .ic{color:var(--gold);flex-shrink:0}
+.foco-bar b{color:var(--gold);font-weight:600}
+.foco-bar .sp{flex:1}
