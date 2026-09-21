@@ -4,6 +4,8 @@
 -- Spec: docs/superpowers/specs/2026-09-21-taxonomia-artefatos-demandas-design.md
 -- Roda DEPOIS de frentes.sql e demandas.sql, inteiro, no SQL Editor, com o
 -- admin fechado. Idempotente: rodar duas vezes deixa o banco igual.
+-- Rodar meses depois REVERTE edições de área/ordem/responsáveis feitas no admin
+-- nos 14 artefatos e 5 áreas listados, e não renova o snapshot.
 --
 -- O que muda:
 --   1. artifact_groups ganha `interna` (área da equipe, invisível ao mentorado).
@@ -33,6 +35,19 @@ create table if not exists public._bkp_20260921_artifact_steps  as select * from
 create table if not exists public._bkp_20260921_step_progress   as select * from public.step_progress;
 create table if not exists public._bkp_20260921_demands         as select * from public.demands;
 create table if not exists public._bkp_20260921_demand_steps    as select * from public.demand_steps;
+
+-- Tabela nova em public nasce exposta ao PostgREST (grants padrão, sem RLS).
+-- Snapshot é só para rollback pela equipe: tranca já na criação.
+alter table public._bkp_20260921_artifact_groups enable row level security;
+alter table public._bkp_20260921_artifacts       enable row level security;
+alter table public._bkp_20260921_artifact_steps  enable row level security;
+alter table public._bkp_20260921_step_progress   enable row level security;
+alter table public._bkp_20260921_demands         enable row level security;
+alter table public._bkp_20260921_demand_steps    enable row level security;
+revoke all on public._bkp_20260921_artifact_groups, public._bkp_20260921_artifacts,
+              public._bkp_20260921_artifact_steps,  public._bkp_20260921_step_progress,
+              public._bkp_20260921_demands,         public._bkp_20260921_demand_steps
+  from anon, authenticated;
 
 -- ── 1. colunas novas ────────────────────────────────────────────────────────
 
@@ -248,9 +263,11 @@ commit;
 -- 1. progresso intacto
 -- select count(*) as linhas, count(*) filter (where feito) as feitas from public.step_progress;
 
--- 2. mesmos step_ids por artefato que o snapshot (esperado: zero linhas)
+-- 2. artefatos que já existiam mantêm exatamente os mesmos step_ids (esperado: zero linhas); os 3 novos ficam fora por não estarem no snapshot
 -- select a.id, array_agg(s.id order by s.ordem)
---   from public.artifacts a join public.artifact_steps s on s.artifact_id = a.id group by a.id
+--   from public.artifacts a join public.artifact_steps s on s.artifact_id = a.id
+--  where a.id in (select id from public._bkp_20260921_artifacts)
+--  group by a.id
 -- except
 -- select a.id, array_agg(s.id order by s.ordem)
 --   from public._bkp_20260921_artifacts a join public._bkp_20260921_artifact_steps s on s.artifact_id = a.id group by a.id;

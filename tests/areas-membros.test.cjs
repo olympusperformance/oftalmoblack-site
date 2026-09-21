@@ -46,3 +46,20 @@ test('área sem artefato visível não vira seção vazia', () => {
   assert.equal(secoes.length, 1);
   assert.equal(secoes[0].grupo.nome, 'Geração de demanda');
 });
+
+test('sem áreas (RLS devolveu vazio), tudo cai numa seção única sem título', () => {
+  const code = extract('public/assets/membros.js', '  function agruparPorArea(', '  function renderArtifacts(');
+  const ctx = vm.createContext({});
+  vm.runInContext(code + '\nthis.agruparPorArea = agruparPorArea;', ctx);
+  const secoes = ctx.agruparPorArea(artefatos, []);
+  assert.equal(secoes.length, 1);
+  assert.equal(secoes[0].grupo, null);
+  const esperado = artefatos
+    .filter(a => a.tipo !== 'interna')
+    .slice()
+    .sort((a, b) => String(a.nome).localeCompare(String(b.nome), 'pt-BR'))
+    .map(a => a.id);
+  assert.deepEqual(secoes[0].itens.map(a => a.id), esperado);
+  assert.ok(!esperado.includes('os'), 'frente interna não devia entrar na lista esperada');
+  assert.ok(!secoes[0].itens.some(a => a.id === 'os'), 'frente interna vazou pra seção sem título');
+});

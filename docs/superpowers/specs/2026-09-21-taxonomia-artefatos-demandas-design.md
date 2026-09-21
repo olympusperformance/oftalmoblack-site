@@ -272,9 +272,11 @@ Aba Tarefas e `Club.data.tasks` (§6.5); `drop table tasks`; `drop function togg
 -- progresso intacto (633 / 618 em 21/09)
 select count(*), count(*) filter (where feito) from step_progress;
 
--- mesmos step_ids por artefato, comparado ao snapshot (esperado: zero linhas)
+-- artefatos que já existiam mantêm exatamente os mesmos step_ids (esperado: zero linhas); os 3 novos ficam fora por não estarem no snapshot
 select a.id, array_agg(s.id order by s.ordem)
-  from artifacts a join artifact_steps s on s.artifact_id = a.id group by a.id
+  from artifacts a join artifact_steps s on s.artifact_id = a.id
+ where a.id in (select id from _bkp_20260921_artifacts)
+ group by a.id
 except
 select a.id, array_agg(s.id order by s.ordem)
   from _bkp_20260921_artifacts a join _bkp_20260921_artifact_steps s on s.artifact_id = a.id group by a.id;

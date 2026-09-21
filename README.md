@@ -385,4 +385,4 @@ prepara `demands.artifact_id`/`step_id`. Roda depois de `frentes.sql` e
 `demandas.sql`, com o admin fechado; o bloco PROVA no fim do arquivo diz o que
 conferir. Spec e plano em `docs/superpowers/`.
 
-Testes de regressão: `node --test tests/graduacao.test.mjs tests/progress-notes.test.cjs tests/cerebro-preview.test.mjs tests/areas-admin.test.cjs tests/areas-membros.test.cjs`
+Testes de regressão: `node --test tests/graduacao.test.mjs tests/progress-notes.test.cjs tests/cerebro-preview.test.mjs tests/areas-admin.test.cjs tests/areas-membros.test.cjs tests/areas-sql.test.cjs`
