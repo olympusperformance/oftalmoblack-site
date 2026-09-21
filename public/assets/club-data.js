@@ -139,6 +139,23 @@
     return sb().from(tabela).delete().eq('id', id).then(function (res) { ok(res); });
   }
 
+  /* O PostgREST devolve no máximo 1000 linhas por pedido (max_rows do
+     projeto). O quadro de demandas passa disso em meses, e sem paginar as
+     linhas mais antigas sumiriam em silêncio. Pede página a página, numa ordem
+     estável (criação, depois id), até vir uma incompleta. `consulta` monta um
+     pedido novo a cada chamada: o builder do supabase-js não se reaproveita. */
+  var PAGINA = 1000;
+  function todas(consulta, aviso, chave) {
+    var acumulado = [];
+    function pagina(de) {
+      return tolerante(consulta().range(de, de + PAGINA - 1), aviso, chave).then(function (rows) {
+        acumulado = acumulado.concat(rows);
+        return rows.length < PAGINA ? acumulado : pagina(de + PAGINA);
+      });
+    }
+    return pagina(0);
+  }
+
   /* Várias linhas novas num insert só: é o que a demanda em lote (uma por
      mentorado) e os checklists dela precisam. Devolve as linhas gravadas. */
   function gravaVarios(tabela, regs) {
@@ -397,8 +414,9 @@
 
   C.data.demands = {
     list: function () {
-      return tolerante(sb().from('demands').select('*'), AVISO_DEM)
-        .then(function (rows) { return rows.sort(byDemanda); });
+      return todas(function () {
+        return sb().from('demands').select('*').order('criado_em').order('id');
+      }, AVISO_DEM).then(function (rows) { return rows.sort(byDemanda); });
     },
     save: function (d) { return grava('demands', d); },
     saveMany: function (rows) { return gravaVarios('demands', rows); },
@@ -468,10 +486,12 @@
      mesma — não é modelo para ninguém, ao contrário das etapas do artefato. */
   C.data.demandSteps = {
     list: function (o) {
-      var q = sb().from('demand_steps').select('*');
       var d = opt(o, 'demandId');
-      if (d !== undefined) q = q.eq('demand_id', d);
-      return tolerante(q, AVISO_DEM_CK, 'faltaChecklistDemanda')
+      return todas(function () {
+        var q = sb().from('demand_steps').select('*');
+        if (d !== undefined) q = q.eq('demand_id', d);
+        return q.order('criado_em').order('id');
+      }, AVISO_DEM_CK, 'faltaChecklistDemanda')
         .then(function (rows) { return rows.sort(byOrdemDem); });
     },
 
