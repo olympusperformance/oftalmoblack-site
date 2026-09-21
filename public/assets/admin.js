@@ -34,7 +34,10 @@
              /* Demandas fechadas nesta leitura. Continuam na lista mesmo com o
                 filtro "Em aberto", até a pessoa trocar visão ou filtro: quem
                 conclui precisa ver que concluiu — e poder reabrir no mesmo lugar. */
-             recemFechadas: {} };
+             recemFechadas: {},
+             /* Detalhe aberto: na janela (detalheModal) ou destacado no painel
+                flutuante (painel). Cada um guarda { id, subId }. */
+             detalheModal: null, painel: null };
 
   /* A navegação é uma árvore de um nível: quem é solto fica solto, quem tem
      'itens' vira um grupo com título. Agenda e Materiais moram em Mentorados
@@ -367,6 +370,9 @@
     /* Só o quadro escreve na URL: #demandas já era o atalho do favorito, e o
        recorte vai junto dele. As outras abas seguem sem endereço. */
     sincronizarHash();
+    /* O painel destacado é da aba Demandas: some com ela e volta com ela. */
+    var painel = $('painelDemanda');
+    if (painel) painel.hidden = key !== 'demands' || !st.painel;
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
@@ -2289,23 +2295,29 @@
     renderDemandas();
   }
 
-  /* O recorte mora na URL: #demandas?foco=atrasadas abre direto na lista, e o
-     endereço se copia para quem precisa ver o mesmo. */
+  /* O recorte e a demanda aberta moram na URL: #demandas?foco=atrasadas abre
+     direto na lista, #demandas/<id> abre a demanda, e o endereço se copia para
+     quem precisa ver o mesmo. */
   function lerHash() {
     var h = (location.hash || '').replace(/^#/, '');
     var i = h.indexOf('?');
-    var secao = i === -1 ? h : h.slice(0, i);
+    var caminho = i === -1 ? h : h.slice(0, i);
+    var partes = caminho.split('/');
     var foco = '';
     if (i !== -1) {
       var m = /(?:^|&)foco=([^&]*)/.exec(h.slice(i + 1));
       foco = m ? decodeURIComponent(m[1]) : '';
     }
-    return { secao:secao, foco:FOCOS[foco] ? foco : '' };
+    var id = '';
+    try { id = decodeURIComponent(partes[1] || ''); } catch (err) { id = ''; }
+    return { secao:partes[0], id:id, foco:FOCOS[foco] ? foco : '' };
   }
 
   function sincronizarHash() {
     if (st.view !== 'demands') return;
-    var novo = '#demandas' + (st.demFoco ? '?foco=' + encodeURIComponent(st.demFoco) : '');
+    var id = idEmDestaque();
+    var novo = '#demandas' + (id ? '/' + encodeURIComponent(id) : '') +
+      (st.demFoco ? '?foco=' + encodeURIComponent(st.demFoco) : '');
     if (location.hash !== novo) history.replaceState(null, '', novo);
   }
 
@@ -2353,6 +2365,11 @@
   }
 
   function renderDemandas() {
+    /* Com o calendário de um prazo aberto (na linha, na janela ou no painel),
+       redesenhar agora apagaria o campo no meio da escolha. Quem fecha o
+       calendário redesenha — salvando ou não. */
+    var foco = document.activeElement;
+    if (foco && foco.classList && foco.classList.contains('cell-date')) return;
     var quadroAnterior = $('listaDemandas').querySelector('.tblw');
     var scrollAnterior = quadroAnterior ? quadroAnterior.scrollLeft : 0;
     var ativo = document.activeElement;
@@ -2470,6 +2487,7 @@
         : st.demResp || st.demMembro || st.demProjeto ? 'Nenhuma demanda com este filtro.'
         : st.demVisao === 'minhas' ? 'Nada em aberto no seu nome. Aproveite.'
         : 'Nenhuma demanda em aberto. Aproveite.');
+      atualizarDetalhes();
       return;
     }
 
@@ -2510,6 +2528,7 @@
         tituloAtivo.setSelectionRange(focoTitulo.inicio, focoTitulo.fim);
       }
     }
+    atualizarDetalhes();
     Club.reancorarMenu();
   }
 
@@ -2662,9 +2681,9 @@
   /* Célula que abre menu no clique. Fica invisível como controle até o mouse
      chegar: a tabela precisa continuar legível como tabela. A chave carrega o
      escopo — 'd' para a demanda, 's' para a subtarefa. */
-  function celula(tipo, id, conteudo, vazia) {
+  function celula(tipo, id, conteudo, vazia, chave) {
     return '<button class="cell' + (vazia ? ' vazio' : '') + '" data-cell="' + tipo +
-      '" data-id="' + id + '" data-menu-id="' + tipo + ':' + id +
+      '" data-id="' + id + '" data-menu-id="' + (chave || tipo + ':' + id) +
       '" aria-haspopup="menu" aria-expanded="false">' + conteudo + '</button>';
   }
 
@@ -2875,6 +2894,9 @@
     function fim(gravar) {
       if (encerrado) return;
       encerrado = true;
+      /* Solta o foco antes de redesenhar: renderDemandas não mexe na tela
+         enquanto um calendário estiver em foco (ver lá), e este está fechando. */
+      inp.blur();
       if (gravar && inp.value !== (r.vence_em || '')) {
         salvar(id, { vence_em: inp.value || null });
       } else {
@@ -2909,9 +2931,13 @@
         return String(atual[k]) !== String(patch[k]);
       });
       if (superada) return;
-      st.demands = ordenarDemandas(st.demands.map(function (x) {
-        return x.id === id ? linha : x;
-      }));
+      /* Só o que esta gravação mandou volta do banco para a tela — mais o
+         carimbo de conclusão, que o gatilho deriva do status. Copiar a linha
+         inteira desfaria uma troca mais nova feita em outro campo enquanto
+         esta resposta viajava. */
+      Object.keys(patch).forEach(function (k) { if (k in linha) atual[k] = linha[k]; });
+      if ('concluida_em' in linha) atual.concluida_em = linha.concluida_em;
+      st.demands = ordenarDemandas(st.demands);
       renderDemandas();
     }).catch(function (err) {
       Object.assign(d, antes);
@@ -2940,7 +2966,15 @@
     renderDemandas();
 
     Club.data.demandSteps.save(Object.assign({ id:id }, patch)).then(function (linha) {
-      st.demandSteps = st.demandSteps.map(function (x) { return x.id === id ? linha : x; });
+      /* Mesma regra da demanda: a resposta só traz os campos que mandou, mais
+         o feito e o carimbo, que o gatilho deriva do status. */
+      var atual = etapa(id);
+      var superada = !atual || Object.keys(patch).some(function (k) {
+        return String(atual[k]) !== String(patch[k]);
+      });
+      if (superada) return;
+      Object.keys(patch).forEach(function (k) { if (k in linha) atual[k] = linha[k]; });
+      ['feito', 'feito_em'].forEach(function (k) { if (k in linha) atual[k] = linha[k]; });
       indexar();
       renderDemandas();
     }).catch(function (err) {
@@ -3113,51 +3147,249 @@
     renderDemandas();
   }
 
-  /* Leitura completa, sem entrar no formulário nem alterar o registro. */
-  function detalheDemanda(id, subId) {
-    var d = achar('demand', id);
-    var r = subId ? etapa(subId) : d;
-    if (!d || !r) return;
+  /* ── detalhe da demanda ────────────────────────────────────────────────
+     Leitura completa sem entrar no formulário, em dois modos: a janela
+     (modal, como sempre foi) e o painel destacado — uma caixa flutuante que
+     fica de pé enquanto a pessoa mexe na lista. O corpo é o mesmo nos dois, e
+     as células de situação, prioridade, dono, mentorado e prazo são as mesmas
+     da linha: trocar aqui grava igual e redesenha os dois lugares. */
+
+  function corpoDetalhe(d, r, subId) {
+    var escopo = subId ? 's' : 'd';
     var projeto = projetoDe(d);
     var titulo = subId || d.member_id ? r.titulo : tituloSemTag(r.titulo);
     var etapas = subId ? [] : etapasDaDemanda(d.id);
     var feitas = etapas.filter(function (e) { return e.feito; }).length;
+    var chave = function (tipo) { return escopo + '.' + tipo + ':' + r.id + ':det'; };
     function campo(nome, valor) {
       return '<div><dt>' + esc(nome) + '</dt><dd>' + valor + '</dd></div>';
     }
-    Club.modal.open({
-      title:subId ? 'Detalhes da subtarefa' : 'Detalhes da demanda',
-      leitura:true, largura:780,
-      body:'<article class="demand-detail">' +
-        '<p class="demand-context">' + esc(projeto.nome) + '</p>' +
-        '<h3 class="demand-title">' + esc(titulo) + '</h3>' +
-        (subId ? '<button type="button" class="demand-parent" data-detalhe-demanda="' + esc(d.id) +
-          '">' + ico('chevron-right') + '<span>Demanda principal: ' +
-          esc(d.member_id ? d.titulo : tituloSemTag(d.titulo)) + '</span></button>' : '') +
-        '<dl class="demand-meta">' +
-          campo('Situação', status(Club.DEM_COR[r.status] || 'var(--faint)', r.status || 'Não informada')) +
-          campo('Prioridade', status(Club.DEM_PRIO_COR[r.prioridade] || 'var(--faint)', r.prioridade || 'Não informada')) +
-          campo('Responsáveis', esc(responsaveisDe(r))) +
-          campo('Prazo', esc(r.vence_em ? Club.fmtDataCurta(r.vence_em) : 'Sem prazo')) +
-          campo('Mentorado', esc(r.member_id ? membro(r.member_id) || 'Mentorado removido' : 'Demanda interna')) +
-          (!subId ? campo('Origem', esc(r.origem || 'Não informada')) : '') +
-        '</dl>' +
-        (!subId ? '<section class="demand-section"><h4>Descrição</h4><p class="demand-description">' +
-          esc(d.descricao || 'Nenhuma descrição adicionada.') + '</p></section>' : '') +
-        (!subId ? '<section class="demand-section"><h4>Checklist <span>' + feitas + '/' + etapas.length +
-          '</span></h4>' + (etapas.length ? '<ul class="demand-checklist">' + etapas.map(function (e) {
-            return '<li><button type="button" class="demand-step" data-detalhe-sub="' + esc(e.id) + '">' +
-              '<span class="demand-step-icon' + (e.feito ? ' done' : '') + '">' +
-                ico(e.feito ? 'check-circle' : 'clock') + '</span><span class="demand-step-body">' +
+    var n = Club.diffDays(r.vence_em);
+    var atrasada = n !== null && n < 0 && !estaFechada(r);
+
+    return '<article class="demand-detail">' +
+      '<p class="demand-context">' + esc(projeto.nome) + '</p>' +
+      '<h3 class="demand-title">' + esc(titulo) + '</h3>' +
+      (subId ? '<button type="button" class="demand-parent" data-detalhe-demanda="' + esc(d.id) +
+        '">' + ico('chevron-right') + '<span>Demanda principal: ' +
+        esc(d.member_id ? d.titulo : tituloSemTag(d.titulo)) + '</span></button>' : '') +
+      '<dl class="demand-meta">' +
+        campo('Situação', celula(escopo + '.status', r.id,
+          status(Club.DEM_COR[r.status] || 'var(--faint)', r.status || 'Não informada'), false, chave('status'))) +
+        campo('Prioridade', celula(escopo + '.prio', r.id,
+          status(Club.DEM_PRIO_COR[r.prioridade] || 'var(--faint)', r.prioridade || 'Não informada'), false, chave('prio'))) +
+        campo('Responsáveis', celula(escopo + '.resp', r.id, '<span class="tx">' + esc(responsaveisDe(r)) + '</span>',
+          !r.responsaveis || !r.responsaveis.length, chave('resp'))) +
+        campo('Prazo', '<button type="button" class="cell' + (r.vence_em ? '' : ' vazio') + '" data-prazo="' +
+          escopo + ':' + esc(r.id) + '"><span class="tx"' + (atrasada ? ' style="color:var(--danger)"' : '') + '>' +
+          esc(r.vence_em ? Club.fmtDataCurta(r.vence_em) + ' · ' + Club.fmtDue(r.vence_em) : 'Sem prazo') +
+          '</span></button>') +
+        campo('Mentorado', celula(escopo + '.membro', r.id, '<span class="tx">' +
+          esc(r.member_id ? membro(r.member_id) || 'Mentorado removido' : 'Demanda interna') + '</span>',
+          !r.member_id, chave('membro'))) +
+        (!subId ? campo('Origem', esc(r.origem || 'Não informada')) : '') +
+      '</dl>' +
+      (!subId ? '<section class="demand-section"><h4>Descrição</h4><p class="demand-description">' +
+        esc(d.descricao || 'Nenhuma descrição adicionada.') + '</p></section>' : '') +
+      (!subId ? '<section class="demand-section"><h4>Checklist <span>' + feitas + '/' + etapas.length +
+        '</span></h4>' + (etapas.length ? '<ul class="demand-checklist">' + etapas.map(function (e) {
+          return '<li' + (e.feito ? ' class="feito"' : '') + '>' +
+            '<button type="button" class="cbx" data-sub="' + esc(e.id) + '" aria-pressed="' + (!!e.feito) +
+              '" aria-label="Marcar subtarefa" title="' + (e.feito && e.feito_em
+                ? esc('Feito em ' + Club.fmtDataCurta(e.feito_em)) : 'Marcar como concluída') + '">' +
+              ico('check') + '</button>' +
+            '<button type="button" class="demand-step" data-detalhe-sub="' + esc(e.id) + '">' +
+              '<span class="demand-step-body">' +
                 '<span class="demand-step-title">' + esc(e.titulo) + '</span>' +
                 '<span class="demand-step-meta">' + esc([e.status || (e.feito ? 'Concluída' : 'A fazer'),
                   responsaveisDe(e), e.vence_em ? Club.fmtDataCurta(e.vence_em) : 'Sem prazo'].join(' · ')) +
                 '</span></span>' + ico('chevron-right') + '</button></li>';
-          }).join('') + '</ul>' : '<p class="demand-description">Nenhuma subtarefa adicionada.</p>') + '</section>' : '') +
-        '<div class="demand-detail-actions"><button type="button" class="btn" data-edit="demand" data-id="' +
-          esc(d.id) + '">' + ico('edit') + (subId ? 'Editar demanda principal' : 'Editar demanda') + '</button></div>' +
-      '</article>'
+        }).join('') + '</ul>' : '<p class="demand-description">Nenhuma subtarefa adicionada.</p>') +
+        '</section>' : '') +
+      '<div class="demand-detail-actions"><button type="button" class="btn" data-edit="demand" data-id="' +
+        esc(d.id) + '">' + ico('edit') + (subId ? 'Editar demanda principal' : 'Editar demanda') + '</button></div>' +
+    '</article>';
+  }
+
+  function detalheDemanda(id, subId) {
+    var d = achar('demand', id);
+    var r = subId ? etapa(subId) : d;
+    if (!d || !r) return;
+    /* Com o painel de pé, ele é o leitor: clicar em outra demanda troca o que
+       está nele, sem abrir janela por cima. */
+    if (st.painel) {
+      st.painel = { id:id, subId:subId || null };
+      renderPainel();
+      sincronizarHash();
+      return;
+    }
+    st.detalheModal = { id:id, subId:subId || null };
+    Club.modal.open({
+      title:subId ? 'Detalhes da subtarefa' : 'Detalhes da demanda',
+      leitura:true, largura:780,
+      body:corpoDetalhe(d, r, subId)
     });
+    /* A setinha para fora: destaca a leitura num painel e devolve a lista. */
+    var cab = document.querySelector('.modal-h');
+    if (cab && !cab.querySelector('[data-destacar]')) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'btn btn-ghost btn-sm btn-destacar';
+      b.setAttribute('data-destacar', '1');
+      b.setAttribute('aria-label', 'Manter aberta');
+      b.title = 'Manter aberta e continuar mexendo na lista';
+      b.innerHTML = ico('arrow-left');
+      cab.insertBefore(b, cab.querySelector('[data-close]'));
+    }
+    observarModal();
+    sincronizarHash();
+  }
+
+  /* A janela fecha por vários caminhos (Esc, fundo, botão): quem avisa que
+     ela fechou é o próprio atributo hidden, e a URL solta o id na hora. */
+  var modalObservado = false;
+  function observarModal() {
+    if (modalObservado || !window.MutationObserver) return;
+    var el = document.querySelector('.modal');
+    if (!el) return;
+    modalObservado = true;
+    new MutationObserver(function () {
+      if (el.hidden && st.detalheModal) { st.detalheModal = null; sincronizarHash(); }
+    }).observe(el, { attributes:true, attributeFilter:['hidden'] });
+  }
+
+  /* ── painel destacado ──────────────────────────────────────────────────── */
+
+  var CHAVE_PAINEL = 'ob-admin-dem-painel';
+  function chavePainel() {
+    return CHAVE_PAINEL + ':' + (sessao && sessao.email ? String(sessao.email).toLowerCase() : 'anon');
+  }
+
+  function criarPainel() {
+    var el = document.createElement('aside');
+    el.id = 'painelDemanda';
+    el.className = 'painel-dem';
+    el.hidden = true;
+    el.setAttribute('aria-label', 'Demanda em acompanhamento');
+    document.body.appendChild(el);
+    var pos = null;
+    try { pos = JSON.parse(localStorage.getItem(chavePainel())); } catch (err) { pos = null; }
+    if (pos && typeof pos.left === 'number' && typeof pos.top === 'number') posicionarPainel(el, pos.left, pos.top);
+    arrastavel(el);
+    window.addEventListener('resize', function () {
+      if (el.style.left) posicionarPainel(el, parseFloat(el.style.left), parseFloat(el.style.top));
+    });
+    return el;
+  }
+
+  /* Nunca sai da tela: sobra ao menos o cabeçalho para pegar de volta. */
+  function posicionarPainel(el, left, top) {
+    var w = el.offsetWidth || 460;
+    left = Math.max(8, Math.min(window.innerWidth - w - 8, left));
+    top = Math.max(8, Math.min(window.innerHeight - 64, top));
+    el.style.left = Math.round(left) + 'px';
+    el.style.top = Math.round(top) + 'px';
+    el.style.right = 'auto';
+    el.style.bottom = 'auto';
+  }
+
+  /* Arrasta pelo cabeçalho. A captura fica no painel, não no cabeçalho: o
+     cabeçalho é redesenhado a cada gravação e sumiria no meio do arraste. */
+  function arrastavel(el) {
+    var arr = null;
+    el.addEventListener('pointerdown', function (e) {
+      if (e.button !== 0 || !e.target.closest('[data-painel-arrastar]') || e.target.closest('button')) return;
+      var r = el.getBoundingClientRect();
+      arr = { id:e.pointerId, dx:e.clientX - r.left, dy:e.clientY - r.top, moveu:false };
+      el.setPointerCapture(e.pointerId);
+      el.classList.add('arrastando');
+      e.preventDefault();
+    });
+    el.addEventListener('pointermove', function (e) {
+      if (!arr || e.pointerId !== arr.id) return;
+      arr.moveu = true;
+      posicionarPainel(el, e.clientX - arr.dx, e.clientY - arr.dy);
+    });
+    function soltar(e) {
+      if (!arr || e.pointerId !== arr.id) return;
+      el.classList.remove('arrastando');
+      if (arr.moveu) {
+        try {
+          localStorage.setItem(chavePainel(), JSON.stringify({
+            left:parseFloat(el.style.left), top:parseFloat(el.style.top) }));
+        } catch (err) { /* sem storage */ }
+      }
+      arr = null;
+    }
+    el.addEventListener('pointerup', soltar);
+    el.addEventListener('pointercancel', soltar);
+  }
+
+  function renderPainel() {
+    var p = st.painel;
+    if (!p) return;
+    var d = achar('demand', p.id), r = p.subId ? etapa(p.subId) : d;
+    if (!d || !r) { fecharPainel(); return; }
+    var el = $('painelDemanda') || criarPainel();
+    var corpoAntigo = el.querySelector('.painel-b');
+    var scroll = corpoAntigo ? corpoAntigo.scrollTop : 0;
+    el.innerHTML =
+      '<div class="painel-h" data-painel-arrastar>' + ico('check-circle') +
+        '<span class="painel-t">' + (p.subId ? 'Subtarefa' : 'Demanda') + ' em acompanhamento</span>' +
+        '<span class="sp"></span>' +
+        '<button type="button" class="btn btn-ghost btn-sm btn-janela" data-painel-janela ' +
+          'aria-label="Abrir como janela" title="Voltar para a janela">' + ico('arrow-left') + '</button>' +
+        '<button type="button" class="btn btn-ghost btn-sm" data-painel-fechar aria-label="Fechar">' +
+          ico('x') + '</button>' +
+      '</div>' +
+      '<div class="painel-b">' + corpoDetalhe(d, r, p.subId) + '</div>';
+    el.hidden = st.view !== 'demands';
+    el.querySelector('.painel-b').scrollTop = scroll;
+  }
+
+  function fecharPainel() {
+    st.painel = null;
+    var el = $('painelDemanda');
+    if (el) el.hidden = true;
+    sincronizarHash();
+  }
+
+  function destacarDetalhe() {
+    var alvo = st.detalheModal;
+    if (!alvo) return;
+    st.detalheModal = null;
+    Club.modal.close();
+    st.painel = alvo;
+    renderPainel();
+    sincronizarHash();
+  }
+
+  function painelParaJanela() {
+    var p = st.painel;
+    if (!p) return;
+    fecharPainel();
+    detalheDemanda(p.id, p.subId);
+  }
+
+  /* Depois de cada redesenho da lista, o detalhe aberto (janela ou painel)
+     relê o registro: a troca feita num lugar aparece no outro. O formulário
+     de edição não tem .demand-detail, então não é tocado. */
+  function atualizarDetalhes() {
+    if (st.painel) renderPainel();
+    var modal = document.querySelector('.modal');
+    var corpo = modal && !modal.hidden ? modal.querySelector('.demand-detail') : null;
+    if (!st.detalheModal || !corpo) return;
+    var d = achar('demand', st.detalheModal.id);
+    var r = st.detalheModal.subId ? etapa(st.detalheModal.subId) : d;
+    if (!d || !r) { Club.modal.close(); return; }
+    corpo.outerHTML = corpoDetalhe(d, r, st.detalheModal.subId);
+  }
+
+  function idEmDestaque() {
+    if (st.painel) return st.painel.id;
+    var modal = document.querySelector('.modal');
+    if (st.detalheModal && modal && !modal.hidden) return st.detalheModal.id;
+    return '';
   }
 
   /* ── formulário da demanda ─────────────────────────────────────────────
@@ -3313,6 +3545,9 @@
     d = d || { titulo:'', descricao:'', status:'A fazer', prioridade:'Média',
                responsaveis:[], member_id:null, origem:'', vence_em:'', projeto:'' };
     var subAtuais = d.id ? etapasDaDemanda(d.id) : [];
+    /* Quem veio da janela de detalhes volta para ela depois de salvar. Com o
+       painel de pé não precisa: ele se redesenha sozinho. */
+    var voltarPara = !novo && !st.painel ? st.detalheModal : null;
     var equipe = st.staff.filter(function (p) { return p.ativo; })
       .map(function (p) { return { value:p.id, label:p.nome }; });
     var ativos = st.members.filter(function (m) { return m.ativo; });
@@ -3434,7 +3669,11 @@
           if (novo && st.demVisao === 'minhas' && (!st.eu || base.responsaveis.indexOf(st.eu.id) === -1)) {
             msg += ' Aparece' + (n > 1 ? 'm' : '') + ' em "Todas".';
           }
-          recarregarDemandas(msg);
+          return recarregarDemandas(msg).then(function () {
+            if (voltarPara && !st.painel && achar('demand', voltarPara.id)) {
+              detalheDemanda(voltarPara.id, voltarPara.subId);
+            }
+          });
         }).catch(aviso);
       }
     });
@@ -3812,6 +4051,14 @@
       return;
     }
 
+    /* Detalhe: destacar em painel, voltar para a janela, fechar o painel. */
+    var destacar = e.target.closest('[data-destacar]');
+    if (destacar) { destacarDetalhe(); return; }
+    var painelJanela = e.target.closest('[data-painel-janela]');
+    if (painelJanela) { painelParaJanela(); return; }
+    var painelFechar = e.target.closest('[data-painel-fechar]');
+    if (painelFechar) { fecharPainel(); return; }
+
     var detalhe = e.target.closest('[data-detalhe-demanda]');
     if (detalhe) { detalheDemanda(detalhe.dataset.detalheDemanda); return; }
 
@@ -4001,9 +4248,18 @@
   /* Com um menu de pé dentro do formulário, Esc fecha só o menu: sem isto o
      mesmo Esc fecharia o formulário junto e levaria o que já estava digitado. */
   document.addEventListener('keydown', function (e) {
-    if (e.key !== 'Escape' || !document.querySelector('.menu')) return;
-    e.stopPropagation();
-    Club.fecharMenu();
+    if (e.key !== 'Escape') return;
+    if (document.querySelector('.menu')) {
+      e.stopPropagation();
+      Club.fecharMenu();
+      return;
+    }
+    /* Esc dentro do painel destacado fecha o painel — só quando não há
+       janela por cima, que é de quem o Esc é primeiro. */
+    var modal = document.querySelector('.modal');
+    var painel = $('painelDemanda');
+    if (st.painel && painel && !painel.hidden && (!modal || modal.hidden) &&
+        painel.contains(document.activeElement)) fecharPainel();
   }, true);
 
   /* Mesma regra para o mouse: o clique fora que derruba o menu (marcar vários
@@ -4144,6 +4400,7 @@
       st.demFoco = h.foco;
       render();
       go(h.secao === 'demandas' ? 'demands' : h.secao && document.querySelector('.view[data-view="' + h.secao + '"]') ? h.secao : 'overview');
+      if (h.secao === 'demandas' && h.id && achar('demand', h.id)) detalheDemanda(h.id);
     });
   }).catch(falhou);
 
@@ -4151,9 +4408,9 @@
   window.addEventListener('hashchange', function () {
     if (!sessao) return;
     var h = lerHash();
-    if (h.secao !== 'demandas' || h.foco === st.demFoco) return;
-    st.demFoco = h.foco;
-    renderDemandas();
+    if (h.secao !== 'demandas') return;
+    if (h.foco !== st.demFoco) { st.demFoco = h.foco; renderDemandas(); }
     if (st.view !== 'demands') go('demands');
+    if (h.id && h.id !== idEmDestaque() && achar('demand', h.id)) detalheDemanda(h.id);
   });
 })();
