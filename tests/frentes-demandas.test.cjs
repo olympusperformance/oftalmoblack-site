@@ -166,3 +166,37 @@ test('prefillDaEtapa: título da etapa, frente, etapa, mentorado; trava vai para
   const semDono = ctx.prefillDaEtapa(m, { id:'s3', titulo:'X', tipo:'entrega' }, { id:'q', nome:'Quiz', responsaveis:[] });
   assert.deepEqual(Array.from(semDono.responsaveis), ['ta'], 'cai no dono da área');
 });
+
+test('proximaOcorrencia: prazo empurrado pela cadência a partir do maior entre prazo e hoje; copia o essencial', () => {
+  const ctx = vm.createContext({});
+  vm.runInContext(extract('public/assets/admin.js', '  function proximaOcorrencia(', '  /* Concluir a demanda que nasceu de uma etapa') +
+    '\nthis.proximaOcorrencia = proximaOcorrencia;', ctx);
+  const d = { id:'d1', titulo:'Leitura semanal', descricao:'x', prioridade:'Alta', responsaveis:['ta'],
+              member_id:'m1', artifact_id:'meta', step_id:'s1', status:'Concluída', vence_em:'2026-09-15' };
+  const atrasada = ctx.proximaOcorrencia(d, { titulo:'Auditoria de segunda', cadencia_dias:7 }, '2026-09-21');
+  assert.equal(atrasada.vence_em, '2026-09-28', 'prazo passado: hoje + 7');
+  const futura = ctx.proximaOcorrencia(Object.assign({}, d, { vence_em:'2026-09-25' }), { titulo:'X', cadencia_dias:14 }, '2026-09-21');
+  assert.equal(futura.vence_em, '2026-10-09', 'prazo futuro: prazo + 14');
+  const semCad = ctx.proximaOcorrencia(Object.assign({}, d, { vence_em:null }), { titulo:'X' }, '2026-09-21');
+  assert.equal(semCad.vence_em, '2026-09-28', 'sem cadência vale 7');
+  assert.equal(atrasada.status, 'A fazer'); assert.equal(atrasada.titulo, 'Leitura semanal');
+  assert.equal(atrasada.artifact_id, 'meta'); assert.equal(atrasada.step_id, 's1'); assert.equal(atrasada.member_id, 'm1');
+  assert.deepEqual(Array.from(atrasada.responsaveis), ['ta']);
+  assert.ok(atrasada.origem.startsWith('Rotina · Auditoria'));
+  assert.ok(!('id' in atrasada) && !('concluida_em' in atrasada));
+});
+
+test('itensMenuFrente esconde artefato exclusivo de outro mentorado e mostra o do próprio', () => {
+  const ctx = contextoQuadro();
+  Object.assign(ctx, { tdCel: s => s, celula: (t, id, c) => c, etapasDe: () => [] });
+  vm.runInContext(extract('public/assets/admin.js', MARCA_INI, MARCA_FIM) +
+    extract('public/assets/admin.js', '  /* A frente é menu:', '  /* Célula que abre menu no clique.') +
+    '\nthis.itensMenuFrente = itensMenuFrente;', ctx);
+  const deM2 = Array.from(ctx.itensMenuFrente('', 'm2'), i => i.value);
+  assert.ok(!deM2.includes('enc'), 'Encontro é só do m1');
+  assert.ok(deM2.includes('quiz') && deM2.includes('os'));
+  const deM1 = Array.from(ctx.itensMenuFrente('enc', 'm1'), i => i.value);
+  assert.ok(deM1.includes('enc'));
+  const interna = Array.from(ctx.itensMenuFrente('', null), i => i.value);
+  assert.ok(!interna.includes('enc') && interna[0] === '');
+});

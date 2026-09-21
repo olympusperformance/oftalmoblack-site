@@ -98,12 +98,6 @@
 
   function byName(a, b) { return String(a.nome).localeCompare(String(b.nome), 'pt-BR'); }
 
-  function byDue(a, b) {
-    /* Pendentes primeiro, depois por vencimento; sem prazo vai para o fim. */
-    if ((a.status === 'done') !== (b.status === 'done')) return a.status === 'done' ? 1 : -1;
-    return String(a.vence_em || '9999').localeCompare(String(b.vence_em || '9999'));
-  }
-
   function byStart(a, b) {
     return String(a.inicia_em || '').localeCompare(String(b.inicia_em || ''));
   }
@@ -176,7 +170,7 @@
       },
       save: function (m) { return grava('members', m); },
       remove: function (id) {
-        /* As tarefas e os artefatos só dele saem junto por ON DELETE CASCADE,
+        /* Os artefatos só dele saem junto por ON DELETE CASCADE,
            declarado no schema.sql. */
         return apaga('members', id);
       }

@@ -37,6 +37,13 @@ test('areas.sql não apaga dado existente e tranca o snapshot novo em public', (
   assert.ok(sql.slice(i).includes('from anon, authenticated;'),
     'revoke não termina cobrindo "from anon, authenticated;"');
 
+  // (c2) as seis tabelas estão DENTRO do mesmo revoke, não só a primeira.
+  const fimRevoke = sql.indexOf('from anon, authenticated;', i);
+  const blocoRevoke = sql.slice(i, fimRevoke);
+  for (const nome of tabelasSnapshot) {
+    assert.ok(blocoRevoke.includes('public.' + nome), `${nome} fora do revoke`);
+  }
+
   // (d) uma transação só: commit; aparece exatamente uma vez.
   const ocorrencias = (sql.match(/commit;/g) || []).length;
   assert.equal(ocorrencias, 1, `esperado exatamente um "commit;", achei ${ocorrencias}`);

@@ -747,16 +747,22 @@
     var cs = st.staff.filter(function (p) { return p.apelido === 'KK' && p.ativo; }).map(function (p) { return p.id; });
     var g = grupoDe(a);
     var dono = (a.responsaveis && a.responsaveis.length) ? a.responsaveis : ((g && g.responsaveis) || []);
-    var hoje = new Date();
     return {
       titulo: e.titulo,
       member_id: m.id,
       artifact_id: a.id,
       step_id: e.id,
       responsaveis: Club.tipoEtapa(e) === 'trava' && cs.length ? cs : dono,
-      origem: 'Progressão · ' + a.nome + ' · ' + Club.fmtDataCurta(hoje.getFullYear() + '-' +
-        String(hoje.getMonth() + 1).padStart(2, '0') + '-' + String(hoje.getDate()).padStart(2, '0'))
+      origem: 'Progressão · ' + a.nome + ' · ' + Club.fmtDataCurta(hojeISO())
     };
+  }
+
+  /* Data de hoje no fuso do navegador, em YYYY-MM-DD. toISOString() daria a
+     data em UTC, que em Manaus vira amanhã depois das 20h. */
+  function hojeISO() {
+    var hoje = new Date();
+    return hoje.getFullYear() + '-' + String(hoje.getMonth() + 1).padStart(2, '0') + '-' +
+      String(hoje.getDate()).padStart(2, '0');
   }
 
   function demandasAbertasDaEtapa(memberId, stepId) {
@@ -809,10 +815,11 @@
       td(situacao) +
       celulaNota(m, 'etapa:' + e.id, e.titulo) +
       td('') +
-      td(abertas.length
+      td((abertas.length
         ? '<button type="button" class="btn btn-sm btn-ghost" data-ver-demandas="' + esc(m.id) + '|' + esc(e.artifact_id) +
-            '" title="Ver no quadro">' + ico('check-square') + abertas.length + ' demanda' + (abertas.length === 1 ? '' : 's') + '</button>'
-        : '<span class="tx-s">' + (p && p.feito_em ? esc('em ' + Club.fmtDataCurta(p.feito_em)) : '—') + '</span>') +
+            '" title="Ver no quadro">' + ico('check-square') + abertas.length + ' demanda' + (abertas.length === 1 ? '' : 's') + '</button> '
+        : '') +
+        '<span class="tx-s">' + (p && p.feito_em ? esc('em ' + Club.fmtDataCurta(p.feito_em)) : (abertas.length ? '' : '—')) + '</span>') +
       '<div class="td end"><div class="row-acts">' +
         (!p && t !== 'aceite'
           ? '<button class="btn btn-sm btn-ghost" data-abrir-demanda="' + esc(m.id) + '|' + esc(e.id) +
@@ -1924,7 +1931,7 @@
           esc(g.nome) + '</option>';
       }).join('') + '<option value="sem"' + (st.artGrupo === 'sem' ? ' selected' : '') + '>Sem área</option>';
 
-    var semCriterio = st.artifacts.filter(function (a) { return !etapasDe(a.id).length; }).length;
+    var semCriterio = st.artifacts.filter(function (a) { return a.tipo !== 'interna' && !etapasDe(a.id).length; }).length;
     $('artResumo').textContent = st.artifacts.length + ' frentes · ' + st.groups.length + ' áreas' +
       (semCriterio ? ' · ' + semCriterio + ' sem critério' : '');
     $('avisoGrupos').innerHTML = Club.faltaGrupos
@@ -2613,10 +2620,14 @@
     return tdCel(celula('d.frente', d.id, '<span class="tx">' + esc(a ? rotuloFrente(a) : 'sem frente') + '</span>', !a));
   }
 
-  function itensMenuFrente(atual) {
+  /* Artefato exclusivo de um mentorado (member_id) só aparece para demanda
+     desse mentorado; demanda interna ou de outro não o vê. */
+  function itensMenuFrente(atual, memberId) {
     var itens = [{ value:'', label:'Sem frente', checked:!atual }];
     areasOrdenadas().forEach(function (g) {
-      frentesOrdenadas().filter(function (a) { return a.group_id === g.id; }).forEach(function (a) {
+      frentesOrdenadas().filter(function (a) {
+        return a.group_id === g.id && (!a.member_id || a.member_id === memberId);
+      }).forEach(function (a) {
         itens.push({ value:a.id, label:rotuloFrente(a), checked:a.id === atual });
       });
     });
@@ -2778,7 +2789,7 @@
     }
 
     if (par[1] === 'frente') {
-      Club.menu(el, itensMenuFrente(r.artifact_id), { titulo:'Frente', onPick:function (v) {
+      Club.menu(el, itensMenuFrente(r.artifact_id, r.member_id), { titulo:'Frente', onPick:function (v) {
         salvar(r.id, { artifact_id: v || null, step_id: null });
       } });
       return;
@@ -3534,8 +3545,7 @@
           '<div class="demand-form-meta">' +
             campoPick('Frente', 'artifact_id', 'pkFrente', d.artifact_id || '',
               'Área da jornada onde a demanda vive. Mentorado + frente = trabalho daquele artefato para ele.') +
-            campoPick('Etapa do checklist', 'step_id', 'pkEtapa', d.step_id || '',
-              'Opcional. Só as etapas da frente escolhida.') +
+            campoPick('Etapa do checklist', 'step_id', 'pkEtapa', d.step_id || '') +
           '</div>' +
           '<div class="demand-form-title">' +
             Club.field('O que precisa ser feito', 'titulo', { value:d.titulo, required:true,
@@ -3663,7 +3673,7 @@
         return { value:i.value, label:i.label };
       }), stepId || '', { titulo:'Etapa do checklist' });
     }
-    pickSimples('pkFrente', 'artifact_id', itensMenuFrente(d.artifact_id).map(function (i) {
+    pickSimples('pkFrente', 'artifact_id', itensMenuFrente(d.artifact_id, d.member_id).map(function (i) {
       return { value:i.value, label:i.label };
     }), d.artifact_id || '', { titulo:'Frente', onPick:function (v) { montarEtapas(v, ''); } });
     montarEtapas(d.artifact_id, d.step_id);
@@ -3695,6 +3705,23 @@
      reler o painel inteiro. Antes, cada conclusão esperava dezoito consultas
      voltarem para a tela reagir — e a linha sumia sem aviso quando o filtro
      "Em aberto" estava ligado. */
+  /* Demanda de rotina concluída: a próxima ocorrência nasce igual, com o
+     prazo empurrado pela cadência da etapa a partir do maior entre o prazo
+     atual e hoje. Sem cadência na etapa, vale uma semana. */
+  function proximaOcorrencia(d, e, hojeISO) {
+    var dias = e && e.cadencia_dias ? e.cadencia_dias : 7;
+    var base = new Date((d.vence_em && d.vence_em > hojeISO ? d.vence_em : hojeISO) + 'T12:00:00');
+    base.setDate(base.getDate() + dias);
+    var iso = base.getFullYear() + '-' + String(base.getMonth() + 1).padStart(2, '0') + '-' +
+      String(base.getDate()).padStart(2, '0');
+    return {
+      titulo: d.titulo, descricao: d.descricao || '', status: 'A fazer',
+      prioridade: d.prioridade || 'Média', responsaveis: (d.responsaveis || []).slice(),
+      member_id: d.member_id || null, artifact_id: d.artifact_id || null, step_id: d.step_id || null,
+      origem: 'Rotina · ' + (e && e.titulo ? e.titulo : 'etapa'), vence_em: iso
+    };
+  }
+
   /* Concluir a demanda que nasceu de uma etapa é, quase sempre, concluir a
      etapa. Quase: por isso pergunta, não marca sozinha. */
   function etapaParaMarcar(d) {
@@ -3708,17 +3735,41 @@
     if (!d) return;
     salvarDemanda(id, { status: status });
     if (status !== 'Concluída') { Club.toast('Demanda reaberta.'); return; }
+    var etapa = d.step_id ? etapasDe(d.artifact_id).filter(function (x) { return x.id === d.step_id; })[0] : null;
+    /* Quem concluiu de dentro da janela de detalhes volta para ela depois. */
+    var det = st.detalheModal;
+    function voltarAoDetalhe() { if (det && achar('demand', det.id)) detalheDemanda(det.id, det.subId); }
+
+    if (etapa && Club.tipoEtapa(etapa) === 'rotina') {
+      /* Rotina concluída pede a próxima ocorrência, não "marcar a etapa":
+         marcar rotina é ligar ou desligar o acompanhamento, não concluir. */
+      var prox = proximaOcorrencia(d, etapa, hojeISO());
+      var cad = etapa.cadencia_dias ? Club.cadenciaRotulo(etapa.cadencia_dias).toLowerCase() : 'a cada 7 dias';
+      Club.modal.open({
+        title:'Criar a próxima ocorrência?',
+        body:'<p>Rotina "' + esc(etapa.titulo) + '" · ' + esc(cad) + '. A próxima demanda nasce para ' +
+          esc(Club.fmtDataCurta(prox.vence_em)) + ', com os mesmos responsáveis.</p>',
+        submitLabel:'Criar a próxima',
+        onSubmit:function () {
+          Club.modal.close();
+          Club.data.demands.save(prox).then(function () {
+            return recarregarDemandas('Próxima ocorrência criada para ' + Club.fmtDataCurta(prox.vence_em) + '.');
+          }).then(voltarAoDetalhe).catch(aviso);
+        }
+      });
+      return;
+    }
+
     var alvo = etapaParaMarcar(d);
     if (alvo) {
-      var e = etapasDe(d.artifact_id).filter(function (x) { return x.id === alvo.stepId; })[0];
       /* Não é Club.modal.confirm: aquele é o diálogo de apagar, com botão
          vermelho "Remover". Aqui a ação afirmativa é marcar. */
       Club.modal.open({
         title:'Marcar a etapa também?',
-        body:'<p>A demanda veio da etapa "' + esc(e ? e.titulo : 'do checklist') + '" de ' +
+        body:'<p>A demanda veio da etapa "' + esc(etapa ? etapa.titulo : 'do checklist') + '" de ' +
           esc(membro(alvo.memberId) || 'mentorado') + '. Marcar como feita na Progressão?</p>',
         submitLabel:'Marcar etapa',
-        onSubmit:function () { Club.modal.close(); marcarEtapa(alvo.memberId, alvo.stepId); }
+        onSubmit:function () { Club.modal.close(); marcarEtapa(alvo.memberId, alvo.stepId); voltarAoDetalhe(); }
       });
     }
     Club.toast(st.demAbertas === 'open'
