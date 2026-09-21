@@ -3554,10 +3554,19 @@
     return Promise.all(acoes);
   }
 
-  function modalDemanda(d) {
-    var novo = !d;
-    d = d || { titulo:'', descricao:'', status:'A fazer', prioridade:'Média',
-               responsaveis:[], member_id:null, origem:'', vence_em:'', projeto:'' };
+  /* O que vai para o banco. Etapa só faz sentido dentro da frente. */
+  function registroDemanda(base, memberId, artifactId, stepId) {
+    var r = Object.assign({}, base, { member_id: memberId || null, artifact_id: artifactId || null });
+    r.step_id = r.artifact_id ? (stepId || null) : null;
+    return r;
+  }
+
+  function modalDemanda(d, prefill) {
+    var novo = !d || !d.id;
+    prefill = prefill || {};
+    d = Object.assign({ titulo:'', descricao:'', status:'A fazer', prioridade:'Média',
+               responsaveis:[], member_id:null, origem:'', vence_em:'', artifact_id:null, step_id:null },
+               novo ? prefill : {}, d || {});
     var subAtuais = d.id ? etapasDaDemanda(d.id) : [];
     /* Quem veio da janela de detalhes volta para ela depois de salvar. Com o
        painel de pé não precisa: ele se redesenha sozinho. */
@@ -3565,27 +3574,25 @@
     var equipe = st.staff.filter(function (p) { return p.ativo; })
       .map(function (p) { return { value:p.id, label:p.nome }; });
     var ativos = st.members.filter(function (m) { return m.ativo; });
-    var projetoAtual = d.id ? lerProjeto(d) : '';
 
     function corDe(mapa, v, padrao) { return mapa[v] || padrao; }
 
     Club.modal.open({
       title: novo ? 'Nova demanda' : 'Editar demanda',
       sub: novo ? 'Quadro interno da equipe. Nenhum mentorado vê demandas — nem as ligadas a ele.'
-                : (d.member_id ? d.titulo : tituloSemTag(d.titulo)),
+                : d.titulo,
       largura: 780,
       submitLabel: novo ? 'Criar demanda' : 'Salvar',
       body:
         '<div class="demand-form">' +
-          '<div class="fld' + (d.member_id ? ' desligado' : '') + '" id="fldProjeto">' +
-            '<label>Projeto</label><div id="pkProjeto"></div>' +
-            '<input type="hidden" name="projeto" value="' + esc(projetoAtual) + '">' +
-            '<input class="inp" name="projeto_novo" id="projetoNovo" placeholder="Nome do novo projeto — ' +
-              'use &quot;Pai / Frente&quot; para agrupar, como Olympus / Comercial" autocomplete="off" hidden>' +
-            '<span class="hint">Só a demanda interna tem projeto; a de mentorado se agrupa por ele.</span>' +
+          '<div class="demand-form-meta">' +
+            campoPick('Frente', 'artifact_id', 'pkFrente', d.artifact_id || '',
+              'Área da jornada onde a demanda vive. Mentorado + frente = trabalho daquele artefato para ele.') +
+            campoPick('Etapa do checklist', 'step_id', 'pkEtapa', d.step_id || '',
+              'Opcional. Só as etapas da frente escolhida.') +
           '</div>' +
           '<div class="demand-form-title">' +
-            Club.field('O que precisa ser feito', 'titulo', { value:tituloSemTag(d.titulo), required:true,
+            Club.field('O que precisa ser feito', 'titulo', { value:d.titulo, required:true,
               placeholder:'Conectar o WhatsApp da clínica do Arthur' }) +
           '</div>' +
           '<div class="demand-form-meta">' +
@@ -3598,7 +3605,7 @@
                 '<input type="hidden" name="responsaveis" value=""></div>') +
             Club.field('Prazo', 'vence_em', { value:d.vence_em || '', type:'date' }) +
             (novo
-              ? campoPick('Para quais mentorados', 'membros', 'pkMembros', '')
+              ? campoPick('Para quais mentorados', 'membros', 'pkMembros', d.member_id || '')
               : campoPick('Mentorado', 'member_id', 'pkMembro', d.member_id || '')) +
             Club.field('Origem', 'origem', { value:d.origem || '', placeholder:'Reunião 30/07',
               hint:'De onde a demanda nasceu.' }) +
@@ -3632,38 +3639,28 @@
           : [dados.member_id || null];
         if (!alvos.length) alvos = [null];
 
-        var proj = dados.projeto === '__novo'
-          ? String(dados.projeto_novo || '').trim()
-          : String(dados.projeto || '').trim();
         var base = {
           titulo:titulo, descricao:dados.descricao, status:dados.status, prioridade:dados.prioridade,
           responsaveis:String(dados.responsaveis || '').split(',').filter(Boolean),
           origem:dados.origem, vence_em:dados.vence_em
         };
-        /* Projeto só vale para a interna; a de mentorado se agrupa por ele.
-           Sem a coluna no banco, o projeto continua indo como tag no título. */
-        function registro(memberId) {
-          var r = Object.assign({}, base, { member_id:memberId || null });
-          var p = memberId ? '' : proj;
-          if (st.temProjeto) { r.projeto = p || null; r.titulo = tituloSemTag(r.titulo); }
-          else { r.titulo = comTag(p, r.titulo); }
-          return r;
-        }
         var itens = lerChecklistForm();
         var botao = document.querySelector('.modal-f .btn-primary');
         if (botao) botao.disabled = true;
 
         var fluxo;
         if (!novo) {
-          fluxo = Club.data.demands.save(Object.assign({ id:d.id }, registro(alvos[0])))
+          fluxo = Club.data.demands.save(Object.assign({ id:d.id }, registroDemanda(base, alvos[0], dados.artifact_id, dados.step_id)))
             .then(function (salva) { return sincronizarChecklist(salva.id, itens, subAtuais, salva.member_id); });
         } else if (alvos.length === 1) {
-          fluxo = Club.data.demands.save(registro(alvos[0]))
+          fluxo = Club.data.demands.save(registroDemanda(base, alvos[0], dados.artifact_id, dados.step_id))
             .then(function (salva) { return sincronizarChecklist(salva.id, itens, [], salva.member_id); });
         } else {
           /* Em lote: um insert com todas as demandas, outro com todos os
              checklists. Duas idas ao banco, não sessenta. */
-          fluxo = Club.data.demands.saveMany(alvos.map(registro)).then(function (salvas) {
+          fluxo = Club.data.demands.saveMany(alvos.map(function (m) {
+            return registroDemanda(base, m, dados.artifact_id, dados.step_id);
+          })).then(function (salvas) {
             var passos = [];
             salvas.forEach(function (s) {
               itens.forEach(function (it, i) {
@@ -3704,35 +3701,34 @@
         { titulo:'Responsáveis', vazio:'Ninguém ainda' });
     }
 
-    /* Com mentorado, o projeto só esmaece — não some. Esconder o campo
-       mudaria a altura do formulário e o scroll fecharia o menu que a pessoa
-       ainda está usando. */
-    var fldProjeto = $('fldProjeto'), projetoNovo = $('projetoNovo');
-    function mostrarProjeto(temMentorado) {
-      if (!fldProjeto) return;
-      fldProjeto.classList.toggle('desligado', !!temMentorado);
-      var b = fldProjeto.querySelector('.pick-b');
-      if (b) b.disabled = !!temMentorado;
-      if (projetoNovo) projetoNovo.disabled = !!temMentorado;
+    /* Frente e etapa: a etapa depende da frente, então trocar a frente
+       redesenha o menu de etapas e zera a escolhida. */
+    var etapaOculta = campoOculto('step_id');
+    function montarEtapas(artifactId, stepId) {
+      var host = $('pkEtapa');
+      if (!host) return;
+      host.innerHTML = '';
+      if (etapaOculta) etapaOculta.value = stepId || '';
+      if (!artifactId || !etapasDe(artifactId).length) {
+        host.innerHTML = '<span class="hint">' + (artifactId ? 'Esta frente não tem checklist.' : 'Escolha a frente primeiro.') + '</span>';
+        return;
+      }
+      pickSimples('pkEtapa', 'step_id', itensMenuEtapa(artifactId, stepId).map(function (i) {
+        return { value:i.value, label:i.label };
+      }), stepId || '', { titulo:'Etapa do checklist' });
     }
-    pickSimples('pkProjeto', 'projeto',
-      [{ value:'', label:'Sem projeto' }]
-        .concat(projetosExistentes().map(function (p) { return { value:p, label:p }; }))
-        .concat([{ value:'__novo', label:'Novo projeto…' }]),
-      projetoAtual, { titulo:'Projeto', onPick:function (v) {
-        if (!projetoNovo) return;
-        projetoNovo.hidden = v !== '__novo';
-        if (v === '__novo') projetoNovo.focus();
-      } });
+    pickSimples('pkFrente', 'artifact_id', itensMenuFrente(d.artifact_id).map(function (i) {
+      return { value:i.value, label:i.label };
+    }), d.artifact_id || '', { titulo:'Frente', onPick:function (v) { montarEtapas(v, ''); } });
+    montarEtapas(d.artifact_id, d.step_id);
 
     if (novo) {
       var membros = ativos.map(function (m) { return { value:m.id, label:m.nome }; });
       var todos = campoOculto('todos');
-      var pickM = pickVarios('pkMembros', 'membros', membros, [],
+      var pickM = pickVarios('pkMembros', 'membros', membros, d.member_id ? [d.member_id] : [],
         { titulo:'Para quais mentorados', vazio:'Nenhum — demanda interna', onPick:atualizarLote });
       function atualizarLote() {
         var n = todos && todos.checked ? ativos.length : (pickM ? pickM.valores().length : 0);
-        mostrarProjeto(n > 0);
         if (pickM) pickM.travar(todos && todos.checked);
         var botao = document.querySelector('.modal-f .btn-primary');
         if (botao) botao.textContent = n > 1 ? 'Criar ' + n + ' demandas' : 'Criar demanda';
@@ -3742,9 +3738,8 @@
       pickSimples('pkMembro', 'member_id',
         [{ value:'', label:'Nenhum — demanda interna' }].concat(st.members.map(function (m) {
           return { value:m.id, label:m.nome };
-        })), d.member_id || '', { titulo:'Sobre qual mentorado', onPick:function (v) { mostrarProjeto(!!v); } });
+        })), d.member_id || '', { titulo:'Sobre qual mentorado' });
     }
-    mostrarProjeto(!!d.member_id);
 
     var campoTitulo = document.querySelector('#modalForm [name="titulo"]');
     if (campoTitulo) campoTitulo.focus();

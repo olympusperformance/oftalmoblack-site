@@ -120,3 +120,15 @@ test('FOCOS.semfrente pega aberta sem frente, e só ela', () => {
   assert.ok(!ctx.FOCOS.semfrente.testa({ status:'A fazer', artifact_id:'quiz' }));
   assert.ok(!ctx.FOCOS.semfrente.testa({ status:'Concluída', artifact_id:null }));
 });
+
+test('registroDemanda grava frente e etapa, nunca projeto; etapa sem frente é descartada', () => {
+  const code = extract('public/assets/admin.js', '  function registroDemanda(', '  function modalDemanda(');
+  const ctx = vm.createContext({});
+  vm.runInContext(code + '\nthis.registroDemanda = registroDemanda;', ctx);
+  const base = { titulo:'X', descricao:'', status:'A fazer', prioridade:'Média', responsaveis:[], origem:'', vence_em:'' };
+  const r = ctx.registroDemanda(base, 'm1', 'quiz', 's9');
+  assert.equal(r.member_id, 'm1'); assert.equal(r.artifact_id, 'quiz'); assert.equal(r.step_id, 's9');
+  assert.ok(!('projeto' in r) && !('projeto_legado' in r));
+  const semFrente = ctx.registroDemanda(base, null, '', 's9');
+  assert.equal(semFrente.artifact_id, null); assert.equal(semFrente.step_id, null);
+});
