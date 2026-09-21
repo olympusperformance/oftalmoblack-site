@@ -2828,7 +2828,7 @@
       Club.menu(el, Club.DEM_STATUS.map(function (v) {
         return { value:v, label:v, color:Club.DEM_COR[v], checked:v === r.status };
       }), { titulo:'Situação', onPick:function (v) {
-        salvar(r.id, { status:v });
+        if (sub) salvar(r.id, { status:v }); else mudarStatus(r.id, v);
       } });
       return;
     }
@@ -3170,8 +3170,10 @@
 
   function corpoDetalhe(d, r, subId) {
     var escopo = subId ? 's' : 'd';
-    var projeto = projetoDe(d);
-    var titulo = subId || d.member_id ? r.titulo : tituloSemTag(r.titulo);
+    var ctxo = contextoDe(d), frente = frenteDe(d);
+    var etapaLigada = d.step_id
+      ? etapasDe(d.artifact_id).filter(function (e) { return e.id === d.step_id; })[0] : null;
+    var titulo = r.titulo;
     var etapas = subId ? [] : etapasDaDemanda(d.id);
     var feitas = etapas.filter(function (e) { return e.feito; }).length;
     var chave = function (tipo) { return escopo + '.' + tipo + ':' + r.id + ':det'; };
@@ -3182,11 +3184,12 @@
     var atrasada = n !== null && n < 0 && !estaFechada(r);
 
     return '<article class="demand-detail">' +
-      '<p class="demand-context">' + esc(projeto.nome) + '</p>' +
+      '<p class="demand-context">' + esc(frente ? rotuloFrente(frente) + (etapaLigada ? ' · ' + etapaLigada.titulo : '')
+        : ctxo.tipo === 'mentorado' ? ctxo.nome : 'Sem frente') + '</p>' +
       '<h3 class="demand-title">' + esc(titulo) + '</h3>' +
       (subId ? '<button type="button" class="demand-parent" data-detalhe-demanda="' + esc(d.id) +
         '">' + ico('chevron-right') + '<span>Demanda principal: ' +
-        esc(d.member_id ? d.titulo : tituloSemTag(d.titulo)) + '</span></button>' : '') +
+        esc(d.titulo) + '</span></button>' : '') +
       '<dl class="demand-meta">' +
         campo('Situação', celula(escopo + '.status', r.id,
           status(Club.DEM_COR[r.status] || 'var(--faint)', r.status || 'Não informada'), false, chave('status'))) +
@@ -3201,6 +3204,12 @@
         campo('Mentorado', celula(escopo + '.membro', r.id, '<span class="tx">' +
           esc(r.member_id ? membro(r.member_id) || 'Mentorado removido' : 'Demanda interna') + '</span>',
           !r.member_id, chave('membro'))) +
+        (!subId ? campo('Frente', celula('d.frente', r.id, '<span class="tx">' +
+          esc(frente ? rotuloFrente(frente) : 'Sem frente') + '</span>', !frente, chave('frente'))) : '') +
+        (!subId && frente ? campo('Etapa', celula('d.etapa', r.id, '<span class="tx">' +
+          esc(etapaLigada ? etapaLigada.titulo : 'Sem etapa') + '</span>', !etapaLigada, chave('etapa'))) : '') +
+        (!subId && d.projeto_legado ? campo('Projeto (legado)', '<span class="tx tx-s" style="color:var(--faint)">' +
+          esc(d.projeto_legado) + '</span>') : '') +
         (!subId ? campo('Origem', esc(r.origem || 'Não informada')) : '') +
       '</dl>' +
       (!subId ? '<section class="demand-section"><h4>Descrição</h4><p class="demand-description">' +
@@ -3749,10 +3758,27 @@
      reler o painel inteiro. Antes, cada conclusão esperava dezoito consultas
      voltarem para a tela reagir — e a linha sumia sem aviso quando o filtro
      "Em aberto" estava ligado. */
+  /* Concluir a demanda que nasceu de uma etapa é, quase sempre, concluir a
+     etapa. Quase: por isso pergunta, não marca sozinha. */
+  function etapaParaMarcar(d) {
+    if (!d || !d.member_id || !d.step_id) return null;
+    if (marcada(d.member_id, d.step_id)) return null;
+    return { memberId:d.member_id, stepId:d.step_id };
+  }
+
   function mudarStatus(id, status) {
-    if (!achar('demand', id)) return;
+    var d = achar('demand', id);
+    if (!d) return;
     salvarDemanda(id, { status: status });
     if (status !== 'Concluída') { Club.toast('Demanda reaberta.'); return; }
+    var alvo = etapaParaMarcar(d);
+    if (alvo) {
+      var e = etapasDe(d.artifact_id).filter(function (x) { return x.id === alvo.stepId; })[0];
+      Club.modal.confirm('Marcar a etapa também?',
+        'A demanda veio da etapa "' + (e ? e.titulo : 'do checklist') + '" de ' + (membro(alvo.memberId) || 'mentorado') +
+        '. Marcar como feita na Progressão?',
+        function () { marcarEtapa(alvo.memberId, alvo.stepId); });
+    }
     Club.toast(st.demAbertas === 'open'
       ? 'Demanda concluída. Ela fica aqui até você trocar o filtro; depois, em "Todas".'
       : 'Demanda concluída.');

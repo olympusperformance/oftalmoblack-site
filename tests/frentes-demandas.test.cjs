@@ -132,3 +132,15 @@ test('registroDemanda grava frente e etapa, nunca projeto; etapa sem frente é d
   const semFrente = ctx.registroDemanda(base, null, '', 's9');
   assert.equal(semFrente.artifact_id, null); assert.equal(semFrente.step_id, null);
 });
+
+test('etapaParaMarcar: só com etapa, mentorado e etapa ainda não marcada', () => {
+  const marcadas = { 'm1|s1': true };
+  const ctx = vm.createContext({ marcada: (m, s) => !!marcadas[m + '|' + s] });
+  vm.runInContext(extract('public/assets/admin.js', '  function etapaParaMarcar(', '  function mudarStatus(') +
+    '\nthis.etapaParaMarcar = etapaParaMarcar;', ctx);
+  const alvo = ctx.etapaParaMarcar({ member_id:'m1', step_id:'s2' });
+  assert.equal(alvo.memberId, 'm1'); assert.equal(alvo.stepId, 's2');
+  assert.equal(ctx.etapaParaMarcar({ member_id:'m1', step_id:'s1' }), null, 'já marcada');
+  assert.equal(ctx.etapaParaMarcar({ member_id:null, step_id:'s2' }), null, 'sem mentorado não há progresso');
+  assert.equal(ctx.etapaParaMarcar({ member_id:'m1', step_id:null }), null);
+});
