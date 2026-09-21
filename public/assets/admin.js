@@ -325,6 +325,8 @@
       if (st.eu) st.eu = st.staff.filter(function (p) { return p.id === st.eu.id; })[0] || null;
       indexar();
       renderDemandas();
+      /* O contador de demandas da etapa, na Progressão, lê o mesmo quadro. */
+      renderMembers();
       if (msg) Club.toast(msg);
     });
   }
@@ -723,9 +725,47 @@
 
   /* Cada tipo de etapa se lê diferente: aceite é o "sim" dele, trava espera
      ato dele, opcional só conta quando marcada, rotina liga e desliga. */
+  /* A demanda que nasce da etapa já vem endereçada: título da etapa, frente,
+     etapa, mentorado e dono. Trava é ato do mentorado — quem cobra é a CS. */
+  function prefillDaEtapa(m, e, a) {
+    var cs = st.staff.filter(function (p) { return p.apelido === 'KK' && p.ativo; }).map(function (p) { return p.id; });
+    var g = grupoDe(a);
+    var dono = (a.responsaveis && a.responsaveis.length) ? a.responsaveis : ((g && g.responsaveis) || []);
+    return {
+      titulo: e.titulo,
+      member_id: m.id,
+      artifact_id: a.id,
+      step_id: e.id,
+      responsaveis: Club.tipoEtapa(e) === 'trava' && cs.length ? cs : dono,
+      origem: 'Progressão · ' + a.nome + ' · ' + Club.fmtDataCurta(new Date().toISOString().slice(0, 10))
+    };
+  }
+
+  function demandasAbertasDaEtapa(memberId, stepId) {
+    return st.demands.filter(function (d) {
+      return d.step_id === stepId && d.member_id === memberId && aberta(d);
+    });
+  }
+
+  function abrirDemandaDaEtapa(memberId, stepId) {
+    var m = st.members.filter(function (x) { return x.id === memberId; })[0];
+    var e = st.steps.filter(function (x) { return x.id === stepId; })[0];
+    var a = e && st.artifacts.filter(function (x) { return x.id === e.artifact_id; })[0];
+    if (!m || !e || !a) return;
+    modalDemanda(null, prefillDaEtapa(m, e, a));
+  }
+
+  function verDemandasDaEtapa(memberId, artifactId) {
+    st.demVisao = 'todas'; st.demFoco = ''; st.demAbertas = 'open';
+    st.demResp = ''; st.demMembro = memberId; st.demFrente = artifactId;
+    go('demands');
+    renderDemandas();
+  }
+
   function linhaEtapa(m, e, par) {
     var p = marcada(m.id, e.id);
     var t = Club.tipoEtapa(e);
+    var abertas = demandasAbertasDaEtapa(m.id, e.id);
     var situacao, nota = '';
     if (t === 'aceite') {
       situacao = p ? status('var(--success)', 'Aceito') : status('var(--faint)', 'Sem aceite');
@@ -751,9 +791,16 @@
       td(situacao) +
       celulaNota(m, 'etapa:' + e.id, e.titulo) +
       td('') +
-      td('<span class="tx-s">' + (p && p.feito_em
-        ? esc('em ' + Club.fmtDataCurta(p.feito_em)) : '—') + '</span>') +
-      '<div class="td end"></div>' +
+      td(abertas.length
+        ? '<button type="button" class="btn btn-sm btn-ghost" data-ver-demandas="' + esc(m.id) + '|' + esc(e.artifact_id) +
+            '" title="Ver no quadro">' + ico('check-square') + abertas.length + ' demanda' + (abertas.length === 1 ? '' : 's') + '</button>'
+        : '<span class="tx-s">' + (p && p.feito_em ? esc('em ' + Club.fmtDataCurta(p.feito_em)) : '—') + '</span>') +
+      '<div class="td end"><div class="row-acts">' +
+        (!p && t !== 'aceite'
+          ? '<button class="btn btn-sm btn-ghost" data-abrir-demanda="' + esc(m.id) + '|' + esc(e.id) +
+              '" aria-label="Abrir demanda desta etapa" title="Abrir demanda">' + ico('plus') + '</button>'
+          : '') +
+      '</div></div>' +
     '</div>' + linhaNota(m, 'etapa:' + e.id, e.titulo);
   }
 
@@ -4210,6 +4257,12 @@
       if (k.charAt(0) === 'd') renderDemandas(); else renderMembers();
       return;
     }
+
+    var abrirDem = e.target.closest('[data-abrir-demanda]');
+    if (abrirDem) { var pd = abrirDem.dataset.abrirDemanda.split('|'); abrirDemandaDaEtapa(pd[0], pd[1]); return; }
+
+    var verDem = e.target.closest('[data-ver-demandas]');
+    if (verDem) { var pv = verDem.dataset.verDemandas.split('|'); verDemandasDaEtapa(pv[0], pv[1]); return; }
 
     var etapaBotao = e.target.closest('[data-etapa]');
     if (etapaBotao) {

@@ -144,3 +144,25 @@ test('etapaParaMarcar: só com etapa, mentorado e etapa ainda não marcada', () 
   assert.equal(ctx.etapaParaMarcar({ member_id:null, step_id:'s2' }), null, 'sem mentorado não há progresso');
   assert.equal(ctx.etapaParaMarcar({ member_id:'m1', step_id:null }), null);
 });
+
+test('prefillDaEtapa: título da etapa, frente, etapa, mentorado; trava vai para a CS, senão dono do artefato', () => {
+  const ctx = vm.createContext({
+    st: { staff: [{ id:'kk', apelido:'KK', nome:'Kellen', ativo:true }, { id:'ta', apelido:'TA', nome:'Thomas', ativo:true }],
+          groups: [{ id:'g4', nome:'Geração de demanda', responsaveis:['ta'] }] },
+    grupoDe: a => ({ id:'g4', nome:'Geração de demanda', responsaveis:['ta'] }),
+    Club: { tipoEtapa: e => e.tipo || 'entrega', fmtDataCurta: () => '21/09' }
+  });
+  vm.runInContext(extract('public/assets/admin.js', '  function prefillDaEtapa(', '  function demandasAbertasDaEtapa(') +
+    '\nthis.prefillDaEtapa = prefillDaEtapa;', ctx);
+  const m = { id:'m1', nome:'João Vitor' };
+  const meta = { id:'meta', nome:'Meta Ads', responsaveis:['ta'] };
+  const trava = ctx.prefillDaEtapa(m, { id:'s1', titulo:'Acesso à BM', tipo:'trava' }, meta);
+  assert.equal(trava.titulo, 'Acesso à BM'); assert.equal(trava.member_id, 'm1');
+  assert.equal(trava.artifact_id, 'meta'); assert.equal(trava.step_id, 's1');
+  assert.deepEqual(Array.from(trava.responsaveis), ['kk']);
+  assert.ok(trava.origem.startsWith('Progressão · Meta Ads'));
+  const entrega = ctx.prefillDaEtapa(m, { id:'s2', titulo:'Plano de subida', tipo:'entrega' }, meta);
+  assert.deepEqual(Array.from(entrega.responsaveis), ['ta']);
+  const semDono = ctx.prefillDaEtapa(m, { id:'s3', titulo:'X', tipo:'entrega' }, { id:'q', nome:'Quiz', responsaveis:[] });
+  assert.deepEqual(Array.from(semDono.responsaveis), ['ta'], 'cai no dono da área');
+});
