@@ -18,7 +18,7 @@ public/                # tudo que vai pro ar
   robots.txt
   sitemap.xml
 docker-entrypoint.d/   # scripts que a imagem nginx roda no boot
-supabase/              # SQL do banco: tabelas, RLS, acervo, demandas, progresso, áreas (areas.sql), frentes internas (frentes-internas.sql)
+supabase/              # SQL do banco: tabelas, RLS, acervo, demandas, progresso, áreas (areas.sql), frentes internas (frentes-internas.sql), limpeza (limpeza.sql)
   functions/           # Edge Functions (a que serve o quadro da TV)
 Dockerfile             # nginx alpine servindo public/
 nginx.conf             # gzip, cache de assets, headers de segurança
@@ -390,4 +390,8 @@ frentes internas, cria o Encontro Grau Zero do Alex, renomeia `demands.projeto`
 para `projeto_legado` e liga as demandas às frentes. Roda com o admin fechado e
 o deploy da UI nova sai logo depois.
 
-Testes de regressão: `node --test tests/graduacao.test.mjs tests/progress-notes.test.cjs tests/cerebro-preview.test.mjs tests/areas-admin.test.cjs tests/areas-membros.test.cjs tests/areas-sql.test.cjs tests/frentes-demandas.test.cjs tests/frentes-sql.test.cjs`
+`supabase/limpeza.sql` (fase 4, 21/09/2026) tira `tasks`/`toggle_task` e
+`artifact_groups.pilar`, deixa o trigger da demanda tolerante e cria o guard
+"área da equipe só recebe frente interna". Roda DEPOIS do deploy da UI da fase 4.
+
+Testes de regressão: `node --test tests/graduacao.test.mjs tests/progress-notes.test.cjs tests/cerebro-preview.test.mjs tests/areas-admin.test.cjs tests/areas-membros.test.cjs tests/areas-sql.test.cjs tests/frentes-demandas.test.cjs tests/frentes-sql.test.cjs tests/limpeza-sql.test.cjs`
