@@ -1029,10 +1029,6 @@ var FORM_ENDPOINT='https://script.google.com/macros/s/AKfycbxg1Kgjg07mwdGwZgeIUO
     return null;
   }
 
-  function novoLid(){
-    try{if(window.crypto&&crypto.randomUUID)return crypto.randomUUID()}catch(e){}
-    return Date.now().toString(36)+Math.random().toString(36).slice(2,10);
-  }
   function fone(v){var d=dig(v);return (d.length===10||d.length===11)?'55'+d:d}
   function posta(dados){
     try{
@@ -1055,7 +1051,7 @@ var FORM_ENDPOINT='https://script.google.com/macros/s/AKfycbxg1Kgjg07mwdGwZgeIUO
     }catch(e){return CHECKOUT_URL}
   }
 
-  form.addEventListener('submit',function(ev){
+  form.addEventListener('submit',async function(ev){
     ev.preventDefault();
     if(enviando)return;
     var erro=confere();
@@ -1063,9 +1059,32 @@ var FORM_ENDPOINT='https://script.google.com/macros/s/AKfycbxg1Kgjg07mwdGwZgeIUO
     if(aviso){aviso.hidden=true;aviso.textContent=''}
     enviando=true;
 
-    var lid=novoLid();
     var ph=fone(campo.tel.value);
     var email=String(campo.email.value||'').trim().toLowerCase();
+    var rotulo=btn?btn.textContent:'';
+    if(btn){btn.disabled=true;btn.textContent='Abrindo o pagamento...'}
+    if(plano)plano.hidden=true;
+    var lid;
+    var controle;
+    var limite;
+    try{
+      controle=new AbortController();
+      limite=setTimeout(function(){controle.abort()},20000);
+      var resposta=await fetch('/api/workshop/session',{
+        method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({email:email}),signal:controle.signal
+      });
+      var sessao=await resposta.json();
+      if(!resposta.ok||typeof sessao.lid!=='string'||!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(sessao.lid))throw new Error('session');
+      lid=sessao.lid;
+    }catch(e){
+      enviando=false;
+      if(btn){btn.disabled=false;btn.textContent=rotulo}
+      acusa(null,'Não foi possível abrir o pagamento. Seus dados continuam aqui. Tente novamente.');
+      return;
+    }finally{
+      if(limite)clearTimeout(limite);
+    }
     var ts=new Date().toISOString();
     var trk={};
     try{trk=window.obTrk?window.obTrk():{}}catch(e){trk={}}
