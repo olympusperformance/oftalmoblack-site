@@ -1380,21 +1380,42 @@
       '<span>' + esc(Club.fmtDataCurta(pontos[ultimo].dia)) + '</span></div>';
   }
 
+  /* A API entrega no maximo 30 dias. Completar o calendario impede que uma
+     falha de coleta comprima o eixo e pareca pertencer a outra data. */
+  function serieSeguidores30(pontos, hoje) {
+    var porDia = {};
+    pontos.forEach(function (p) { porDia[p.dia] = p; });
+    var fim = new Date((hoje || new Date().toISOString().slice(0, 10)) + 'T00:00:00Z');
+    var saida = [];
+    for (var i = 29; i >= 0; i--) {
+      var d = new Date(fim); d.setUTCDate(d.getUTCDate() - i);
+      var dia = d.toISOString().slice(0, 10);
+      saida.push(porDia[dia] || { dia:dia, seguidores_ganhos:null });
+    }
+    return saida;
+  }
+
   /* Barras de ganho diário. Cada dia é uma coluna que ocupa a altura toda e
      ancora a barra na base — com `top` em elemento relative, como estava, a
      barra saía do cartão e caía por cima do bloco de baixo. Dia negativo
      (o Instagram devolve ganho, mas conta apagada pode zerar) cresce para
-     baixo a partir do meio. */
+     baixo a partir do meio. Nulo fica marcado como pendente; nunca vira zero. */
   function barras(pontos, campo, altura) {
     var H = altura || 96;
-    var vals = pontos.map(function (p) { return p[campo] || 0; });
-    if (!vals.length) return '<div class="ig-vazio">Sem dados no período.</div>';
-    var teto = Math.max.apply(null, vals.map(Math.abs)) || 1;
-    var temNeg = vals.some(function (v) { return v < 0; });
+    var vals = pontos.map(function (p) { return p[campo]; });
+    var validos = vals.filter(function (v) { return v !== null && v !== undefined; });
+    if (!validos.length) return '<div class="ig-vazio">Aguardando dados da Meta.</div>';
+    var teto = Math.max.apply(null, validos.map(Math.abs)) || 1;
+    var temNeg = validos.some(function (v) { return v < 0; });
     var util = temNeg ? H / 2 : H;
     return '<div class="ig-barras' + (temNeg ? ' tem-neg' : '') + '" style="height:' + H + 'px">' +
       pontos.map(function (p, i) {
         var v = vals[i];
+        if (v === null || v === undefined) {
+          return '<span class="ig-col pendente" data-dia="' +
+            esc(Club.fmtDataCurta(p.dia)) +
+            '" data-valor="aguardando dado da Meta"><i></i></span>';
+        }
         var h = Math.max(2, Math.abs(v) / teto * util * 0.94);
         var cor = v < 0 ? 'var(--danger)' : 'var(--success)';
         return '<span class="ig-col' + (v < 0 ? ' neg' : '') +
@@ -1409,10 +1430,12 @@
      então quanto mais longe do hoje, mais a linha erra. Por isso 30 dias e o
      aviso ao lado do título. */
   function curvaSeguidores(pontos, totalHoje) {
-    var acc = totalHoje, saida = [];
+    var acc = totalHoje, saida = [], confiavel = true;
     for (var i = pontos.length - 1; i >= 0; i--) {
-      saida.unshift({ dia: pontos[i].dia, seguidores: acc });
-      acc -= (pontos[i].seguidores_ganhos || 0);
+      saida.unshift({ dia: pontos[i].dia, seguidores: confiavel ? acc : null });
+      var ganho = pontos[i].seguidores_ganhos;
+      if (ganho === null || ganho === undefined) confiavel = false;
+      else if (confiavel) acc -= ganho;
     }
     return saida;
   }
@@ -1537,16 +1560,20 @@
   function desenharDetalheIg(l, dias, todos) {
     var username = l.username;
     var corte = new Date(); corte.setDate(corte.getDate() - dias);
-    var corte30 = new Date(); corte30.setDate(corte30.getDate() - 30);
     var serie = todos.filter(function (p) { return new Date(p.dia + 'T12:00') >= corte; });
-    var serie30 = todos.filter(function (p) { return new Date(p.dia + 'T12:00') >= corte30; });
+    var serie30 = serieSeguidores30(todos);
 
     var alc = serie.map(function (p) { return p.alcance_dia; })
                    .filter(function (v) { return v !== null && v !== undefined; });
     var media = alc.length ? Math.round(alc.reduce(function (a, b) { return a + b; }, 0) / alc.length) : null;
     var melhor = serie.filter(function (p) { return p.alcance_dia !== null; })
                       .sort(function (a, b) { return b.alcance_dia - a.alcance_dia; })[0];
-    var ganhos30 = serie30.reduce(function (a, p) { return a + (p.seguidores_ganhos || 0); }, 0);
+    var ganhosValidos = serie30.filter(function (p) {
+      return p.seguidores_ganhos !== null && p.seguidores_ganhos !== undefined;
+    });
+    var ganhos30 = ganhosValidos.length
+      ? ganhosValidos.reduce(function (a, p) { return a + p.seguidores_ganhos; }, 0)
+      : null;
     var curva = curvaSeguidores(serie30, l.seguidores || 0);
 
     Club.modal.open({
@@ -1571,10 +1598,13 @@
             cardStat('SEGUIDORES', numeroCurto(l.seguidores), 'agora',
                      'Total de seguidores no último retrato. É o número que o próprio ' +
                      'Instagram mostra no perfil.') +
-            cardStat('GANHOS EM 30 DIAS', (ganhos30 > 0 ? '+' : '') + numeroCurto(ganhos30),
-                     'somando o que entrou por dia',
+            cardStat('GANHOS EM 30 DIAS', ganhos30 === null ? '—' :
+                     (ganhos30 > 0 ? '+' : '') + numeroCurto(ganhos30),
+                     ganhosValidos.length === 30 ? 'somando o que entrou por dia' :
+                     ganhosValidos.length + ' de 30 dias consolidados',
                      'Soma de quem seguiu a conta nos últimos 30 dias. O Instagram conta ' +
-                     'quem chegou, não quem saiu — então isto é entrada bruta, não saldo.') +
+                     'quem chegou, não quem saiu — então isto é entrada bruta, não saldo. ' +
+                     'Dias ainda ausentes ficam pendentes e não entram como zero.') +
             cardStat('ALCANCE MÉDIO/DIA', numeroCurto(media), 'nos últimos ' + dias + ' dias',
                      'Média de contas únicas que viram algum conteúdo por dia no período. ' +
                      'Diferente de visualizações: a mesma pessoa vendo três vezes conta uma.') +

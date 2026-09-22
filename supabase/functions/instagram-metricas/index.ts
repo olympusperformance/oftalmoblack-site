@@ -29,6 +29,7 @@
    ========================================================================= */
 
 import { createClient } from "npm:@supabase/supabase-js@2.49.4";
+import { normalizarGanhos } from "./seguidores.ts";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -179,8 +180,20 @@ Deno.serve(async (req) => {
     desde.setUTCDate(desde.getUTCDate() - 7);
     const since = desde.toISOString().slice(0, 10);
 
+    // follower_count e uma serie diaria de ate 30 dias. Pedir desde=ate (como
+    // antes) cria uma janela sem duracao e a Meta devolve []: nao era zero.
+    // Reconsultar a janela inteira tambem recupera consolidacoes atrasadas.
+    const desdeFollower = new Date(`${dia}T00:00:00Z`);
+    desdeFollower.setUTCDate(desdeFollower.getUTCDate() - 29);
+    const ateFollower = new Date(`${dia}T00:00:00Z`);
+    ateFollower.setUTCDate(ateFollower.getUTCDate() + 1);
+    const followerSince = String(Math.floor(desdeFollower.getTime() / 1000));
+    const followerUntil = String(Math.floor(ateFollower.getTime() / 1000));
+
     const linhas: Array<Record<string, unknown>> = [];
+    const linhasGanhos: Array<Record<string, unknown>> = [];
     const falhas: Array<{ username: string; erro: string }> = [];
+    const pendenciasGanhos: Array<{ username: string; erro: string }> = [];
 
     // Limita a concorrencia para concluir a turma dentro do tempo da funcao.
     for (let inicio = 0; inicio < alvos.length; inicio += 3) {
@@ -216,13 +229,22 @@ Deno.serve(async (req) => {
           const fc = await graph(`${ig.id}/insights`, {
             metric: "follower_count",
             period: "day",
-            since: dia,
-            until: dia,
+            since: followerSince,
+            until: followerUntil,
             access_token: pageToken,
           });
           const vals = fc.data?.[0]?.values ?? [];
-          ganhos = vals.length > 0 ? vals[vals.length - 1].value : null;
-        } catch { /* conta com menos de 100 seguidores não tem esta métrica */ }
+          const historico = normalizarGanhos(ig.id, vals);
+          linhasGanhos.push(...historico);
+          ganhos = historico.find((x) => x.dia === dia)?.seguidores_ganhos ?? null;
+        } catch (e) {
+          // Perfil com menos de 100 seguidores ou indisponibilidade da Meta:
+          // o estoque ainda e salvo, mas o fluxo fica explicitamente pendente.
+          pendenciasGanhos.push({
+            username: ig.username ?? ig.id,
+            erro: mensagemErro(e),
+          });
+        }
 
         linhas.push({
           ig_user_id: ig.id,
@@ -249,6 +271,15 @@ Deno.serve(async (req) => {
       if (error) throw new Error(`sync metricas: ${error.message}`);
     }
 
+    let ganhosAtualizados = 0;
+    if (linhasGanhos.length > 0) {
+      const { data, error } = await db.rpc("instagram_sync_seguidores_ganhos", {
+        p: linhasGanhos,
+      });
+      if (error) throw new Error(`sync seguidores ganhos: ${error.message}`);
+      ganhosAtualizados = Number(data) || 0;
+    }
+
     return json({
       ok: linhas.length > 0,
       dia,
@@ -256,6 +287,11 @@ Deno.serve(async (req) => {
       coletadas: linhas.length,
       sem_mentorado: semMentorado,
       falhas,
+      ganhos: {
+        recebidos: linhasGanhos.length,
+        atualizados: ganhosAtualizados,
+        contas_pendentes: pendenciasGanhos,
+      },
     }, linhas.length > 0 ? 200 : 502);
   } catch (e) {
     console.error("[instagram-metricas]", e);
