@@ -46,6 +46,7 @@
      'members' mudou para Progressão. */
   var NAV = [
     { key:'overview', label:'Visão geral', icon:'home' },
+    { key:'farol', label:'Farol', icon:'eye' },
     { grupo:'Mentorados', itens: [
       { key:'members',   label:'Progressão', icon:'users' },
       { key:'graduacao', label:'Graduação', icon:'award' },
@@ -373,6 +374,12 @@
     /* Só o quadro escreve na URL: #demandas já era o atalho do favorito, e o
        recorte vai junto dele. As outras abas seguem sem endereço. */
     sincronizarHash();
+    if (key === 'farol') {
+      montarFarol();
+      Club.farol.enter(lerHash().secao === 'farol' ? location.hash : '');
+    } else if (location.hash.indexOf('#farol/') === 0 && key !== 'demands') {
+      history.replaceState(null, '', location.pathname + location.search);
+    }
     /* O painel destacado é da aba Demandas: some com ela e volta com ela. */
     var painel = $('painelDemanda');
     if (painel) painel.hidden = key !== 'demands' || !st.painel;
@@ -491,6 +498,33 @@
     r.pct = r.pcts.length
       ? Math.round(r.pcts.reduce(function (s, x) { return s + x; }, 0) / r.pcts.length) : 0;
     return r;
+  }
+
+  var farolMontado = false;
+  function montarFarol() {
+    if (farolMontado) return;
+    farolMontado = true;
+    Club.farol.mount($('farolAdmin'), {
+      members: function () { return st.members; },
+      session: function () { return sessao; },
+      instagram: function () { return { resumo:st.igResumo || [], serie:st.igSerie || [], indisponivel:Club.instagramIndisponivel }; },
+      entregas: contaMembro,
+      artefatos: function (id) {
+        return artefatosDe(id).map(function (a) {
+          return { artifact:a, part:contaPar(id, a), steps:etapasDe(a.id).map(function (e) {
+            return Object.assign({}, e, { feito:!!marcada(id, e.id) });
+          }),
+            demands:st.demands.filter(function (d) { return d.member_id === id && d.artifact_id === a.id; }) };
+        });
+      },
+      demandas: function () { return st.demands; },
+      abrirInstagram: abrirDetalheIg,
+      abrirProgressao: function (id) { st.arvMembro = id; go('members'); renderMembers(); },
+      abrirDemandas: function (id) {
+        st.demMembro = id; st.demVisao = 'todas'; st.demFoco = '';
+        st.demAbertas = 'open'; go('demands'); renderDemandas();
+      }
+    });
   }
 
   /* Par "A definir" só aparece em "Tudo"; em todos os outros filtros ele não
@@ -941,6 +975,7 @@
       indexar();
       renderMembers();
       renderOverview();
+      if (farolMontado) Club.farol.refresh();
     }).catch(function (err) {
       aplicaLocal(memberId, stepId, antes);
       renderMembers();
@@ -4466,6 +4501,11 @@
   window.addEventListener('hashchange', function () {
     if (!sessao) return;
     var h = lerHash();
+    if (h.secao === 'farol') {
+      if (st.view !== 'farol') go('farol');
+      else Club.farol.enter(location.hash);
+      return;
+    }
     if (h.secao !== 'demandas') return;
     if (h.foco !== st.demFoco) { st.demFoco = h.foco; renderDemandas(); }
     if (st.view !== 'demands') go('demands');

@@ -1,0 +1,145 @@
+/* Farol: um quadro executivo que cabe na altura de um desktop comum. */
+.view[data-view="farol"]{max-width:1260px}
+.farol{display:grid;gap:13px}
+.farol-header{display:flex;align-items:end;justify-content:space-between;gap:20px;min-width:0}
+.farol-heading>span,.farol-section-title>span,.farol-label,.farol-card-head>span{font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--gold)}
+.farol-heading>span{display:flex;align-items:center;gap:8px}
+.farol-heading>span i{width:4px;height:4px;border-radius:50%;background:var(--gold)}
+.farol-heading h1{font-family:var(--display);font-size:clamp(30px,3vw,42px);line-height:1.05;letter-spacing:-.025em;font-weight:500;margin:8px 0 5px}
+.farol-heading p{margin:0;color:var(--muted);font-size:12px;line-height:1.4}
+.farol-heading p b{padding:0 5px;color:var(--gold)}
+.farol-controls{display:flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:end}
+.farol-controls select,.farol-search{height:35px;border:1px solid var(--border-soft);border-radius:8px;background:var(--panel);color:var(--text);font-size:12px}
+.farol-controls select{max-width:190px;min-width:150px;padding:0 8px}
+.farol-search{display:flex;align-items:center;gap:6px;padding:0 9px;width:132px}
+.farol-search .ic{font-size:14px;color:var(--muted)}
+.farol-search input{min-width:0;width:100%;border:0;outline:0;background:transparent;color:var(--text);font:inherit}
+.farol-search input::placeholder{color:var(--muted)}
+.farol-controls>button,.farol-days button{height:35px;min-width:33px;padding:0 8px;border:1px solid var(--border-soft);border-radius:8px;background:var(--panel);color:var(--text);cursor:pointer}
+.farol-controls>button{font-size:22px;line-height:1}
+.farol-controls>button:disabled{opacity:.35;cursor:default}
+.farol-days{display:flex;gap:3px;padding:3px;border:1px solid var(--border-soft);border-radius:9px;background:var(--panel)}
+.farol-days button{height:27px;border:0;background:transparent;font-size:11px;white-space:nowrap}
+.farol-days button[aria-pressed="true"]{color:var(--on-gold);background:var(--gold);font-weight:700}
+.farol-period{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:11px;min-height:17px}
+.farol-period span+span{margin-left:auto}
+.farol-period b{font-weight:500;color:var(--warning-tx)}
+.farol-funnel,.farol-card,.farol-foot{background:var(--panel);border:1px solid var(--border-soft);border-radius:14px;box-shadow:0 8px 25px rgba(0,0,0,.07)}
+.farol-funnel{padding:16px 18px 19px;background:linear-gradient(120deg,rgba(var(--gold-rgb),.085),transparent 58%),var(--panel)}
+.farol-section-title,.farol-card-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.farol-section-title small,.farol-card-head small{color:var(--muted);font-size:10px;font-weight:400}
+.farol-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));margin-top:15px}
+.farol-kpi{padding:3px 16px;border-left:1px solid var(--border-soft);min-width:0}
+.farol-kpi{display:block;width:100%;text-align:left;background:none;border-top:0;border-right:0;border-bottom:0;color:inherit;cursor:pointer}
+.farol-kpi:hover strong,.farol-detail-button:hover strong,.farol-ig-main button:hover strong,.farol-grade button:hover strong{color:var(--gold)}
+.farol-kpi:first-child{padding-left:0;border-left:0}
+.farol-kpi strong{display:block;font-family:var(--display);font-size:clamp(28px,3vw,43px);font-weight:500;line-height:1.15;margin:8px 0 3px;font-variant-numeric:tabular-nums}
+.farol-kpi small{font-size:10px;color:var(--muted);white-space:normal}
+.farol-pulse{opacity:.55;letter-spacing:3px}
+.farol-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.farol-card{padding:17px 18px 13px;display:flex;flex-direction:column;min-width:0;min-height:251px}
+.farol-card[data-farol-card]{cursor:pointer}
+.farol-card-head{min-height:16px}
+.farol-card-head small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.farol-ig-main,.farol-grade{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:19px}
+.farol-ig-main>div+div,.farol-grade>div+div{border-left:1px solid var(--border-soft);padding-left:14px}
+.farol-ig-main>button+button,.farol-grade>button+button{border-left:1px solid var(--border-soft);padding-left:14px}
+.farol-ig-main button,.farol-grade button,.farol-ig-details button,.farol-delivery-details button,.farol-detail-button{display:block;text-align:left;border:0;background:none;color:inherit;font:inherit;padding:0;cursor:pointer;min-width:0}
+.farol-ig-main strong,.farol-grade strong,.farol-delivery-main strong{display:block;font-family:var(--display);font-weight:500;font-size:30px;line-height:1.25;margin-top:4px;font-variant-numeric:tabular-nums}
+.farol-ig-main strong.farol-gain{font-size:27px;color:var(--gold)}
+.farol-source{color:var(--muted);font-size:10px;margin-top:5px;line-height:1.35}
+.farol-spark{height:44px;display:flex;align-items:end;gap:2px;margin:8px 0 5px;padding-bottom:1px;border-bottom:1px solid var(--border-soft)}
+.farol-spark i{display:block;flex:1;min-width:2px;max-width:12px;border-radius:2px 2px 0 0;background:var(--success)}
+.farol-spark i.negative{background:var(--danger)}
+.farol-spark button{display:block;flex:1;min-width:2px;max-width:12px;padding:0;border:0;border-radius:2px 2px 0 0;background:var(--success);cursor:pointer}
+.farol-spark button.negative{background:var(--danger)}
+.farol-spark button:hover{filter:brightness(1.35)}
+.farol-empty-spark{height:44px;display:grid;place-items:center;color:var(--faint);font-size:10px}
+.farol-ig-details{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:auto;padding-top:4px}
+.farol-ig-details span{min-width:0}
+.farol-ig-details button{min-width:0}
+.farol-ig-details small{display:block;font-size:9px;color:var(--muted);line-height:1.2;white-space:normal}
+.farol-ig-details b{font-size:14px;font-weight:600;line-height:1.5}
+.farol-delivery-main{display:flex;align-items:baseline;gap:10px;margin-top:17px}
+.farol-delivery-main strong{font-size:40px}
+.farol-delivery-main span{font-size:11px;color:var(--muted)}
+.farol-progress{width:100%;height:7px;margin-top:12px;border-radius:99px;background:var(--track);overflow:hidden}
+.farol-progress i{display:block;height:100%;background:linear-gradient(90deg,var(--gold-deep),var(--gold-bright));border-radius:inherit}
+.farol-delivery-details{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:19px}
+.farol-delivery-details span{font-size:11px;color:var(--muted);white-space:nowrap}
+.farol-delivery-details button{font-size:11px;color:var(--muted);white-space:nowrap}
+.farol-delivery-details b{display:block;font-size:21px;color:var(--text);font-weight:500}
+.farol-delivery-details button:hover b{color:var(--gold)}
+.farol-delivery-details .farol-warn b{color:var(--warning)}
+.farol-grade{margin-top:21px}
+.farol-grade strong small{font:400 12px var(--body);color:var(--muted)}
+.farol-grade+.farol-progress{margin-top:16px}
+.farol-presence{display:flex;align-items:center;gap:8px;width:100%;margin-top:10px;padding:8px 0 0;border:0;border-top:1px solid var(--border-soft);background:none;color:var(--muted);font-size:10px;text-align:left;cursor:pointer}
+.farol-presence b{margin-left:auto;color:var(--text);font-weight:600}
+.farol-presence:hover b{color:var(--gold)}
+.farol-preview{font-size:9px;color:var(--warning-tx);border:1px solid var(--warn-bd);border-radius:4px;padding:2px 4px;margin-right:3px}
+.farol-link{display:inline-flex;align-items:center;gap:5px;align-self:flex-start;margin-top:auto;padding:10px 0 0;border:0;background:none;color:var(--gold);font:600 11px var(--body);text-decoration:none;cursor:pointer}
+.farol-link:hover{text-decoration:underline}
+.farol-link:disabled{opacity:.45;cursor:default}
+.farol-unavailable{color:var(--muted);font-size:12px;margin:auto 0}
+.farol-foot{display:grid;grid-template-columns:minmax(0,2.25fr) minmax(210px,1fr);overflow:hidden;min-height:89px}
+.farol-finance{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));min-width:0;border-right:1px solid var(--border-soft)}
+.farol-finance-cell{display:flex;flex-direction:column;justify-content:center;min-width:0;text-align:left;border:0;border-right:1px solid var(--border-soft);background:none;color:inherit;padding:12px 15px;cursor:pointer}
+.farol-finance-cell:last-child{border-right:0}
+.farol-finance-cell:hover strong{color:var(--gold)}
+.farol-finance-cell strong{font-family:var(--display);font-weight:500;font-size:24px;line-height:1.1;margin-top:5px;white-space:nowrap}
+.farol-finance-cell small{font-size:10px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.farol-commercial{padding:15px 18px;border-right:1px solid var(--border-soft);display:flex;flex-direction:column;justify-content:center}
+.farol-commercial strong{font-family:var(--display);font-weight:500;font-size:27px;line-height:1.1;margin-top:5px;font-variant-numeric:tabular-nums}
+.farol-commercial small{font-size:10px;color:var(--muted);margin-top:3px}
+.farol-attention{padding:15px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.farol-attention .farol-label{width:100%;line-height:1}
+.farol-attention button{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--warn-bd);border-radius:7px;padding:5px 8px;background:var(--warn-bg);color:var(--warning-tx);font-size:10px;cursor:pointer}
+.farol-attention button:hover{background:var(--surface-hi)}
+.farol-all-clear{font-size:11px;color:var(--muted)}
+.farol-footer{display:flex;justify-content:space-between;gap:10px;color:var(--faint);font-size:10px;padding:0 2px}
+.farol-footer a{color:var(--muted);text-decoration:none}
+.farol-footer a:hover{color:var(--gold)}
+.farol-empty{padding:35px;border:1px solid var(--border-soft);border-radius:14px;color:var(--muted)}
+.farol-modal-backdrop{position:fixed;inset:0;z-index:120;background:var(--veil);display:grid;place-items:center;padding:16px}
+.shell:has(.farol-modal-backdrop){z-index:150}
+.farol-modal{display:flex;flex-direction:column;width:min(620px,100%);max-height:min(760px,calc(100vh - 32px));background:var(--panel);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+.farol-modal-top,.farol-modal-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 18px;border-bottom:1px solid var(--border-soft);font-size:11px;color:var(--muted)}
+.farol-modal-top button,.farol-modal-bottom button{border:0;background:none;color:var(--gold);cursor:pointer;font:inherit}
+.farol-modal-top button:disabled{opacity:.4;cursor:default}
+.farol-modal-top button:last-child{font-size:24px;line-height:1}
+.farol-modal h2{margin:17px 20px 6px;font-family:var(--display);font-size:30px;font-weight:500}
+.farol-modal-scroll{overflow:auto;padding:4px 20px 20px;overscroll-behavior:contain}
+.farol-modal-scroll>p{color:var(--muted);font-size:12px;line-height:1.6}
+.farol-modal-scroll h3{font-size:12px;color:var(--gold);margin:21px 0 7px}
+.farol-modal-bottom{border-bottom:0;border-top:1px solid var(--border-soft)}
+.farol-modal-bottom a{color:var(--gold);text-decoration:none}
+.farol-modal-bottom a:hover{text-decoration:underline}
+.farol-detail-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:8px 0 16px}
+.farol-detail-metric{border:1px solid var(--border-soft);border-radius:9px;padding:10px;background:var(--surface-lo)}
+.farol-detail-metric span{display:block;color:var(--muted);font-size:10px}
+.farol-detail-metric strong{display:block;font-size:19px;font-weight:600;margin-top:5px;overflow-wrap:anywhere}
+.farol-detail-row{position:relative;display:flex;flex-direction:column;width:100%;padding:10px 30px 10px 0;border:0;border-top:1px solid var(--border-soft);background:none;color:var(--text);font:inherit;text-align:left;cursor:pointer}
+.farol-detail-row:hover span{color:var(--gold)}
+.farol-detail-row span{font-size:12px;font-weight:600}
+.farol-detail-row small{color:var(--muted);font-size:10px;margin-top:3px}
+.farol-detail-row b{position:absolute;right:4px;top:9px;color:var(--gold);font-size:19px;font-weight:400}
+.farol-detail-row.farol-step{cursor:default}
+.farol-modal-note{color:var(--faint)!important;font-size:10px!important;margin:15px 0 4px}
+.farol-modal-link{display:inline-flex;margin-top:8px;color:var(--gold);border:0;background:none;padding:0;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer}
+.farol-modal-link:hover{text-decoration:underline}
+.farol-finance-warning{color:var(--warning-tx)!important;border:1px solid var(--warn-bd);border-radius:8px;background:var(--warn-bg);padding:9px}
+@media(min-width:1000px) and (max-height:800px){
+  .main:has(.view[data-view="farol"]:not([hidden])){padding-top:17px;padding-bottom:18px}
+  .farol{gap:7px}.farol-heading h1{font-size:32px;margin:3px 0 2px}
+  .farol-funnel{padding:11px 15px 13px}.farol-kpis{margin-top:9px}
+  .farol-kpi strong{font-size:31px;margin:3px 0 0}
+  .farol-card{min-height:221px;padding:12px 13px 9px}
+  .farol-ig-main,.farol-grade{margin-top:8px}.farol-delivery-main{margin-top:8px}
+  .farol-spark{height:31px;margin:4px 0 2px}.farol-delivery-details{margin-top:10px}
+  .farol-progress{margin-top:7px}.farol-presence{padding-top:5px;margin-top:5px}
+  .farol-finance-cell{padding:8px 12px}.farol-attention{padding:9px 12px}
+}
+@media(max-width:1180px){.farol-header{align-items:start;flex-direction:column}.farol-controls{justify-content:start}.farol-kpi{padding:3px 10px}.farol-card{padding:15px 13px}.farol-ig-details{grid-template-columns:repeat(2,1fr);gap:5px}.farol-cards{align-items:stretch}}
+@media(max-width:760px){.farol{gap:12px}.farol-controls{width:100%}.farol-search{flex:1;min-width:120px}.farol-controls select{flex:2;max-width:none}.farol-days{width:100%;margin-top:4px}.farol-days button{flex:1}.farol-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 0}.farol-kpi:nth-child(odd){padding-left:0;border-left:0}.farol-kpi strong{font-size:34px}.farol-cards{grid-template-columns:1fr}.farol-card{min-height:230px}.farol-ig-details{grid-template-columns:repeat(4,1fr)}.farol-foot{grid-template-columns:1fr}.farol-finance{grid-template-columns:1fr;border-right:0;border-bottom:1px solid var(--border-soft)}.farol-finance-cell{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:8px;border-right:0;border-bottom:1px solid var(--border-soft);padding:9px 13px}.farol-finance-cell:last-child{border-bottom:0}.farol-finance-cell strong{grid-column:2;grid-row:1/3;font-size:21px}.farol-finance-cell small{grid-column:1;grid-row:2}.farol-attention{min-height:75px}.farol-period{flex-wrap:wrap}}
+@media(max-width:420px){.farol-controls select{min-width:130px}.farol-ig-details{grid-template-columns:repeat(2,1fr)}.farol-grade strong,.farol-ig-main strong{font-size:26px}}
