@@ -344,7 +344,7 @@ gtag('event','view_item',{currency:'BRL',value:97,items:[{item_id:'workshop-clin
     var q=questions[step];
     document.getElementById('question-step').textContent='Pergunta '+(step+1)+' de '+questions.length;
     document.getElementById('question-title').textContent=q.title;
-    var progress=document.getElementById('research-progress');if(progress){progress.value=step+1;progress.setAttribute('aria-valuetext',(step+1)+' de '+questions.length);}
+    var progress=document.getElementById('research-progress');if(progress){progress.value=step+1;progress.textContent=(step+1)+' de '+questions.length;progress.setAttribute('aria-valuetext',(step+1)+' de '+questions.length);}
     var options=document.getElementById('question-options');options.replaceChildren();
     q.options.forEach(function(text){
       var label=document.createElement('label'),input=document.createElement('input'),span=document.createElement('span');
