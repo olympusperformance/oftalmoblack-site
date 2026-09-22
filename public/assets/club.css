@@ -957,6 +957,7 @@ input[type="file"].inp::file-selector-button:hover{background:var(--surface);bor
 .ig-barras.tem-neg .ig-col.neg{align-items:flex-start}
 .ig-col i{width:100%;border-radius:2px;display:block;opacity:.9;transition:opacity .15s}
 .ig-col:hover i{opacity:1}
+.ig-col.pendente i{height:2px!important;background:var(--border)!important;opacity:.45}
 
 .ig-semana{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:2px 0 8px}
 @media (max-width:700px){.ig-semana{grid-template-columns:repeat(2,1fr)}}
