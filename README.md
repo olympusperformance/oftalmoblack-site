@@ -159,10 +159,10 @@ os quatro critérios e os bônus. `/admin/#graduacao` traz o radar da turma, com
 filtros por situação e busca por nome. O atalho de cada linha abre a graduação
 daquele mentorado na pré-visualização.
 
-Esta primeira versão é uma prévia fixa da planilha **SISTEMA DE GRADUAÇÃO BLACK**
-de 10/09/2026. Não consulta a Meta e não altera métricas existentes. Reproduz os
+É uma prévia fixa da planilha **SISTEMA DE GRADUAÇÃO BLACK**, hoje a de
+17/09/2026. Não consulta a Meta e não altera métricas existentes. Reproduz os
 29 cadastros, os valores por trimestre e os graus calculados no Painel: Cintia
-tem 65,3 pontos em jul–set e dois graus; 11 mentorados estão entre 35 e 49,9.
+tem 63,9 pontos em jul–set e dois graus; 11 mentorados estão entre 35 e 49,9.
 O grau do Painel já inclui o trimestre corrente, então a interface não soma
 outro grau quando a meta é atingida. O Histórico Graus ainda não tem datas de
 entrega: isso aparece como pendência de registro, sem criar cerimônias fictícias.
@@ -179,6 +179,22 @@ No projeto Supabase **OftalmoBlack Web** (`zpyxnkuvircukjlfexrv`), aplicar
 a turma e a gravação é reservada ao serviço. Os dados individuais não ficam nos
 arquivos públicos do site. A carga falha se houver nome sem correspondência e
 não sobrescreve registros que já saíram do modo de demonstração.
+
+**Planilha nova.** O gerador lê o xlsx e reescreve a fixture, o SQL de carga e
+o texto "Dados da planilha de …" da área de membros. Ele para se a pontuação de
+algum trimestre não fechar com participação, indicação e bônus, e imprime quem
+gradua e quantos estão na reta final, para conferir com a aba Graduação:
+
+```bash
+npm --prefix scripts/graduacao install
+node scripts/graduacao/gerar.mjs "SISTEMA DE GRADUAÇÃO BLACK.xlsx" 2026-09-17   # data da última apuração
+node --test tests/graduacao.test.mjs     # ajuste os números esperados que mudaram
+supabase db query --linked -f supabase/graduacao-preview-dados.sql
+```
+
+O gerador não toca no banco. Quatro nomes da planilha diferem do cadastro e
+estão mapeados em `NOME_NO_BANCO`; mentorado novo com nome diferente entra ali.
+Ajuste feito à mão no banco some na próxima carga: corrija na planilha.
 
 Verificação: `node --test tests/graduacao.test.mjs`. A fixture reproduz os
 valores da planilha e permite conferir totais, limites e situações do radar.
