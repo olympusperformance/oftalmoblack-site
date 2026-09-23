@@ -429,9 +429,15 @@ gtag('event','view_item',{currency:'BRL',value:97,items:[{item_id:'workshop-clin
       var lid=await session(d.email),previous=draft&&draft.lid===lid?draft:null;
       draft=Object.assign({},previous||{},d,{schema:2,lid:lid,whatsapp:phone(d.whatsapp),origem:'lp-workshop-'+variant,ts:previous?previous.ts:new Date().toISOString(),page:location.origin+location.pathname,referrer:document.referrer||'',answers:previous?previous.answers:{},stage:'cadastro'});
       var trk=window.obTrk?window.obTrk():{};attribution.forEach(function(k){if(trk[k])draft[k]=trk[k];});
-      revision();await save();if(!previous)trackBasic();
+      revision();var saving=save();
+      if(variant==='v2'){
+        // The session is ready. Let the visitor answer while Sheets confirms the basic capture.
+        draft.stage='pesquisa';busy=false;basic.disabled=false;basic.textContent=basicText;step=0;showResearch();
+        return saving.then(function(){if(!previous)trackBasic();}).catch(function(){});
+      }
+      await saving;if(!previous)trackBasic();
       busy=false;basic.disabled=false;basic.textContent=basicText;
-      if(variant==='v2'){step=0;showResearch();}else{await goCheckout();}
+      await goCheckout();
     }catch(err){busy=false;basic.disabled=false;basic.textContent=basicText;alertText('form-error','Não conseguimos salvar seu cadastro agora. Seus dados continuam nesta página. Confira a conexão e tente novamente. Código '+failureCode(err)+'.');}
   });
   back.addEventListener('click',function(){
