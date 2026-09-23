@@ -249,7 +249,7 @@ gtag('event','view_item',{currency:'BRL',value:97,items:[{item_id:'workshop-clin
     <div class="research-heading">
       <p class="eyebrow"><span class="live-dot" aria-hidden="true"></span>Antes do pagamento</p>
       <h2 id="research-heading" tabindex="-1">Conte um pouco sobre <em>a sua clínica.</em></h2>
-      <p>Responda às 5 perguntas para continuar sua inscrição.</p>
+      <p>São 5 perguntas. Ao tocar em uma resposta, você avança para a próxima.</p>
     </div>
     <div class="question-card">
       <div class="question-meta"><span id="question-step" aria-live="polite">Pergunta 1 de 5</span><progress id="research-progress" max="5" value="1" aria-label="Progresso da pesquisa">1 de 5</progress></div>
@@ -311,7 +311,7 @@ gtag('event','view_item',{currency:'BRL',value:97,items:[{item_id:'workshop-clin
     form.addEventListener('submit',function(e){e.preventDefault();});
     return;
   }
-  var step=0, busy=false, queue=Promise.resolve(), savedRevision=-1, saveFailure=false, draft=null;
+  var step=0, busy=false, queue=Promise.resolve(), advanceTimer=null, draft=null;
   var storageKey='ob_workshop_'+variant;
   var META={content_name:'workshop_clinica_premium',content_category:'oftalmoblack_b2b',value:97,currency:'BRL'};
   function keep(){try{sessionStorage.setItem(storageKey,JSON.stringify({draft:draft,step:step,at:Date.now()}));}catch(e){}}
@@ -350,24 +350,33 @@ gtag('event','view_item',{currency:'BRL',value:97,items:[{item_id:'workshop-clin
     var body=JSON.stringify(payload);
     var task=queue.catch(function(){}).then(async function(){
       for(var attempt=0;attempt<2;attempt++){
+        // Every snapshot contains all answers. Send the newest pending snapshot only.
+        if(payload.stage==='pesquisa'&&payload.revision<draft.revision)return;
         try{
           var result=await jsonRequest(ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:body,redirect:'follow'},'CAPTURE');
           if(result&&result.ok===false)throw requestError('CAPTURE','REJECT',true);
           if(!result||result.ok!==true||result.lid!==payload.lid||typeof result.revision!=='number'||!Number.isFinite(result.revision)||result.revision<payload.revision)throw requestError('CAPTURE','ACK',false);
-          savedRevision=Math.max(savedRevision,result.revision);saveFailure=false;
+          if(payload.revision===draft.revision)alertText('research-error','');
           return result;
         }catch(error){if(attempt===1||!error.retryable)throw error;}
       }
     });
     queue=task;
-    task.catch(function(error){saveFailure=true;alertText('research-error','Não conseguimos salvar sua última resposta. Ela continua nesta página. Clique em Continuar para tentar novamente. Código '+failureCode(error)+'.');});
+    task.catch(function(error){if(payload.revision===draft.revision)alertText('research-error','Sua resposta está mantida nesta página. Tentaremos salvá-la novamente ao continuar para o pagamento. Código '+failureCode(error)+'.');});
     return task;
   }
   function buttons(){
     back.disabled=busy;next.disabled=busy;pay.disabled=busy||!complete(draft.answers);
     next.hidden=step===questions.length-1;
   }
+  function cancelAdvance(){clearTimeout(advanceTimer);advanceTimer=null;}
+  function advance(){
+    cancelAdvance();if(busy)return;
+    if(!draft.answers[questions[step].key]){alertText('research-error','Selecione uma resposta para continuar.');return;}
+    step=Math.min(questions.length-1,step+1);render(true);
+  }
   function render(focus){
+    cancelAdvance();
     var q=questions[step];
     document.getElementById('question-step').textContent='Pergunta '+(step+1)+' de '+questions.length;
     document.getElementById('question-title').textContent=q.title;
@@ -377,7 +386,13 @@ gtag('event','view_item',{currency:'BRL',value:97,items:[{item_id:'workshop-clin
       var label=document.createElement('label'),input=document.createElement('input'),span=document.createElement('span');
       label.className='question-option';input.type='radio';input.name=q.key;input.value=text;input.checked=draft.answers[q.key]===text;span.textContent=text;
       input.addEventListener('change',function(){
+        if(busy||questions[step].key!==q.key)return;
         draft.answers[q.key]=text;draft.stage='pesquisa';revision();alertText('research-error','');buttons();save().catch(function(){});
+      });
+      // Click/tap (including Space) advances; arrow-key selection keeps native radio navigation.
+      input.addEventListener('click',function(){
+        if(busy||questions[step].key!==q.key||step===questions.length-1)return;
+        cancelAdvance();advanceTimer=setTimeout(function(){if(questions[step].key===q.key)advance();},220);
       });
       label.append(input,span);options.append(label);
     });
@@ -388,11 +403,12 @@ gtag('event','view_item',{currency:'BRL',value:97,items:[{item_id:'workshop-clin
   async function goCheckout(){
     if(busy)return;
     if(variant==='v2'&&!complete(draft.answers)){alertText('research-error','Responda às cinco perguntas antes de continuar.');return;}
+    cancelAdvance();
     busy=true;buttons();basic.disabled=true;pay.textContent='Preparando pagamento...';
     alertText('research-error','');alertText('form-error','');
     try{
       var lid=await session(draft.email);
-      if(lid!==draft.lid){draft.lid=lid;draft.ts=new Date().toISOString();savedRevision=-1;}
+      if(lid!==draft.lid){draft.lid=lid;draft.ts=new Date().toISOString();}
       draft.stage='checkout';revision();await save();
       try{localStorage.setItem('ob_cad',JSON.stringify({lid:draft.lid,ts:draft.ts}));}catch(e){}
       trackCheckout();location.assign(checkout(draft));
@@ -419,18 +435,10 @@ gtag('event','view_item',{currency:'BRL',value:97,items:[{item_id:'workshop-clin
     }catch(err){busy=false;basic.disabled=false;basic.textContent=basicText;alertText('form-error','Não conseguimos salvar seu cadastro agora. Seus dados continuam nesta página. Confira a conexão e tente novamente. Código '+failureCode(err)+'.');}
   });
   back.addEventListener('click',function(){
-    if(busy)return;alertText('research-error','');
+    if(busy)return;cancelAdvance();alertText('research-error','');
     if(step>0){step--;render(true);}else{research.hidden=true;landing.hidden=false;form.elements.nome.focus();}
   });
-  next.addEventListener('click',async function(){
-    if(busy)return;
-    if(!draft.answers[questions[step].key]){alertText('research-error','Selecione uma resposta para continuar.');return;}
-    busy=true;buttons();next.textContent='Salvando...';
-    try{
-      await queue.catch(function(){});if(saveFailure||savedRevision<draft.revision)await save();
-      step=Math.min(questions.length-1,step+1);alertText('research-error','');busy=false;render(true);
-    }catch(e){busy=false;buttons();}finally{next.textContent='Continuar';}
-  });
+  next.addEventListener('click',advance);
   pay.addEventListener('click',goCheckout);
   var started=false;form.addEventListener('focusin',function(e){if(started||e.target.tagName!=='INPUT'||e.target.name==='site')return;started=true;try{gtag('event','form_start',{form_id:'cadastro'});}catch(err){}});
   try{
