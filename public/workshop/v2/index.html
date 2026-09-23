@@ -131,15 +131,22 @@ footer a:hover{text-decoration:underline;color:var(--paper)}
 .secondary-button:disabled{opacity:.35;cursor:default}
 #research-next{min-height:44px;min-width:128px;padding:12px 22px;font-size:12px}
 #research-error{margin-top:16px}
-.research-payment{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:28px;margin-top:14px;padding:22px;border:1px solid #4d3b22;border-radius:14px;background:#18170f}
-.research-payment p{font-size:18px;line-height:1.3;font-weight:700;letter-spacing:-.025em}
-.research-payment small{font-size:12px;font-weight:400;letter-spacing:0;color:var(--muted);display:block;margin-top:7px}
 #checkout-button{width:100%}
 @media(min-width:1500px){.hero{padding-block:78px 100px}}
 @media(max-width:1000px){.hero{gap:35px;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}.hero h1{font-size:42px}.form-card{padding:25px}.presenter{gap:48px}.presenter-copy .bio{font-size:17px}}
-@media(max-width:760px){.shell{width:calc(100% - 40px)}.topbar{padding-top:20px}.brand{width:145px}.topnote{font-size:11px;max-width:100px;text-align:right;line-height:1.3}.hero{grid-template-columns:1fr;gap:31px;padding-block:40px 54px}.hero-copy{max-width:570px}.hero h1{font-size:clamp(36px,7.5vw,48px);max-width:19ch;margin-top:13px}.event-name{margin-top:16px;font-size:14px}.hero-summary{margin-top:22px;max-width:47ch;font-size:16px}.event-details{margin-top:24px}.event-details strong{font-size:16px}.event-details span{font-size:13px}.live-details{font-size:12px;margin-top:13px}.form-card{padding:27px;max-width:570px;width:100%;justify-self:center}.presenter-section{padding-block:48px 50px}.presenter{grid-template-columns:1fr;gap:29px;max-width:570px}.portrait{max-width:400px;width:100%;aspect-ratio:4/5}.presenter-copy h2{font-size:37px;max-width:17ch;margin-top:13px}.presenter-copy .bio{font-size:16px;margin-top:20px}.presenter-copy .registration{margin-top:14px}.footer-row{display:block}.footer-copy{max-width:none}footer nav{margin-top:18px;justify-content:flex-start}.research{padding-block:35px 45px}.research-heading h2{font-size:37px}.research-heading p:last-child{font-size:16px}.question-card{padding:20px 18px 0;margin-top:24px}.question-meta{gap:16px;margin-bottom:19px}#question-title{font-size:24px;margin-bottom:20px}#question-options label{font-size:15px;padding:13px 12px;min-height:58px;gap:12px}.research-navigation{margin-inline:-18px;padding:14px 18px}.research-payment{grid-template-columns:1fr;padding:20px;gap:20px}.research-payment p{font-size:17px}#checkout-button{font-size:12.5px;min-height:56px}.eyebrow{font-size:11px;letter-spacing:.09em}}
+@media(max-width:760px){.shell{width:calc(100% - 40px)}.topbar{padding-top:20px}.brand{width:145px}.topnote{font-size:11px;max-width:100px;text-align:right;line-height:1.3}.hero{grid-template-columns:1fr;gap:31px;padding-block:40px 54px}.hero-copy{max-width:570px}.hero h1{font-size:clamp(36px,7.5vw,48px);max-width:19ch;margin-top:13px}.event-name{margin-top:16px;font-size:14px}.hero-summary{margin-top:22px;max-width:47ch;font-size:16px}.event-details{margin-top:24px}.event-details strong{font-size:16px}.event-details span{font-size:13px}.live-details{font-size:12px;margin-top:13px}.form-card{padding:27px;max-width:570px;width:100%;justify-self:center}.presenter-section{padding-block:48px 50px}.presenter{grid-template-columns:1fr;gap:29px;max-width:570px}.portrait{max-width:400px;width:100%;aspect-ratio:4/5}.presenter-copy h2{font-size:37px;max-width:17ch;margin-top:13px}.presenter-copy .bio{font-size:16px;margin-top:20px}.presenter-copy .registration{margin-top:14px}.footer-row{display:block}.footer-copy{max-width:none}footer nav{margin-top:18px;justify-content:flex-start}.research{padding-block:35px 45px}.research-heading h2{font-size:37px}.research-heading p:last-child{font-size:16px}.question-card{padding:20px 18px 0;margin-top:24px}.question-meta{gap:16px;margin-bottom:19px}#question-title{font-size:24px;margin-bottom:20px}#question-options label{font-size:15px;padding:13px 12px;min-height:58px;gap:12px}.research-navigation{margin-inline:-18px;padding:14px 18px}#checkout-button{font-size:12.5px;min-height:56px}.eyebrow{font-size:11px;letter-spacing:.09em}}
 @media(max-width:380px){.shell{width:calc(100% - 32px)}.hero h1{font-size:35px}.form-card{padding:23px 20px}.form-card h2{font-size:26px}.research-heading h2{font-size:33px}#question-title{font-size:22px}.question-card{padding-inline:14px}.research-navigation{margin-inline:-14px;padding-inline:14px}.event-details strong{font-size:15px}.cta{font-size:12px;letter-spacing:.11em;padding-inline:18px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important;animation:none!important}}
+.research-completion{max-width:800px;min-height:calc(100svh - 235px);display:flex;flex-direction:column;justify-content:center;padding-block:65px 85px}
+.completion-check{display:grid;place-items:center;width:25px;height:25px;border:1px solid var(--gold);border-radius:50%;color:var(--gold-light);font-size:14px}
+.research-completion .research-heading h2{max-width:16ch}
+.research-completion .research-heading p:last-child{max-width:44ch;margin-inline:auto;line-height:1.6}
+.completion-payment{text-align:center;width:100%;max-width:470px;margin:32px auto 0}
+.completion-payment .cta{width:100%}
+.completion-payment>p{font-size:14px;color:var(--muted);line-height:1.6;margin:20px auto 0;max-width:44ch}
+.completion-payment .form-error{color:#ffd4bd}
+.completion-payment .secondary-button{margin-top:15px;font-size:13px;font-weight:400;text-decoration:underline;text-underline-offset:4px}
+@media(max-width:760px){.research-completion{padding-block:52px;min-height:calc(100svh - 160px)}.research-completion .research-heading h2{font-size:39px}.completion-payment{margin-top:28px}}
 </style>
 <script>
 /* ===== Google Analytics 4 ===== */
@@ -258,7 +265,19 @@ gtag('event','view_item',{currency:'BRL',value:97,items:[{item_id:'workshop-clin
       <p id="research-error" class="form-error" role="alert" hidden></p>
       <div class="research-navigation"><button id="research-back" class="secondary-button" type="button">Voltar</button><button id="research-next" class="cta" type="button">Continuar</button></div>
     </div>
-    <div class="research-payment"><p>Após responder, continue para o pagamento.<small>Sua vaga é confirmada após a aprovação da compra.</small></p><button id="checkout-button" class="cta" type="button" disabled>Ir para o pagamento · R$97</button></div>
+    </section>
+  <section id="completion" class="shell research research-completion" aria-labelledby="completion-heading" hidden>
+    <div class="research-heading">
+      <p class="eyebrow"><span class="completion-check" aria-hidden="true">✓</span>Pesquisa concluída</p>
+      <h2 id="completion-heading" tabindex="-1">Agora, garanta <em>sua vaga.</em></h2>
+      <p>Para concluir sua inscrição, clique no botão abaixo e realize o pagamento do ingresso.</p>
+    </div>
+    <div class="completion-payment">
+      <button id="checkout-button" class="cta" type="button" disabled>Ir para o pagamento · R$97</button>
+      <p>Sua vaga será confirmada após a aprovação do pagamento. Depois, você terá acesso ao grupo do workshop.</p>
+      <p id="completion-error" class="form-error" role="alert" hidden></p>
+      <button id="review-answers" class="secondary-button" type="button">Revisar respostas</button>
+    </div>
   </section>
 </main>
 <footer>
@@ -305,6 +324,7 @@ gtag('event','view_item',{currency:'BRL',value:97,items:[{item_id:'workshop-clin
   var variant=route?route[1]:null;
   var form=document.getElementById('cadastro'), landing=document.getElementById('landing'), research=document.getElementById('research');
   var basic=document.getElementById('submit-basic'), basicText=basic.textContent, back=document.getElementById('research-back'), next=document.getElementById('research-next'), pay=document.getElementById('checkout-button');
+  var completion=document.getElementById('completion'), review=document.getElementById('review-answers');
   if(!variant){
     basic.disabled=true;
     var routeError=document.getElementById('form-error');routeError.hidden=false;routeError.textContent='Não foi possível identificar esta página. Abra novamente o link do workshop. Código FLOW-ROUTE.';
@@ -316,6 +336,7 @@ gtag('event','view_item',{currency:'BRL',value:97,items:[{item_id:'workshop-clin
   var META={content_name:'workshop_clinica_premium',content_category:'oftalmoblack_b2b',value:97,currency:'BRL'};
   function keep(){try{sessionStorage.setItem(storageKey,JSON.stringify({draft:draft,step:step,at:Date.now()}));}catch(e){}}
   function alertText(id,message){var el=document.getElementById(id);el.textContent=message||'';el.hidden=!message;}
+  function researchAlert(message){alertText('research-error',completion.hidden?message:'');alertText('completion-error',completion.hidden?'':message);}
   function trackBasic(){
     try{fbq('track','CompleteRegistration',META);fbq('trackCustom','CadastroWorkshop',META);}catch(e){}
     try{gtag('event','generate_lead',{currency:'BRL',value:97,transport_type:'beacon'});}catch(e){}
@@ -356,23 +377,24 @@ gtag('event','view_item',{currency:'BRL',value:97,items:[{item_id:'workshop-clin
           var result=await jsonRequest(ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:body,redirect:'follow'},'CAPTURE');
           if(result&&result.ok===false)throw requestError('CAPTURE','REJECT',true);
           if(!result||result.ok!==true||result.lid!==payload.lid||typeof result.revision!=='number'||!Number.isFinite(result.revision)||result.revision<payload.revision)throw requestError('CAPTURE','ACK',false);
-          if(payload.revision===draft.revision)alertText('research-error','');
+          if(payload.revision===draft.revision)researchAlert('');
           return result;
         }catch(error){if(attempt===1||!error.retryable)throw error;}
       }
     });
     queue=task;
-    task.catch(function(error){if(payload.revision===draft.revision)alertText('research-error','Sua resposta está mantida nesta página. Tentaremos salvá-la novamente ao continuar para o pagamento. Código '+failureCode(error)+'.');});
+    task.catch(function(error){if(payload.revision===draft.revision)researchAlert('Suas respostas estão mantidas nesta página. Tentaremos salvá-las novamente ao continuar para o pagamento. Código '+failureCode(error)+'.');});
     return task;
   }
   function buttons(){
-    back.disabled=busy;next.disabled=busy;pay.disabled=busy||!complete(draft.answers);
-    next.hidden=step===questions.length-1;
+    back.disabled=busy;next.disabled=busy;review.disabled=busy;pay.disabled=busy||!complete(draft.answers);
+    next.hidden=false;next.textContent=step===questions.length-1?'Concluir pesquisa':'Continuar';
   }
   function cancelAdvance(){clearTimeout(advanceTimer);advanceTimer=null;}
   function advance(){
-    cancelAdvance();if(busy)return;
-    if(!draft.answers[questions[step].key]){alertText('research-error','Selecione uma resposta para continuar.');return;}
+    cancelAdvance();if(busy||!questions[step])return;
+    if(!draft.answers[questions[step].key]){researchAlert('Selecione uma resposta para continuar.');return;}
+    if(step===questions.length-1){if(complete(draft.answers))showCompletion();return;}
     step=Math.min(questions.length-1,step+1);render(true);
   }
   function render(focus){
@@ -386,26 +408,30 @@ gtag('event','view_item',{currency:'BRL',value:97,items:[{item_id:'workshop-clin
       var label=document.createElement('label'),input=document.createElement('input'),span=document.createElement('span');
       label.className='question-option';input.type='radio';input.name=q.key;input.value=text;input.checked=draft.answers[q.key]===text;span.textContent=text;
       input.addEventListener('change',function(){
-        if(busy||questions[step].key!==q.key)return;
-        draft.answers[q.key]=text;draft.stage='pesquisa';revision();alertText('research-error','');buttons();save().catch(function(){});
+        if(busy||!questions[step]||questions[step].key!==q.key)return;
+        draft.answers[q.key]=text;draft.stage='pesquisa';revision();researchAlert('');buttons();save().catch(function(){});
       });
       // Click/tap (including Space) advances; arrow-key selection keeps native radio navigation.
       input.addEventListener('click',function(){
-        if(busy||questions[step].key!==q.key||step===questions.length-1)return;
-        cancelAdvance();advanceTimer=setTimeout(function(){if(questions[step].key===q.key)advance();},220);
+        if(busy||!questions[step]||questions[step].key!==q.key)return;
+        cancelAdvance();advanceTimer=setTimeout(function(){if(questions[step]&&questions[step].key===q.key)advance();},220);
       });
       label.append(input,span);options.append(label);
     });
     back.textContent=step===0?'Editar meus dados':'Voltar';buttons();keep();
     if(focus){var title=document.getElementById('question-title');title.setAttribute('tabindex','-1');title.focus();}
   }
-  function showResearch(){landing.hidden=true;research.hidden=false;render(true);window.scrollTo(0,0);}
+  function showResearch(){landing.hidden=true;completion.hidden=true;research.hidden=false;render(true);window.scrollTo(0,0);}
+  function showCompletion(){
+    cancelAdvance();step=questions.length;landing.hidden=true;research.hidden=true;completion.hidden=false;
+    researchAlert('');buttons();keep();document.getElementById('completion-heading').focus();window.scrollTo(0,0);
+  }
   async function goCheckout(){
     if(busy)return;
-    if(variant==='v2'&&!complete(draft.answers)){alertText('research-error','Responda às cinco perguntas antes de continuar.');return;}
+    if(variant==='v2'&&!complete(draft.answers)){researchAlert('Responda às cinco perguntas antes de continuar.');return;}
     cancelAdvance();
     busy=true;buttons();basic.disabled=true;pay.textContent='Preparando pagamento...';
-    alertText('research-error','');alertText('form-error','');
+    researchAlert('');alertText('form-error','');
     try{
       var lid=await session(draft.email);
       if(lid!==draft.lid){draft.lid=lid;draft.ts=new Date().toISOString();}
@@ -414,7 +440,7 @@ gtag('event','view_item',{currency:'BRL',value:97,items:[{item_id:'workshop-clin
       trackCheckout();location.assign(checkout(draft));
     }catch(e){
       var message='Não conseguimos concluir o cadastro agora. Seus dados foram mantidos. Tente novamente. Código '+failureCode(e)+'.';
-      alertText(variant==='v2'?'research-error':'form-error',message);
+      if(variant==='v2')researchAlert(message);else alertText('form-error',message);
       busy=false;buttons();basic.disabled=false;basic.textContent=basicText;pay.textContent='Ir para o pagamento · R$97';
     }
   }
@@ -441,18 +467,22 @@ gtag('event','view_item',{currency:'BRL',value:97,items:[{item_id:'workshop-clin
     }catch(err){busy=false;basic.disabled=false;basic.textContent=basicText;alertText('form-error','Não conseguimos salvar seu cadastro agora. Seus dados continuam nesta página. Confira a conexão e tente novamente. Código '+failureCode(err)+'.');}
   });
   back.addEventListener('click',function(){
-    if(busy)return;cancelAdvance();alertText('research-error','');
+    if(busy)return;cancelAdvance();researchAlert('');
     if(step>0){step--;render(true);}else{research.hidden=true;landing.hidden=false;form.elements.nome.focus();}
   });
   next.addEventListener('click',advance);
+  review.addEventListener('click',function(){if(busy)return;step=questions.length-1;researchAlert('');showResearch();});
   pay.addEventListener('click',goCheckout);
   var started=false;form.addEventListener('focusin',function(e){if(started||e.target.tagName!=='INPUT'||e.target.name==='site')return;started=true;try{gtag('event','form_start',{form_id:'cadastro'});}catch(err){}});
   try{
     var restored=JSON.parse(sessionStorage.getItem(storageKey)||'null');
     if(restored&&Date.now()-restored.at<86400000&&restored.draft&&restored.draft.schema===2&&!validate(restored.draft)){
-      draft=restored.draft;step=Math.max(0,Math.min(4,Number(restored.step)||0));
+      draft=restored.draft;step=Math.max(0,Math.min(questions.length,Math.floor(Number(restored.step)||0)));
       ['nome','email','whatsapp'].forEach(function(k){form.elements[k].value=draft[k];});
-      if(variant==='v2'&&draft.stage!=='cadastro')showResearch();
+      if(variant==='v2'&&draft.stage!=='cadastro'){
+        if(step===questions.length&&complete(draft.answers))showCompletion();
+        else{step=Math.min(questions.length-1,step);showResearch();}
+      }
     }
   }catch(e){}
 }());
