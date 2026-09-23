@@ -19,16 +19,16 @@ test('pontuação do trimestre reconcilia participação, indicação e bônus',
     assert.ok(Math.abs(p.points - expected) < 0.11, memberName + ' ' + p.id);
   }));
 });
-test('Cintia tem 65,3 pontos e dois graus, sem ganhar um terceiro ao renderizar', () => {
+test('Cintia tem 63,9 pontos e dois graus, sem ganhar um terceiro ao renderizar', () => {
   const row = rows.find(r => r.memberName === 'Cintia Santini');
   const m = G.model(row.snapshot, '2026-T3');
-  assert.equal(m.points, 65.3); assert.equal(m.grade, 2); assert.equal(m.missing, 0); assert.equal(m.percent, 100);
+  assert.equal(m.points, 63.9); assert.equal(m.grade, 2); assert.equal(m.missing, 0); assert.equal(m.percent, 100);
   assert.equal(row.snapshot.recordedDegrees, 0);
 });
 test('Adriano e Oswaldo mostram o saldo exato, sem arredondar um ponto a mais', () => {
   const adriano = G.model(rows.find(r => r.memberName.startsWith('Adriano')).snapshot, '2026-T3');
   const oswaldo = G.model(rows.find(r => r.memberName.startsWith('Oswaldo')).snapshot, '2026-T3');
-  assert.equal(adriano.missing, 31); assert.equal(oswaldo.missing, 3.3); assert.equal(oswaldo.status, 'near');
+  assert.equal(adriano.missing, 28.6); assert.equal(oswaldo.missing, 2.7); assert.equal(oswaldo.status, 'near');
 });
 test('trimestres futuros e membros sem apuração não aparecem com zero pontos confirmado', () => {
   const future = G.model(rows[0].snapshot, '2026-T4');

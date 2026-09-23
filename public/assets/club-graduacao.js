@@ -43,7 +43,7 @@
     }).join('') + '</select></label>';
   }
   function top(id) {
-    return '<div class="gr-toolbar"><p class="gr-demo"><span></span>Prévia da graduação <small>Dados da planilha de 10/09/2026 · sem atualização automática</small></p>' + periodSelect(id) + '</div>';
+    return '<div class="gr-toolbar"><p class="gr-demo"><span></span>Prévia da graduação <small>Dados da planilha de 17/09/2026 · sem atualização automática</small></p>' + periodSelect(id) + '</div>';
   }
   function journey(grade) {
     var labels = ['Preta','Preta','Preta','Preta','Preta','Preta','Coral','Coral','Vermelha','Dourada'];
