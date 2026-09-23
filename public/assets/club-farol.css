@@ -35,7 +35,27 @@
 .farol-kpi:first-child{padding-left:0;border-left:0}
 .farol-kpi strong{display:block;font-family:var(--body);font-size:clamp(27px,2.8vw,39px);font-weight:600;line-height:1.15;margin:8px 0 3px;font-variant-numeric:tabular-nums;letter-spacing:-.025em}
 .farol-kpi small{font-size:11px;color:var(--muted);white-space:normal}
-.farol-pulse{opacity:.55;letter-spacing:3px}
+/* Carregamento: esqueleto com brilho dourado e uma linha de progresso no topo do bloco. */
+.farol-skel{display:block;height:11px;max-width:100%;border-radius:6px;background:linear-gradient(90deg,rgba(var(--gold-rgb),.07) 0%,rgba(var(--gold-rgb),.24) 45%,rgba(var(--gold-rgb),.07) 90%) 0 0/250% 100%;animation:farol-shimmer 1.5s ease-in-out infinite}
+.farol-skel+.farol-skel{margin-top:9px}
+small>.farol-skel{margin-top:6px}
+.farol-skel-num{height:.78em;margin:.2em 0 .12em;border-radius:8px}
+.farol-skel-money{height:20px;margin:3px 0 2px}
+.farol-skel-bar{height:6px;margin-top:22px !important;border-radius:4px}
+.farol-kpi:nth-child(2) .farol-skel,.farol-finance-cell:nth-child(2) .farol-skel{animation-delay:.12s}
+.farol-kpi:nth-child(3) .farol-skel,.farol-finance-cell:nth-child(3) .farol-skel{animation-delay:.24s}
+.farol-kpi:nth-child(4) .farol-skel{animation-delay:.36s}
+.farol-kpi:nth-child(5) .farol-skel{animation-delay:.48s}
+.farol-funnel.is-loading,.farol-card.is-loading,.farol-finance.is-loading{position:relative;overflow:hidden}
+.farol-funnel.is-loading::before,.farol-card.is-loading::before,.farol-finance.is-loading::before{content:"";position:absolute;top:0;left:0;height:2px;width:35%;background:linear-gradient(90deg,transparent,var(--gold),transparent);animation:farol-sweep 1.3s ease-in-out infinite}
+.farol-card.is-loading{cursor:progress}
+.farol-loading-note{display:inline-flex;align-items:center;gap:7px}
+.farol-loading-note i{width:10px;height:10px;border-radius:50%;border:1.5px solid rgba(var(--gold-rgb),.25);border-top-color:var(--gold);animation:farol-spin .8s linear infinite}
+.farol-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@keyframes farol-shimmer{0%{background-position:100% 0}100%{background-position:-50% 0}}
+@keyframes farol-sweep{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}
+@keyframes farol-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.farol-skel,.farol-loading-note i,.farol-funnel.is-loading::before,.farol-card.is-loading::before,.farol-finance.is-loading::before{animation:none}.farol-skel{background:rgba(var(--gold-rgb),.1)}}
 .farol-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
 .farol-card{padding:17px 18px 13px;display:flex;flex-direction:column;min-width:0;min-height:251px}
 .farol-card[data-farol-card]{cursor:pointer}
