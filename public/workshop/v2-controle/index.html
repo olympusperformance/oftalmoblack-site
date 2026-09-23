@@ -61,11 +61,9 @@ em{font-family:Georgia,'Times New Roman',serif;font-weight:400;color:var(--gold-
 .form-card::before{content:'';height:1px;position:absolute;inset:0 24px auto;background:linear-gradient(90deg,transparent,#9b733d80,transparent)}
 .form-card h2{font-size:27px;letter-spacing:-.04em;line-height:1.12}
 .form-intro{margin-top:9px;font-size:14px;color:var(--muted);line-height:1.5}
-.price{display:flex;align-items:baseline;gap:7px;margin-block:17px 23px;padding-bottom:18px;border-bottom:1px solid var(--line);color:var(--gold-light)}
-.price .currency{font-size:18px;font-weight:600}
-.price strong{font-size:42px;line-height:1;font-weight:700;letter-spacing:-.05em}
-.price .payment{color:var(--muted);font-size:13px;margin-left:6px}
-.fields{display:grid;gap:15px}
+.ticket-price{margin-top:21px;font-size:13px;color:var(--muted);line-height:1.5;text-align:center}
+.ticket-price strong{font-weight:600;color:var(--gold-light)}
+.fields{display:grid;gap:15px;margin-top:23px}
 .field{display:grid;gap:7px;min-width:0}
 .field span{font-size:13px;font-weight:600;color:var(--paper)}
 .field input{display:block;width:100%;min-height:49px;border-radius:7px;border:1px solid #3b372e;background:#0c0c0b;padding:12px 13px;font-size:16px;line-height:1.35;color:var(--paper);transition:border-color .16s,box-shadow .16s}
@@ -73,11 +71,11 @@ em{font-family:Georgia,'Times New Roman',serif;font-weight:400;color:var(--gold-
 .field input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px #d89d4d1c}
 .field input[aria-invalid=true],.field input.hf-bad{border-color:var(--red)}
 .honeypot{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
-.cta{display:flex;align-items:center;justify-content:center;min-height:57px;gap:8px;padding:16px 18px;text-align:center;text-decoration:none;color:#161005;border:1px solid #eac588;border-radius:8px;background:linear-gradient(180deg,#ecc889 0%,#dba757 90%);box-shadow:0 5px 0 #8b602a,inset 0 1px 0 #fff5;font-size:16px;font-weight:800;line-height:1.15;letter-spacing:-.02em;transition:background .15s,transform .15s,box-shadow .15s}
-.cta:hover:not(:disabled){background:linear-gradient(180deg,#f4d8a5,#e2b16b);box-shadow:0 5px 0 #8b602a,inset 0 1px 0 #fff5,0 8px 28px #d89d4d1a}
-.cta:active:not(:disabled){transform:translateY(3px);box-shadow:0 2px 0 #8b602a}
-.cta:disabled{color:#a19a8b;background:#302c24;border-color:#494134;box-shadow:0 4px 0 #1b1813;cursor:not-allowed}
-#submit-basic{margin-top:24px;width:100%}
+.cta{display:flex;align-items:center;justify-content:center;min-height:56px;gap:10px;padding:17px 24px;text-align:center;text-decoration:none;color:#0a0a0a;border:0;border-radius:999px;background:linear-gradient(115deg,#d89d4d,#fdf3b5);box-shadow:inset 0 1px 0 rgba(255,255,255,.45);font-size:12.5px;font-weight:600;line-height:1.35;letter-spacing:.13em;text-transform:uppercase;transition:transform .35s ease,box-shadow .35s ease}
+.cta:hover:not(:disabled){transform:translateY(-2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 16px 44px rgba(216,157,77,.28)}
+.cta:active:not(:disabled){transform:translateY(0);box-shadow:inset 0 1px 0 rgba(255,255,255,.45)}
+.cta:disabled{color:#a19a8b;background:#302c24;box-shadow:inset 0 1px 0 #ffffff0d;cursor:not-allowed}
+#submit-basic{margin-top:12px;width:100%}
 .form-security{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:18px;font-size:12px;color:var(--muted)}
 .form-security svg{flex:none;color:var(--gold-light)}
 .privacy{font-size:11px;line-height:1.5;color:#979287;margin-top:14px}
@@ -85,9 +83,13 @@ em{font-family:Georgia,'Times New Roman',serif;font-weight:400;color:var(--gold-
 .noscript{margin-top:16px;padding:12px;border:1px solid var(--line);color:var(--gold-light);font-size:14px}
 .presenter-section{border-top:1px solid var(--line);padding-block:76px 84px;background:linear-gradient(180deg,#0a0a0a85,#0a0a0ae8)}
 .presenter{display:grid;grid-template-columns:minmax(0,.87fr) minmax(0,1.13fr);align-items:center;gap:80px}
-.portrait{position:relative;overflow:hidden;background:#10100e;border:1px solid var(--line);border-radius:12px;aspect-ratio:4/4.9}
-.portrait img{width:100%;height:100%;object-fit:cover;object-position:50% 20%}
-.portrait::after{position:absolute;content:'';inset:70% 0 0;background:linear-gradient(transparent,#0a0a0a70);pointer-events:none}
+.portrait{position:relative;border-radius:26px;aspect-ratio:4/5;box-shadow:0 30px 60px rgba(0,0,0,.5)}
+.portrait-edge{position:absolute;inset:0;z-index:2;pointer-events:none;border-radius:26px;padding:2px;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;overflow:hidden}
+.portrait-edge i{position:absolute;inset:-55%;display:block;background:conic-gradient(from 0deg,transparent 0 64%,rgba(216,157,77,.35) 76%,rgba(230,189,116,.85) 86%,#fdf3b5 90%,rgba(216,157,77,.5) 95%,transparent 100%);animation:portrait-orbit 4.5s linear infinite}
+.portrait-body{position:absolute;inset:2px;z-index:1;display:block;overflow:hidden;border-radius:24px;background:#0a0a0a}
+@keyframes portrait-orbit{to{transform:rotate(360deg)}}
+.portrait img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%}
+.portrait-body::after{position:absolute;content:'';inset:0;background:linear-gradient(180deg,transparent 55%,rgba(10,10,10,.55));pointer-events:none}
 .presenter-copy h2{font-size:clamp(35px,3.7vw,46px);max-width:15ch;margin-top:18px}
 .presenter-copy .registration{margin-top:17px;color:var(--gold-light);font-size:12px;letter-spacing:.04em;font-weight:600}
 .presenter-copy .bio{margin-top:24px;color:var(--muted);font-size:18px;line-height:1.65;max-width:45ch}
@@ -127,7 +129,7 @@ footer a:hover{text-decoration:underline;color:var(--paper)}
 .secondary-button{color:var(--muted);background:transparent;padding:9px 5px;border:0;font-size:16px;font-weight:700;min-height:44px}
 .secondary-button:hover:not(:disabled){color:var(--paper)}
 .secondary-button:disabled{opacity:.35;cursor:default}
-#research-next{min-height:44px;min-width:128px;padding:12px 22px;font-size:14px;box-shadow:0 3px 0 #8b602a}
+#research-next{min-height:44px;min-width:128px;padding:12px 22px;font-size:12px}
 #research-error{margin-top:16px}
 .research-payment{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:28px;margin-top:14px;padding:22px;border:1px solid #4d3b22;border-radius:14px;background:#18170f}
 .research-payment p{font-size:18px;line-height:1.3;font-weight:700;letter-spacing:-.025em}
@@ -135,8 +137,8 @@ footer a:hover{text-decoration:underline;color:var(--paper)}
 #checkout-button{width:100%}
 @media(min-width:1500px){.hero{padding-block:78px 100px}}
 @media(max-width:1000px){.hero{gap:35px;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}.hero h1{font-size:42px}.form-card{padding:25px}.presenter{gap:48px}.presenter-copy .bio{font-size:17px}}
-@media(max-width:760px){.shell{width:calc(100% - 40px)}.topbar{padding-top:20px}.brand{width:145px}.topnote{font-size:11px;max-width:100px;text-align:right;line-height:1.3}.hero{grid-template-columns:1fr;gap:31px;padding-block:40px 54px}.hero-copy{max-width:570px}.hero h1{font-size:clamp(36px,7.5vw,48px);max-width:19ch;margin-top:13px}.event-name{margin-top:16px;font-size:14px}.hero-summary{margin-top:22px;max-width:47ch;font-size:16px}.event-details{margin-top:24px}.event-details strong{font-size:16px}.event-details span{font-size:13px}.live-details{font-size:12px;margin-top:13px}.form-card{padding:27px;max-width:570px;width:100%;justify-self:center}.presenter-section{padding-block:48px 50px}.presenter{grid-template-columns:1fr;gap:29px;max-width:570px}.portrait{max-width:400px;width:100%;aspect-ratio:4/4.5}.presenter-copy h2{font-size:37px;max-width:17ch;margin-top:13px}.presenter-copy .bio{font-size:16px;margin-top:20px}.presenter-copy .registration{margin-top:14px}.footer-row{display:block}.footer-copy{max-width:none}footer nav{margin-top:18px;justify-content:flex-start}.research{padding-block:35px 45px}.research-heading h2{font-size:37px}.research-heading p:last-child{font-size:16px}.question-card{padding:20px 18px 0;margin-top:24px}.question-meta{gap:16px;margin-bottom:19px}#question-title{font-size:24px;margin-bottom:20px}#question-options label{font-size:15px;padding:13px 12px;min-height:58px;gap:12px}.research-navigation{margin-inline:-18px;padding:14px 18px}.research-payment{grid-template-columns:1fr;padding:20px;gap:20px}.research-payment p{font-size:17px}#checkout-button{font-size:16px;min-height:57px}.eyebrow{font-size:11px;letter-spacing:.09em}}
-@media(max-width:380px){.shell{width:calc(100% - 32px)}.hero h1{font-size:35px}.form-card{padding:23px 20px}.form-card h2{font-size:26px}.research-heading h2{font-size:33px}#question-title{font-size:22px}.question-card{padding-inline:14px}.research-navigation{margin-inline:-14px;padding-inline:14px}.event-details strong{font-size:15px}.cta{font-size:15px}}
+@media(max-width:760px){.shell{width:calc(100% - 40px)}.topbar{padding-top:20px}.brand{width:145px}.topnote{font-size:11px;max-width:100px;text-align:right;line-height:1.3}.hero{grid-template-columns:1fr;gap:31px;padding-block:40px 54px}.hero-copy{max-width:570px}.hero h1{font-size:clamp(36px,7.5vw,48px);max-width:19ch;margin-top:13px}.event-name{margin-top:16px;font-size:14px}.hero-summary{margin-top:22px;max-width:47ch;font-size:16px}.event-details{margin-top:24px}.event-details strong{font-size:16px}.event-details span{font-size:13px}.live-details{font-size:12px;margin-top:13px}.form-card{padding:27px;max-width:570px;width:100%;justify-self:center}.presenter-section{padding-block:48px 50px}.presenter{grid-template-columns:1fr;gap:29px;max-width:570px}.portrait{max-width:400px;width:100%;aspect-ratio:4/5}.presenter-copy h2{font-size:37px;max-width:17ch;margin-top:13px}.presenter-copy .bio{font-size:16px;margin-top:20px}.presenter-copy .registration{margin-top:14px}.footer-row{display:block}.footer-copy{max-width:none}footer nav{margin-top:18px;justify-content:flex-start}.research{padding-block:35px 45px}.research-heading h2{font-size:37px}.research-heading p:last-child{font-size:16px}.question-card{padding:20px 18px 0;margin-top:24px}.question-meta{gap:16px;margin-bottom:19px}#question-title{font-size:24px;margin-bottom:20px}#question-options label{font-size:15px;padding:13px 12px;min-height:58px;gap:12px}.research-navigation{margin-inline:-18px;padding:14px 18px}.research-payment{grid-template-columns:1fr;padding:20px;gap:20px}.research-payment p{font-size:17px}#checkout-button{font-size:12.5px;min-height:56px}.eyebrow{font-size:11px;letter-spacing:.09em}}
+@media(max-width:380px){.shell{width:calc(100% - 32px)}.hero h1{font-size:35px}.form-card{padding:23px 20px}.form-card h2{font-size:26px}.research-heading h2{font-size:33px}#question-title{font-size:22px}.question-card{padding-inline:14px}.research-navigation{margin-inline:-14px;padding-inline:14px}.event-details strong{font-size:15px}.cta{font-size:12px;letter-spacing:.11em;padding-inline:18px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important;animation:none!important}}
 </style>
 <script>
@@ -215,7 +217,6 @@ gtag('event','view_item',{currency:'BRL',value:97,items:[{item_id:'workshop-clin
       <form id="cadastro" class="form-card" novalidate autocomplete="on" aria-labelledby="form-title">
         <h2 id="form-title">Participe dessa reunião.</h2>
         <p class="form-intro">Preencha seus dados para continuar a inscrição.</p>
-        <p class="price"><span class="currency">R$</span><strong>97</strong><span class="payment">no Pix ou no cartão</span></p>
         <div class="fields">
           <label class="field" for="nome"><span>Nome completo</span><input id="nome" name="nome" type="text" required minlength="5" maxlength="160" autocomplete="name" placeholder="Seu nome completo" aria-describedby="form-error"></label>
           <label class="field" for="email"><span>E-mail</span><input id="email" name="email" type="email" required maxlength="254" autocomplete="email" autocapitalize="none" spellcheck="false" placeholder="seu@email.com" aria-describedby="form-error"></label>
@@ -223,6 +224,7 @@ gtag('event','view_item',{currency:'BRL',value:97,items:[{item_id:'workshop-clin
         </div>
         <div class="honeypot" aria-hidden="true"><label for="site">Site</label><input id="site" name="site" type="text" tabindex="-1" autocomplete="off"></div>
         <p id="form-error" class="form-error" role="alert" hidden></p>
+        <p class="ticket-price">Ingresso: <strong>R$97</strong> · Pix ou cartão</p>
         <button id="submit-basic" class="cta" type="submit">Ir para o pagamento · R$97</button>
         <p class="form-security"><svg aria-hidden="true" width="13" height="15" viewBox="0 0 16 18" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="8" width="12" height="8" rx="2"/><path d="M4 8V5a4 4 0 018 0v3M8 11v2"/></svg>Pagamento seguro · Garantia de 7 dias</p>
         <p class="privacy">Usaremos seus dados para a inscrição e as comunicações do evento. Consulte a <a href="/politica-de-privacidade/">Política de privacidade</a>.</p>
@@ -231,7 +233,7 @@ gtag('event','view_item',{currency:'BRL',value:97,items:[{item_id:'workshop-clin
     </section>
     <section class="presenter-section" aria-labelledby="presenter-title">
       <div class="shell presenter">
-        <figure class="portrait"><img src="/workshop/assets/img/alex-hero-800.webp" srcset="/workshop/assets/img/alex-hero-800.webp 800w, /workshop/assets/img/alex-hero-992.webp 992w" sizes="(min-width: 1180px) 420px, (min-width: 761px) 40vw, calc(100vw - 40px)" width="800" height="1200" loading="lazy" decoding="async" alt="Dr. Alex Sá, de terno e microfone, conduzindo uma aula"></figure>
+        <figure class="portrait"><span class="portrait-edge" aria-hidden="true"><i></i></span><span class="portrait-body"><img src="/imersaograuzero/assets/img/gz-mentor.webp" width="688" height="1032" loading="lazy" decoding="async" alt="Dr. Alex Sá, de terno e microfone, conduzindo uma aula"></span></figure>
         <div class="presenter-copy">
           <p class="eyebrow">Quem conduz a reunião</p>
           <h2 id="presenter-title">Dr. Alex <em>Gonçalves Sá</em></h2>
@@ -293,14 +295,22 @@ gtag('event','view_item',{currency:'BRL',value:97,items:[{item_id:'workshop-clin
   function checkout(d){
     var u=new URL('https://payfast.greenn.com.br/pre-checkout/j6ut7g4');
     u.searchParams.set('email',d.email);u.searchParams.set('ph',d.whatsapp);u.searchParams.set('lid',d.lid);u.searchParams.set('src',d.origem);
+    u.searchParams.set('o_0T42eV','1');
     attribution.forEach(function(k){if(d[k])u.searchParams.set(k,d[k]);});
     return u.href;
   }
   if(typeof module==='object'&&module.exports){module.exports={phone:phone,validate:validate,complete:complete,questions:questions,checkout:checkout};return;}
   var ENDPOINT='https://script.google.com/macros/s/AKfycbxg1Kgjg07mwdGwZgeIUOJdqruEoOhPoOetMWaWuX8Zq2_wzK-SOu2D_X-f6-k7vJar/exec';
-  var variant=document.body.dataset.variant;
+  var route=/^\/workshop\/(v2|v2-controle)(?:\/|\/index\.html)?$/.exec(location.pathname);
+  var variant=route?route[1]:null;
   var form=document.getElementById('cadastro'), landing=document.getElementById('landing'), research=document.getElementById('research');
   var basic=document.getElementById('submit-basic'), basicText=basic.textContent, back=document.getElementById('research-back'), next=document.getElementById('research-next'), pay=document.getElementById('checkout-button');
+  if(!variant){
+    basic.disabled=true;
+    var routeError=document.getElementById('form-error');routeError.hidden=false;routeError.textContent='Não foi possível identificar esta página. Abra novamente o link do workshop. Código FLOW-ROUTE.';
+    form.addEventListener('submit',function(e){e.preventDefault();});
+    return;
+  }
   var step=0, busy=false, queue=Promise.resolve(), savedRevision=-1, saveFailure=false, draft=null;
   var storageKey='ob_workshop_'+variant;
   var META={content_name:'workshop_clinica_premium',content_category:'oftalmoblack_b2b',value:97,currency:'BRL'};
@@ -314,26 +324,43 @@ gtag('event','view_item',{currency:'BRL',value:97,items:[{item_id:'workshop-clin
     try{fbq('trackCustom','ClickCheckout',META);}catch(e){}
     try{gtag('event','begin_checkout',{currency:'BRL',value:97,transport_type:'beacon',items:[{item_id:'workshop-clinica-premium',item_name:'Workshop Clínica Oftalmológica Premium',price:97}]});}catch(e){}
   }
-  async function jsonRequest(url,options){
+  function requestError(stage,reason,retryable){var error=new Error(stage+'-'+reason);error.flowCode=stage+'-'+reason;error.retryable=!!retryable;return error;}
+  function failureCode(error){return error&&/^(SESSION|CAPTURE)-(NET|TIMEOUT|HTTP[1-5]\d\d|JSON|REJECT|ACK)$/.test(error.flowCode)?error.flowCode:'CAPTURE-UNKNOWN';}
+  async function jsonRequest(url,options,stage){
     var controller=new AbortController();var timer=setTimeout(function(){controller.abort();},20000);
-    try{var response=await fetch(url,Object.assign({signal:controller.signal},options));if(!response.ok)throw new Error('request');return await response.json();}finally{clearTimeout(timer);}
+    try{
+      var response=await fetch(url,Object.assign({signal:controller.signal},options));
+      if(!response.ok)throw requestError(stage,'HTTP'+response.status,response.status===429||response.status>=500);
+      return await response.json();
+    }catch(error){
+      if(error.flowCode)throw error;
+      if(error.name==='AbortError'||controller.signal.aborted)throw requestError(stage,'TIMEOUT',true);
+      if(error.name==='TypeError')throw requestError(stage,'NET',true);
+      throw requestError(stage,'JSON',false);
+    }finally{clearTimeout(timer);}
   }
   async function session(email){
-    var result=await jsonRequest('/api/workshop/session',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email})});
-    if(!result.lid||!/^[a-f0-9-]{36}$/i.test(result.lid))throw new Error('session');
+    var result=await jsonRequest('/api/workshop/session',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email})},'SESSION');
+    if(!result||typeof result.lid!=='string'||!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(result.lid))throw requestError('SESSION','ACK',false);
     return result.lid;
   }
   function revision(){draft.revision=Math.max(Date.now(),(draft.revision||0)+1);keep();}
   function save(){
     var payload=JSON.parse(JSON.stringify(draft));
+    var body=JSON.stringify(payload);
     var task=queue.catch(function(){}).then(async function(){
-      var result=await jsonRequest(ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify(payload),redirect:'follow'});
-      if(!result.ok||result.lid!==payload.lid||result.revision<payload.revision)throw new Error('capture');
-      savedRevision=Math.max(savedRevision,result.revision);saveFailure=false;
-      return result;
+      for(var attempt=0;attempt<2;attempt++){
+        try{
+          var result=await jsonRequest(ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:body,redirect:'follow'},'CAPTURE');
+          if(result&&result.ok===false)throw requestError('CAPTURE','REJECT',true);
+          if(!result||result.ok!==true||result.lid!==payload.lid||typeof result.revision!=='number'||!Number.isFinite(result.revision)||result.revision<payload.revision)throw requestError('CAPTURE','ACK',false);
+          savedRevision=Math.max(savedRevision,result.revision);saveFailure=false;
+          return result;
+        }catch(error){if(attempt===1||!error.retryable)throw error;}
+      }
     });
     queue=task;
-    task.catch(function(){saveFailure=true;alertText('research-error','Não conseguimos salvar sua última resposta. Ela continua nesta página. Clique em Continuar para tentar novamente.');});
+    task.catch(function(error){saveFailure=true;alertText('research-error','Não conseguimos salvar sua última resposta. Ela continua nesta página. Clique em Continuar para tentar novamente. Código '+failureCode(error)+'.');});
     return task;
   }
   function buttons(){
@@ -370,7 +397,7 @@ gtag('event','view_item',{currency:'BRL',value:97,items:[{item_id:'workshop-clin
       try{localStorage.setItem('ob_cad',JSON.stringify({lid:draft.lid,ts:draft.ts}));}catch(e){}
       trackCheckout();location.assign(checkout(draft));
     }catch(e){
-      var message='Não conseguimos concluir o cadastro agora. Seus dados foram mantidos. Tente novamente.';
+      var message='Não conseguimos concluir o cadastro agora. Seus dados foram mantidos. Tente novamente. Código '+failureCode(e)+'.';
       alertText(variant==='v2'?'research-error':'form-error',message);
       busy=false;buttons();basic.disabled=false;basic.textContent=basicText;pay.textContent='Ir para o pagamento · R$97';
     }
@@ -389,7 +416,7 @@ gtag('event','view_item',{currency:'BRL',value:97,items:[{item_id:'workshop-clin
       revision();await save();if(!previous)trackBasic();
       busy=false;basic.disabled=false;basic.textContent=basicText;
       if(variant==='v2'){step=0;showResearch();}else{await goCheckout();}
-    }catch(err){busy=false;basic.disabled=false;basic.textContent=basicText;alertText('form-error','Não conseguimos salvar seu cadastro agora. Confira a conexão e tente novamente.');}
+    }catch(err){busy=false;basic.disabled=false;basic.textContent=basicText;alertText('form-error','Não conseguimos salvar seu cadastro agora. Seus dados continuam nesta página. Confira a conexão e tente novamente. Código '+failureCode(err)+'.');}
   });
   back.addEventListener('click',function(){
     if(busy)return;alertText('research-error','');
