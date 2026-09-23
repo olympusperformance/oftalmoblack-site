@@ -351,7 +351,10 @@ gtag('event','view_item',{currency:'BRL',value:97,items:[{item_id:'workshop-clin
     var controller=new AbortController();var timer=setTimeout(function(){controller.abort();},20000);
     try{
       var response=await fetch(url,Object.assign({signal:controller.signal},options));
-      if(!response.ok)throw requestError(stage,'HTTP'+response.status,response.status===429||response.status>=500);
+      // Apps Script can persist the row yet return 404 from its one-time ContentService reply URL.
+      // A repeated POST keeps the same lid/revision; the receiver acknowledges without duplicating.
+      var missingGoogleReply=stage==='CAPTURE'&&response.status===404&&response.redirected&&/^https:\/\/script\.googleusercontent\.com\/macros\/echo(?:\?|$)/.test(response.url||'');
+      if(!response.ok)throw requestError(stage,'HTTP'+response.status,missingGoogleReply||response.status===429||response.status>=500);
       return await response.json();
     }catch(error){
       if(error.flowCode)throw error;
