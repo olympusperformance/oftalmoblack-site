@@ -149,7 +149,6 @@
     else if (clinic && clinic.funnel && clinic.funnel.status === 'error') items.push(['Funil do CRM indisponível', 'funnel']);
     if (clinic && clinic.commercial && clinic.commercial.status === 'error') items.push(['Valor comercial indisponível', 'commercial']);
     if (clinic && clinic.commercial && clinic.commercial.data && clinic.commercial.data.missing_price_count) items.push([clinic.commercial.data.missing_price_count + ' registro' + (clinic.commercial.data.missing_price_count === 1 ? '' : 's') + ' sem preço', 'commercial']);
-    if (clinic && clinic.finance && clinic.finance.status === 'error') items.push(['Financeiro parcialmente indisponível', 'finance']);
     if (!igData().row) items.push(['Instagram sem vínculo ou indisponível', 'instagram']);
     if (graduation && !graduation.snapshot) items.push(['Graduação sem apuração', 'graduation']);
     return items.slice(0, 3);
@@ -346,15 +345,8 @@
   }
   function foot() {
     var commercial = clinic && clinic.commercial && clinic.commercial.status === 'ready' ? clinic.commercial.data : null;
-    var finance = clinic && clinic.finance;
-    var billed = finance && finance.billed && finance.billed.current;
-    var received = finance && finance.received && finance.received.current;
     var issues = attention();
     return '<div class="farol-foot"><div class="farol-finance' + (clinicLoading ? ' is-loading' : '') + '"' + (clinicLoading ? ' aria-busy="true"' : '') + '>' +
-      financeCell('FATURADO · ' + days + ' DIAS', 'finance:billed', billed && billed.amount,
-        billed ? billed.record_count === 0 ? 'Sem lançamentos financeiros registrados' : number(billed.record_count) + ' cobranças' : 'Financeiro indisponível') +
-      financeCell('RECEBIDO · ' + days + ' DIAS', 'finance:received', received && received.amount,
-        received ? received.record_count === 0 ? 'Sem lançamentos financeiros registrados' : number(received.record_count) + ' pagamentos / estornos' : 'Financeiro indisponível') +
       financeCell('VALOR COMERCIAL · ' + days + ' DIAS', 'commercial', commercial && commercial.total, commercial ? number(commercial.count) + ' registros comerciais' : 'CRM indisponível') + '</div>' +
       '<div class="farol-attention"><span class="farol-label">ATENÇÃO</span>' + (issues.length ? issues.map(function (i) {
         return '<button data-farol-detail="attention:' + i[1] + '">' + text(i[0]) + '<span aria-hidden="true">↗</span></button>';
