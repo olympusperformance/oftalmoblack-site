@@ -58,13 +58,14 @@
     var delta = Math.round((Number(currentValue) - Number(previousValue)) / Number(previousValue) * 100);
     return (delta > 0 ? '+' : '') + delta + '% vs. período anterior';
   }
+  function skel(w, cls) { return '<span class="farol-skel' + (cls ? ' ' + cls : '') + '" style="width:' + w + '" aria-hidden="true"></span>'; }
   function clinicalData() { return clinic && clinic.funnel && clinic.funnel.status === 'ready' ? clinic.funnel.data : null; }
   function clinicalCard(label, field) {
     var data = clinicalData(), value = data && data.periodo && data.periodo[field];
     var before = data && data.anterior && data.anterior[field];
     return '<button class="farol-kpi" data-farol-detail="clinical:' + field + '"><span class="farol-label">' + label + '</span>' +
-      '<strong>' + (clinicLoading ? '<span class="farol-pulse">···</span>' : number(value)) + '</strong>' +
-      '<small>' + (clinicLoading ? 'Carregando CRM' : text(data ? percent(value, before) : 'CRM indisponível')) + '</small></button>';
+      '<strong>' + (clinicLoading ? skel('64%', 'farol-skel-num') : number(value)) + '</strong>' +
+      '<small>' + (clinicLoading ? skel('82%') : text(data ? percent(value, before) : 'CRM indisponível')) + '</small></button>';
   }
   function igData() {
     var all = sources.instagram();
@@ -119,7 +120,9 @@
     return now.getFullYear() + '-T' + quarter;
   }
   function graduationCard() {
-    if (graduationLoading) return '<section class="farol-card" data-farol-card="graduation"><div class="farol-card-head"><span>GRADUAÇÃO</span></div><div class="farol-unavailable">Carregando apuração…</div></section>';
+    if (graduationLoading) return '<section class="farol-card is-loading" aria-busy="true" data-farol-card="graduation"><div class="farol-card-head"><span>GRADUAÇÃO</span>' + skel('92px') + '</div>' +
+      '<div class="farol-grade"><div>' + skel('70px') + skel('78%', 'farol-skel-num') + '</div><div>' + skel('70px') + skel('46%', 'farol-skel-num') + '</div></div>' +
+      skel('100%', 'farol-skel-bar') + skel('38%') + '<span class="farol-sr">Carregando graduação</span></section>';
     if (!graduation || !graduation.snapshot) return '<section class="farol-card" data-farol-card="graduation"><div class="farol-card-head"><span>GRADUAÇÃO</span></div><button class="farol-unavailable farol-detail-button" data-farol-detail="graduation">' + text(graduation && graduation.error || 'Sem apuração disponível') + '</button><button class="farol-link" data-farol-detail="graduation">Entender fonte ↗</button></section>';
     var s = graduation.snapshot, m = C.graduacao.model(s, periodId(s));
     var attendance = m.period && m.period.attendance;
@@ -339,7 +342,7 @@
   }
   function financeCell(label, key, currentValue, hint) {
     return '<button class="farol-finance-cell" data-farol-detail="' + key + '"><span class="farol-label">' + label + '</span><strong>' +
-      (clinicLoading ? '···' : moneyValue(currentValue)) + '</strong><small>' + text(hint) + '</small></button>';
+      (clinicLoading ? skel('58%', 'farol-skel-money') : moneyValue(currentValue)) + '</strong><small>' + (clinicLoading ? skel('74%') : text(hint)) + '</small></button>';
   }
   function foot() {
     var commercial = clinic && clinic.commercial && clinic.commercial.status === 'ready' ? clinic.commercial.data : null;
@@ -347,7 +350,7 @@
     var billed = finance && finance.billed && finance.billed.current;
     var received = finance && finance.received && finance.received.current;
     var issues = attention();
-    return '<div class="farol-foot"><div class="farol-finance">' +
+    return '<div class="farol-foot"><div class="farol-finance' + (clinicLoading ? ' is-loading' : '') + '"' + (clinicLoading ? ' aria-busy="true"' : '') + '>' +
       financeCell('FATURADO · ' + days + ' DIAS', 'finance:billed', billed && billed.amount,
         billed ? billed.record_count === 0 ? 'Sem lançamentos financeiros registrados' : number(billed.record_count) + ' cobranças' : 'Financeiro indisponível') +
       financeCell('RECEBIDO · ' + days + ' DIAS', 'finance:received', received && received.amount,
@@ -362,16 +365,16 @@
     var list = members(), m = current();
     if (!m) { root.innerHTML = '<div class="farol-empty">Nenhum médico ativo disponível.</div>'; return; }
     var position = list.indexOf(m), data = clinicalData();
-    var source = clinicLoading ? 'Carregando dados da clínica…' : clinic && clinic.status === 'unlinked' ? 'Clínica sem vínculo · CRM indisponível' : clinic && clinic.error ? clinic.error : clinic && clinic.clinic ? clinic.clinic.name : 'Clínica não informada';
+    var source = clinicLoading ? null : clinic && clinic.status === 'unlinked' ? 'Clínica sem vínculo · CRM indisponível' : clinic && clinic.error ? clinic.error : clinic && clinic.clinic ? clinic.clinic.name : 'Clínica não informada';
     var windowLabel = clinic && clinic.period ? date(clinic.period.date_start || clinic.period.start) + '–' + date(clinic.period.date_end || clinic.period.end) : days + ' dias';
     var partial = data && clinic.period && ((data.trilha_desde && data.trilha_desde > clinic.period.start) || (data.dados_desde && data.dados_desde > clinic.period.start));
-    root.innerHTML = '<div class="farol"><div class="farol-header"><div class="farol-heading"><span>VISÃO EXECUTIVA <i></i> FAROL</span><h1>' + text(m.nome) + '</h1><p>' + text(m.turma || 'Turma não informada') + ' <b>·</b> ' + text(source) + '</p></div>' +
+    root.innerHTML = '<div class="farol"><div class="farol-header"><div class="farol-heading"><span>VISÃO EXECUTIVA <i></i> FAROL</span><h1>' + text(m.nome) + '</h1><p>' + text(m.turma || 'Turma não informada') + ' <b>·</b> ' + (source === null ? '<span class="farol-loading-note"><i aria-hidden="true"></i>Carregando dados da clínica…</span>' : text(source)) + '</p></div>' +
       '<div class="farol-controls"><label class="farol-search">' + C.icon('search') + '<input type="search" data-farol-search placeholder="Buscar médico" aria-label="Buscar médico"></label>' +
       '<select data-farol-member aria-label="Selecionar médico">' + list.map(function (x) { return '<option value="' + esc(x.id) + '"' + (x.id === selected ? ' selected' : '') + '>' + text(x.nome) + '</option>'; }).join('') + '</select>' +
       '<button data-farol-prev aria-label="Médico anterior"' + (!position ? ' disabled' : '') + '>‹</button><button data-farol-next aria-label="Próximo médico"' + (position === list.length - 1 ? ' disabled' : '') + '>›</button><button data-farol-retry aria-label="Atualizar Farol" title="Atualizar Farol">↻</button>' +
       '<div class="farol-days" aria-label="Período"><button data-farol-days="7" aria-pressed="' + (days === 7) + '">7 dias</button><button data-farol-days="30" aria-pressed="' + (days === 30) + '">30 dias</button></div></div></div>' +
       '<div class="farol-period"><span>' + text(windowLabel) + '</span>' + (partial ? '<b>Dados parciais desde ' + date(data.trilha_desde || data.dados_desde) + '</b>' : '') + (clinic && clinic.updated_at ? '<span>Atualizado ' + text(date(clinic.updated_at)) + '</span>' : '') + '</div>' +
-      '<div class="farol-funnel"><div class="farol-section-title"><span>JORNADA CLÍNICA</span><small>Movimentos do período · CRM</small></div><div class="farol-kpis">' +
+      '<div class="farol-funnel' + (clinicLoading ? ' is-loading' : '') + '"' + (clinicLoading ? ' aria-busy="true"' : '') + '><div class="farol-section-title"><span>JORNADA CLÍNICA</span><small>Movimentos do período · CRM</small></div><div class="farol-kpis">' +
       [['Novos leads','novos'],['Agendadas','agendadas'],['Realizadas','realizadas'],['Indicações','indicacoes'],['Fechamentos','cirurgias']].map(function (x) { return clinicalCard(x[0], x[1]); }).join('') + '</div></div>' +
       '<div class="farol-cards">' + instagramCard() + deliveryCard() + graduationCard() + '</div>' + foot() +
       '<div class="farol-footer"><span>Fontes independentes · ausências exibidas como —</span><a href="https://sistema.oftalmoblack.com.br/metrics" target="_blank" rel="noopener">Abrir métricas no CRM ↗</a></div></div>';
