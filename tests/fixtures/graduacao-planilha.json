@@ -3,13 +3,13 @@
     "memberName": "Anderson Gielo Quinellato",
     "snapshot": {
       "sourceName": "Anderson Gielo Quinellato",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 83.6,
+      "annualPoints": 85.2,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -37,16 +37,16 @@
           "videos": {
             "count": 34,
             "weeks": 9.86,
-            "credits": 9.66666666666667
+            "credits": 9.666666667
           }
         },
         {
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 37.3,
+          "points": 38.9,
           "scores": {
-            "attendance": 11.1,
+            "attendance": 12.7,
             "followers": 10,
             "videos": 16.2
           },
@@ -54,8 +54,8 @@
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 5,
-            "eligible": 9
+            "attended": 7,
+            "eligible": 11
           },
           "followers": {
             "growth": 2950
@@ -63,7 +63,7 @@
           "videos": {
             "count": 29,
             "weeks": 10.29,
-            "credits": 8.33333333333333
+            "credits": 8.333333333
           }
         },
         {
@@ -101,13 +101,13 @@
     "memberName": "Arthur Onofre Beltran Filho",
     "snapshot": {
       "sourceName": "Arthur Onofre Beltran Filho",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 79.1,
+      "annualPoints": 81.5,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -135,16 +135,16 @@
           "videos": {
             "count": 5,
             "weeks": 9.86,
-            "credits": 1.66666666666667
+            "credits": 1.666666667
           }
         },
         {
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 39,
+          "points": 41.4,
           "scores": {
-            "attendance": 6.7,
+            "attendance": 9.1,
             "followers": 20,
             "videos": 12.3
           },
@@ -152,8 +152,8 @@
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 3,
-            "eligible": 9
+            "attended": 5,
+            "eligible": 11
           },
           "followers": {
             "growth": 7007
@@ -161,7 +161,7 @@
           "videos": {
             "count": 24,
             "weeks": 10.29,
-            "credits": 6.33333333333333
+            "credits": 6.333333333
           }
         },
         {
@@ -199,13 +199,13 @@
     "memberName": "Cintia Santini",
     "snapshot": {
       "sourceName": "Cintia de Oliveira Santini",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
       "grade": 2,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 113.6,
+      "annualPoints": 112.2,
       "renewalDiscount": 15000,
       "renewalPrice": 105000,
       "vouchers": 0,
@@ -240,9 +240,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 65.3,
+          "points": 63.9,
           "scores": {
-            "attendance": 17.8,
+            "attendance": 16.4,
             "followers": 20,
             "videos": 17.5
           },
@@ -250,8 +250,8 @@
           "bonus": 10,
           "bonusReason": "Palestrante · Imersão de Marketing",
           "attendance": {
-            "attended": 8,
-            "eligible": 9
+            "attended": 9,
+            "eligible": 11
           },
           "followers": {
             "growth": 7151
@@ -297,13 +297,13 @@
     "memberName": "Daniel Barcellos de Moraes Jardim",
     "snapshot": {
       "sourceName": "Daniel Barcellos de Moraes Jardim",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 56.1,
+      "annualPoints": 57.5,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -338,9 +338,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 22.8,
+          "points": 24.2,
           "scores": {
-            "attendance": 2.2,
+            "attendance": 3.6,
             "followers": 20,
             "videos": 0.6
           },
@@ -348,8 +348,8 @@
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 1,
-            "eligible": 9
+            "attended": 2,
+            "eligible": 11
           },
           "followers": {
             "growth": 11029
@@ -357,7 +357,7 @@
           "videos": {
             "count": 1,
             "weeks": 10.29,
-            "credits": 0.333333333333333
+            "credits": 0.3333333333
           }
         },
         {
@@ -395,13 +395,13 @@
     "memberName": "Edney Cabral Silva",
     "snapshot": {
       "sourceName": "Edney Cabral Silva",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
       "grade": 1,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 94.9,
+      "annualPoints": 93.7,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -436,9 +436,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 44.8,
+          "points": 43.6,
           "scores": {
-            "attendance": 6.7,
+            "attendance": 5.5,
             "followers": 20,
             "videos": 18.1
           },
@@ -447,7 +447,7 @@
           "bonusReason": null,
           "attendance": {
             "attended": 3,
-            "eligible": 9
+            "eligible": 11
           },
           "followers": {
             "growth": 7217
@@ -455,7 +455,7 @@
           "videos": {
             "count": 111,
             "weeks": 10.29,
-            "credits": 9.33333333333333
+            "credits": 9.333333333
           }
         },
         {
@@ -493,7 +493,7 @@
     "memberName": "Eduardo Menta Vidal",
     "snapshot": {
       "sourceName": "Eduardo Menta Vidal",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
       "grade": 1,
@@ -527,7 +527,7 @@
           "videos": {
             "count": 54,
             "weeks": 9.86,
-            "credits": 10.6666666666667
+            "credits": 10.66666667
           }
         },
         {
@@ -545,7 +545,7 @@
           "bonusReason": null,
           "attendance": {
             "attended": 0,
-            "eligible": 9
+            "eligible": 11
           },
           "followers": {
             "growth": 15498
@@ -591,13 +591,13 @@
     "memberName": "Gabriela Traiano",
     "snapshot": {
       "sourceName": "Gabriela Traiano",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 52.8,
+      "annualPoints": 54.4,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -632,9 +632,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 24.7,
+          "points": 26.3,
           "scores": {
-            "attendance": 11.1,
+            "attendance": 12.7,
             "followers": 0,
             "videos": 13.6
           },
@@ -642,8 +642,8 @@
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 5,
-            "eligible": 9
+            "attended": 7,
+            "eligible": 11
           },
           "followers": {
             "growth": 2412
@@ -689,13 +689,13 @@
     "memberName": "Harymy Costa Barros Teixeira Vidal",
     "snapshot": {
       "sourceName": "Harymy Costa Barros Teixeira Vidal",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
       "grade": 1,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 84.8,
+      "annualPoints": 84,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -723,16 +723,16 @@
           "videos": {
             "count": 14,
             "weeks": 9.86,
-            "credits": 3.66666666666667
+            "credits": 3.666666667
           }
         },
         {
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 37.4,
+          "points": 36.6,
           "scores": {
-            "attendance": 4.4,
+            "attendance": 3.6,
             "followers": 20,
             "videos": 13
           },
@@ -741,7 +741,7 @@
           "bonusReason": null,
           "attendance": {
             "attended": 2,
-            "eligible": 9
+            "eligible": 11
           },
           "followers": {
             "growth": 5528
@@ -749,7 +749,7 @@
           "videos": {
             "count": 22,
             "weeks": 10.29,
-            "credits": 6.66666666666667
+            "credits": 6.666666667
           }
         },
         {
@@ -787,13 +787,13 @@
     "memberName": "João Vitor Baia Coelho",
     "snapshot": {
       "sourceName": "João Vitor Baia Coelho",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "07/05",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 46.9,
+      "annualPoints": 48,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -828,9 +828,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 19.3,
+          "points": 20.4,
           "scores": {
-            "attendance": 4.4,
+            "attendance": 5.5,
             "followers": 0,
             "videos": 14.9
           },
@@ -838,8 +838,8 @@
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 2,
-            "eligible": 9
+            "attended": 3,
+            "eligible": 11
           },
           "followers": {
             "growth": 1560
@@ -847,7 +847,7 @@
           "videos": {
             "count": 29,
             "weeks": 10.29,
-            "credits": 7.66666666666667
+            "credits": 7.666666667
           }
         },
         {
@@ -885,13 +885,13 @@
     "memberName": "Luciana da Hora",
     "snapshot": {
       "sourceName": "Luciana Maria Tavares da Hora",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "02/06",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 66.6,
+      "annualPoints": 67.4,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -919,16 +919,16 @@
           "videos": {
             "count": 11,
             "weeks": 4.14,
-            "credits": 2.66666666666667
+            "credits": 2.666666667
           }
         },
         {
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 43.7,
+          "points": 44.5,
           "scores": {
-            "attendance": 15.6,
+            "attendance": 16.4,
             "followers": 0,
             "videos": 18.1
           },
@@ -936,8 +936,8 @@
           "bonus": 10,
           "bonusReason": "Palestrante · Congresso da Sociedade Brasileira de Oftalmologia (LIOs tóricas)",
           "attendance": {
-            "attended": 7,
-            "eligible": 9
+            "attended": 9,
+            "eligible": 11
           },
           "followers": {
             "growth": 742
@@ -945,7 +945,7 @@
           "videos": {
             "count": 52,
             "weeks": 10.29,
-            "credits": 9.33333333333333
+            "credits": 9.333333333
           }
         },
         {
@@ -983,13 +983,13 @@
     "memberName": "Luís Guilherme Vidal",
     "snapshot": {
       "sourceName": "Luís Guilherme Vidal",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
       "grade": 1,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 99.4,
+      "annualPoints": 98.6,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -1017,16 +1017,16 @@
           "videos": {
             "count": 110,
             "weeks": 9.86,
-            "credits": 8.33333333333333
+            "credits": 8.333333333
           }
         },
         {
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 42.5,
+          "points": 41.7,
           "scores": {
-            "attendance": 4.4,
+            "attendance": 3.6,
             "followers": 20,
             "videos": 18.1
           },
@@ -1035,7 +1035,7 @@
           "bonusReason": null,
           "attendance": {
             "attended": 2,
-            "eligible": 9
+            "eligible": 11
           },
           "followers": {
             "growth": 9874
@@ -1043,7 +1043,7 @@
           "videos": {
             "count": 75,
             "weeks": 10.29,
-            "credits": 9.33333333333333
+            "credits": 9.333333333
           }
         },
         {
@@ -1081,13 +1081,13 @@
     "memberName": "Nauara Naissa",
     "snapshot": {
       "sourceName": "Nauara Naissa Duarte Silva",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 56.7,
+      "annualPoints": 55.3,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -1122,9 +1122,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 45.3,
+          "points": 43.9,
           "scores": {
-            "attendance": 17.8,
+            "attendance": 16.4,
             "followers": 0,
             "videos": 17.5
           },
@@ -1132,8 +1132,8 @@
           "bonus": 10,
           "bonusReason": "Palestrante — data não localizada",
           "attendance": {
-            "attended": 8,
-            "eligible": 9
+            "attended": 9,
+            "eligible": 11
           },
           "followers": {
             "growth": 453
@@ -1179,13 +1179,13 @@
     "memberName": "Pedro Fábio de Mello Pinese",
     "snapshot": {
       "sourceName": "Pedro Fábio de Mello Pinese",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 76.1,
+      "annualPoints": 76.3,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -1213,16 +1213,16 @@
           "videos": {
             "count": 2,
             "weeks": 9.86,
-            "credits": 0.666666666666667
+            "credits": 0.6666666667
           }
         },
         {
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 38,
+          "points": 38.2,
           "scores": {
-            "attendance": 8.9,
+            "attendance": 9.1,
             "followers": 20,
             "videos": 9.1
           },
@@ -1230,8 +1230,8 @@
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 4,
-            "eligible": 9
+            "attended": 5,
+            "eligible": 11
           },
           "followers": {
             "growth": 7415
@@ -1239,7 +1239,7 @@
           "videos": {
             "count": 15,
             "weeks": 10.29,
-            "credits": 4.66666666666667
+            "credits": 4.666666667
           }
         },
         {
@@ -1277,13 +1277,13 @@
     "memberName": "Adriano Fonseca Yamada",
     "snapshot": {
       "sourceName": "Adriano Fonseca Yamada",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "05/06",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 28,
+      "annualPoints": 30.4,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -1311,16 +1311,16 @@
           "videos": {
             "count": 5,
             "weeks": 3.71,
-            "credits": 1.66666666666667
+            "credits": 1.666666667
           }
         },
         {
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 19,
+          "points": 21.4,
           "scores": {
-            "attendance": 6.7,
+            "attendance": 9.1,
             "followers": 0,
             "videos": 12.3
           },
@@ -1328,8 +1328,8 @@
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 3,
-            "eligible": 9
+            "attended": 5,
+            "eligible": 11
           },
           "followers": {
             "growth": 1221
@@ -1337,7 +1337,7 @@
           "videos": {
             "count": 32,
             "weeks": 10.29,
-            "credits": 6.33333333333333
+            "credits": 6.333333333
           }
         },
         {
@@ -1375,13 +1375,13 @@
     "memberName": "Affou Madi",
     "snapshot": {
       "sourceName": "Affou Madi",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "09/07",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 9.1,
+      "annualPoints": 8.6,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -1416,9 +1416,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 9.1,
+          "points": 8.6,
           "scores": {
-            "attendance": 2.5,
+            "attendance": 2,
             "followers": 0,
             "videos": 6.6
           },
@@ -1427,7 +1427,7 @@
           "bonusReason": null,
           "attendance": {
             "attended": 1,
-            "eligible": 8
+            "eligible": 10
           },
           "followers": {
             "growth": 90
@@ -1473,13 +1473,13 @@
     "memberName": "Diogo Rodrigues",
     "snapshot": {
       "sourceName": "Diogo Rodrigues",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "30/06",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 10.2,
+      "annualPoints": 10.4,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -1514,9 +1514,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 10.2,
+          "points": 10.4,
           "scores": {
-            "attendance": 8.9,
+            "attendance": 9.1,
             "followers": 0,
             "videos": 1.3
           },
@@ -1524,8 +1524,8 @@
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 4,
-            "eligible": 9
+            "attended": 5,
+            "eligible": 11
           },
           "followers": {
             "growth": 18
@@ -1533,7 +1533,7 @@
           "videos": {
             "count": 2,
             "weeks": 10.29,
-            "credits": 0.666666666666667
+            "credits": 0.6666666667
           }
         },
         {
@@ -1571,13 +1571,13 @@
     "memberName": "Felipe Almeida Mota",
     "snapshot": {
       "sourceName": "Felipe Almeida Mota",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "09/07",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 7.2,
+      "annualPoints": 6.2,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -1612,9 +1612,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 7.2,
+          "points": 6.2,
           "scores": {
-            "attendance": 5,
+            "attendance": 4,
             "followers": 0,
             "videos": 2.2
           },
@@ -1623,7 +1623,7 @@
           "bonusReason": null,
           "attendance": {
             "attended": 2,
-            "eligible": 8
+            "eligible": 10
           },
           "followers": {
             "growth": 165
@@ -1669,13 +1669,13 @@
     "memberName": "Felipe Marcolini Dantas Bertucci",
     "snapshot": {
       "sourceName": "Felipe Marcolini Dantas Bertucci",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "11/05",
       "grade": 1,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 104,
+      "annualPoints": 106,
       "renewalDiscount": 15000,
       "renewalPrice": 105000,
       "vouchers": 0,
@@ -1703,16 +1703,16 @@
           "videos": {
             "count": 20,
             "weeks": 7.29,
-            "credits": 6.66666666666667
+            "credits": 6.666666667
           }
         },
         {
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 45.7,
+          "points": 47.7,
           "scores": {
-            "attendance": 8.9,
+            "attendance": 10.9,
             "followers": 20,
             "videos": 16.8
           },
@@ -1720,8 +1720,8 @@
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 4,
-            "eligible": 9
+            "attended": 6,
+            "eligible": 11
           },
           "followers": {
             "growth": 6520
@@ -1729,7 +1729,7 @@
           "videos": {
             "count": 27,
             "weeks": 10.29,
-            "credits": 8.66666666666667
+            "credits": 8.666666667
           }
         },
         {
@@ -1767,7 +1767,7 @@
     "memberName": "Fernando Bauken",
     "snapshot": {
       "sourceName": "Fernando Bauken",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "03/06",
       "grade": 0,
@@ -1801,7 +1801,7 @@
           "videos": {
             "count": 5,
             "weeks": 4,
-            "credits": 1.66666666666667
+            "credits": 1.666666667
           }
         },
         {
@@ -1819,7 +1819,7 @@
           "bonusReason": null,
           "attendance": {
             "attended": 0,
-            "eligible": 9
+            "eligible": 11
           },
           "followers": {
             "growth": 153
@@ -1865,13 +1865,13 @@
     "memberName": "Gibran Volpe Chaves Petter",
     "snapshot": {
       "sourceName": "Gibran Volpe Chaves Petter",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "18/06",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 4.4,
+      "annualPoints": 5.5,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -1906,9 +1906,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 4.4,
+          "points": 5.5,
           "scores": {
-            "attendance": 4.4,
+            "attendance": 5.5,
             "followers": 0,
             "videos": 0
           },
@@ -1916,8 +1916,8 @@
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 2,
-            "eligible": 9
+            "attended": 3,
+            "eligible": 11
           },
           "followers": {
             "growth": 44
@@ -1963,13 +1963,13 @@
     "memberName": "Gustavo Ribeiro",
     "snapshot": {
       "sourceName": "Gustavo Ramos Ribeiro",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 35.2,
+      "annualPoints": 35,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -2004,9 +2004,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 22.4,
+          "points": 22.2,
           "scores": {
-            "attendance": 11.1,
+            "attendance": 10.9,
             "followers": 0,
             "videos": 1.3
           },
@@ -2014,8 +2014,8 @@
           "bonus": 10,
           "bonusReason": "Palestrante — data não localizada",
           "attendance": {
-            "attended": 5,
-            "eligible": 9
+            "attended": 6,
+            "eligible": 11
           },
           "followers": {
             "growth": 1351
@@ -2023,7 +2023,7 @@
           "videos": {
             "count": 2,
             "weeks": 10.29,
-            "credits": 0.666666666666667
+            "credits": 0.6666666667
           }
         },
         {
@@ -2061,13 +2061,13 @@
     "memberName": "Helcio Valerio Passos Junior",
     "snapshot": {
       "sourceName": "Helcio Valerio Passos Junior",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "20/05",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 8.9,
+      "annualPoints": 9.1,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -2102,9 +2102,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 8.9,
+          "points": 9.1,
           "scores": {
-            "attendance": 8.9,
+            "attendance": 9.1,
             "followers": 0,
             "videos": 0
           },
@@ -2112,8 +2112,8 @@
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 4,
-            "eligible": 9
+            "attended": 5,
+            "eligible": 11
           },
           "followers": {
             "growth": 4
@@ -2159,13 +2159,13 @@
     "memberName": "Higrant Sampaio Monte",
     "snapshot": {
       "sourceName": "Higrant Sampaio Monte",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 30,
+      "annualPoints": 28.8,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -2193,16 +2193,16 @@
           "videos": {
             "count": 10,
             "weeks": 9.86,
-            "credits": 3.33333333333333
+            "credits": 3.333333333
           }
         },
         {
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 9.9,
+          "points": 8.7,
           "scores": {
-            "attendance": 6.7,
+            "attendance": 5.5,
             "followers": 0,
             "videos": 3.2
           },
@@ -2211,7 +2211,7 @@
           "bonusReason": null,
           "attendance": {
             "attended": 3,
-            "eligible": 9
+            "eligible": 11
           },
           "followers": {
             "growth": 782
@@ -2219,7 +2219,7 @@
           "videos": {
             "count": 5,
             "weeks": 10.29,
-            "credits": 1.66666666666667
+            "credits": 1.666666667
           }
         },
         {
@@ -2257,13 +2257,13 @@
     "memberName": "Leo Felyppe Ferreira Sappi",
     "snapshot": {
       "sourceName": "Leo Felyppe Ferreira Sappi",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "10/06",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 27.6,
+      "annualPoints": 29.2,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -2298,9 +2298,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 17.6,
+          "points": 19.2,
           "scores": {
-            "attendance": 11.1,
+            "attendance": 12.7,
             "followers": 0,
             "videos": 6.5
           },
@@ -2308,8 +2308,8 @@
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 5,
-            "eligible": 9
+            "attended": 7,
+            "eligible": 11
           },
           "followers": {
             "growth": 56
@@ -2317,7 +2317,7 @@
           "videos": {
             "count": 10,
             "weeks": 10.29,
-            "credits": 3.33333333333333
+            "credits": 3.333333333
           }
         },
         {
@@ -2355,13 +2355,13 @@
     "memberName": "Lucas Ferreira de Sales",
     "snapshot": {
       "sourceName": "Lucas Ferreira de Sales",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "16/05",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 24.9,
+      "annualPoints": 24.3,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -2389,16 +2389,16 @@
           "videos": {
             "count": 1,
             "weeks": 6.57,
-            "credits": 0.333333333333333
+            "credits": 0.3333333333
           }
         },
         {
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 13.9,
+          "points": 13.3,
           "scores": {
-            "attendance": 13.3,
+            "attendance": 12.7,
             "followers": 0,
             "videos": 0.6
           },
@@ -2406,8 +2406,8 @@
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 6,
-            "eligible": 9
+            "attended": 7,
+            "eligible": 11
           },
           "followers": {
             "growth": 62
@@ -2415,7 +2415,7 @@
           "videos": {
             "count": 1,
             "weeks": 10.29,
-            "credits": 0.333333333333333
+            "credits": 0.3333333333
           }
         },
         {
@@ -2453,13 +2453,13 @@
     "memberName": "Marcelo Rosa Gameiro",
     "snapshot": {
       "sourceName": "Marcelo Rosa Gameiro",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "05/06",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 21.5,
+      "annualPoints": 33.5,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -2494,9 +2494,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 11.5,
+          "points": 23.5,
           "scores": {
-            "attendance": 4.4,
+            "attendance": 16.4,
             "followers": 0,
             "videos": 7.1
           },
@@ -2504,8 +2504,8 @@
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 2,
-            "eligible": 9
+            "attended": 9,
+            "eligible": 11
           },
           "followers": {
             "growth": 38
@@ -2513,7 +2513,7 @@
           "videos": {
             "count": 14,
             "weeks": 10.29,
-            "credits": 3.66666666666667
+            "credits": 3.666666667
           }
         },
         {
@@ -2551,13 +2551,13 @@
     "memberName": "Marina Vilas Boas Braga",
     "snapshot": {
       "sourceName": "Marina Vilas Boas Braga",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "24/06",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 15.4,
+      "annualPoints": 15.6,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -2592,9 +2592,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 15.4,
+          "points": 15.6,
           "scores": {
-            "attendance": 8.9,
+            "attendance": 9.1,
             "followers": 0,
             "videos": 6.5
           },
@@ -2602,8 +2602,8 @@
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 4,
-            "eligible": 9
+            "attended": 5,
+            "eligible": 11
           },
           "followers": {
             "growth": 72
@@ -2611,7 +2611,7 @@
           "videos": {
             "count": 13,
             "weeks": 10.29,
-            "credits": 3.33333333333333
+            "credits": 3.333333333
           }
         },
         {
@@ -2649,13 +2649,13 @@
     "memberName": "Oswaldo Cardoso Frazão Neto",
     "snapshot": {
       "sourceName": "Oswaldo Cardoso Frazão Neto",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 80,
+      "annualPoints": 80.6,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -2690,9 +2690,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 46.7,
+          "points": 47.3,
           "scores": {
-            "attendance": 6.7,
+            "attendance": 7.3,
             "followers": 10,
             "videos": 20
           },
@@ -2700,8 +2700,8 @@
           "bonus": 10,
           "bonusReason": "Palestrante — data não localizada",
           "attendance": {
-            "attended": 3,
-            "eligible": 9
+            "attended": 4,
+            "eligible": 11
           },
           "followers": {
             "growth": 3494
@@ -2709,7 +2709,7 @@
           "videos": {
             "count": 107,
             "weeks": 10.29,
-            "credits": 10.3333333333333
+            "credits": 10.33333333
           }
         },
         {
@@ -2747,13 +2747,13 @@
     "memberName": "Rachell Raymundo Ribeiro",
     "snapshot": {
       "sourceName": "Rachell Raymundo Ribeiro",
-      "sourceDate": "2026-09-10",
+      "sourceDate": "2026-09-17",
       "currentPeriod": "2026-T3",
       "entry": "10/06",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 2.2,
+      "annualPoints": 3.6,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -2788,9 +2788,9 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 2.2,
+          "points": 3.6,
           "scores": {
-            "attendance": 2.2,
+            "attendance": 3.6,
             "followers": 0,
             "videos": 0
           },
@@ -2798,8 +2798,8 @@
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 1,
-            "eligible": 9
+            "attended": 2,
+            "eligible": 11
           },
           "followers": {
             "growth": 50
