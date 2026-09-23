@@ -1,0 +1,9 @@
+{
+  "name": "gerador-graduacao",
+  "private": true,
+  "type": "module",
+  "description": "Gera a prévia da graduação a partir da planilha do Sistema de Graduação Black.",
+  "dependencies": {
+    "xlsx": "0.18.5"
+  }
+}
