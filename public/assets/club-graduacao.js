@@ -27,11 +27,11 @@
       percent:points == null ? 0 : Math.max(0, Math.min(100, points / META * 100)),
       status:p && p.state === 'future' ? 'future' : scoreStatus(points) };
   }
-  function belt(grade, compact) {
+  function belt(grade, mini) {
     var stripes = grade <= 6 ? grade : 0;
-    return '<div class="gr-belt' + (compact ? ' gr-belt-small' : '') + ' gr-belt-' + grade + '" role="img" aria-label="' + esc(beltName(grade) + ', ' + degreeLabel(grade)) + '">' +
-      '<span class="gr-belt-weave"></span><span class="gr-belt-brand">BLACK</span><span class="gr-belt-rank">' +
-      Array.from({ length:stripes }, function () { return '<i></i>'; }).join('') + '</span></div>';
+    return '<div class="gr-pin' + (mini ? ' gr-pin-mini' : '') + ' gr-pin-' + grade + '"' + (mini ? ' aria-hidden="true"' : ' role="img" aria-label="' + esc(beltName(grade) + ', ' + degreeLabel(grade)) + '"') + '>' +
+      '<span class="gr-pin-face"><img class="gr-pin-logo" src="/assets/graduacao-olho.png" alt=""><span class="gr-pin-rank">' +
+      Array.from({ length:stripes }, function () { return '<i></i>'; }).join('') + '</span></span></div>';
   }
   function progress(percent, label) {
     return '<div class="gr-track" role="progressbar" aria-label="' + esc(label) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + round(percent) + '"><span style="width:' + percent + '%"></span></div>';
@@ -49,7 +49,7 @@
     var labels = ['Preta','Preta','Preta','Preta','Preta','Preta','Coral','Coral','Vermelha','Dourada'];
     return '<section class="gr-journey"><div class="gr-section-head"><div><h2>Um grau de cada vez</h2><p>Os pontos renovam a cada ciclo. Sua graduação fica com você.</p></div></div>' +
       '<ol class="gr-degrees">' + labels.map(function (label, i) {
-        return '<li class="gr-degree gr-degree-' + (i + 1) + (i < grade ? ' is-earned' : '') + '"><span>' + (i + 1) + 'º</span><b>' + label + '</b><small>' +
+        return '<li class="gr-degree gr-degree-' + (i + 1) + (i < grade ? ' is-earned' : '') + '">' + belt(i + 1, true) + '<span>' + (i + 1) + 'º</span><b>' + label + '</b><small>' +
           (i < grade ? 'Na sua faixa' : i === 6 ? '+ 2 anos' : i === 7 ? '+ 3 anos' : i === 8 ? '+ 4 anos' : i === 9 ? 'Dr. Alex' : '50 pts / tri') + '</small></li>';
       }).join('') + '</ol><p class="gr-caption">Até o 6º grau: no máximo um grau por trimestre. O 7º, 8º e 9º também exigem tempo de Black. A faixa dourada é conferida pelo Dr. Alex.</p></section>';
   }
