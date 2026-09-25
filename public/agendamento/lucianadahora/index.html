@@ -6,6 +6,7 @@
 <title>Agendamento · Santa Luzia Hospital de Olhos</title>
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#FBFCFD">
+
 <!-- Meta Pixel · Dra. Luciana da Hora (dataset 1025369820465448) · padrão de tracking Mestre 30/08/2026 -->
 <script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
 n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
@@ -268,17 +269,6 @@ h1,h2{margin:0}
       </section>
       
 
-      <!-- ===== TELA · MOTIVO (preço muda: consulta R$ 300 · suspeita de catarata R$ 450) ===== -->
-      <section class="tela tela--recuada" data-tela="motivo" data-titulo="O seu caso" data-progresso="32%">
-        <span class="kicker kicker--curto">O seu caso</span>
-        <h2 class="tt h2">O que traz você aqui?</h2>
-        <p class="texto texto--menor texto--gap">Escolha a opção mais parecida com o seu caso. A nossa equipe já recebe a sua mensagem sabendo disso.</p>
-        <div class="opcoes">
-          <button class="opcao" type="button" data-ir="a1" data-motivo="Quero parar de usar óculos" data-preco="R$ 300" data-parcelas="Em até 2x" data-preco-texto="Nossa consulta oftalmológica completa está no valor de:">Quero parar de usar óculos <i>&rsaquo;</i></button>
-          <button class="opcao" type="button" data-ir="a1" data-motivo="Suspeita de catarata" data-preco="R$ 450" data-parcelas="Em até 2x" data-preco-texto="A consulta com avaliação de catarata está no valor de:">Acho que tenho catarata <i>&rsaquo;</i></button>
-          <button class="opcao" type="button" data-ir="a1" data-motivo="Consulta e exames de rotina" data-preco="R$ 300" data-parcelas="Em até 2x" data-preco-texto="Nossa consulta oftalmológica completa está no valor de:">Consulta e exames de rotina <i>&rsaquo;</i></button>
-        </div>
-      </section>
       <section class="tela tela--recuada" data-tela="cidade" data-titulo="Passo 01 · Localização" data-progresso="28%">
         <span class="kicker kicker--curto">Passo 01 · Localização</span>
         <h2 class="tt h2">De qual cidade você é?</h2>
@@ -288,12 +278,26 @@ h1,h2{margin:0}
                  spellcheck="false" placeholder="Escreva a sua cidade" aria-label="De qual cidade você é?"
                  aria-autocomplete="list" aria-controls="cidade-sugestoes">
           <ul class="sugestoes" id="cidade-sugestoes" role="listbox" hidden></ul>
-          <p class="campo-cidade--vazio" id="cidade-vazio" hidden>Não encontrei na lista — pode seguir com o que você escreveu.</p>
+          <p class="campo-cidade--vazio" id="cidade-vazio" hidden>Não encontrei na lista. Pode seguir com o que você escreveu.</p>
         </div>
         <button class="btn" type="button" style="margin-top:26px" id="cidade-ok" data-ir="bq" disabled>Continuar</button>
       </section>
       
-      <!-- ===== RAMO A · PACIENTE DA PRAÇA ===== -->
+
+      <section class="tela tela--recuada" data-tela="motivo" data-titulo="O seu caso" data-progresso="32%">
+        <span class="kicker kicker--curto">O seu caso</span>
+        <h2 class="tt h2">O que traz você aqui?</h2>
+        <p class="texto texto--menor texto--gap">Escolha a opção mais parecida com o seu caso. A nossa equipe já recebe a sua mensagem sabendo disso.</p>
+        <div class="opcoes">
+
+          <button class="opcao" type="button" data-ir="a1" data-motivo="Quero parar de usar óculos" data-preco="R$ 300" data-parcelas="Em até 2x" data-preco-texto="Nossa consulta oftalmológica completa está no valor de:">Quero parar de usar óculos <i>&rsaquo;</i></button>
+          
+          <button class="opcao" type="button" data-ir="a1" data-motivo="Suspeita de catarata" data-preco="R$ 450" data-parcelas="Em até 2x" data-preco-texto="A consulta com avaliação de catarata está no valor de:">Acho que tenho catarata <i>&rsaquo;</i></button>
+          
+          <button class="opcao" type="button" data-ir="a1" data-motivo="Consulta e exames de rotina" data-preco="R$ 300" data-parcelas="Em até 2x" data-preco-texto="Nossa consulta oftalmológica completa está no valor de:">Consulta e exames de rotina <i>&rsaquo;</i></button>
+                  </div>
+      </section>
+            <!-- ===== RAMO A · PACIENTE DA PRAÇA ===== -->
       <section class="tela" data-tela="a1" data-titulo="Perfeito!" data-progresso="45%">
         <div class="miolo pilha">
           <i class="icone">&#10003;</i>
@@ -328,8 +332,9 @@ h1,h2{margin:0}
         <div class="miolo">
           <span class="kicker">Investimento</span>
           <div class="cartao cartao--centro">
+
             <p class="texto texto--menor" style="margin-bottom:18px" id="preco-texto">Nossa consulta oftalmológica completa está no valor de:</p>
-            <div class="tt preco" id="preco-valor">R$ 300</div>
+                        <div class="tt preco" id="preco-valor">R$ 300</div>
             <div class="regua regua--fina regua--centro"></div>
 
             <div class="preco-parcelas" id="preco-parcelas">Em até 2x</div>
@@ -421,10 +426,10 @@ h1,h2{margin:0}
   "use strict";
   var WA = "557791430079";
   var MSG = {"local": "Olá! Vim pelo link da bio da Dra. Luciana da Hora. Sou de {unidade} e gostaria de agendar minha consulta presencial. Meu caso: {motivo}.", "tele": "Olá! Vim pelo link da bio da Dra. Luciana da Hora. Sou de {cidade}, tenho interesse em cirurgia e posso ir a Vitória da Conquista. Gostaria de agendar a teleconsulta."};
-  /* Frase de ANUNCIO (utm_medium=cpc na URL, last-touch guardado 90 dias no aparelho): quem
-     veio de trafego pago abre o WhatsApp com "Vi um anuncio", nao "link da bio". Mesmo padrao
-     do quiz do Dr. Alex (02/09/2026); frases catalogadas em frases-origem.md (Norte). Lead nunca
-     ve codigo: so a frase muda. Instalado 08/09/2026 pra campanha de Quiz da LUV. */
+
+  /* Frase de ANUNCIO (utm_medium=cpc na URL, last-touch guardado 90 dias no
+     aparelho): quem veio de trafego pago abre o WhatsApp com "Vi um anuncio", nao "link da bio".
+     Lead nunca ve codigo: so a frase muda. Padrao do Felipe Melo (08/09/2026), agora na skill. */
   var MSG_ADS = {"local": "Olá! Vi um anúncio da Dra. Luciana da Hora. Sou de {unidade} e gostaria de agendar minha consulta presencial. Meu caso: {motivo}.", "tele": "Olá! Vi um anúncio da Dra. Luciana da Hora. Sou de {cidade}, tenho interesse em cirurgia e posso ir a Vitória da Conquista. Gostaria de agendar a teleconsulta."};
   var vemDeAnuncio = (function(){
     var K = "luciana_quiz_medium", DIAS = 90, agora = Date.now(), medium = "";
@@ -435,7 +440,7 @@ h1,h2{margin:0}
     } catch(e){}
     return medium === "cpc";
   })();
-  var telas = {}, ordem = [];
+    var telas = {}, ordem = [];
   Array.prototype.forEach.call(document.querySelectorAll("[data-tela]"), function(el){
     telas[el.getAttribute("data-tela")] = el; ordem.push(el);
   });
@@ -453,17 +458,19 @@ h1,h2{margin:0}
      vezes para quem escolhesse a outra cidade. O valor que vem no HTML e' o da
      unidade padrao (a primeira do perfil); se o JS nao rodar, e' esse que fica. */
   var PRECOS = {};
-  /* Preco por MOTIVO (Dra. Luciana, 08/09/2026): consulta R$ 300, suspeita de
-     catarata R$ 450. O botao da tela "motivo" carrega data-preco / data-parcelas /
-     data-preco-texto; sobrepoe o preco da unidade. Sem escolha, fica o do HTML. */
+
+  /* Preco por MOTIVO: o botao da tela "O seu caso" carrega data-preco / data-parcelas /
+     data-preco-texto e sobrepoe o preco da unidade. Sem escolha, fica o do HTML. */
   var precoMotivo = null;
-  function aplicaPreco(){
+    function aplicaPreco(){
     var p = PRECOS[unidade];
+
     if(precoMotivo) p = Object.assign({}, p || {}, precoMotivo);
-    if(!p) return;
+        if(!p) return;
+
     var tx = document.getElementById("preco-texto");
     if(tx && p.texto) tx.textContent = p.texto;
-    var el = document.getElementById("preco-valor");
+        var el = document.getElementById("preco-valor");
     if(el && p.valor) el.textContent = p.valor;
     el = document.getElementById("preco-parcelas");
     if(el){ el.textContent = p.parcelas || ""; el.hidden = !p.parcelas; }
@@ -610,12 +617,15 @@ h1,h2{margin:0}
     /* window.open tem de acontecer DENTRO do clique: fora dele o navegador
        trata como popup e bloqueia (Safari sempre, Chrome com frequência). */
     if(chave === "local" && vemDeFora && MSG.vem) chave = "vem";
+
     var texto = ((vemDeAnuncio && MSG_ADS[chave]) || MSG[chave] || "").replace("{unidade}", unidade)
-                                  .replace("{motivo}", motivo)
-                                  .replace("{cidade}", cidadePaciente);
+                                      .replace("{motivo}", motivo)
+                                  .replace("{cidade}", cidadePaciente)
+                                  /* praca com WhatsApp direto nao passa pela tela de motivo */
+                                  .replace(" Meu caso: .", "");
     var numero = (chave === "local" && waUnidade) ? waUnidade : WA;
     /* "Rio de Janeiro" pede artigo, e ele pode chegar aqui pela praca, pela cidade que o paciente
-    escolheu ou pela cidade do colega: acerta no texto final, qualquer que seja a origem. */
+       escolheu ou pela cidade do colega: acerta no texto final, qualquer que seja a origem. */
     texto = texto.replace(/\b(em|a|de) Rio de Janeiro\b/g, function(m, p){ return ({em: "no", a: "ao", de: "do"})[p] + " Rio de Janeiro"; });
     var url = "https://wa.me/" + numero + (texto ? "?text=" + encodeURIComponent(texto) : "");
 
@@ -632,13 +642,14 @@ h1,h2{margin:0}
     if(!alvo) return;
     if(alvo.hasAttribute("data-motivo")){
       motivo = alvo.getAttribute("data-motivo") || motivo;
+
       if(alvo.hasAttribute("data-preco")){
         precoMotivo = { valor: alvo.getAttribute("data-preco"),
                         parcelas: alvo.getAttribute("data-parcelas") || "",
                         texto: alvo.getAttribute("data-preco-texto") || "" };
         aplicaPreco();
       }
-    }
+          }
     /* "Sim, eu iria a <cidade>": mora fora, mas viaja. Sem isso a mensagem da
        tela de preco diria "Sou de <cidade do medico>", que e' falso. */
     if(alvo.hasAttribute("data-vem")){ vemDeFora = true; }
