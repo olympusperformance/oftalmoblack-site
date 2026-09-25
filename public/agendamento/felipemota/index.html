@@ -5,17 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Agendamento · Dr. Felipe Mota</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#FEFDFB">
+<meta name="theme-color" content="#FAFBFC">
 <style>
 :root{
-  --primaria:#C9A24B; --primaria-rgb:201,162,75;
-  --primaria-escura:#856B32; --primaria-escura-rgb:133,107,50;
-  --metal:#B8860B; --metal-claro:#DFC991; --metal-suave:#E8D8B1;
-  --metal-linha:#E4D1A2; --metal-rgb:223,201,145; --metal-linha-rgb:228,209,162;
-  --tinta:#1D1D1F; --tinta-suave:#635C4D; --tinta-fraca:#A59D8F;
-  --papel:#FEFEFD; --papel-2:#FDFCF9; --papel-rgb:254,254,253;
-  --fundo-1:#FEFDFB; --fundo-2:#FAF7F0; --fundo-3:#F7F2E6;
-  --sombra-rgb:76,62,28; --trilha:#FAF7EF;
+  --primaria:#0F3460; --primaria-rgb:15,52,96;
+  --primaria-escura:#09213F; --primaria-escura-rgb:9,33,63;
+  --metal:#2B8F6E; --metal-claro:#A0CDBE; --metal-suave:#BBDBD1;
+  --metal-linha:#AED4C8; --metal-rgb:160,205,190; --metal-linha-rgb:174,212,200;
+  --tinta:#0C1016; --tinta-suave:#3E4551; --tinta-fraca:#888C93;
+  --papel:#FCFDFD; --papel-2:#F7F8F9; --papel-rgb:252,253,253;
+  --fundo-1:#FAFBFC; --fundo-2:#EBEEF1; --fundo-3:#DDE3E9;
+  --sombra-rgb:6,20,36; --trilha:#E9EDF1;
   --curva:cubic-bezier(.16,1,.3,1);
 }
 *{box-sizing:border-box}
@@ -307,12 +307,13 @@ h1,h2{margin:0}
         <div class="miolo">
           <span class="kicker">Investimento</span>
           <div class="cartao cartao--centro">
+
             <p class="texto texto--menor" style="margin-bottom:18px">Nossa consulta oftalmológica completa está no valor de:</p>
-            <div class="tt preco" id="preco-valor">R$ 500</div>
+                        <div class="tt preco" id="preco-valor">R$ 500</div>
             <div class="regua regua--fina regua--centro"></div>
 
-            <div class="preco-parcelas" id="preco-parcelas">À vista no Pix, débito ou crédito</div>
-                        <div class="preco-obs"></div>
+            <div class="preco-parcelas" id="preco-parcelas">Em até 3x sem juros</div>
+                        <div class="preco-obs">Atendimento particular · não atendemos convênio</div>
           </div>
         </div>
         <button class="btn" type="button" data-whats="local">Agendar consulta</button>
@@ -347,9 +348,9 @@ h1,h2{margin:0}
           <span class="kicker">Primeiro passo</span>
           <div class="cartao cartao--centro">
             <p class="texto texto--menor" style="margin-bottom:18px">O primeiro passo é uma <strong>teleconsulta</strong> com o Dr. Felipe Mota, no valor de:</p>
-            <div class="tt preco preco--menor">R$ 500</div>
+            <div class="tt preco preco--menor">R$ 300</div>
             <div class="regua regua--fina regua--centro"></div>
-            <div class="preco-obs">Atendimento on-line com o Dr. Felipe Mota</div>
+            <div class="preco-obs">Atendimento on-line com o Dr. Felipe Mota · pagamento no Pix</div>
           </div>
         </div>
         <button class="btn" type="button" data-ir="protocolo">Continuar</button>
@@ -566,8 +567,9 @@ h1,h2{margin:0}
     /* window.open tem de acontecer DENTRO do clique: fora dele o navegador
        trata como popup e bloqueia (Safari sempre, Chrome com frequência). */
     if(chave === "local" && vemDeFora && MSG.vem) chave = "vem";
+
     var texto = (MSG[chave] || "").replace("{unidade}", unidade)
-                                  .replace("{motivo}", motivo)
+                                      .replace("{motivo}", motivo)
                                   .replace("{cidade}", cidadePaciente)
                                   /* praca com WhatsApp direto nao passa pela tela de motivo */
                                   .replace(" Meu caso: .", "");
