@@ -14,9 +14,11 @@
   var $ = function (id) { return document.getElementById(id); };
 
   var st = { membro:null, events:[], artifacts:[], materials:[],
-             steps:[], progress:[], groups:[], matCategoria:'' };
+             steps:[], progress:[], groups:[], igResumo:[], igSerie:[],
+             baseLoading:true, igLoading:true, matCategoria:'' };
 
   var NAV = [
+    { key:'farol',     label:'Farol',     icon:'eye' },
     { key:'home',      label:'Início',    icon:'home' },
     { key:'graduacao', label:'Graduação', icon:'award' },
     { key:'instagram', label:'Instagram', icon:'eye' },
@@ -41,16 +43,30 @@
       return Promise.resolve(sessao.member);
     }
 
-    return Club.data.members.list().then(function (todos) {
-      var pedido = new URLSearchParams(location.search).get('membro');
-      return todos.filter(function (m) { return m.id === pedido; })[0] || todos[0] || null;
-    });
+    var pedido = new URLSearchParams(location.search).get('membro');
+    if (pedido && /^[0-9a-f-]{36}$/i.test(pedido)) return Club.data.members.get(pedido);
+    return Club.data.members.list().then(function (todos) { return todos[0] || null; });
   }
 
   function carregar() {
     return alvo().then(function (m) {
       if (!m) throw new Error('Nenhum membro cadastrado ainda.');
       st.membro = m;
+      var inicial = location.hash.slice(1);
+      if (!inicial || inicial.indexOf('farol/') === 0 || inicial === 'farol') {
+        renderIdentidade();
+        renderNav('farol');
+        montarFarol();
+        Club.farol.enter(location.hash.indexOf('#farol/') === 0 ? location.hash : '');
+      }
+      Promise.all([Club.data.instagram.resumo(), Club.data.instagram.serie(45)]).then(function (r) {
+        st.igResumo = r[0]; st.igSerie = r[1];
+      }).catch(function () {
+        st.igResumo = []; st.igSerie = [];
+      }).then(function () {
+        st.igLoading = false;
+        if (farolMontado) Club.farol.refresh();
+      });
       return Promise.all([
         Club.data.events.list({ memberId: m.id }),
         Club.data.artifacts.list({ memberId: m.id }),
@@ -64,6 +80,8 @@
     }).then(function (r) {
       st.events = r[0]; st.artifacts = r[1]; st.materials = r[2];
       st.steps = r[3]; st.progress = r[4]; st.groups = r[5] || [];
+      st.baseLoading = false;
+      if (farolMontado) Club.farol.refresh();
     });
   }
 
@@ -178,7 +196,7 @@
     $('turmaFase').textContent = [m.turma, m.fase].filter(Boolean).join(' · ') || 'Mentoria';
     $('greeting').innerHTML = Club.greeting() + ', <b>' +
       esc(m.nome.replace(/^(Dr|Dra)\.?\s+/i, '').split(' ')[0]) + '</b>';
-    document.title = 'Área do Mentorado — ' + m.nome;
+    document.title = 'Cérebro Black — ' + m.nome;
   }
 
   /* Quando é o admin espiando, deixar isso explícito e dar como trocar de membro. */
@@ -223,6 +241,48 @@
      só quando marcada. O mentorado vê o que falta da implantação, e depois dos
      100% vê a rotina como acompanhamento, não como pendência. */
   function parDe(a) { return Club.par(etapasDe(a.id), feita); }
+
+  function artefatosFarol() {
+    return st.artifacts.filter(function (a) { return a.tipo !== 'interna'; }).map(function (a) {
+      return { artifact:a, part:parDe(a), steps:etapasDe(a.id).map(function (e) {
+        return Object.assign({}, e, { feito:feita(e.id) });
+      }), demands:[] };
+    });
+  }
+
+  function entregasFarol() {
+    var r = { feitas:0, total:0, aceitos:0, definir:0, travados:0, equipe:0, noar:0, pcts:[], pct:0 };
+    artefatosFarol().forEach(function (a) {
+      var p = a.part;
+      if (p.estado === 'definir') { r.definir++; return; }
+      r.aceitos++; r.feitas += p.feitas; r.total += p.total;
+      if (p.estado === 'travado') r.travados++;
+      else if (Club.NO_AR[p.estado]) r.noar++;
+      else r.equipe++;
+      if (p.total || p.rotinas.length) r.pcts.push(p.completo ? 100 : p.pct);
+    });
+    r.pct = r.pcts.length ? Math.round(r.pcts.reduce(function (sum, pct) { return sum + pct; }, 0) / r.pcts.length) : 0;
+    return r;
+  }
+
+  var farolMontado = false;
+  function montarFarol() {
+    if (farolMontado) return;
+    farolMontado = true;
+    Club.farol.mount($('farolMembro'), {
+      memberMode:true,
+      members:function () { return [st.membro]; },
+      session:function () { return sessao; },
+      instagram:function () { return { resumo:st.igResumo, serie:st.igSerie, loading:st.igLoading, indisponivel:Club.instagramIndisponivel }; },
+      deliveriesLoading:function () { return st.baseLoading; },
+      entregas:entregasFarol,
+      artefatos:artefatosFarol,
+      demandas:function () { return []; },
+      abrirInstagram:function () { go('instagram'); },
+      abrirProgressao:function () { go('artifacts'); },
+      abrirDemandas:function () {}
+    });
+  }
 
   function checklist(a, detalhado) {
     var etapas = Club.ordenaEtapas(etapasDe(a.id));
@@ -523,6 +583,12 @@
       v.hidden = v.dataset.view !== key;
     });
     renderNav(key);
+    if (key === 'farol') {
+      montarFarol();
+      Club.farol.enter(location.hash.indexOf('#farol/') === 0 ? location.hash : '');
+    } else if (location.hash.indexOf('#farol/') === 0) {
+      history.replaceState(null, '', location.pathname + location.search);
+    }
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
@@ -586,12 +652,19 @@
       render();
       renderAvisoAdmin();
       var alvoInicial = location.hash.slice(1);
-      go(NAV.some(function (n) { return n.key === alvoInicial; }) ? alvoInicial : 'home');
+      go(alvoInicial.indexOf('farol/') === 0 ? 'farol' : NAV.some(function (n) { return n.key === alvoInicial; }) ? alvoInicial : 'farol');
     });
   }).catch(function (err) {
     document.querySelector('.main').innerHTML =
       '<div class="placeholder">' + ico('alert') + '<h2>Não foi possível abrir sua área</h2>' +
       '<p>' + esc(err.message) + '</p>' +
       '<button class="btn" id="sair" style="margin-top:18px">Sair</button></div>';
+  });
+
+  window.addEventListener('hashchange', function () {
+    if (!sessao) return;
+    var h = location.hash.slice(1);
+    if (h.indexOf('farol/') === 0) { go('farol'); return; }
+    if (NAV.some(function (n) { return n.key === h; })) go(h);
   });
 })();

@@ -13,7 +13,7 @@
              demands: [], staff: [], steps: [], progress: [], demandSteps: [],
              groups: [], artGrupo: '', progressNotes: [], notasEdit: {},
              qrLinks: [], qrScans: [],
-             view: 'overview', igOrdem: 'seguidores',
+             view: 'farol', igOrdem: 'seguidores',
              matCategoria: '', matMembro: '',
              demResp: '', demMembro: '', demFrente: '', demAbertas: 'open',
              /* Recorte aberto por um cartão do painel (atrasadas, sem dono…).
@@ -45,7 +45,6 @@
      que o time produz. A chave de cada view continua a mesma — só o rótulo de
      'members' mudou para Progressão. */
   var NAV = [
-    { key:'overview', label:'Visão geral', icon:'home' },
     { key:'farol', label:'Farol', icon:'eye' },
     { grupo:'Mentorados', itens: [
       { key:'members',   label:'Progressão', icon:'users' },
@@ -83,11 +82,13 @@
   function aplicarIdentidade() {
     $('quemNome').textContent = sessao.name || sessao.email;
     $('avatar').textContent = sessao.initials || Club.initials(sessao.name || sessao.email);
-    $('saudacao').innerHTML = Club.greeting() + ', <b>' +
-      esc((sessao.name || '').split(' ')[0] || 'admin') + '</b>';
   }
 
   $('sair').addEventListener('click', function () { Club.auth.logout(); });
+  $('verComoMembro').addEventListener('click', function () {
+    var id = Club.farol.selected();
+    if (id) this.href = '/membros/?membro=' + encodeURIComponent(id);
+  });
 
   /* ── dados ────────────────────────────────────────────────────────────── */
 
@@ -324,10 +325,8 @@
       if (st.eu) st.eu = st.staff.filter(function (p) { return p.id === st.eu.id; })[0] || null;
       indexar();
       renderDemandas();
-      /* O contador de demandas da etapa (Progressão) e os cartões da visão
-         geral leem o mesmo quadro. */
+      /* O contador de demandas da etapa (Progressão) lê o mesmo quadro. */
       renderMembers();
-      renderOverview();
       if (msg) Club.toast(msg);
     });
   }
@@ -384,50 +383,6 @@
     var painel = $('painelDemanda');
     if (painel) painel.hidden = key !== 'demands' || !st.painel;
     window.scrollTo({ top: 0, behavior: 'instant' });
-  }
-
-  /* ── visão geral ──────────────────────────────────────────────────────── */
-
-  function renderOverview() {
-    var ativos = st.members.filter(function (m) { return m.ativo; }).length;
-    var abertas = st.demands.filter(function (d) { return Club.DEM_ABERTOS.indexOf(d.status) !== -1; });
-    var atrasadas = abertas.filter(function (d) {
-      var n = Club.diffDays(d.vence_em); return n !== null && n < 0;
-    });
-    var futuros = st.events.filter(function (e) {
-      return Club.parseDate(e.inicia_em) >= new Date();
-    });
-    var prox = futuros[0];
-    var producao = st.artifacts.filter(function (a) { return a.status === 'Em produção'; }).length;
-
-    $('stats').innerHTML =
-      cardStat('MEMBROS ATIVOS', ativos, st.members.length - ativos + ' inativos') +
-      cardStat('DEMANDAS EM ABERTO', abertas.length, atrasadas.length + ' atrasadas') +
-      cardStat('PRÓXIMO ENCONTRO', prox ? Club.fmtDate(prox.inicia_em) : '—',
-               prox ? prox.titulo : 'Nada agendado') +
-      cardStat('ARTEFATOS EM PRODUÇÃO', producao, st.artifacts.length + ' cadastrados no total');
-
-    $('atrasadas').innerHTML = atrasadas.length
-      ? tabelaDemandasAtrasadas(atrasadas)
-      : Club.empty('check-circle', 'Nenhuma demanda atrasada. O time está em dia.');
-  }
-
-  /* Resumo das atrasadas na visão geral: título (abre o detalhe), contexto
-     (área · frente, ou o mentorado), dono e prazo. O resto mora no quadro. */
-  function tabelaDemandasAtrasadas(rows) {
-    rows = rows.slice().sort(function (a, b) { return String(a.vence_em).localeCompare(String(b.vence_em)); });
-    return tabela('minmax(0,2.2fr) minmax(0,1.4fr) 160px 120px',
-      ['Demanda', 'Frente ou mentorado', 'Responsáveis', 'Prazo'],
-      rows.map(function (d) {
-        var c = contextoDe(d);
-        return '<div class="tr">' +
-          '<div class="td"><button type="button" class="demand-open" data-detalhe-demanda="' + esc(d.id) +
-            '" aria-label="Ver demanda: ' + esc(d.titulo) + '"><span class="tx tx-t">' + esc(d.titulo) + '</span></button></div>' +
-          td('<span class="tx-s">' + esc(c.tipo === 'frente' && c.area ? c.area.nome + ' · ' + c.nome : c.nome) + '</span>') +
-          td('<span class="tx-s">' + esc(responsaveisDe(d) || '—') + '</span>') +
-          td('<span style="color:var(--danger)">' + esc(Club.fmtDue(d.vence_em)) + '</span>') +
-        '</div>';
-      }).join(''), 'Nada por aqui.');
   }
 
   /* `dica` é opcional: quando existe, o cartão explica ao passar o mouse o que
@@ -974,7 +929,6 @@
       }).concat([linha]);
       indexar();
       renderMembers();
-      renderOverview();
       if (farolMontado) Club.farol.refresh();
     }).catch(function (err) {
       aplicaLocal(memberId, stepId, antes);
@@ -2950,7 +2904,6 @@
     renderDemandas();
     /* O contador de demandas da etapa, na Progressão, lê o mesmo quadro. */
     if ('step_id' in patch || 'member_id' in patch || 'status' in patch) renderMembers();
-    renderOverview();
 
     Club.data.demands.save(Object.assign({ id:id }, patch)).then(function (linha) {
       /* Concluir e reabrir em seguida manda duas gravações; a resposta da
@@ -4463,7 +4416,6 @@
 
   function render() {
     renderNav();
-    renderOverview();
     renderMembers();
     renderAgenda();
     renderArtifacts();
@@ -4492,7 +4444,7 @@
       var h = lerHash();
       st.demFoco = h.foco;
       render();
-      go(h.secao === 'demandas' ? 'demands' : h.secao && document.querySelector('.view[data-view="' + h.secao + '"]') ? h.secao : 'overview');
+      go(h.secao === 'demandas' ? 'demands' : h.secao && document.querySelector('.view[data-view="' + h.secao + '"]') ? h.secao : 'farol');
       if (h.secao === 'demandas' && h.id && achar('demand', h.id)) detalheDemanda(h.id);
     });
   }).catch(falhou);

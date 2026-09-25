@@ -1,5 +1,13 @@
 /* Farol: um quadro executivo que cabe na altura de um desktop comum. */
 .view[data-view="farol"]{max-width:1260px}
+.farol-initial{display:grid;gap:16px;max-width:1260px}
+.farol-initial-heading{width:36%;height:38px;margin:10px 0 4px}
+.farol-initial-funnel,.farol-initial-cards{display:grid;gap:14px}
+.farol-initial-funnel{grid-template-columns:repeat(5,minmax(0,1fr));padding:44px 18px 26px;border:1px solid var(--border-soft);border-radius:14px;background:var(--panel)}
+.farol-initial-funnel .farol-skel{height:56px;width:85%}
+.farol-initial-cards{grid-template-columns:repeat(3,minmax(0,1fr))}
+.farol-initial-cards .farol-skel{height:250px;width:100%;border:1px solid var(--border-soft);border-radius:14px}
+@media(max-width:760px){.farol-initial-funnel{grid-template-columns:repeat(2,minmax(0,1fr))}.farol-initial-cards{grid-template-columns:1fr}.farol-initial-cards .farol-skel{height:180px}}
 .farol{display:grid;gap:13px}
 .farol-header{display:flex;align-items:end;justify-content:space-between;gap:20px;min-width:0}
 .farol-heading>span,.farol-section-title>span,.farol-label,.farol-card-head>span{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--gold)}

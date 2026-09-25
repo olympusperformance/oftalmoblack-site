@@ -9,10 +9,10 @@ const script = readFileSync(new URL('../public/assets/club-farol.js', import.met
 function deferred() { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; }
 function settle() { return new Promise(resolve => setImmediate(resolve)); }
 
-function setup(hash = '') {
+function setup(hash = '', memberMode = false) {
   const clinical = [], graduation = [];
   const listeners = {};
-  const location = { hash, pathname:'/admin/', search:'' };
+  const location = { hash, pathname:memberMode ? '/membros/' : '/admin/', search:'' };
   const root = {
     html:'', addEventListener(name, callback) { listeners[name] = callback; },
     set innerHTML(value) { this.html = value; }, get innerHTML() { return this.html; },
@@ -34,8 +34,9 @@ function setup(hash = '') {
     document, Intl, URLSearchParams, Date, Number, Math, Promise };
   vm.runInNewContext(script, context);
   Club.farol.mount(root, {
-    members:() => [{ id:MEMBER_A, nome:'Dra. Alice', ativo:true }, { id:MEMBER_B, nome:'Dr. Bruno', ativo:true }],
-    session:() => ({ userId:'admin' }), instagram:() => ({ resumo:[], serie:[] }),
+    memberMode,
+    members:() => memberMode ? [{ id:MEMBER_A, nome:'Dra. Alice', ativo:true }] : [{ id:MEMBER_A, nome:'Dra. Alice', ativo:true }, { id:MEMBER_B, nome:'Dr. Bruno', ativo:true }],
+    session:() => ({ userId:memberMode ? 'member' : 'admin' }), instagram:() => ({ resumo:[], serie:[] }),
     entregas:() => ({ pcts:[], pct:0, aceitos:0, definir:0, travados:0, equipe:0, noar:0 }),
     artefatos:() => [], demandas:() => [], abrirInstagram:() => {}, abrirProgressao:() => {}, abrirDemandas:() => {},
   });
@@ -77,6 +78,16 @@ test('presença ausente continua sem apuração e detalhe reaparece por URL', as
   assert.match(t.root.html, /role="dialog"/);
   assert.doesNotMatch(t.root.html, /0% de presença/);
   assert.equal(t.location.hash, url);
+});
+
+test('mentorado abre apenas seu Farol mesmo com URL de outro membro', () => {
+  const t = setup('#farol/' + MEMBER_B + '?dias=7', true);
+  t.Club.farol.enter(t.location.hash);
+  assert.equal(t.clinical.length, 1);
+  assert.equal(t.clinical[0].params.body.member_id, MEMBER_A);
+  assert.doesNotMatch(t.root.html, /data-farol-member|data-farol-prev|data-farol-search/);
+  assert.match(t.root.html, /Dra\. Alice/);
+  assert.equal(t.location.hash, '#farol/' + MEMBER_A + '?dias=7');
 });
 
 test('fonte ausente aparece como travessão e troca de período invalida resposta antiga', async () => {

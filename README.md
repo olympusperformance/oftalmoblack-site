@@ -199,6 +199,30 @@ Ajuste feito à mão no banco some na próxima carga: corrija na planilha.
 Verificação: `node --test tests/graduacao.test.mjs`. A fixture reproduz os
 valores da planilha e permite conferir totais, limites e situações do radar.
 
+### Farol do Cérebro Black
+
+O Farol é a primeira aba do admin e de cada mentorado. Na área de membros, o
+Farol mostra apenas os dados ligados ao próprio login. O admin pode escolher
+outro médico no seletor e o botão **Ver como membro** abre a pré-visualização do
+selecionado. A tela de pré-visualização mostra um esqueleto enquanto identifica
+o membro e carrega as fontes; as métricas do CRM e a graduação começam a carregar
+assim que o membro é identificado.
+
+A função `supabase/functions/farol-metricas` confirma o JWT e autoriza o admin
+ou o membro ativo vinculado ao login antes de usar a service role. A URL e o
+hash não concedem acesso a outro médico. Instagram e graduação seguem as
+políticas RLS das respectivas fontes.
+
+Para publicar o acesso dos mentorados, **implante a função antes da interface**:
+
+```bash
+supabase functions deploy farol-metricas --project-ref zpyxnkuvircukjlfexrv --no-verify-jwt
+deno test --allow-env tests/farol-acesso.test.ts
+node --test tests/farol-ui.test.mjs
+```
+
+Depois, publique o site pelo fluxo normal de `main`.
+
 ### Cérebro: o mentorado pergunta em português
 
 A aba **Cérebro** é uma conversa, não um formulário: o mentorado pergunta sobre o

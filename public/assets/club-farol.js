@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   var C = window.Club = window.Club || {};
-  var root, sources, selected = '', days = 30, request = 0;
+  var root, sources, selected = '', days = 30, request = 0, memberMode = false;
   var clinic = null, graduation = null, clinicLoading = false, graduationLoading = false;
   var modalStack = [], modalReturnFocus = null;
   var esc = C.esc;
@@ -29,7 +29,7 @@
   function current() { return members().filter(function (m) { return m.id === selected; })[0] || null; }
   function storageKey() {
     var s = sources.session() || {};
-    return 'ob-admin-farol:' + (s.userId || String(s.email || '').toLowerCase() || 'anon');
+    return (memberMode ? 'ob-member-farol:' : 'ob-admin-farol:') + (s.userId || String(s.email || '').toLowerCase() || 'anon');
   }
   function saved() {
     try { return JSON.parse(localStorage.getItem(storageKey()) || '{}'); } catch (_) { return {}; }
@@ -92,6 +92,8 @@
   }
   function instagramCard() {
     var ig = igData();
+    if (sources.instagram().loading) return '<section class="farol-card is-loading" aria-busy="true" data-farol-card="instagram"><div class="farol-card-head"><span>INSTAGRAM</span></div>' +
+      '<div class="farol-ig-main">' + skel('65%', 'farol-skel-num') + skel('65%', 'farol-skel-num') + '</div>' + skel('90%', 'farol-skel-bar') + '<span class="farol-sr">Carregando Instagram</span></section>';
     if (!ig.row) return '<section class="farol-card" data-farol-card="instagram"><div class="farol-card-head"><span>INSTAGRAM</span></div><button class="farol-unavailable farol-detail-button" data-farol-detail="instagram">' + text(ig.error) + '</button><button class="farol-link" data-farol-detail="instagram">Entender fonte ↗</button></section>';
     var r = ig.row;
     var detail = [
@@ -106,6 +108,8 @@
       '<button class="farol-link" data-farol-ig-open>Ver histórico <span aria-hidden="true">↗</span></button></section>';
   }
   function deliveryCard() {
+    if (sources.deliveriesLoading && sources.deliveriesLoading()) return '<section class="farol-card is-loading" aria-busy="true" data-farol-card="delivery"><div class="farol-card-head"><span>ENTREGAS DO CLUB</span></div>' +
+      skel('58%', 'farol-skel-num') + skel('100%', 'farol-skel-bar') + skel('70%') + '<span class="farol-sr">Carregando entregas</span></section>';
     var d = sources.entregas(selected);
     return '<section class="farol-card" data-farol-card="delivery"><div class="farol-card-head"><span>ENTREGAS DO CLUB</span><small>artefatos aceitos</small></div>' +
       '<button class="farol-delivery-main farol-detail-button" data-farol-detail="delivery"><strong>' + (d.pcts.length ? d.pct + '%' : '—') + '</strong><span>progresso médio</span></button>' +
@@ -133,7 +137,7 @@
       '<div class="farol-progress"><i style="width:' + m.percent + '%"></i></div>' +
       '<div class="farol-source">' + text(m.points == null ? 'Sem pontos neste trimestre' : m.missing === 0 ? 'Meta atingida' : 'Faltam ' + number(m.missing) + ' pts') + ' · ' + text(C.graduacao.beltName(m.grade)) + '</div>' +
       '<button class="farol-presence" data-farol-detail="presence"><span>Presença</span><b>' + (attendanceValid(attendance) ? attended + ' de ' + eligible + ' encontros' : 'Sem apuração') + '</b><span aria-hidden="true">↗</span></button>' +
-      '<a class="farol-link" target="_blank" rel="noopener" href="/membros/?membro=' + encodeURIComponent(selected) + '#graduacao">Ver graduação ↗</a></section>';
+      '<a class="farol-link" href="' + (memberMode ? '#graduacao' : '/membros/?membro=' + encodeURIComponent(selected) + '#graduacao') + '">Ver graduação ↗</a></section>';
   }
   function lateDemands() {
     return sources.demandas().filter(function (d) {
@@ -149,7 +153,7 @@
     else if (clinic && clinic.funnel && clinic.funnel.status === 'error') items.push(['Funil do CRM indisponível', 'funnel']);
     if (clinic && clinic.commercial && clinic.commercial.status === 'error') items.push(['Valor comercial indisponível', 'commercial']);
     if (clinic && clinic.commercial && clinic.commercial.data && clinic.commercial.data.missing_price_count) items.push([clinic.commercial.data.missing_price_count + ' registro' + (clinic.commercial.data.missing_price_count === 1 ? '' : 's') + ' sem preço', 'commercial']);
-    if (!igData().row) items.push(['Instagram sem vínculo ou indisponível', 'instagram']);
+    if (!sources.instagram().loading && !igData().row) items.push(['Instagram sem vínculo ou indisponível', 'instagram']);
     if (graduation && !graduation.snapshot) items.push(['Graduação sem apuração', 'graduation']);
     return items.slice(0, 3);
   }
@@ -238,7 +242,7 @@
       out.body = '<p>Progresso médio dos artefatos aceitos, calculado com as regras da Progressão. Rotinas não entram no denominador do checklist.</p>' +
         (arts.length ? arts.map(function (x) { return detailButton('artifact:' + x.artifact.id, x.artifact.nome,
           C.rotuloPar(x.part) + ' · ' + (x.part.total ? x.part.feitas + '/' + x.part.total + ' etapas' : 'sem checklist')); }).join('') : '<p>Nenhum artefato nesta situação.</p>');
-      out.action = '<button class="farol-modal-link" data-farol-progress>Abrir Progressão ↗</button>';
+      out.action = '<button class="farol-modal-link" data-farol-progress>Abrir ' + (memberMode ? 'Artefatos' : 'Progressão') + ' ↗</button>';
     } else if (kind === 'artifact') {
       var art = sources.artefatos(selected).filter(function (x) { return x.artifact.id === bits[1]; })[0];
       out.title = art ? art.artifact.nome : 'Artefato';
@@ -246,10 +250,10 @@
         detailMetric('Etapas', art.part.feitas + '/' + art.part.total) + '</div><p>Checklist do par médico + artefato.</p>' +
         art.steps.map(function (s) { return '<div class="farol-detail-row farol-step"><span>' + text(s.titulo) + '</span><small>' +
           (s.feito ? 'Concluída' : 'Em aberto') + ' · ' + text(C.tipoEtapa(s)) + '</small></div>'; }).join('') +
-        '<h3>Demandas relacionadas</h3>' + (art.demands.length ? art.demands.map(function (d) {
+        (memberMode ? '' : '<h3>Demandas relacionadas</h3>' + (art.demands.length ? art.demands.map(function (d) {
           return detailButton('demand:' + d.id, d.titulo, d.status || '—');
-        }).join('') : '<p>Nenhuma demanda vinculada.</p>') : '<p>Artefato indisponível.</p>';
-      out.action = '<button class="farol-modal-link" data-farol-progress>Abrir Progressão ↗</button>';
+        }).join('') : '<p>Nenhuma demanda vinculada.</p>')) : '<p>Artefato indisponível.</p>';
+      out.action = '<button class="farol-modal-link" data-farol-progress>Abrir ' + (memberMode ? 'Artefatos' : 'Progressão') + ' ↗</button>';
     } else if (kind === 'demand') {
       var dem = sources.demandas().filter(function (d) { return d.id === bits[1] && d.member_id === selected; })[0];
       out.title = dem ? dem.titulo : 'Demanda';
@@ -296,7 +300,7 @@
           (pG && pG.referrals != null ? detailMetric('Indicações na planilha', number(pG.referrals)) : '') +
           (pG && pG.bonus != null ? detailMetric('Bônus na planilha', number(pG.bonus)) : '');
       }
-      out.action = '<a class="farol-modal-link" href="/membros/?membro=' + encodeURIComponent(selected) + '#graduacao" target="_blank" rel="noopener">Abrir graduação em nova aba ↗</a>';
+      out.action = '<a class="farol-modal-link" href="' + (memberMode ? '#graduacao' : '/membros/?membro=' + encodeURIComponent(selected) + '#graduacao') + '">Abrir graduação ↗</a>';
     } else if (kind === 'attention') {
       var target = bits[1];
       out.title = 'Atenção · ' + ({ demands:'demandas', progress:'entregas', instagram:'Instagram', graduation:'graduação', crm:'vínculo com CRM', funnel:'funil', commercial:'comercial', finance:'financeiro' })[target];
@@ -361,15 +365,15 @@
     var windowLabel = clinic && clinic.period ? date(clinic.period.date_start || clinic.period.start) + '–' + date(clinic.period.date_end || clinic.period.end) : days + ' dias';
     var partial = data && clinic.period && ((data.trilha_desde && data.trilha_desde > clinic.period.start) || (data.dados_desde && data.dados_desde > clinic.period.start));
     root.innerHTML = '<div class="farol"><div class="farol-header"><div class="farol-heading"><span>VISÃO EXECUTIVA <i></i> FAROL</span><h1>' + text(m.nome) + '</h1><p>' + text(m.turma || 'Turma não informada') + ' <b>·</b> ' + (source === null ? '<span class="farol-loading-note"><i aria-hidden="true"></i>Carregando dados da clínica…</span>' : text(source)) + '</p></div>' +
-      '<div class="farol-controls"><label class="farol-search">' + C.icon('search') + '<input type="search" data-farol-search placeholder="Buscar médico" aria-label="Buscar médico"></label>' +
+      '<div class="farol-controls">' + (memberMode ? '' : '<label class="farol-search">' + C.icon('search') + '<input type="search" data-farol-search placeholder="Buscar médico" aria-label="Buscar médico"></label>' +
       '<select data-farol-member aria-label="Selecionar médico">' + list.map(function (x) { return '<option value="' + esc(x.id) + '"' + (x.id === selected ? ' selected' : '') + '>' + text(x.nome) + '</option>'; }).join('') + '</select>' +
-      '<button data-farol-prev aria-label="Médico anterior"' + (!position ? ' disabled' : '') + '>‹</button><button data-farol-next aria-label="Próximo médico"' + (position === list.length - 1 ? ' disabled' : '') + '>›</button><button data-farol-retry aria-label="Atualizar Farol" title="Atualizar Farol">↻</button>' +
+      '<button data-farol-prev aria-label="Médico anterior"' + (!position ? ' disabled' : '') + '>‹</button><button data-farol-next aria-label="Próximo médico"' + (position === list.length - 1 ? ' disabled' : '') + '>›</button>') + '<button data-farol-retry aria-label="Atualizar Farol" title="Atualizar Farol">↻</button>' +
       '<div class="farol-days" aria-label="Período"><button data-farol-days="7" aria-pressed="' + (days === 7) + '">7 dias</button><button data-farol-days="30" aria-pressed="' + (days === 30) + '">30 dias</button></div></div></div>' +
       '<div class="farol-period"><span>' + text(windowLabel) + '</span>' + (partial ? '<b>Dados parciais desde ' + date(data.trilha_desde || data.dados_desde) + '</b>' : '') + (clinic && clinic.updated_at ? '<span>Atualizado ' + text(date(clinic.updated_at)) + '</span>' : '') + '</div>' +
       '<div class="farol-funnel' + (clinicLoading ? ' is-loading' : '') + '"' + (clinicLoading ? ' aria-busy="true"' : '') + '><div class="farol-section-title"><span>JORNADA CLÍNICA</span><small>Movimentos do período · CRM</small></div><div class="farol-kpis">' +
       [['Novos leads','novos'],['Agendadas','agendadas'],['Realizadas','realizadas'],['Indicações','indicacoes'],['Fechamentos','cirurgias']].map(function (x) { return clinicalCard(x[0], x[1]); }).join('') + '</div></div>' +
       '<div class="farol-cards">' + instagramCard() + deliveryCard() + graduationCard() + '</div>' + foot() +
-      '<div class="farol-footer"><span>Fontes independentes · ausências exibidas como —</span><a href="https://sistema.oftalmoblack.com.br/metrics" target="_blank" rel="noopener">Abrir métricas no CRM ↗</a></div></div>';
+      '<div class="farol-footer"><span>Fontes independentes · ausências exibidas como —</span>' + (memberMode ? '' : '<a href="https://sistema.oftalmoblack.com.br/metrics" target="_blank" rel="noopener">Abrir métricas no CRM ↗</a>') + '</div></div>';
     drawModal();
   }
   function load() {
@@ -415,7 +419,9 @@
   }
   function refresh() { if (root && selected) render(); }
   function mount(el, callbacks) {
-    root = el; sources = callbacks;
+    root = el; sources = callbacks; memberMode = !!callbacks.memberMode;
+    if (root.classList) root.classList.remove('farol-initial');
+    if (root.removeAttribute) { root.removeAttribute('role'); root.removeAttribute('aria-live'); }
     root.addEventListener('click', function (event) {
       if (event.target.hasAttribute('data-farol-backdrop')) { closeDetail(true); return; }
       var t = event.target.closest('button');
@@ -465,5 +471,5 @@
       else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
     });
   }
-  C.farol = { mount:mount, enter:enter, refresh:refresh };
+  C.farol = { mount:mount, enter:enter, refresh:refresh, selected:function () { return selected; } };
 })();

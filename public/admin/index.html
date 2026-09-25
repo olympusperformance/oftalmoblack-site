@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#07060A">
-<title>Painel do Admin — Club OftalmoBlack</title>
+<title>Cérebro Black — Administração</title>
 <link rel="icon" href="/assets/favicon.png">
 <link rel="stylesheet" href="/assets/club.css">
 <link rel="stylesheet" href="/assets/club-graduacao.css?v=20260924">
@@ -19,14 +19,14 @@
 
 <header class="topbar">
   <a class="logo" href="/admin/">
-    <span class="logo-ring"><span class="logo-inner"><svg class="ic"><use href="#i-eye"/></svg></span></span>
+    <img class="logo-mark" src="/assets/graduacao-olho.png" alt="">
     <span class="logo-txt">
-      <span class="b">OFTALMO BLACK</span>
-      <span class="c">Painel do administrador</span>
+      <span class="b">CÉREBRO BLACK</span>
+      <span class="c">Administração</span>
     </span>
   </a>
   <span class="topbar-sp"></span>
-  <a class="btn btn-sm" href="/membros/" title="Ver a área como membro">
+  <a class="btn btn-sm" id="verComoMembro" href="/membros/" title="Ver a área como membro">
     <svg class="ic"><use href="#i-eye"/></svg><span class="hide-sm">Ver como membro</span></a>
   <button class="icon-btn" data-tema aria-label="Alternar tema"><svg class="ic"><use href="#i-moon"/></svg></button>
   <div class="who">
@@ -43,25 +43,13 @@
 
   <main class="main">
 
-    <div class="view" data-view="overview">
-      <div class="hello">
-        <h1 id="saudacao">Painel</h1>
-        <p>Tudo que os mentorados enxergam é cadastrado aqui.</p>
+    <div class="view" data-view="farol">
+      <div id="farolAdmin" class="farol-initial" role="status" aria-live="polite">
+        <div class="farol-loading-note"><i aria-hidden="true"></i>Preparando o Farol…</div>
+        <div class="farol-initial-heading farol-skel" aria-hidden="true"></div>
+        <div class="farol-initial-funnel" aria-hidden="true"><span class="farol-skel"></span><span class="farol-skel"></span><span class="farol-skel"></span><span class="farol-skel"></span><span class="farol-skel"></span></div>
+        <div class="farol-initial-cards" aria-hidden="true"><span class="farol-skel"></span><span class="farol-skel"></span><span class="farol-skel"></span></div>
       </div>
-      <div class="statgrid" id="stats"></div>
-      <section>
-        <div class="sec">
-          <div class="sec-g">
-            <div class="sec-eb"><span class="sec-dash"></span><span>ATENÇÃO</span></div>
-            <h2 class="sec-t">Demandas atrasadas</h2>
-          </div>
-        </div>
-        <div id="atrasadas"></div>
-      </section>
-    </div>
-
-    <div class="view" data-view="farol" hidden>
-      <div id="farolAdmin"></div>
     </div>
 
     <div class="view" data-view="members" hidden>
