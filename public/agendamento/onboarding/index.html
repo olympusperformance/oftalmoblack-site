@@ -17,6 +17,8 @@
 --foil:linear-gradient(120deg,#8a5210 0%,#c78039 18%,#e6bd74 32%,#fdf3b5 42%,#d89d4d 55%,#c78039 72%,#8a5210 100%);
 --glass:linear-gradient(150deg,rgba(0,0,0,.72) 0%,rgba(38,25,10,.5) 38%,rgba(140,95,40,.16) 74%,rgba(216,157,77,.24) 100%);
 --sh-sel:inset 0 1px 0 rgba(253,243,181,.42),0 0 26px rgba(216,157,77,.14),0 20px 44px rgba(0,0,0,.4);
+--glass-green:linear-gradient(150deg,rgba(0,0,0,.82) 0%,rgba(0,40,22,.55) 38%,rgba(0,201,107,.14) 74%,rgba(20,224,125,.26) 100%);
+--sh-green:inset 0 1px 0 rgba(160,255,205,.28),0 0 32px rgba(0,201,107,.18),0 24px 50px rgba(0,0,0,.45);
 }
 html,body{margin:0;padding:0;background:var(--bg-soft);color:var(--text);-webkit-font-smoothing:antialiased}
 body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',sans-serif;position:relative;min-height:100vh;overflow-x:hidden}
@@ -46,9 +48,12 @@ h1{margin:0 0 18px;font-weight:600;letter-spacing:-.02em;font-size:clamp(30px,4.
 .lang button:hover{color:var(--gold-bright)}
 .lang button[aria-pressed="true"]:hover{color:#0A0A0C}
 .grid{display:grid;grid-template-columns:minmax(0,560px);gap:18px;animation:obUp .4s ease both .08s}
-.card{position:relative;border-radius:24px;padding:1px;overflow:hidden;background:rgba(216,157,77,.55)}
-.card-in{position:relative;z-index:1;box-sizing:border-box;border-radius:23px;padding:32px 28px;display:flex;flex-direction:column;gap:16px;background:var(--glass);backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);box-shadow:var(--sh-sel)}
-.check{position:absolute;top:24px;right:24px;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--foil)}
+.card{position:relative;display:block;border-radius:24px;padding:1px;overflow:hidden;cursor:pointer;color:inherit;text-decoration:none;background:rgba(216,157,77,.55);transition:transform .25s ease,background .3s ease,box-shadow .3s ease;-webkit-tap-highlight-color:transparent}
+.card:hover{color:inherit}
+.swipe{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;background:linear-gradient(100deg,transparent 0%,rgba(253,243,181,.55) 45%,rgba(230,189,116,.9) 50%,transparent 100%)}
+.card.flash .swipe{opacity:1;animation:obSwipe .45s cubic-bezier(.22,1,.36,1) 1 forwards}
+.card-in{position:relative;z-index:1;box-sizing:border-box;border-radius:23px;padding:32px 28px;display:flex;flex-direction:column;gap:16px;background:var(--glass);backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);box-shadow:var(--sh-sel);transition:box-shadow .3s ease,background .3s ease}
+.go{position:absolute;top:24px;right:24px;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--foil);color:#0A0A0C}
 .card-eyebrow{display:flex;align-items:center;gap:12px;padding-right:34px}
 .card-eyebrow .num{font-size:20px}
 .card-eyebrow .rule{width:28px}
@@ -59,26 +64,24 @@ h2{margin:0;font-size:22px;font-weight:600;color:#fff;letter-spacing:-.01em}
 .card ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
 .card li{display:flex;align-items:center;gap:10px;font-size:13px;line-height:1.4;color:rgba(245,240,230,.55)}
 .card li::before{content:"";flex:none;width:8px;height:1px;background:var(--gold)}
-.dur{margin-top:auto;padding-top:14px;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:rgba(216,157,77,.6)}
-.cta-wrap{display:flex;flex-direction:column;align-items:flex-start;gap:14px;animation:obUp .4s ease both .16s}
-.cta{position:relative;overflow:hidden;isolation:isolate;border-radius:999px;padding:17px 34px;min-height:56px;font-size:13px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;border:1px solid transparent;color:#0A0A0C;cursor:pointer;background:var(--foil);background-size:300% 100%;box-shadow:0 18px 40px -18px rgba(212,166,83,.5),inset 0 1px 0 rgba(255,255,255,.3);transition:box-shadow .3s ease,transform .25s cubic-bezier(.22,1,.36,1)}
-.cta:hover{transform:translateY(-3px);animation:foilShift 2.2s ease-in-out infinite;box-shadow:0 28px 56px -18px rgba(212,166,83,.75),0 0 26px rgba(216,157,77,.35),inset 0 1px 0 rgba(255,255,255,.4)}
-.cta .sheen{position:absolute;top:0;bottom:0;left:0;width:45%;z-index:0;pointer-events:none;opacity:0;background:linear-gradient(100deg,transparent 0%,rgba(255,255,255,.32) 40%,rgba(253,243,181,.92) 50%,rgba(255,255,255,.32) 60%,transparent 100%)}
-.cta:hover .sheen{opacity:1;animation:obSwipe 1.4s cubic-bezier(.4,0,.6,1) infinite}
-.cta .lbl{position:relative;z-index:1}
-.cta[aria-busy="true"]{cursor:progress;opacity:.85}
+.foot-card{margin-top:auto;padding-top:14px;display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase}
+.dur{color:rgba(216,157,77,.6)}
+.ver{color:var(--gold-bright);transition:color .2s ease}
+@media (hover:hover){
+  .card:hover{background:rgba(20,224,125,.42);transform:translateY(-4px);box-shadow:0 30px 60px -24px rgba(0,0,0,.7)}
+  .card:hover .card-in{background:var(--glass-green);backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);box-shadow:var(--sh-green)}
+  .card:hover .ver{color:#fff}
+}
 .sup{margin:0;font-size:13px;color:var(--muted);line-height:1.5}
 .foot{margin:0;font-size:13px;color:var(--muted)}
 button:focus-visible,a:focus-visible{outline:1px solid var(--gold);outline-offset:3px}
 @media (max-width:1023px){
-  .wrap{padding:44px 20px 120px;gap:40px}
-  .cta{width:100%}
-  .cta-wrap{align-items:stretch;text-align:center}
+  .wrap{padding:44px 20px 100px;gap:40px}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition-property:box-shadow,background,border-color,opacity!important}}
 </style>
 </head>
-<body data-page="onboarding-agenda-v1">
+<body data-page="onboarding-agenda-v2">
 <div class="drape"></div>
 <div class="glow"></div>
 
@@ -102,11 +105,10 @@ button:focus-visible,a:focus-visible{outline:1px solid var(--gold);outline-offse
   </div>
 
   <div class="grid">
-    <div class="card" role="group" aria-labelledby="ob-h2">
+    <a class="card" id="card" data-track="onboarding" href="https://calendar.app.google/TtdgaGmfN5roWmh16" target="_blank" rel="noopener" aria-labelledby="ob-h2 card-ver">
+      <span class="swipe"></span>
       <div class="card-in">
-        <div class="check" aria-hidden="true">
-          <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2.4 6.2 4.7 8.5 9.6 3.6" stroke="#0A0A0C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-        </div>
+        <span class="go" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6h7M6.5 3l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         <div class="card-eyebrow">
           <span class="num">I</span>
           <span class="rule"></span>
@@ -122,13 +124,9 @@ button:focus-visible,a:focus-visible{outline:1px solid var(--gold);outline-offse
           <li data-i18n="b2">Grupo da sua clínica e primeiros acessos</li>
           <li data-i18n="b3">Agenda do onboarding técnico e da sessão de Growth</li>
         </ul>
-        <div class="dur" data-i18n="dur">45 MIN</div>
+        <div class="foot-card"><span class="dur" data-i18n="dur">45 MIN</span><span class="ver" id="card-ver" data-i18n="ver">VER HORÁRIOS →</span></div>
       </div>
-    </div>
-  </div>
-
-  <div class="cta-wrap">
-    <button type="button" class="cta" id="cta" aria-busy="false"><span class="sheen"></span><span class="lbl" id="cta-lbl">VER HORÁRIOS · ONBOARDING →</span></button>
+    </a>
     <p class="sup" id="sup" data-i18n="sup">Duração de 45 min · Google Meet · horário de Brasília, convertido automaticamente para o seu fuso.</p>
   </div>
 
@@ -155,9 +153,8 @@ const T = {
     b2: 'Grupo da sua clínica e primeiros acessos',
     b3: 'Agenda do onboarding técnico e da sessão de Growth',
     dur: '45 MIN',
-    cta: 'VER HORÁRIOS · ONBOARDING →',
-    ctaWa: 'ESCOLHER HORÁRIO NO WHATSAPP →',
-    opening: 'ABRINDO AGENDA…',
+    ver: 'VER HORÁRIOS →',
+    verWa: 'ESCOLHER NO WHATSAPP →',
     sup: 'Duração de 45 min · Google Meet · horário de Brasília, convertido automaticamente para o seu fuso.',
     supWa: 'Duração de 45 min · Google Meet · me diga dois ou três horários que funcionam pra você e eu confirmo.',
     foot: 'Alguma dúvida? <a href="https://wa.me/' + WHATSAPP + '" target="_blank" rel="noopener">Fale comigo no WhatsApp</a>',
@@ -175,9 +172,8 @@ const T = {
     b2: 'Grupo de tu clínica y primeros accesos',
     b3: 'Agenda del onboarding técnico y de la sesión de Growth',
     dur: '45 MIN',
-    cta: 'VER HORARIOS · ONBOARDING →',
-    ctaWa: 'ELEGIR HORARIO POR WHATSAPP →',
-    opening: 'ABRIENDO AGENDA…',
+    ver: 'VER HORARIOS →',
+    verWa: 'ELEGIR POR WHATSAPP →',
     sup: 'Duración de 45 min · Google Meet · horario de Brasilia, convertido automáticamente a tu zona horaria.',
     supWa: 'Duración de 45 min · Google Meet · dime dos o tres horarios que te funcionen y yo te confirmo.',
     foot: '¿Alguna duda? <a href="https://wa.me/' + WHATSAPP + '" target="_blank" rel="noopener">Escríbeme por WhatsApp</a>',
@@ -186,7 +182,6 @@ const T = {
 };
 
 let lang = detectLang();
-let opening = false;
 
 function detectLang() {
   const q = new URLSearchParams(location.search).get('lang');
@@ -202,9 +197,11 @@ function apply() {
   document.querySelectorAll('[data-i18n]').forEach(function (el) {
     const k = el.getAttribute('data-i18n');
     if (k === 'sup') { el.innerHTML = AGENDA_URL ? t.sup : t.supWa; return; }
+    if (k === 'ver') { el.textContent = AGENDA_URL ? t.ver : t.verWa; return; }
     if (t[k] != null) el.innerHTML = t[k];
   });
-  document.getElementById('cta-lbl').textContent = opening ? t.opening : (AGENDA_URL ? t.cta : t.ctaWa);
+  // O cartão É o link: um toque abre a agenda direto, sem botão de confirmar.
+  document.getElementById('card').href = AGENDA_URL || ('https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(t.waText));
   document.querySelectorAll('.lang button').forEach(function (b) {
     b.setAttribute('aria-pressed', b.getAttribute('data-lang') === lang ? 'true' : 'false');
   });
@@ -218,20 +215,12 @@ document.querySelectorAll('.lang button').forEach(function (b) {
   });
 });
 
-document.getElementById('cta').addEventListener('click', function () {
-  if (opening) return;
-  const t = T[lang];
-  const url = AGENDA_URL || ('https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(t.waText));
-  opening = true;
-  this.setAttribute('aria-busy', 'true');
-  apply();
-  const btn = this;
-  setTimeout(function () {
-    window.open(url, '_blank', 'noopener');
-    opening = false;
-    btn.setAttribute('aria-busy', 'false');
-    apply();
-  }, 800);
+document.getElementById('card').addEventListener('click', function () {
+  const a = this;
+  a.classList.remove('flash');
+  void a.offsetWidth;
+  a.classList.add('flash');
+  setTimeout(function () { a.classList.remove('flash'); }, 480);
 });
 
 apply();
