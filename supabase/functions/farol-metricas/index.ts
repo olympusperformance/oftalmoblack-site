@@ -1,5 +1,5 @@
 /* Farol: agrega somente métricas de uma clínica vinculada a um membro ativo.
-   O JWT do site autoriza o admin antes de qualquer leitura com service_role. */
+   O JWT autoriza o admin ou o próprio mentorado antes de qualquer leitura com service_role. */
 import { createClient } from "npm:@supabase/supabase-js@2.49.4";
 
 const CORS = {
@@ -101,13 +101,21 @@ export async function handleFarol(req: Request): Promise<Response> {
   });
   const { data:userData, error:userError } = await userClient.auth.getUser(token);
   if (userError || !userData.user) return json({ error:"unauthorized" }, 401);
-  const { data:isAdmin, error:adminError } = await userClient.rpc("is_admin");
-  if (adminError || isAdmin !== true) return json({ error:"forbidden" }, 403);
-
   let body: any;
   try { body = await req.json(); } catch { return json({ error:"invalid_body" }, 400); }
   if (!body || typeof body !== "object" || !UUID.test(body.member_id) || ![7, 30].includes(body.days)) {
     return json({ error:"invalid_parameters" }, 400);
+  }
+
+  const { data:isAdmin, error:adminError } = await userClient.rpc("is_admin");
+  if (adminError) return json({ error:"authorization_failed" }, 503);
+  if (isAdmin !== true) {
+    // A consulta usa o JWT do visitante e exige o vínculo ao próprio login.
+    // A service role só entra depois desta verificação.
+    const { data:ownMember, error:ownError } = await userClient.from("members")
+      .select("id").eq("id", body.member_id).eq("user_id", userData.user.id).eq("ativo", true).maybeSingle();
+    if (ownError) return json({ error:"authorization_failed" }, 503);
+    if (!ownMember) return json({ error:"forbidden" }, 403);
   }
 
   const site = createClient(siteUrl, siteService, { global:{ fetch:boundedFetch }, auth:{ persistSession:false, autoRefreshToken:false } });

@@ -5,10 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#07060A">
-<title>Área do Mentorado — Club OftalmoBlack</title>
+<title>Cérebro Black — Área do Mentorado</title>
 <link rel="icon" href="/assets/favicon.png">
 <link rel="stylesheet" href="/assets/club.css">
 <link rel="stylesheet" href="/assets/club-graduacao.css?v=20260924">
+<link rel="stylesheet" href="/assets/club-farol.css">
 <script src="/assets/club-tema.js"></script>
 </head>
 <body>
@@ -18,9 +19,9 @@
 
 <header class="topbar">
   <a class="logo" href="/membros/">
-    <span class="logo-ring"><span class="logo-inner"><svg class="ic"><use href="#i-eye"/></svg></span></span>
+    <img class="logo-mark" src="/assets/graduacao-olho.png" alt="">
     <span class="logo-txt">
-      <span class="b">OFTALMO BLACK</span>
+      <span class="b">CÉREBRO BLACK</span>
       <span class="c" id="turmaFase">—</span>
     </span>
   </a>
@@ -41,7 +42,16 @@
 
   <main class="main">
 
-    <div class="view" data-view="home">
+    <div class="view" data-view="farol">
+      <div id="farolMembro" class="farol-initial" role="status" aria-live="polite">
+        <div class="farol-loading-note"><i aria-hidden="true"></i>Preparando seu Farol…</div>
+        <div class="farol-initial-heading farol-skel" aria-hidden="true"></div>
+        <div class="farol-initial-funnel" aria-hidden="true"><span class="farol-skel"></span><span class="farol-skel"></span><span class="farol-skel"></span><span class="farol-skel"></span><span class="farol-skel"></span></div>
+        <div class="farol-initial-cards" aria-hidden="true"><span class="farol-skel"></span><span class="farol-skel"></span><span class="farol-skel"></span></div>
+      </div>
+    </div>
+
+    <div class="view" data-view="home" hidden>
       <div class="hello hello-top">
         <div>
           <h1 id="greeting">—</h1>
@@ -152,6 +162,7 @@
 <script src="/assets/club-data.js"></script>
 <script src="/assets/club-graduacao.js?v=20260924"></script>
 <script src="/assets/club-instagram.js"></script>
+<script src="/assets/club-farol.js"></script>
 <script src="/assets/membros.js"></script>
 </body>
 </html>
