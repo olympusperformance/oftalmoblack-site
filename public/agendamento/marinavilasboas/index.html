@@ -525,6 +525,9 @@ h1,h2{margin:0}
                                   /* praca com WhatsApp direto nao passa pela tela de motivo */
                                   .replace(" Meu caso: .", "");
     var numero = (chave === "local" && waUnidade) ? waUnidade : WA;
+    /* "Rio de Janeiro" pede artigo, e ele pode chegar aqui pela praca, pela cidade que o paciente
+       escolheu ou pela cidade do colega: acerta no texto final, qualquer que seja a origem. */
+    texto = texto.replace(/(em|a|de) Rio de Janeiro/g, function(m, p){ return ({em: "no", a: "ao", de: "do"})[p] + " Rio de Janeiro"; });
     var url = "https://wa.me/" + numero + (texto ? "?text=" + encodeURIComponent(texto) : "");
 
     var ramo = chave;

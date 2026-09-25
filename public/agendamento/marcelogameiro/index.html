@@ -267,7 +267,7 @@ h1,h2{margin:0}
                  spellcheck="false" placeholder="Escreva a sua cidade" aria-label="De qual cidade você é?"
                  aria-autocomplete="list" aria-controls="cidade-sugestoes">
           <ul class="sugestoes" id="cidade-sugestoes" role="listbox" hidden></ul>
-          <p class="campo-cidade--vazio" id="cidade-vazio" hidden>Não encontrei na lista — pode seguir com o que você escreveu.</p>
+          <p class="campo-cidade--vazio" id="cidade-vazio" hidden>Não encontrei na lista. Pode seguir com o que você escreveu.</p>
         </div>
         <button class="btn" type="button" style="margin-top:26px" id="cidade-ok" data-ir="bq" disabled>Continuar</button>
       </section>
@@ -578,8 +578,13 @@ h1,h2{margin:0}
     if(chave === "local" && vemDeFora && MSG.vem) chave = "vem";
     var texto = (MSG[chave] || "").replace("{unidade}", unidade)
                                   .replace("{motivo}", motivo)
-                                  .replace("{cidade}", cidadePaciente);
+                                  .replace("{cidade}", cidadePaciente)
+                                  /* praca com WhatsApp direto nao passa pela tela de motivo */
+                                  .replace(" Meu caso: .", "");
     var numero = (chave === "local" && waUnidade) ? waUnidade : WA;
+    /* "Rio de Janeiro" pede artigo, e ele pode chegar aqui pela praca, pela cidade que o paciente
+       escolheu ou pela cidade do colega: acerta no texto final, qualquer que seja a origem. */
+    texto = texto.replace(/(em|a|de) Rio de Janeiro/g, function(m, p){ return ({em: "no", a: "ao", de: "do"})[p] + " Rio de Janeiro"; });
     var url = "https://wa.me/" + numero + (texto ? "?text=" + encodeURIComponent(texto) : "");
 
     var ramo = chave;
