@@ -30,6 +30,7 @@
 
 import { createClient } from "npm:@supabase/supabase-js@2.49.4";
 import { normalizarGanhos } from "./seguidores.ts";
+import { normalizarAlcance } from "./alcance.ts";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -190,10 +191,19 @@ Deno.serve(async (req) => {
     const followerSince = String(Math.floor(desdeFollower.getTime() / 1000));
     const followerUntil = String(Math.floor(ateFollower.getTime() / 1000));
 
+    // A serie de reach aceita ate 30 dias por consulta. Reconsultar a janela
+    // recupera dias que a Meta consolidou depois da primeira coleta.
+    const desdeAlcance = new Date(`${dia}T00:00:00Z`);
+    desdeAlcance.setUTCDate(desdeAlcance.getUTCDate() - 30);
+    const alcanceSince = String(Math.floor(desdeAlcance.getTime() / 1000));
+    const alcanceUntil = String(Math.floor(new Date(`${dia}T00:00:00Z`).getTime() / 1000));
+
     const linhas: Array<Record<string, unknown>> = [];
     const linhasGanhos: Array<Record<string, unknown>> = [];
+    const linhasAlcance: Array<Record<string, unknown>> = [];
     const falhas: Array<{ username: string; erro: string }> = [];
     const pendenciasGanhos: Array<{ username: string; erro: string }> = [];
+    const pendenciasAlcance: Array<{ username: string; erro: string }> = [];
 
     // Limita a concorrencia para concluir a turma dentro do tempo da funcao.
     for (let inicio = 0; inicio < alvos.length; inicio += 3) {
@@ -246,6 +256,23 @@ Deno.serve(async (req) => {
           });
         }
 
+        try {
+          const alcanceDiario = await graph(`${ig.id}/insights`, {
+            metric: "reach",
+            period: "day",
+            metric_type: "time_series",
+            since: alcanceSince,
+            until: alcanceUntil,
+            access_token: pageToken,
+          });
+          linhasAlcance.push(...normalizarAlcance(ig.id, alcanceDiario.data?.[0]?.values));
+        } catch (e) {
+          pendenciasAlcance.push({
+            username: ig.username ?? ig.id,
+            erro: mensagemErro(e),
+          });
+        }
+
         linhas.push({
           ig_user_id: ig.id,
           dia,
@@ -280,6 +307,15 @@ Deno.serve(async (req) => {
       ganhosAtualizados = Number(data) || 0;
     }
 
+    let alcanceAtualizado = 0;
+    if (linhasAlcance.length > 0) {
+      const { data, error } = await db.rpc("instagram_sync_alcance_diario", {
+        p: linhasAlcance,
+      });
+      if (error) throw new Error(`sync alcance diario: ${error.message}`);
+      alcanceAtualizado = Number(data) || 0;
+    }
+
     return json({
       ok: linhas.length > 0,
       dia,
@@ -291,6 +327,11 @@ Deno.serve(async (req) => {
         recebidos: linhasGanhos.length,
         atualizados: ganhosAtualizados,
         contas_pendentes: pendenciasGanhos,
+      },
+      alcance_diario: {
+        recebidos: linhasAlcance.length,
+        atualizados: alcanceAtualizado,
+        contas_pendentes: pendenciasAlcance,
       },
     }, linhas.length > 0 ? 200 : 502);
   } catch (e) {

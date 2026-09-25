@@ -29,17 +29,22 @@
     var passo = W / (pontos.length - 1 || 1);
     var y = function (v) { return PB + (H - PB * 2) * (1 - (v - min) / span); };
 
-    var d = '', area = '', aberto = false;
+    var d = '', area = '', aberto = false, ultimoX = null;
     pontos.forEach(function (p, i) {
       var v = p[campo];
-      if (v === null || v === undefined) { aberto = false; return; }
+      if (v === null || v === undefined) {
+        if (aberto) area += 'L' + ultimoX + ' ' + H + 'Z';
+        aberto = false;
+        return;
+      }
       var px = i * passo, py = y(v);
       d += (aberto ? 'L' : 'M') + px.toFixed(1) + ' ' + py.toFixed(1) + ' ';
       area += (aberto ? 'L' : 'M' + px.toFixed(1) + ' ' + H + 'L') + px.toFixed(1) + ' ' + py.toFixed(1) + ' ';
+      ultimoX = px.toFixed(1);
       aberto = true;
     });
     var ultimo = pontos.length - 1;
-    area += 'L' + (ultimo * passo).toFixed(1) + ' ' + H + 'Z';
+    if (aberto) area += 'L' + ultimoX + ' ' + H + 'Z';
 
     var id = 'g' + Math.random().toString(36).slice(2, 8);
     var meio = pontos[Math.floor(pontos.length / 2)];
@@ -208,7 +213,7 @@
 
   function desenharDetalheIg(l, dias, todos) {
     var username = l.username;
-    var corte = new Date(); corte.setDate(corte.getDate() - dias);
+    var corte = new Date(); corte.setHours(0, 0, 0, 0); corte.setDate(corte.getDate() - dias + 1);
     var serie = todos.filter(function (p) { return new Date(p.dia + 'T12:00') >= corte; });
     var serie30 = serieSeguidores30(todos);
 
@@ -232,7 +237,7 @@
             '<a class="ig-arroba" href="https://instagram.com/' + esc(username) + '" ' +
               'target="_blank" rel="noopener">@' + esc(username) + '</a>' +
             '<div class="seg ig-per" id="igPeriodo">' +
-              [30, 90, 180].map(function (d) {
+              [7, 30, 90, 180].map(function (d) {
                 return '<button data-igdias="' + d + '" aria-selected="' + (d === dias) + '">' +
                   d + ' dias</button>';
               }).join('') +
@@ -296,7 +301,7 @@
   C.instagramMember = {
     mount: function (host, member) {
       if (!host || !member || !member.id) return;
-      var accounts = [], selected = null, history = [], days = 90, request = 0;
+      var accounts = [], selected = null, history = [], days = 30, request = 0;
       host.innerHTML = '<p role="status">Carregando seus resultados do Instagram...</p>';
       function message(text, retry) {
         host.innerHTML = '<div class="ig-bloco"><p role="status">' + esc(text) + '</p>' +
@@ -355,7 +360,7 @@
         var period = event.target.closest('[data-igdias]');
         if (!period || !selected) return;
         days = Number(period.dataset.igdias);
-        if ([30, 90, 180].indexOf(days) !== -1) draw();
+        if ([7, 30, 90, 180].indexOf(days) !== -1) draw();
       };
       host.addEventListener('mousemove', rastrear);
       host.addEventListener('mouseleave', esconderDica);
