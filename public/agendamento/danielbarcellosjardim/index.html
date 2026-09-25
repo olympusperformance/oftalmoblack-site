@@ -267,7 +267,7 @@ h1,h2{margin:0}
                  spellcheck="false" placeholder="Escreva a sua cidade" aria-label="De qual cidade você é?"
                  aria-autocomplete="list" aria-controls="cidade-sugestoes">
           <ul class="sugestoes" id="cidade-sugestoes" role="listbox" hidden></ul>
-          <p class="campo-cidade--vazio" id="cidade-vazio" hidden>Não encontrei na lista — pode seguir com o que você escreveu.</p>
+          <p class="campo-cidade--vazio" id="cidade-vazio" hidden>Não encontrei na lista. Pode seguir com o que você escreveu.</p>
         </div>
         <button class="btn" type="button" style="margin-top:26px" id="cidade-ok" data-ir="bq" disabled>Continuar</button>
       </section>
@@ -310,7 +310,9 @@ h1,h2{margin:0}
             <p class="texto texto--menor" style="margin-bottom:18px">Nossa consulta oftalmológica completa está no valor de:</p>
             <div class="tt preco" id="preco-valor">R$ 500</div>
             <div class="regua regua--fina regua--centro"></div>
-            <div class="preco-obs"></div>
+
+            <div class="preco-parcelas" id="preco-parcelas">À vista no Pix, dinheiro, débito ou crédito</div>
+                        <div class="preco-obs">Particular · também atendemos Unimed, SulAmérica e Hapvida</div>
           </div>
 
           <p class="rodape-nota" id="preco-nota" style="margin-top:18px;text-align:left">Para garantir o horário, um sinal de <strong>R$ 100</strong> via Pix, descontado no dia da consulta.</p>
@@ -349,7 +351,7 @@ h1,h2{margin:0}
             <p class="texto texto--menor" style="margin-bottom:18px">O primeiro passo é uma <strong>teleconsulta</strong> com o Dr. Daniel, no valor de:</p>
             <div class="tt preco preco--menor">R$ 500</div>
             <div class="regua regua--fina regua--centro"></div>
-            <div class="preco-obs">Atendimento on-line com o Dr. Daniel</div>
+            <div class="preco-obs">Atendimento on-line com o Dr. Daniel · com o mesmo sinal de R$ 100</div>
           </div>
         </div>
         <button class="btn" type="button" data-ir="protocolo">Continuar</button>
@@ -570,7 +572,9 @@ h1,h2{margin:0}
     if(chave === "local" && vemDeFora && MSG.vem) chave = "vem";
     var texto = (MSG[chave] || "").replace("{unidade}", unidade)
                                   .replace("{motivo}", motivo)
-                                  .replace("{cidade}", cidadePaciente);
+                                  .replace("{cidade}", cidadePaciente)
+                                  /* praca com WhatsApp direto nao passa pela tela de motivo */
+                                  .replace(" Meu caso: .", "");
     var numero = (chave === "local" && waUnidade) ? waUnidade : WA;
     var url = "https://wa.me/" + numero + (texto ? "?text=" + encodeURIComponent(texto) : "");
 

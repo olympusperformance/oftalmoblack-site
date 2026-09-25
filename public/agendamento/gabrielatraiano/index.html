@@ -267,7 +267,7 @@ h1,h2{margin:0}
                  spellcheck="false" placeholder="Escreva a sua cidade" aria-label="De qual cidade você é?"
                  aria-autocomplete="list" aria-controls="cidade-sugestoes">
           <ul class="sugestoes" id="cidade-sugestoes" role="listbox" hidden></ul>
-          <p class="campo-cidade--vazio" id="cidade-vazio" hidden>Não encontrei na lista — pode seguir com o que você escreveu.</p>
+          <p class="campo-cidade--vazio" id="cidade-vazio" hidden>Não encontrei na lista. Pode seguir com o que você escreveu.</p>
         </div>
         <button class="btn" type="button" style="margin-top:26px" id="cidade-ok" data-ir="bq" disabled>Continuar</button>
       </section>
@@ -289,15 +289,11 @@ h1,h2{margin:0}
         <p class="texto texto--menor" style="margin-bottom:22px">Exames importantíssimos para a sua saúde ocular:</p>
         <div class="lista">
 
-          <div class="item"><i>&#9670;</i><div><div class="item__nome">Acuidade visual</div><div class="item__desc">Nitidez da sua visão</div></div></div>
+          <div class="item"><i>&#9670;</i><div><div class="item__nome">Avaliação completa</div><div class="item__desc">Consulta com a Dra. Gabriela</div></div></div>
           
-          <div class="item"><i>&#9670;</i><div><div class="item__nome">Refratometria</div><div class="item__desc">Avaliação do grau dos óculos</div></div></div>
+          <div class="item"><i>&#9670;</i><div><div class="item__nome">Autorrefração</div><div class="item__desc">Pré-exame: medida computadorizada do grau</div></div></div>
           
-          <div class="item"><i>&#9670;</i><div><div class="item__nome">Tonometria</div><div class="item__desc">Pressão intraocular</div></div></div>
-          
-          <div class="item"><i>&#9670;</i><div><div class="item__nome">Biomicroscopia</div><div class="item__desc">Estruturas anteriores do olho</div></div></div>
-          
-          <div class="item"><i>&#9670;</i><div><div class="item__nome">Fundoscopia</div><div class="item__desc">Fundo de olho</div></div></div>
+          <div class="item"><i>&#9670;</i><div><div class="item__nome">Tonometria</div><div class="item__desc">Pré-exame: pressão intraocular</div></div></div>
                   </div>
         <p class="rodape-nota">Tudo incluso no valor da consulta.</p>
         <button class="btn" type="button" style="margin-top:26px" data-ir="preco">Continuar</button>
@@ -310,7 +306,9 @@ h1,h2{margin:0}
             <p class="texto texto--menor" style="margin-bottom:18px">Nossa consulta oftalmológica completa está no valor de:</p>
             <div class="tt preco" id="preco-valor">R$ 450</div>
             <div class="regua regua--fina regua--centro"></div>
-            <div class="preco-obs">Atendimento particular · não atendemos convênio</div>
+
+            <div class="preco-parcelas" id="preco-parcelas">À vista · ou 3x de R$ 166,66 no cartão</div>
+                        <div class="preco-obs">Particular · também atendemos Unifas e Sinam</div>
           </div>
         </div>
         <button class="btn" type="button" data-whats="local">Agendar consulta</button>
@@ -324,57 +322,12 @@ h1,h2{margin:0}
         <p class="texto texto--menor texto--gap">Nossa clínica fica em Francisco Beltrão, e é aqui que a Dra. Gabriela realiza as cirurgias. Você viria até aqui para realizar o seu sonho de ter a liberdade visual?</p>
         <div class="opcoes">
           <button class="btn" type="button" style="animation-delay:.1s" data-vem="1"
-                  data-ir="b1">Sim, eu iria a Francisco Beltrão</button>
+                  data-ir="a1">Sim, eu iria a Francisco Beltrão</button>
           <button class="btn btn--secundario" type="button" data-ir="fora">Não</button>
         </div>
       </section>
       
 
-
-      <section class="tela" data-tela="b1" data-titulo="Que ótimo!" data-progresso="45%">
-        <div class="miolo pilha">
-          <i class="icone">&#9733;</i>
-          <h2 class="tt h2--g">Que ótimo!</h2>
-          <p class="texto">Ficamos muito felizes com a sua decisão de cuidar da sua visão.</p>
-        </div>
-        <button class="btn" type="button" data-ir="tele_etapas">Continuar</button>
-      </section>
-
-      <section class="tela" data-tela="tele" data-titulo="Primeiro passo" data-progresso="78%">
-        <div class="miolo">
-          <span class="kicker">Primeiro passo</span>
-          <div class="cartao cartao--centro">
-            <p class="texto texto--menor" style="margin-bottom:18px">O primeiro passo é uma <strong>teleconsulta</strong> com a Dra. Gabriela, no valor de:</p>
-            <div class="tt preco preco--menor">R$ 450</div>
-            <div class="regua regua--fina regua--centro"></div>
-            <div class="preco-obs">Atendimento on-line com a Dra. Gabriela</div>
-          </div>
-        </div>
-        <button class="btn" type="button" data-ir="protocolo">Continuar</button>
-      </section>
-
-      <section class="tela tela--recuada" data-tela="tele_etapas" data-titulo="Na teleconsulta" data-progresso="60%">
-        <span class="kicker kicker--curto">Na teleconsulta</span>
-        <h2 class="tt h2--p">A Dra. Gabriela avalia o seu caso</h2>
-        <p class="texto texto--menor" style="margin-bottom:20px">Ela analisará seus exames, esclarecerá todas as suas dúvidas e avaliará se o seu caso é indicado para cirurgia:</p>
-        <div class="marcadores">
-
-          <span class="marcador">Catarata</span>
-                  </div>
-        <button class="btn" type="button" style="margin-top:30px" data-ir="tele">Continuar</button>
-      </section>
-
-      <section class="tela" data-tela="protocolo" data-titulo="Último passo" data-progresso="92%">
-        <div class="miolo pilha">
-          <span class="kicker">Último passo</span>
-          <h2 class="tt h2--p">Conttemple</h2>
-          <div class="regua"></div>
-          <p class="texto">Se o seu caso for indicado, orientaremos você sobre como realizar a cirurgia com a Dra. Gabriela aqui em Francisco Beltrão, com todo o suporte da nossa equipe.</p>
-        </div>
-
-        <button class="btn" type="button" data-whats="tele">Agendar teleconsulta</button>
-              </section>
-      
 
 
       <section class="tela" data-tela="fora" data-titulo="Entendemos<br>perfeitamente">
@@ -395,7 +348,7 @@ h1,h2{margin:0}
 (function(){
   "use strict";
   var WA = "5546991069777";
-  var MSG = {"local": "Olá! Vim pelo link da bio da Dra. Gabriela Traiano. Sou de {unidade} e gostaria de agendar minha consulta presencial.", "tele": "Olá! Vim pelo link da bio da Dra. Gabriela Traiano. Sou de {cidade}, tenho interesse em cirurgia e posso ir a Francisco Beltrão. Gostaria de agendar a teleconsulta."};
+  var MSG = {"local": "Olá! Vim pelo link da bio da Dra. Gabriela Traiano. Sou de {unidade} e gostaria de agendar minha consulta presencial.", "vem": "Olá! Vim pelo link da bio da Dra. Gabriela Traiano. Sou de {cidade} e posso ir a Francisco Beltrão. Gostaria de agendar minha consulta presencial."};
   var telas = {}, ordem = [];
   Array.prototype.forEach.call(document.querySelectorAll("[data-tela]"), function(el){
     telas[el.getAttribute("data-tela")] = el; ordem.push(el);
@@ -566,7 +519,9 @@ h1,h2{margin:0}
     if(chave === "local" && vemDeFora && MSG.vem) chave = "vem";
     var texto = (MSG[chave] || "").replace("{unidade}", unidade)
                                   .replace("{motivo}", motivo)
-                                  .replace("{cidade}", cidadePaciente);
+                                  .replace("{cidade}", cidadePaciente)
+                                  /* praca com WhatsApp direto nao passa pela tela de motivo */
+                                  .replace(" Meu caso: .", "");
     var numero = (chave === "local" && waUnidade) ? waUnidade : WA;
     var url = "https://wa.me/" + numero + (texto ? "?text=" + encodeURIComponent(texto) : "");
 

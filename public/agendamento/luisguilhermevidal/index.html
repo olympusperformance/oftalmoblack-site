@@ -267,7 +267,7 @@ h1,h2{margin:0}
                  spellcheck="false" placeholder="Escreva a sua cidade" aria-label="De qual cidade você é?"
                  aria-autocomplete="list" aria-controls="cidade-sugestoes">
           <ul class="sugestoes" id="cidade-sugestoes" role="listbox" hidden></ul>
-          <p class="campo-cidade--vazio" id="cidade-vazio" hidden>Não encontrei na lista — pode seguir com o que você escreveu.</p>
+          <p class="campo-cidade--vazio" id="cidade-vazio" hidden>Não encontrei na lista. Pode seguir com o que você escreveu.</p>
         </div>
         <button class="btn" type="button" style="margin-top:26px" id="cidade-ok" data-ir="bq" disabled>Continuar</button>
       </section>
@@ -297,7 +297,7 @@ h1,h2{margin:0}
           
           <div class="item"><i>&#9670;</i><div><div class="item__nome">Teste de acuidade visual e refração</div><div class="item__desc">Avaliação do grau</div></div></div>
                   </div>
-        <p class="rodape-nota">Tudo incluso no valor da consulta.</p>
+        <p class="rodape-nota">Tudo incluso no valor da consulta, com retorno em até 30 dias.</p>
         <button class="btn" type="button" style="margin-top:26px" data-ir="preco">Continuar</button>
       </section>
       
@@ -308,11 +308,11 @@ h1,h2{margin:0}
             <p class="texto texto--menor" style="margin-bottom:18px">Nossa consulta oftalmológica completa está no valor de:</p>
             <div class="tt preco" id="preco-valor">R$ 400</div>
             <div class="regua regua--fina regua--centro"></div>
-            <div class="preco-obs"></div>
-          </div>
 
-          <p class="rodape-nota" id="preco-nota" style="margin-top:18px;text-align:left">Para garantir o horário, um adiantamento de <strong>R$ 100</strong>, integralmente descontado no dia da consulta.</p>
-                  </div>
+            <div class="preco-parcelas" id="preco-parcelas">Pix ou cartão</div>
+                        <div class="preco-obs">Atendimento particular · não atendemos convênio</div>
+          </div>
+        </div>
         <button class="btn" type="button" data-whats="local">Agendar consulta</button>
       </section>
 
@@ -570,7 +570,9 @@ h1,h2{margin:0}
     if(chave === "local" && vemDeFora && MSG.vem) chave = "vem";
     var texto = (MSG[chave] || "").replace("{unidade}", unidade)
                                   .replace("{motivo}", motivo)
-                                  .replace("{cidade}", cidadePaciente);
+                                  .replace("{cidade}", cidadePaciente)
+                                  /* praca com WhatsApp direto nao passa pela tela de motivo */
+                                  .replace(" Meu caso: .", "");
     var numero = (chave === "local" && waUnidade) ? waUnidade : WA;
     var url = "https://wa.me/" + numero + (texto ? "?text=" + encodeURIComponent(texto) : "");
 

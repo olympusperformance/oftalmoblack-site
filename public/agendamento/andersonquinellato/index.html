@@ -267,7 +267,7 @@ h1,h2{margin:0}
                  spellcheck="false" placeholder="Escreva a sua cidade" aria-label="De qual cidade você é?"
                  aria-autocomplete="list" aria-controls="cidade-sugestoes">
           <ul class="sugestoes" id="cidade-sugestoes" role="listbox" hidden></ul>
-          <p class="campo-cidade--vazio" id="cidade-vazio" hidden>Não encontrei na lista — pode seguir com o que você escreveu.</p>
+          <p class="campo-cidade--vazio" id="cidade-vazio" hidden>Não encontrei na lista. Pode seguir com o que você escreveu.</p>
         </div>
         <button class="btn" type="button" style="margin-top:26px" id="cidade-ok" data-ir="bq" disabled>Continuar</button>
       </section>
@@ -289,17 +289,13 @@ h1,h2{margin:0}
         <p class="texto texto--menor" style="margin-bottom:22px">Exames importantíssimos para a sua saúde ocular:</p>
         <div class="lista">
 
-          <div class="item"><i>&#9670;</i><div><div class="item__nome">Acuidade visual</div><div class="item__desc">Nitidez da sua visão</div></div></div>
-          
           <div class="item"><i>&#9670;</i><div><div class="item__nome">Refratometria</div><div class="item__desc">Avaliação do grau dos óculos</div></div></div>
           
           <div class="item"><i>&#9670;</i><div><div class="item__nome">Tonometria</div><div class="item__desc">Pressão intraocular</div></div></div>
           
-          <div class="item"><i>&#9670;</i><div><div class="item__nome">Biomicroscopia</div><div class="item__desc">Estruturas anteriores do olho</div></div></div>
-          
           <div class="item"><i>&#9670;</i><div><div class="item__nome">Fundoscopia</div><div class="item__desc">Fundo de olho</div></div></div>
                   </div>
-        <p class="rodape-nota">Tudo incluso no valor da consulta. Mapeamento de retina, retinografia e OCT, quando indicados, são cobrados à parte.</p>
+        <p class="rodape-nota">Tudo incluso no valor da consulta, com retorno em até 30 dias. Mapeamento de retina, retinografia e OCT, quando indicados, são cobrados à parte.</p>
         <button class="btn" type="button" style="margin-top:26px" data-ir="preco">Continuar</button>
       </section>
       
@@ -310,9 +306,13 @@ h1,h2{margin:0}
             <p class="texto texto--menor" style="margin-bottom:18px">Nossa consulta oftalmológica completa está no valor de:</p>
             <div class="tt preco" id="preco-valor">R$ 500</div>
             <div class="regua regua--fina regua--centro"></div>
-            <div class="preco-obs">Particular · também atendemos Unimed e HFC</div>
+
+            <div class="preco-parcelas" id="preco-parcelas">Parcela no cartão</div>
+                        <div class="preco-obs">Particular · também atendemos Unimed e HFC</div>
           </div>
-        </div>
+
+          <p class="rodape-nota" id="preco-nota" style="margin-top:18px;text-align:left">Para garantir o horário, um sinal de <strong>R$ 150</strong> via Pix. O restante é pago no dia, no Pix, no dinheiro ou no cartão.</p>
+                  </div>
         <button class="btn" type="button" data-whats="local">Agendar consulta</button>
       </section>
 
@@ -347,7 +347,7 @@ h1,h2{margin:0}
             <p class="texto texto--menor" style="margin-bottom:18px">O primeiro passo é uma <strong>teleconsulta</strong> com o Dr. Anderson, no valor de:</p>
             <div class="tt preco preco--menor">R$ 500</div>
             <div class="regua regua--fina regua--centro"></div>
-            <div class="preco-obs">Atendimento on-line com o Dr. Anderson</div>
+            <div class="preco-obs">Atendimento on-line com o Dr. Anderson · retorno presencial em até 30 dias</div>
           </div>
         </div>
         <button class="btn" type="button" data-ir="protocolo">Continuar</button>
@@ -568,7 +568,9 @@ h1,h2{margin:0}
     if(chave === "local" && vemDeFora && MSG.vem) chave = "vem";
     var texto = (MSG[chave] || "").replace("{unidade}", unidade)
                                   .replace("{motivo}", motivo)
-                                  .replace("{cidade}", cidadePaciente);
+                                  .replace("{cidade}", cidadePaciente)
+                                  /* praca com WhatsApp direto nao passa pela tela de motivo */
+                                  .replace(" Meu caso: .", "");
     var numero = (chave === "local" && waUnidade) ? waUnidade : WA;
     var url = "https://wa.me/" + numero + (texto ? "?text=" + encodeURIComponent(texto) : "");
 
