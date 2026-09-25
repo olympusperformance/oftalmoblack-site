@@ -576,7 +576,7 @@ h1,h2{margin:0}
     var numero = (chave === "local" && waUnidade) ? waUnidade : WA;
     /* "Rio de Janeiro" pede artigo, e ele pode chegar aqui pela praca, pela cidade que o paciente
        escolheu ou pela cidade do colega: acerta no texto final, qualquer que seja a origem. */
-    texto = texto.replace(/(em|a|de) Rio de Janeiro/g, function(m, p){ return ({em: "no", a: "ao", de: "do"})[p] + " Rio de Janeiro"; });
+    texto = texto.replace(/\b(em|a|de) Rio de Janeiro\b/g, function(m, p){ return ({em: "no", a: "ao", de: "do"})[p] + " Rio de Janeiro"; });
     var url = "https://wa.me/" + numero + (texto ? "?text=" + encodeURIComponent(texto) : "");
 
     var ramo = chave;

@@ -249,10 +249,10 @@ h1,h2{margin:0}
       <section class="tela tela--recuada" data-tela="local" data-titulo="Passo 01 · Localização" data-progresso="22%">
         <span class="kicker kicker--curto">Passo 01 · Localização</span>
         <h2 class="tt h2">Onde você mora?</h2>
-        <p class="texto texto--menor texto--gap">Atendemos em Rio de Janeiro e Belém. Para seguir com o seu atendimento, onde você mora?</p>
+        <p class="texto texto--menor texto--gap">Atendemos no Rio de Janeiro e Belém. Para seguir com o seu atendimento, onde você mora?</p>
         <div class="opcoes">
 
-          <button class="opcao" type="button" data-ir="a1" data-unidade="Rio de Janeiro" data-wa="">Moro em Rio de Janeiro ou região <i>&rsaquo;</i></button>
+          <button class="opcao" type="button" data-ir="a1" data-unidade="Rio de Janeiro" data-wa="">Moro no Rio de Janeiro ou região <i>&rsaquo;</i></button>
           
           <button class="opcao" type="button" data-whats="local" data-unidade="Belém" data-wa="">Moro em Belém ou região <i>&rsaquo;</i></button>
                     <button class="opcao" type="button" data-ir="cidade">Moro em outra cidade <i>&rsaquo;</i></button>
@@ -328,11 +328,11 @@ h1,h2{margin:0}
       <!-- ===== RAMO B · PACIENTE DE FORA ===== -->
       <section class="tela tela--recuada" data-tela="bq" data-titulo="Uma pergunta importante" data-progresso="30%">
         <span class="kicker kicker--curto">Uma pergunta importante</span>
-        <h2 class="tt h2--m">Você viria a Rio de Janeiro?</h2>
-        <p class="texto texto--menor texto--gap">Atendemos em Rio de Janeiro e Belém, e é em Rio de Janeiro que o Dr. Oswaldo realiza as cirurgias. Você viria até lá para realizar o seu sonho de ter a liberdade visual?</p>
+        <h2 class="tt h2--m">Você viria ao Rio de Janeiro?</h2>
+        <p class="texto texto--menor texto--gap">Atendemos no Rio de Janeiro e Belém, e é no Rio de Janeiro que o Dr. Oswaldo realiza as cirurgias. Você viria até lá para realizar o seu sonho de ter a liberdade visual?</p>
         <div class="opcoes">
           <button class="btn" type="button" style="animation-delay:.1s" data-vem="1"
-                  data-ir="b1">Sim, eu iria a Rio de Janeiro</button>
+                  data-ir="b1">Sim, eu iria ao Rio de Janeiro</button>
           <button class="btn btn--secundario" type="button" data-ir="fora">Não</button>
         </div>
       </section>
@@ -379,7 +379,7 @@ h1,h2{margin:0}
           <span class="kicker">Último passo</span>
           <h2 class="tt h2--p">Cirurgia de Catarata</h2>
           <div class="regua"></div>
-          <p class="texto">Se o seu caso for indicado, orientaremos você sobre como realizar a cirurgia com o Dr. Oswaldo aqui em Rio de Janeiro, com todo o suporte da nossa equipe.</p>
+          <p class="texto">Se o seu caso for indicado, orientaremos você sobre como realizar a cirurgia com o Dr. Oswaldo aqui no Rio de Janeiro, com todo o suporte da nossa equipe.</p>
         </div>
 
         <button class="btn" type="button" data-whats="tele">Agendar teleconsulta</button>
@@ -392,7 +392,7 @@ h1,h2{margin:0}
           <i class="icone icone--centro">&#9825;</i>
           <h2 class="tt h2--m">Entendemos<br>perfeitamente</h2>
           <div class="regua" style="margin-left:auto;margin-right:auto"></div>
-          <p class="texto">Agradecemos muito o seu contato e o interesse no trabalho do Dr. Oswaldo Frazão. Se um dia você decidir dar esse passo em direção à sua liberdade visual, estaremos de portas abertas para te receber aqui em Rio de Janeiro.</p>
+          <p class="texto">Agradecemos muito o seu contato e o interesse no trabalho do Dr. Oswaldo Frazão. Se um dia você decidir dar esse passo em direção à sua liberdade visual, estaremos de portas abertas para te receber aqui no Rio de Janeiro.</p>
           <p class="assinatura" style="margin:26px 0 0">Cuide bem da sua visão.</p>
         </div>
       </section>
@@ -405,7 +405,7 @@ h1,h2{margin:0}
 (function(){
   "use strict";
   var WA = "5591992754141";
-  var MSG = {"local": "Olá! Vim pelo link da bio do Dr. Oswaldo Frazão. Sou de {unidade} e gostaria de agendar minha consulta presencial.", "tele": "Olá! Vim pelo link da bio do Dr. Oswaldo Frazão. Sou de {cidade}, tenho interesse em cirurgia e posso ir a Rio de Janeiro. Gostaria de agendar a teleconsulta."};
+  var MSG = {"local": "Olá! Vim pelo link da bio do Dr. Oswaldo Frazão. Sou de {unidade} e gostaria de agendar minha consulta presencial.", "tele": "Olá! Vim pelo link da bio do Dr. Oswaldo Frazão. Sou de {cidade}, tenho interesse em cirurgia e posso ir ao Rio de Janeiro. Gostaria de agendar a teleconsulta."};
   var telas = {}, ordem = [];
   Array.prototype.forEach.call(document.querySelectorAll("[data-tela]"), function(el){
     telas[el.getAttribute("data-tela")] = el; ordem.push(el);
@@ -582,7 +582,7 @@ h1,h2{margin:0}
     var numero = (chave === "local" && waUnidade) ? waUnidade : WA;
     /* "Rio de Janeiro" pede artigo, e ele pode chegar aqui pela praca, pela cidade que o paciente
        escolheu ou pela cidade do colega: acerta no texto final, qualquer que seja a origem. */
-    texto = texto.replace(/(em|a|de) Rio de Janeiro/g, function(m, p){ return ({em: "no", a: "ao", de: "do"})[p] + " Rio de Janeiro"; });
+    texto = texto.replace(/\b(em|a|de) Rio de Janeiro\b/g, function(m, p){ return ({em: "no", a: "ao", de: "do"})[p] + " Rio de Janeiro"; });
     var url = "https://wa.me/" + numero + (texto ? "?text=" + encodeURIComponent(texto) : "");
 
     var ramo = chave;
