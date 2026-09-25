@@ -26,7 +26,11 @@ function setup(hash = '', memberMode = false) {
     rotuloPar:p => p.estado, tipoEtapa:() => 'trava',
     graduacao:{ model(snapshot) { const period = snapshot.periods[0]; return { period, points:period.points, grade:snapshot.grade, missing:50-period.points, percent:period.points*2 }; }, beltName:() => 'Faixa preta' },
     sb:{ functions:{ invoke(_name, params) { const pending = deferred(); clinical.push({ pending, params }); return pending.promise; } },
-      from() { return { select() { return this; }, eq() { return this; }, maybeSingle() { const pending = deferred(); graduation.push(pending); return pending.promise; } }; } },
+      from(table) { return {
+        select() { return this; }, eq() { return this; }, gte() { return this; }, lte() { return this; },
+        order() { return Promise.resolve({ data:[] }); },
+        maybeSingle() { const pending = deferred(); graduation.push(pending); return pending.promise; },
+      }; } },
   };
   const document = { activeElement:{ getAttribute:() => null }, contains:() => false };
   const context = { window:{ Club }, Club, localStorage:{ getItem:key => store.get(key), setItem:(key,value) => store.set(key,value) },
@@ -101,4 +105,35 @@ test('fonte ausente aparece como travessão e troca de período invalida respost
   assert.match(t.root.html, /Instagram sem vínculo/);
   assert.doesNotMatch(t.root.html, />99</);
   assert.equal(t.location.hash, '#farol/' + MEMBER_A + '?dias=7');
+});
+
+test('Farol mostra os períodos do CRM e envia 90 dias à consulta', () => {
+  const t = setup(); t.Club.farol.enter('#farol/' + MEMBER_A + '?dias=30');
+  for (const preset of ['today','yesterday','last7days','thisWeek','lastWeek','thisMonth','lastMonth','monthBeforeLast','last30days','last90days','custom','all']) {
+    assert.match(t.root.html, new RegExp('option value="' + preset + '"'));
+  }
+  t.listeners.change({ target:{ matches:selector => selector === '[data-farol-period]', value:'last90days' } });
+  assert.equal(t.clinical[1].params.body.preset, 'last90days');
+  assert.equal(t.location.hash, '#farol/' + MEMBER_A + '?periodo=last90days');
+});
+
+test('período personalizado preserva datas no link e consulta', () => {
+  const url = '#farol/' + MEMBER_A + '?periodo=custom&de=2026-09-01&ate=2026-09-12';
+  const t = setup(url); t.Club.farol.enter(url);
+  assert.equal(t.clinical[0].params.body.preset, 'custom');
+  assert.equal(t.clinical[0].params.body.from, '2026-09-01');
+  assert.equal(t.clinical[0].params.body.to, '2026-09-12');
+  assert.equal(t.location.hash, url);
+  assert.match(t.root.html, /data-farol-from/);
+});
+
+test('todo período é consultado sem apresentar comparação artificial', async () => {
+  const url = '#farol/' + MEMBER_A + '?periodo=all';
+  const t = setup(url); t.Club.farol.enter(url);
+  assert.equal(t.clinical[0].params.body.preset, 'all');
+  t.clinical[0].pending.resolve(clinicalResponse(MEMBER_A, 12));
+  t.graduation[0].resolve(snapshot(3)); await settle();
+  assert.match(t.root.html, /Todo período/);
+  assert.match(t.root.html, /Sem comparativo/);
+  assert.doesNotMatch(t.root.html, /Anterior: 0/);
 });
