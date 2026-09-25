@@ -216,7 +216,7 @@ políticas RLS das respectivas fontes.
 Para publicar o acesso dos mentorados, **implante a função antes da interface**:
 
 ```bash
-supabase functions deploy farol-metricas --project-ref zpyxnkuvircukjlfexrv
+supabase functions deploy farol-metricas --project-ref zpyxnkuvircukjlfexrv --no-verify-jwt
 deno test --allow-env tests/farol-acesso.test.ts
 node --test tests/farol-ui.test.mjs
 ```
