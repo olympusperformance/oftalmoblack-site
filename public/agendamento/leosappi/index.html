@@ -851,7 +851,10 @@ h1,h2{margin:0}
                    .replace("{cidade}", cidadePaciente)
                    .replace("{ida}", mesma ? "" : " e posso ir a " + parceiro.cidade);
       }
-        var url = "https://wa.me/" + numero + (texto ? "?text=" + encodeURIComponent(texto) : "");
+        /* "Rio de Janeiro" pede artigo, e ele pode chegar aqui pela praca, pela cidade que o paciente
+       escolheu ou pela cidade do colega: acerta no texto final, qualquer que seja a origem. */
+    texto = texto.replace(/(em|a|de) Rio de Janeiro/g, function(m, p){ return ({em: "no", a: "ao", de: "do"})[p] + " Rio de Janeiro"; });
+    var url = "https://wa.me/" + numero + (texto ? "?text=" + encodeURIComponent(texto) : "");
 
     var ramo = (chave === "parceiro" && parceiro) ? ("Indicacao-" + parceiro.slug) : chave;
           ga("whatsapp_click", { page_path: PAGE_PATH, link_url: url, ramo: ramo });
