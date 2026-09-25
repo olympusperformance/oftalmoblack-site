@@ -29,6 +29,12 @@
 .farol-days{display:flex;gap:3px;padding:3px;border:1px solid var(--border-soft);border-radius:9px;background:var(--panel)}
 .farol-days button{height:27px;border:0;background:transparent;font-size:11px;white-space:nowrap}
 .farol-days button[aria-pressed="true"]{color:var(--on-gold);background:var(--gold);font-weight:700}
+.farol-period-picker{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:11px}
+.farol-period-picker select{min-width:170px;max-width:190px}
+.farol-custom{display:flex;align-items:center;gap:5px}
+.farol-custom input{height:35px;max-width:128px;padding:0 6px;border:1px solid var(--border-soft);border-radius:8px;background:var(--panel);color:var(--text);font:inherit;font-size:11px}
+.farol-custom button{height:35px;padding:0 10px;border:1px solid var(--gold);border-radius:8px;background:var(--gold);color:var(--on-gold);font-weight:700;cursor:pointer}
+.farol-custom [data-farol-date-error]{color:var(--danger);font-size:11px}
 .farol-period{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:11px;min-height:17px}
 .farol-period span+span{margin-left:auto}
 .farol-period b{font-weight:500;color:var(--warning-tx)}
@@ -171,3 +177,4 @@ small>.farol-skel{margin-top:6px}
 @media(max-width:1180px){.farol-header{align-items:start;flex-direction:column}.farol-controls{justify-content:start}.farol-kpi{padding:3px 10px}.farol-card{padding:15px 13px}.farol-ig-details{grid-template-columns:repeat(2,1fr);gap:5px}.farol-cards{align-items:stretch}}
 @media(max-width:760px){.farol{gap:12px}.farol-controls{width:100%}.farol-search{flex:1;min-width:120px}.farol-controls select{flex:2;max-width:none}.farol-days{width:100%;margin-top:4px}.farol-days button{flex:1}.farol-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 0}.farol-kpi:nth-child(odd){padding-left:0;border-left:0}.farol-kpi strong{font-size:34px}.farol-cards{grid-template-columns:1fr}.farol-card{min-height:230px}.farol-ig-details{grid-template-columns:repeat(4,1fr)}.farol-foot{grid-template-columns:1fr}.farol-finance{grid-template-columns:1fr;border-right:0;border-bottom:1px solid var(--border-soft)}.farol-finance-cell{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:8px;border-right:0;border-bottom:1px solid var(--border-soft);padding:9px 13px}.farol-finance-cell:last-child{border-bottom:0}.farol-finance-cell strong{grid-column:2;grid-row:1/3;font-size:21px}.farol-finance-cell small{grid-column:1;grid-row:2}.farol-attention{min-height:75px}.farol-period{flex-wrap:wrap}}
 @media(max-width:420px){.farol-controls select{min-width:130px}.farol-ig-details{grid-template-columns:repeat(2,1fr)}.farol-grade strong,.farol-ig-main strong{font-size:26px}}
+@media(max-width:420px){.farol-custom{width:100%;flex-wrap:wrap}.farol-custom input{flex:1;min-width:130px;max-width:none}}

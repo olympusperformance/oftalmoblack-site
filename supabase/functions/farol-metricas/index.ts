@@ -1,6 +1,7 @@
 /* Farol: agrega somente métricas de uma clínica vinculada a um membro ativo.
    O JWT autoriza o admin ou o próprio mentorado antes de qualquer leitura com service_role. */
 import { createClient } from "npm:@supabase/supabase-js@2.49.4";
+import { PRESETS, resolvePeriod, type Preset } from "./periodo.ts";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -103,7 +104,8 @@ export async function handleFarol(req: Request): Promise<Response> {
   if (userError || !userData.user) return json({ error:"unauthorized" }, 401);
   let body: any;
   try { body = await req.json(); } catch { return json({ error:"invalid_body" }, 400); }
-  if (!body || typeof body !== "object" || !UUID.test(body.member_id) || ![7, 30].includes(body.days)) {
+  const preset: Preset = body?.preset ?? (body?.days === 7 ? "last7days" : body?.days === 30 ? "last30days" : "" as Preset);
+  if (!body || typeof body !== "object" || !UUID.test(body.member_id) || !PRESETS.includes(preset)) {
     return json({ error:"invalid_parameters" }, 400);
   }
 
@@ -138,9 +140,11 @@ export async function handleFarol(req: Request): Promise<Response> {
   let zone = clinicRow.timezone || "America/Sao_Paulo";
   try { new Intl.DateTimeFormat("en-US", { timeZone:zone }); } catch { zone = "America/Sao_Paulo"; }
   const today = dateInZone(new Date(), zone);
-  const first = addDays(today, 1 - body.days);
+  const period = resolvePeriod(preset, today, body.from, body.to);
+  if (!period) return json({ error:"invalid_period" }, 400);
+  const first = period.date_start;
   const start = zonedMidnight(first, zone).toISOString();
-  const end = new Date(zonedMidnight(addDays(today, 1), zone).getTime() - 1).toISOString();
+  const end = new Date(zonedMidnight(addDays(period.date_end, 1), zone).getTime() - 1).toISOString();
   const args = { p_clinic_id:clinicRow.id, p_period_start:start, p_period_end:end };
   const [funilResult, commercialResult, billedResult, receivedResult] = await Promise.allSettled([
     crm.rpc("get_funil_metrics", args),
@@ -157,11 +161,11 @@ export async function handleFarol(req: Request): Promise<Response> {
   try { if (rawFunnel) safeFunnel = funnel(rawFunnel); } catch { /* fonte independente */ }
   try { if (rawCommercial) safeCommercial = commercial(rawCommercial); } catch { /* fonte independente */ }
   const partialHistory = !!safeFunnel && [safeFunnel.trilha_desde, safeFunnel.dados_desde]
-    .some((since) => since !== null && since > start);
+    .some((since) => since !== null && since.slice(0, 10) > first);
   const complete = !!safeFunnel && !!safeCommercial && !!billed && !!received && !partialHistory;
   return json({ status:complete ? "ready" : "partial", member_id:member.id,
     clinic:{ id:clinicRow.id, name:clinicRow.name, timezone:zone },
-    period:{ days:body.days, start, end, date_start:first, date_end:today }, updated_at:new Date().toISOString(),
+    period:{ ...period, start, end }, updated_at:new Date().toISOString(),
     funnel:{ status:safeFunnel ? "ready" : "error", data:safeFunnel },
     commercial:{ status:safeCommercial ? "ready" : "error", data:safeCommercial },
     finance:{ status:billed && received ? "ready" : "error", billed, received } });
