@@ -434,3 +434,7 @@ o deploy da UI nova sai logo depois.
 "área da equipe só recebe frente interna". Roda DEPOIS do deploy da UI da fase 4.
 
 Testes de regressão: `node --test tests/graduacao.test.mjs tests/progress-notes.test.cjs tests/cerebro-preview.test.mjs tests/areas-admin.test.cjs tests/areas-membros.test.cjs tests/areas-sql.test.cjs tests/frentes-demandas.test.cjs tests/frentes-sql.test.cjs tests/limpeza-sql.test.cjs`
+
+## Íris Black (26/09/2026)
+
+Nome vigente do projeto e artefato antes chamado SDR IA. A agente do Dr. Alex se apresenta como Íris (antes Marina). Aplicar `supabase/iris-black.sql` após os scripts históricos de catálogo e frentes. A renomeação preserva IDs, etapas, demandas e progresso; a UI lê o nome do banco. O repositório técnico permanece `sdr-ia`.
