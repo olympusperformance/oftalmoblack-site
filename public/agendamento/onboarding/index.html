@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Onboarding | Club OftalmoBlack</title>
-<meta name="description" content="Agende sua sessão de onboarding com a coordenação do Club OftalmoBlack.">
+<title>Diagnóstico | Club OftalmoBlack</title>
+<meta name="description" content="Agende seu diagnóstico individual com Felipe Melo, Diretor de Operações do OftalmoBlack.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:ital,wght@0,400;0,500&display=swap">
@@ -96,7 +96,7 @@ button:focus-visible,a:focus-visible{outline:1px solid var(--gold);outline-offse
         <span class="kicker" data-i18n="kicker">SUA ENTRADA NO CLUB</span>
       </div>
       <h1 data-i18n="h1">Boas-vindas ao Club. <span class="grifo">Vamos começar.</span></h1>
-      <p class="sub" data-i18n="sub">Sua primeira sessão com a coordenação. Escolha o horário e eu te vejo lá.</p>
+      <p class="sub" data-i18n="sub">Seu diagnóstico individual com Felipe. O onboarding em grupo com Dr. Alex acontece mensalmente, em uma data comunicada à turma.</p>
     </div>
     <div class="lang" role="group" aria-label="Idioma / Language">
       <button type="button" data-lang="pt" aria-pressed="true">PT</button>
@@ -116,13 +116,13 @@ button:focus-visible,a:focus-visible{outline:1px solid var(--gold);outline-offse
         </div>
         <div style="display:flex;flex-direction:column;gap:8px">
           <h2 id="ob-h2" data-i18n="h2">Reunião de Diagnóstico</h2>
-          <p data-i18n="cardP">Como tudo funciona daqui pra frente, seus acessos e o primeiro passo prático, com Felipe Melo, Diretor de Operações do OftalmoBlack.</p>
+          <p data-i18n="cardP">Vamos conversar sobre sua clínica, esclarecer as informações da pesquisa e do formulário e alinhar prioridades, com Felipe Melo, Diretor de Operações do OftalmoBlack.</p>
         </div>
         <div class="sep"></div>
         <ul>
-          <li data-i18n="b1">Apresentação da equipe e do método de trabalho</li>
-          <li data-i18n="b2">Grupo da sua clínica e primeiros acessos</li>
-          <li data-i18n="b3">Agenda do onboarding técnico e da sessão de Growth</li>
+          <li data-i18n="b1">Contexto da clínica, pesquisa prévia e formulário</li>
+          <li data-i18n="b2">Objetivos, prioridades e orientação sobre o Club</li>
+          <li data-i18n="b3">Próximos passos e apresentação do plano</li>
         </ul>
         <div class="foot-card"><span class="dur" data-i18n="dur">45 MIN</span><span class="ver" id="card-ver" data-i18n="ver">VER HORÁRIOS →</span></div>
       </div>
@@ -135,49 +135,49 @@ button:focus-visible,a:focus-visible{outline:1px solid var(--gold);outline-offse
 </main>
 
 <script>
-// Link da agenda "Onboarding" do Google Calendar (agenda do Felipe, Coordenação).
+// Diagnóstico individual com Felipe. URL e rota legadas preservadas; onboarding coletivo é marcado separadamente por Alex.
 // Vazio = a página cai no fallback do WhatsApp (mensagem pré-preenchida pro Felipe).
 const AGENDA_URL = 'https://calendar.app.google/TtdgaGmfN5roWmh16';
 const WHATSAPP = '5592981381810';
 
 const T = {
   pt: {
-    title: 'Onboarding | Club OftalmoBlack',
+    title: 'Diagnóstico | Club OftalmoBlack',
     kicker: 'SUA ENTRADA NO CLUB',
     h1: 'Boas-vindas ao Club. <span class="grifo">Vamos começar.</span>',
-    sub: 'Sua primeira sessão com a coordenação. Escolha o horário e eu te vejo lá.',
+    sub: 'Seu diagnóstico individual com Felipe. O onboarding em grupo com Dr. Alex acontece mensalmente, em uma data comunicada à turma.',
     cardKicker: 'COORDENAÇÃO',
     h2: 'Reunião de Diagnóstico',
-    cardP: 'Como tudo funciona daqui pra frente, seus acessos e o primeiro passo prático, com Felipe Melo, Diretor de Operações do OftalmoBlack.',
-    b1: 'Apresentação da equipe e do método de trabalho',
-    b2: 'Grupo da sua clínica e primeiros acessos',
-    b3: 'Agenda do onboarding técnico e da sessão de Growth',
+    cardP: 'Vamos conversar sobre sua clínica, esclarecer as informações da pesquisa e do formulário e alinhar prioridades, com Felipe Melo, Diretor de Operações do OftalmoBlack.',
+    b1: 'Contexto da clínica, pesquisa prévia e formulário',
+    b2: 'Objetivos, prioridades e orientação sobre o Club',
+    b3: 'Próximos passos e apresentação do plano',
     dur: '45 MIN',
     ver: 'VER HORÁRIOS →',
     verWa: 'ESCOLHER NO WHATSAPP →',
     sup: 'Duração de 45 min · Google Meet · horário de Brasília, convertido automaticamente para o seu fuso.',
     supWa: 'Duração de 45 min · Google Meet · me diga dois ou três horários que funcionam pra você e eu confirmo.',
     foot: 'Alguma dúvida? <a href="https://wa.me/' + WHATSAPP + '" target="_blank" rel="noopener">Fale comigo no WhatsApp</a>',
-    waText: 'Olá, Felipe! Quero agendar minha sessão de onboarding do Club OftalmoBlack. Tenho disponibilidade em: '
+    waText: 'Olá, Felipe! Quero agendar meu diagnóstico individual com Felipe do Club OftalmoBlack. Tenho disponibilidade em: '
   },
   es: {
-    title: 'Onboarding | Club OftalmoBlack',
+    title: 'Diagnóstico | Club OftalmoBlack',
     kicker: 'TU ENTRADA AL CLUB',
     h1: 'Te damos la bienvenida. <span class="grifo">Empecemos.</span>',
-    sub: 'Tu primera sesión con la coordinación. Elige el horario y nos vemos ahí.',
+    sub: 'Tu diagnóstico individual con Felipe. El onboarding grupal con Dr. Alex se realiza mensualmente, en una fecha comunicada al grupo.',
     cardKicker: 'COORDINACIÓN',
     h2: 'Reunión de Diagnóstico',
-    cardP: 'Cómo funciona todo de aquí en adelante, tus accesos y el primer paso práctico, con Felipe Melo, Director de Operaciones de OftalmoBlack.',
-    b1: 'Presentación del equipo y del método de trabajo',
-    b2: 'Grupo de tu clínica y primeros accesos',
-    b3: 'Agenda del onboarding técnico y de la sesión de Growth',
+    cardP: 'Conversaremos sobre tu clínica, aclararemos la información de la investigación previa y del formulario y alinearemos prioridades con Felipe Melo, Director de Operaciones de OftalmoBlack.',
+    b1: 'Contexto de la clínica, investigación previa y formulario',
+    b2: 'Objetivos, prioridades y orientación sobre el Club',
+    b3: 'Próximos pasos y presentación del plan',
     dur: '45 MIN',
     ver: 'VER HORARIOS →',
     verWa: 'ELEGIR POR WHATSAPP →',
     sup: 'Duración de 45 min · Google Meet · horario de Brasilia, convertido automáticamente a tu zona horaria.',
     supWa: 'Duración de 45 min · Google Meet · dime dos o tres horarios que te funcionen y yo te confirmo.',
     foot: '¿Alguna duda? <a href="https://wa.me/' + WHATSAPP + '" target="_blank" rel="noopener">Escríbeme por WhatsApp</a>',
-    waText: '¡Hola, Felipe! Quiero agendar mi sesión de onboarding del Club OftalmoBlack. Tengo disponibilidad: '
+    waText: '¡Hola, Felipe! Quiero agendar mi diagnóstico individual con Felipe del Club OftalmoBlack. Tengo disponibilidad: '
   }
 };
 
