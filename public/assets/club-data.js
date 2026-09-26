@@ -27,7 +27,7 @@
     /* tipo e interna chegam com supabase/areas.sql (fase 1 da taxonomia).
        pilar saiu da UI na fase 2 e do banco na fase 4 (limpeza.sql). */
     artifacts: ['member_id', 'nome', 'subtitulo', 'icone', 'status', 'meta', 'url',
-                'group_id', 'ordem', 'responsaveis', 'tipo'],
+                'group_id', 'ordem', 'responsaveis', 'tipo', 'somente_equipe'],
     artifact_groups: ['nome', 'ordem', 'responsaveis', 'interna'],
     materials: ['titulo', 'descricao', 'categoria', 'visivel_para', 'arquivo_path',
                 'arquivo_nome', 'arquivo_tipo', 'arquivo_bytes', 'publicado_em'],

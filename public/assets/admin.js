@@ -1056,7 +1056,7 @@
           Club.select('Formato', 'formato', Club.FORMATOS, e.formato) +
         '</div>' +
         Club.select('Para quem', 'member_id', opcoesMembro(true), e.member_id || '',
-          { hint:'"Turma inteira" aparece para todos os membros.' }) +
+          { hint:'"Turma inteira" aplica a todos; itens somente da equipe ficam ocultos aos membros.' }) +
         Club.field('Link da sala ou da gravação', 'link', { value:e.link,
           placeholder:'https://…' }),
       onSubmit: function (d) {
@@ -1922,7 +1922,7 @@
       '<div class="td"><span class="art-i" style="width:28px;height:28px;border-radius:8px;' +
         'font-size:14px;margin:0;flex-shrink:0">' + ico(a.icone || 'box') + '</span>' +
         '<div class="tx"><div class="tx tx-t" title="' + esc(a.nome) + '">' + esc(a.nome) + '</div>' +
-        '<div class="tx tx-s">' + esc([a.subtitulo, a.member_id ? 'só ' + escopo(a.member_id) : null,
+        '<div class="tx tx-s">' + esc([a.subtitulo, a.somente_equipe ? 'Somente equipe' : null, a.member_id ? 'só ' + escopo(a.member_id) : null,
           siglas(a.responsaveis) ? 'dono ' + siglas(a.responsaveis) : null].filter(Boolean).join(' · ')) +
         '</div></div></div>' +
       '<div class="td"><div class="tx">' + (interna
@@ -2054,14 +2054,16 @@
           Club.select('Ícone', 'icone', Club.ART_ICONES, a.icone) +
         '</div>' +
         Club.select('Tipo', 'tipo', [
-            { value:'artefato', label:'Artefato do mentorado (checklist e progresso)' },
+            { value:'artefato', label:'Artefato com checklist e progresso' },
             { value:'interna',  label:'Frente interna (só agrupa demandas)' }
           ], a.tipo || 'artefato',
           { hint:'Frente interna nunca aparece para o mentorado nem na Progressão. Use só em área da equipe.' }) +
+        Club.checkbox('Somente equipe: oculto para o mentorado, mantém checklist e progresso',
+          'somente_equipe', !!a.somente_equipe) +
         Club.field('Observação', 'meta', { value:a.meta,
           placeholder:'Entrega em 6 dias', hint:'Linha pequena que aparece embaixo do status.' }) +
         Club.select('Para quem', 'member_id', opcoesMembro(true), a.member_id || '',
-          { hint:'"Turma inteira" aparece para todos os membros.' }) +
+          { hint:'"Turma inteira" aplica a todos; itens somente da equipe ficam ocultos aos membros.' }) +
         Club.field('Link', 'url', { value:a.url, placeholder:'/mentorados/…  ou  https://…',
           hint:'Com link preenchido, o cartão vira clicável na área do mentorado.' }) +
         Club.field('Etapas padrão', 'etapas', { value:etapasAtuais.map(function (e) {
@@ -2075,6 +2077,7 @@
         if (!d.nome) { Club.toast('O artefato precisa de um nome.', 'alert'); return; }
         d.id = a.id;
         d.tipo = d.tipo === 'interna' ? 'interna' : 'artefato';
+        d.somente_equipe = !!d.somente_equipe;
         /* Frente interna é da equipe: não é de mentorado nenhum e não tem checklist. */
         d.member_id = d.tipo === 'interna' ? null : (d.member_id || null);
         if (comGrupos) { d.group_id = d.group_id || null; d.responsaveis = d.responsaveis || []; }

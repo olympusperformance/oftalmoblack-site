@@ -243,7 +243,7 @@
   function parDe(a) { return Club.par(etapasDe(a.id), feita); }
 
   function artefatosFarol() {
-    return st.artifacts.filter(function (a) { return a.tipo !== 'interna'; }).map(function (a) {
+    return st.artifacts.filter(function (a) { return a.tipo !== 'interna' && !a.somente_equipe; }).map(function (a) {
       return { artifact:a, part:parDe(a), steps:etapasDe(a.id).map(function (e) {
         return Object.assign({}, e, { feito:feita(e.id) });
       }), demands:[] };
@@ -350,7 +350,7 @@
      seção vazia. */
   function agruparPorArea(artefatos, grupos) {
     var porNome = function (a, b) { return String(a.nome).localeCompare(String(b.nome), 'pt-BR'); };
-    var visiveis = artefatos.filter(function (a) { return a.tipo !== 'interna'; });
+    var visiveis = artefatos.filter(function (a) { return a.tipo !== 'interna' && !a.somente_equipe; });
     var secoes = grupos.slice()
       .sort(function (a, b) { return ((a.ordem || 0) - (b.ordem || 0)) || porNome(a, b); })
       .map(function (g) {
@@ -371,7 +371,7 @@
        mesmo sem aceite ou etapas marcadas para este mentorado. Frente interna
        é da equipe e nunca aparece. */
     var meus = st.artifacts.filter(function (a) {
-      return a.tipo !== 'interna' &&
+      return a.tipo !== 'interna' && !a.somente_equipe &&
         (a.status === 'Disponível' || !etapasDe(a.id).length || parDe(a).estado !== 'definir');
     });
     var secoes = agruparPorArea(meus, st.groups);
