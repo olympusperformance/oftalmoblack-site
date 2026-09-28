@@ -249,12 +249,10 @@ h1,h2{margin:0}
       <section class="tela tela--recuada" data-tela="local" data-titulo="Passo 01 · Localização" data-progresso="22%">
         <span class="kicker kicker--curto">Passo 01 · Localização</span>
         <h2 class="tt h2">Onde você mora?</h2>
-        <p class="texto texto--menor texto--gap">Atendemos no Rio de Janeiro e Belém. Para seguir com o seu atendimento, onde você mora?</p>
+        <p class="texto texto--menor texto--gap">Para seguir com o seu atendimento, você mora no Rio de Janeiro ou região ou em outra cidade?</p>
         <div class="opcoes">
 
           <button class="opcao" type="button" data-ir="a1" data-unidade="Rio de Janeiro" data-wa="">Moro no Rio de Janeiro ou região <i>&rsaquo;</i></button>
-          
-          <button class="opcao" type="button" data-whats="local" data-unidade="Belém" data-wa="">Moro em Belém ou região <i>&rsaquo;</i></button>
                     <button class="opcao" type="button" data-ir="cidade">Moro em outra cidade <i>&rsaquo;</i></button>
         </div>
       </section>
@@ -313,8 +311,9 @@ h1,h2{margin:0}
         <div class="miolo">
           <span class="kicker">Investimento</span>
           <div class="cartao cartao--centro">
+
             <p class="texto texto--menor" style="margin-bottom:18px">Nossa consulta oftalmológica completa está no valor de:</p>
-            <div class="tt preco" id="preco-valor">R$ 650</div>
+                        <div class="tt preco" id="preco-valor">R$ 650</div>
             <div class="regua regua--fina regua--centro"></div>
 
             <div class="preco-parcelas" id="preco-parcelas">À vista no Pix, dinheiro ou cartão</div>
@@ -329,7 +328,7 @@ h1,h2{margin:0}
       <section class="tela tela--recuada" data-tela="bq" data-titulo="Uma pergunta importante" data-progresso="30%">
         <span class="kicker kicker--curto">Uma pergunta importante</span>
         <h2 class="tt h2--m">Você viria ao Rio de Janeiro?</h2>
-        <p class="texto texto--menor texto--gap">Atendemos no Rio de Janeiro e Belém, e é no Rio de Janeiro que o Dr. Oswaldo realiza as cirurgias. Você viria até lá para realizar o seu sonho de ter a liberdade visual?</p>
+        <p class="texto texto--menor texto--gap">Nossa clínica fica no Rio de Janeiro, e é aqui que o Dr. Oswaldo realiza as cirurgias. Você viria até aqui para realizar o seu sonho de ter a liberdade visual?</p>
         <div class="opcoes">
           <button class="btn" type="button" style="animation-delay:.1s" data-vem="1"
                   data-ir="b1">Sim, eu iria ao Rio de Janeiro</button>
@@ -574,8 +573,9 @@ h1,h2{margin:0}
     /* window.open tem de acontecer DENTRO do clique: fora dele o navegador
        trata como popup e bloqueia (Safari sempre, Chrome com frequência). */
     if(chave === "local" && vemDeFora && MSG.vem) chave = "vem";
+
     var texto = (MSG[chave] || "").replace("{unidade}", unidade)
-                                  .replace("{motivo}", motivo)
+                                      .replace("{motivo}", motivo)
                                   .replace("{cidade}", cidadePaciente)
                                   /* praca com WhatsApp direto nao passa pela tela de motivo */
                                   .replace(" Meu caso: .", "");
