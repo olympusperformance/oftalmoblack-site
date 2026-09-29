@@ -117,7 +117,11 @@ small>.farol-skel{margin-top:6px}
 .farol-link:disabled{opacity:.45;cursor:default}
 .farol-unavailable{color:var(--muted);font-size:12px;margin:auto 0}
 .farol-foot{display:grid;grid-template-columns:minmax(240px,1fr) minmax(0,2fr);overflow:hidden;min-height:89px}
-.farol-finance{display:grid;grid-template-columns:minmax(0,1fr);min-width:0;border-right:1px solid var(--border-soft)}
+.farol-finance{display:grid;grid-template-columns:minmax(0,1fr);min-width:0;position:relative;border-right:1px solid var(--border-soft)}
+.farol-money-toggle{position:absolute;top:9px;right:10px;z-index:1;display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border:1px solid transparent;border-radius:8px;background:none;color:var(--muted);cursor:pointer;transition:color .15s,border-color .15s,background .15s}
+.farol-money-toggle:hover,.farol-money-toggle:focus-visible{color:var(--gold);border-color:var(--border-soft);background:rgba(var(--gold-rgb),.08)}
+.farol-money-toggle[aria-pressed="true"]{color:var(--gold)}
+.farol-money-toggle .ic{width:16px;height:16px;font-size:16px}
 .farol-finance-cell{display:flex;flex-direction:column;justify-content:center;min-width:0;text-align:left;border:0;border-right:1px solid var(--border-soft);background:none;color:inherit;padding:12px 15px;cursor:pointer}
 .farol-finance-cell:last-child{border-right:0}
 .farol-finance-cell:hover strong{color:var(--gold)}

@@ -137,3 +137,19 @@ test('todo período é consultado sem apresentar comparação artificial', async
   assert.match(t.root.html, /Sem comparativo/);
   assert.doesNotMatch(t.root.html, /Anterior: 0/);
 });
+
+test('olhinho esconde o valor comercial com ---- e mostra de novo', async () => {
+  const t = setup(); t.Club.farol.enter('#farol/' + MEMBER_A + '?dias=30');
+  const response = clinicalResponse(MEMBER_A, 4);
+  response.data.commercial.data = { total:314300, count:81, missing_price_count:0, groups:[] };
+  t.clinical[0].pending.resolve(response); t.graduation[0].resolve(snapshot(1)); await settle();
+  assert.match(t.root.html, /R\$\s?314\.300/);
+  const toggle = { hasAttribute:name => name === 'data-farol-money', dataset:{} };
+  const click = () => t.listeners.click({ target:{ hasAttribute:() => false, closest:selector => selector === 'button' ? toggle : null } });
+  click();
+  assert.doesNotMatch(t.root.html, /314\.300/);
+  assert.match(t.root.html, /R\$ ----/);
+  assert.match(t.root.html, /aria-pressed="true"/);
+  click();
+  assert.match(t.root.html, /R\$\s?314\.300/);
+});
