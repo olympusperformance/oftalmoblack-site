@@ -6,6 +6,12 @@
   var clinic = null, graduation = null, clinicLoading = false, graduationLoading = false;
   var igHistory = null, igLoading = false;
   var modalStack = [], modalReturnFocus = null;
+  // Olhinho do valor comercial: esconde os valores em reais (ex.: ao projetar a
+  // tela). Fica lembrado neste navegador.
+  var MONEY_KEY = 'ob-farol-valores-ocultos', moneyHidden = false;
+  try { moneyHidden = localStorage.getItem(MONEY_KEY) === '1'; } catch (_) { /* armazenamento opcional */ }
+  var HIDDEN_MONEY = 'R$ ----';
+  var EYE_OFF = '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg>';
   var esc = C.esc;
   var format = new Intl.NumberFormat('pt-BR');
   var money = new Intl.NumberFormat('pt-BR', { style:'currency', currency:'BRL', maximumFractionDigits:0 });
@@ -44,8 +50,13 @@
     return PERIODS.filter(function (p) { return p[0] === preset; })[0][1];
   }
   function number(value) { return value === null || value === undefined || !Number.isFinite(Number(value)) ? '—' : format.format(Number(value)); }
-  function moneyValue(value) { return value === null || value === undefined || !Number.isFinite(Number(value)) ? '—' : money.format(Number(value)); }
-  function moneyDetail(value) { return value === null || value === undefined || !Number.isFinite(Number(value)) ? '—' : moneyPrecise.format(Number(value)); }
+  function moneyValue(value) { return value === null || value === undefined || !Number.isFinite(Number(value)) ? '—' : moneyHidden ? HIDDEN_MONEY : money.format(Number(value)); }
+  function moneyDetail(value) { return value === null || value === undefined || !Number.isFinite(Number(value)) ? '—' : moneyHidden ? HIDDEN_MONEY : moneyPrecise.format(Number(value)); }
+  function moneyToggle() {
+    var label = moneyHidden ? 'Mostrar valores' : 'Esconder valores';
+    return '<button class="farol-money-toggle" data-farol-money aria-pressed="' + moneyHidden + '" aria-label="' + label + '" title="' + label + '">' +
+      (moneyHidden ? EYE_OFF : C.icon('eye')) + '</button>';
+  }
   function attendanceValid(a) {
     if (!a || a.attended == null || a.eligible == null || a.attended === '' || a.eligible === '') return false;
     var x = Number(a.attended), y = Number(a.eligible);
@@ -388,7 +399,7 @@
   function foot() {
     var commercial = clinic && clinic.commercial && clinic.commercial.status === 'ready' ? clinic.commercial.data : null;
     var issues = attention();
-    return '<div class="farol-foot"><div class="farol-finance' + (clinicLoading ? ' is-loading' : '') + '"' + (clinicLoading ? ' aria-busy="true"' : '') + '>' +
+    return '<div class="farol-foot"><div class="farol-finance' + (clinicLoading ? ' is-loading' : '') + '"' + (clinicLoading ? ' aria-busy="true"' : '') + '>' + moneyToggle() +
       financeCell('VALOR COMERCIAL · ' + periodLabel().toUpperCase(), 'commercial', commercial && commercial.total, commercial ? number(commercial.count) + ' registros comerciais' : 'CRM indisponível') + '</div>' +
       '<div class="farol-attention"><span class="farol-label">ATENÇÃO</span>' + (issues.length ? issues.map(function (i) {
         return '<button data-farol-detail="attention:' + i[1] + '">' + text(i[0]) + '<span aria-hidden="true">↗</span></button>';
@@ -493,6 +504,14 @@
       }
       if (!t) return;
       if (t.hasAttribute('data-farol-close')) { closeDetail(true); return; }
+      if (t.hasAttribute('data-farol-money')) {
+        moneyHidden = !moneyHidden;
+        try { localStorage.setItem(MONEY_KEY, moneyHidden ? '1' : '0'); } catch (_) { /* armazenamento opcional */ }
+        render();
+        var again = root.querySelector('[data-farol-money]');
+        if (again) again.focus();
+        return;
+      }
       if (t.hasAttribute('data-farol-back')) { if (modalStack.length > 1) closeDetail(false); return; }
       if (t.hasAttribute('data-farol-retry')) { load(); return; }
       if (t.dataset.farolDetail) { openDetail(t.dataset.farolDetail); return; }
