@@ -81,6 +81,12 @@ reverter o front-end não exige remover dados.
   as referências dos módulos. Grau é conferido pela equipe após o fechamento,
   exige meta atingida, só avança um por trimestre e preserva o histórico.
 - **Ranking:** pseudônimos para outros membros; administração vê os nomes.
+  Usa os mesmos pontos trimestrais da Graduação quando não existe placar v2.2
+  para o membro/período. A origem e a marcação de prévia (`is_demo`) são visíveis;
+  períodos futuros e sem pontuação não entram. A apuração nova, inclusive zero,
+  substitui o histórico sem somar ou duplicar pontos. Essa leitura não concede
+  graus, vouchers nem elegibilidade de resgate. Erro de consulta não aparece
+  como ranking vazio. `tests/black-ranking.sql` valida a transição e a privacidade.
   “Registrar referência semanal” conserva a primeira posição da semana. A
   seta só aparece quando existe referência da semana anterior, no mesmo trimestre.
 - **Vitrine:** a equipe cadastra condições, janela e estoque real. Solicitações

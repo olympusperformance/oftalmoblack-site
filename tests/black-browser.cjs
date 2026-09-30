@@ -24,6 +24,8 @@ for(const key of ['select','order','gte','lte','gt','lt','or','in','is','not','l
 q.eq=(key,value)=>{filters.push([key,value]);return q;};q.maybeSingle=q.single=()=>{one=true;return q;};
 q.insert=q.upsert=q.update=(row)=>{write=row;window.__writes.push({table,row});return q;};
 q.then=(resolve,reject)=>{if(window.__failTable===table)return Promise.resolve({data:null,error:{message:'Fonte indisponível'}}).then(resolve,reject);let data=fixtures[table]||[];if(write){const old=data.find(r=>write.id&&r.id===write.id);const merged={...old,...write,id:write.id||'new-id'};fixtures[table]=old?data.map(r=>r===old?merged:r):[...data,merged];data=[merged];}else for(const [k,v] of filters)data=data.filter(r=>r[k]===v);return Promise.resolve({data:one?(data[0]||null):data}).then(resolve,reject);};return q;}};
+const rpc=window.Club.sb.rpc;window.__failRanking=false;
+window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRanking)return {data:null,error:{message:'Ranking indisponível'}};return {data:[{position:1,alias:member.nome,member_id:member.id,total:63.9,grade:2,source:'graduacao',is_demo:true,source_date:'2026-09-20',complete:false,movement:null}]};}return rpc(name,args);};
 `;}
 (function testDirectStorageHost(){const source=fs.readFileSync(path.join(root,'assets/club-black.js'),'utf8');assert.match(source,/\.storage\.supabase\.co/,'Upload grande deve usar o host direto recomendado pelo Storage');})();
 (async()=>{
@@ -64,6 +66,14 @@ q.then=(resolve,reject)=>{if(window.__failTable===table)return Promise.resolve({
    else {assert.equal(await page.locator('.cb-drawer [name=status]').count(),1);await page.keyboard.press('Escape');await page.locator('#rail [data-nav="subida"]').click();await page.locator('#black-subida .cb-card[data-cb-step="D04"]').click();await page.locator('[data-cb-step-edit]').click();await page.locator('[name=status]').selectOption('audited');await page.locator('[name=evidence]').fill('Critérios ainda incompletos');await page.locator('.cb-drawer [type=submit]').click();assert.match(await page.locator('.cb-form-error').innerText(),/todos os critérios/);await page.keyboard.press('Escape');}
    for(const key of ['ranking','vitrine','modulos','casos','graduacao','farol','artifacts','agenda',...(isAdmin?['rede','members']:[]),'subida']){await page.locator('#rail [data-nav="'+key+'"]').click();assert.equal(await page.locator('.view:not([hidden])').count(),1);}
    await page.locator('#rail [data-nav="agenda"]').click();await page.locator('[data-view=agenda] [data-nav=encontro]').click();assert.equal(await page.locator('[data-view=encontro]').isVisible(),true);
+   await page.locator('#rail [data-nav=ranking]').click();await page.locator('#black-ranking .cb-table').waitFor();
+   assert.match(await page.locator('#black-ranking .cb-own').innerText(),/63,9/);
+   assert.match(await page.locator('#black-ranking .cb-own').innerText(),/Prévia da graduação/);
+   assert.match(await page.locator('#black-ranking .cb-notice').innerText(),/dados de prévia/);
+   await page.evaluate(()=>window.__failRanking=true);await page.locator('#black-ranking [data-cb-reload]').first().click();await page.locator('#black-ranking [role=alert]').waitFor();
+   assert.match(await page.locator('#black-ranking [role=alert]').innerText(),/Não foi possível carregar/);
+   assert.equal(await page.locator('#black-ranking .cb-table').count(),0);
+   await page.evaluate(()=>window.__failRanking=false);await page.locator('#black-ranking [role=alert] [data-cb-reload]').click();await page.locator('#black-ranking .cb-table').waitFor();
    await page.locator('#rail [data-nav="modulos"]').click();assert.equal(await page.locator('#black-modulos .cb-module').count(),2);await page.locator('#black-modulos [data-nav=iris]').click();assert.equal(await page.locator('[data-view=iris]').isVisible(),true);
    if(!isAdmin){for(const key of ['cerebro','profile']){await page.locator('header [data-nav='+key+']').click();assert.equal(await page.locator('[data-view='+key+']').isVisible(),true);}}
    await page.locator('#rail [data-nav="subida"]').click();await page.locator('#black-subida .cb-card[data-cb-step=D08]').click();await page.locator('.cb-drawer [data-nav=encontro]').click();assert.equal(await page.locator('[data-view=encontro]').isVisible(),true);assert.equal(await page.locator('.cb-drawer').count(),0);
