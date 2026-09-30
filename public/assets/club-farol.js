@@ -257,7 +257,7 @@
       out.title = 'Valor comercial';
       out.body = '<div class="farol-detail-metrics">' + detailMetric('Valor de catálogo', moneyDetail(c && c.total)) +
         detailMetric('Registros', number(c && c.count)) + detailMetric('Sem preço', number(c && c.missing_price_count)) + '</div>' +
-        '<p>Consultas pela data de agendamento; exames e cirurgias pelo fechamento. É o valor de catálogo registrado, sem representar faturamento ou dinheiro recebido.</p>' +
+        '<p>Consultas realizadas pela data da consulta; exames e cirurgias pelo fechamento. É o valor de catálogo registrado, sem representar faturamento ou dinheiro recebido.</p>' +
         (c && c.groups ? c.groups.map(function (g) { return detailButton('commercialgroup:' + g.kind, g.kind, moneyDetail(g.amount) + ' · ' + number(g.count) + ' registros'); }).join('') : '<p>Fonte comercial indisponível.</p>');
       out.action = crmLink('metrics');
     } else if (kind === 'commercialgroup') {
