@@ -12,21 +12,8 @@
 @media(max-width:360px){.topbar:has(.cb-profile) .logo-txt{display:none}}
 @media(prefers-reduced-motion:reduce){.cb-card{transition:none}.cb-card:hover{transform:none}}
 
-/* Grafite em camadas: o fundo, a navegação e os cartões têm superfícies distintas.
-   Estes tokens se limitam ao painel, onde esta folha é carregada. */
-:root:not([data-theme="light"]){
-  --bg:#141518;--panel:#202227;--elevated:#292c32;
-  --surface:rgba(255,255,255,.05);--surface-hi:rgba(255,255,255,.085);
-  --surface-lo:rgba(255,255,255,.035);--card-a:rgba(255,255,255,.065);
-  --glass:rgba(25,26,30,.96);--glass-m:rgba(25,26,30,.98);
-  --border:rgba(216,180,107,.3);--border-soft:rgba(255,255,255,.13);
-  --text:#F3F1EB;--muted:#B8B7C0;--faint:#9997A2;
-  --gold:#DDBB76;--gold-strong:#F3DBAA;--gold-quiet:#C6A465;
-  --gold-rgb:221,187,118;--halo:rgba(221,187,118,.10);--halo2:rgba(221,187,118,.025);
-  --shadow:0 16px 40px rgba(0,0,0,.26);
-}
-.rail{background:var(--glass)}
-.halo,.halo2{opacity:.45}
+/* Agrupamento em cartões, preservando a paleta original preto + premium gold.
+   Não alterar tokens globais: Visão Geral e navegação mantêm o visual da marca. */
 .cb-head{gap:24px;margin-bottom:30px}
 .cb-head h1{letter-spacing:-.035em}
 .cb-head>.cb-tools{flex-shrink:0;align-items:flex-end}
@@ -35,10 +22,6 @@
 .cb-hero,.cb-card,.cb-score-card{box-shadow:0 4px 16px rgba(0,0,0,.06)}
 .cb-card,.cb-score-card{border-radius:16px}
 .cb-card{padding:23px}
-.cb-stats{background:none;border:0;border-radius:0;overflow:visible;gap:12px}
-.cb-stat,.cb-stat:last-child{background:var(--panel);border:1px solid var(--cb-line);border-radius:14px}
-.cb-stat small{font-size:12px}
-.cb-stat span{font-size:11px;line-height:1.5}
 .cb-empty{background:var(--panel);border-style:solid;padding:26px;border-radius:16px}
 .cb-notice{background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:12px;padding:17px 20px}
 .cb-table-wrap{border:1px solid var(--cb-line);border-radius:14px;background:var(--panel)}
@@ -49,7 +32,7 @@
 .cb-history[open]>summary{margin-bottom:22px}
 .gr-criterion{background:var(--panel)}
 .gr-empty{background:var(--panel);border-style:solid}
-.cb-empty-card{display:flex;align-items:center;gap:22px;min-height:168px;padding:30px;border:1px solid var(--cb-line);border-radius:18px;background:linear-gradient(110deg,var(--halo),transparent 58%),var(--panel)}
+.cb-empty-card{display:flex;align-items:center;gap:22px;min-height:168px;padding:30px;border:1px solid var(--border);border-radius:18px;background:var(--panel)}
 .cb-empty-icon{display:grid;place-items:center;width:64px;height:64px;flex-shrink:0;border:1px solid var(--border);border-radius:18px;background:var(--surface);color:var(--gold);font-size:27px}
 .cb-empty-card h3{font-size:18px;line-height:1.4}
 .cb-empty-card p{margin:8px 0 0;max-width:62ch;font-size:13px}

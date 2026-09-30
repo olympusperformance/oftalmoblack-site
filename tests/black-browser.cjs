@@ -40,6 +40,10 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRa
    await page.route('https://**',route=>route.abort());
    await page.goto(url+(isAdmin?'/admin/':'/membros/'));
    await page.locator('#rail [data-nav="farol"][aria-selected=true]').waitFor();
+   assert.equal(await page.evaluate(()=>getComputedStyle(document.body).backgroundColor),'rgb(7, 6, 10)','Preservar o preto original, sem clarear o painel inteiro');
+   assert.equal(await page.evaluate(()=>getComputedStyle(document.documentElement).getPropertyValue('--panel').trim()),'#0B0910');
+   assert.equal(await page.evaluate(()=>getComputedStyle(document.documentElement).getPropertyValue('--gold').trim()),'#E8C07A');
+   await page.screenshot({path:path.join(out,(isAdmin?'admin':'member')+'-farol-black-gold.png'),fullPage:true});
    const mentoria=['Visão Geral','Subida: Rumo ao Olympus','Pendências','Protocolo Grau Zero','Graduação','Ranking Black','Vitrine Black','Instagram','Processos Black','Materiais','Agenda'];
    const menu=await page.locator('#rail .nav>span:not(.cb-badge)').allTextContents();
    assert.deepEqual(menu.slice(0,12),[...mentoria,'Fábrica · Íris Black']);
