@@ -31,7 +31,7 @@ ficam exclusivamente em `tests/`.
 ### Banco antes da interface
 
 Aplicar **uma única vez** a migração
-`supabase/migrations/20260930182004_cerebro_black_12_degraus.sql` na instalação
+`supabase/migrations/20260930195028_cerebro_black_12_degraus.sql` na instalação
 existente, que já deve ter `schema.sql`, `progresso.sql`, `graduacao.sql` e a
 coleta/view `instagram_serie`. Não rodar os SQLs antigos novamente em produção.
 A migração adiciona tabelas `cb_*`, políticas, livro-razão e bucket privado;
