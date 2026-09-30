@@ -224,7 +224,7 @@
       out.title = labels[bits[1]] || 'Jornada clínica';
       out.body = '<div class="farol-detail-metrics">' + detailMetric('Neste período', number(data && data.periodo && data.periodo[bits[1]])) +
         detailMetric('Período anterior', preset === 'all' ? '—' : number(data && data.anterior && data.anterior[bits[1]])) + '</div>' +
-        '<p>Fluxo de pessoas que passaram por esta etapa na janela; “fechamentos” usa a etapa cirurgias do CRM. As etapas não formam uma taxa de conversão entre si.</p>' +
+        '<p>Fluxo da janela: leads e consultas contam pessoas; indicações e fechamentos contam um registro por procedimento, como no CRM (um paciente com cirurgia e exames conta mais de uma vez). As etapas não formam uma taxa de conversão entre si.</p>' +
         '<p>Trilha de etapas desde ' + date(data && data.trilha_desde) + ' · conversas desde ' + date(data && data.dados_desde) + '.</p>';
       out.action = crmLink('metrics');
     } else if (kind === 'finance') {
