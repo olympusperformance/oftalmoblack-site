@@ -7,6 +7,30 @@ const Club = { esc: text => String(text || ''), icon: name => `<i>${name}</i>` }
 vm.runInNewContext(readFileSync(new URL('../public/assets/club-graduacao.js', import.meta.url), 'utf8'), { window:{ Club } });
 const G = Club.graduacao;
 
+test('importação mostra data real, corte, estimativas e indicação de 25 pontos', () => {
+  const record = { is_demo:false, source_date:'2026-09-30', snapshot:{grade:2, periods:[{
+    id:'2026-T3', label:'Jul–set 2026', state:'closed', points:108.5,
+    scores:{attendance:16.5, followers:20, videos:12}, referrals:2, referralUnitPoints:25,
+    bonus:10, cutoffDate:'2026-09-24', followers:{growth:5100,estimated:true}
+  }]}};
+  const html = G.summary(record, '2026-T3');
+  assert.match(html,/108,5/);
+  assert.match(html,/30\/09\/2026/);
+  assert.match(html,/24\/09\/2026/);
+  assert.match(html,/vale 25 pontos/);
+  assert.match(html,/Crescimento estimado/);
+  assert.match(html,/2º grau/);
+  assert.doesNotMatch(html,/Prévia da graduação|17\/09\/2026|data-gr-period/);
+  record.is_demo=true;
+  assert.match(G.summary(record,'2026-T3'),/Prévia da graduação/);
+});
+
+test('falta de pontos é exibida como aguardando apuração, não faltam zero', () => {
+  const html=G.summary({snapshot:{periods:[{id:'2026-T3',state:'closed',points:null}]}},'2026-T3');
+  assert.match(html,/Aguardando apuração/);
+  assert.doesNotMatch(html,/Faltam 0 pontos/);
+});
+
 test('radar reproduz os 29 mentorados, 1 graduação e 11 na reta final', () => {
   assert.equal(rows.length, 29);
   const models = rows.map(r => G.model(r.snapshot, '2026-T3'));

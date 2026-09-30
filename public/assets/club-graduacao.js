@@ -1,4 +1,4 @@
-/* Graduação Black: prévia da planilha. Dados individuais vêm do banco com RLS. */
+/* Graduação Black: apurações importadas. Dados individuais vêm do banco com RLS. */
 (function () {
   'use strict';
   var C = window.Club = window.Club || {};
@@ -42,8 +42,11 @@
       return '<option value="' + p.id + '"' + (p.id === id ? ' selected' : '') + '>' + p.label + '</option>';
     }).join('') + '</select></label>';
   }
-  function top(id) {
-    return '<div class="gr-toolbar"><p class="gr-demo"><span></span>Prévia da graduação <small>Dados da planilha de 17/09/2026 · sem atualização automática</small></p>' + periodSelect(id) + '</div>';
+  function top(id, records, embedded) {
+    var dates = records.map(function (r) { return r.source_date || (r.snapshot || {}).sourceDate; }).filter(function (d, i, all) { return /^\d{4}-\d{2}-\d{2}$/.test(d || '') && all.indexOf(d) === i; }).sort();
+    var label = records.some(function (r) { return r.is_demo; }) ? 'Prévia da graduação' : 'Graduação da planilha';
+    var source = dates.length ? 'Dados da planilha de ' + dates.map(function (d) { return d.split('-').reverse().join('/'); }).join(' e ') : 'Data de apuração não informada';
+    return '<div class="gr-toolbar"><p class="gr-demo"><span></span>' + label + ' <small>' + esc(source) + ' · sem atualização automática</small></p>' + (embedded ? '' : periodSelect(id)) + '</div>';
   }
   function journey(grade) {
     var labels = ['Preta','Preta','Preta','Preta','Preta','Preta','Coral','Coral','Vermelha','Dourada'];
@@ -62,6 +65,7 @@
   }
   function criteria(p) {
     var scores = p.scores || {}, a = p.attendance || {}, f = p.followers || {}, v = p.videos || {};
+    var referralUnit = p.referralUnitPoints == null ? 50 : p.referralUnitPoints;
     var attendance = a.eligible ? fmt(a.attended) + ' de ' + fmt(a.eligible) + ' encontros registrados' : 'Presença ainda não apurada';
     var followerGoal = (f.growth || 0) < 2500 ? 2500 : 5000;
     var followerAction = scores.followers >= 20 ? 'Você já atingiu o teto deste critério.' : f.growth == null ? 'Aguarde a apuração do crescimento no trimestre.' :
@@ -71,13 +75,13 @@
         scores.attendance >= 20 ? 'Teto atingido. Continue participando dos encontros.' : 'Participe dos encontros e confirme sua presença com a equipe.',
         'Presenças ÷ encontros elegíveis × 20. Conta a partir da sua entrada.') +
       criterion('users', 'Seguidores', scores.followers, f.growth == null ? 'Crescimento ainda não apurado' : (f.growth >= 0 ? '+' : '') + fmt(f.growth) + ' seguidores no trimestre', followerAction,
-        '+2.500 = 10 pontos. +5.000 = 20 pontos. Vale o crescimento, não o total do perfil.') +
+        '+2.500 = 10 pontos. +5.000 = 20 pontos. Vale o crescimento, não o total do perfil.' + (f.estimated ? ' Crescimento estimado na planilha.' : '')) +
       criterion('play', 'Vídeos', scores.videos, v.count == null ? 'Publicações ainda não apuradas' : fmt(v.count) + ' vídeos · ' + fmt(v.credits) + ' créditos de semana',
         scores.videos >= 20 ? 'Você atingiu o teto de constância deste período.' : 'Publique 3 vídeos por semana, mantendo a constância.',
         'Cada semana vale até 1 crédito. Muitos vídeos de uma vez não compensam semanas sem postar.') +
-      criterion('users', 'Indicações', p.referrals == null ? null : p.referrals * 50,
+      criterion('users', 'Indicações', p.referrals == null ? null : p.referrals * referralUnit,
         p.referrals == null ? 'Indicações ainda não apuradas' : fmt(p.referrals) + ' indicações convertidas',
-        'Cada indicação que fecha no Grau Zero ou Black vale 50 pontos + 1 voucher.',
+        'Cada indicação que fecha no Grau Zero ou Black vale ' + fmt(referralUnit) + ' pontos + 1 voucher.',
         'Sem limite de pontos. A equipe confirma a conversão.') + '</div>' +
       (p.bonus ? '<div class="gr-bonus">' + C.icon('award') + '<div><b>+' + fmt(p.bonus) + ' pontos de bônus</b><p>' + esc(p.bonusReason || 'Reconhecimento registrado na planilha') + '</p></div><small>Já incluídos no total do trimestre</small></div>' : '');
   }
@@ -87,36 +91,38 @@
       '<p><b>Sua faixa é permanente.</b> Todos começam na faixa preta lisa. Os graus conquistados não são perdidos quando os pontos zeram na renovação anual.</p>' +
       '<p><b>Entrou no meio do trimestre?</b> A presença e a constância dos vídeos consideram a sua janela de participação. A meta para o grau continua sendo 50 pontos.</p>' +
       '<p><b>Bônus.</b> Pontos concedidos pelo Dr. Alex entram no trimestre. Palestras antigas já pontuadas foram mantidas; a partir de out–dez/2026, palestrar é um benefício, sem pontuação automática.</p>' +
-      '<p><b>Esta é uma prévia.</b> Os valores reproduzem a planilha enviada. Datas de entrega dos graus ainda precisam ser registradas pela equipe.</p></div></details>';
+      '<p><b>Apuração da planilha.</b> Os valores reproduzem a planilha enviada. As datas de entrega dos graus são registradas separadamente pela equipe.</p></div></details>';
   }
   function benefits(s) {
     return '<details class="gr-details"><summary>Seus pontos no ciclo e benefícios</summary><div class="gr-rules"><div class="gr-benefits">' +
       '<div><small>Pontuação para renovação na planilha</small><b>' + fmt(s.annualPoints) + ' pts</b></div>' +
       '<div><small>Desconto previsto na renovação</small><b>' + money(s.renewalDiscount) + '</b></div>' +
       '<div><small>Vouchers registrados</small><b>' + fmt(s.vouchers) + '</b></div></div>' +
-      '<p>A Vitrine abre no fim do trimestre para quem atingiu 50 pontos ou tem voucher. Os benefícios dependem de disponibilidade; quem tem voucher escolhe primeiro.</p>' +
-      '<p>Na renovação, 100 pontos dão R$ 15 mil de desconto; 150 dão R$ 25 mil; 200 dão R$ 35 mil; 250 dão R$ 45 mil; 300 dão R$ 55 mil; e 350 dão R$ 60 mil. Valores de prévia, conforme o painel da planilha.</p></div></details>';
+      '<p>Vouchers e descontos acima reproduzem o painel importado. A equipe confirma a disponibilidade e as condições dos benefícios.</p>' +
+      '<p>Na renovação, 100 pontos dão R$ 15 mil de desconto; 150 dão R$ 25 mil; 200 dão R$ 35 mil; 250 dão R$ 45 mil; 300 dão R$ 55 mil; e 350 dão R$ 60 mil. Valores conforme o painel da planilha.</p></div></details>';
   }
-  function renderMember(root, record, id) {
+  function memberContent(record, id, embedded) {
     var s = record && record.snapshot;
     if (!s) {
-      root.innerHTML = '<div class="gr-empty">' + C.icon('award') + '<h2>Sua graduação começa aqui</h2><p>A equipe ainda não incluiu sua pontuação nesta prévia. Assim que ela for apurada, você verá sua faixa e os próximos degraus.</p></div>' + rules();
-      return;
+      return '<div class="gr-empty">' + C.icon('award') + '<h2>Sua graduação começa aqui</h2><p>A equipe ainda não incluiu sua pontuação nesta apuração. Assim que ela for apurada, você verá sua faixa e os próximos degraus.</p></div>' + rules();
     }
     var m = model(s, id), ready = m.status === 'ready', future = m.status === 'future';
     var nextDegree = Math.min(10, m.grade + 1);
-    var headline = ready ? 'Meta do trimestre atingida' : future ? 'Um novo trimestre pela frente' : 'Faltam ' + fmt(m.missing) + ' pontos';
+    var headline = ready ? 'Meta do trimestre atingida' : future ? 'Um novo trimestre pela frente' : m.points == null ? 'Aguardando apuração' : 'Faltam ' + fmt(m.missing) + ' pontos';
     var sub = ready ? 'Este trimestre já conta para a graduação mostrada ao lado. A entrega do grau será confirmada pela equipe.' :
       future ? 'A apuração deste período ainda não começou. Sua graduação conquistada permanece.' :
       'para buscar o ' + nextDegree + 'º grau na sua faixa.';
-    root.innerHTML = top(id) + '<section class="gr-hero"><div class="gr-belt-panel"><span class="gr-eyebrow">SUA GRADUAÇÃO</span>' + belt(m.grade) +
+    return top(id, [record], embedded) + (m.period && m.period.cutoffDate ? '<p class="gr-caption">Trimestre fechado com corte em ' + esc(m.period.cutoffDate.split('-').reverse().join('/')) + '.</p>' : '') + '<section class="gr-hero"><div class="gr-belt-panel"><span class="gr-eyebrow">SUA GRADUAÇÃO</span>' + belt(m.grade) +
       '<h2>' + beltName(m.grade) + '</h2><p class="gr-grade-name">' + (m.grade ? degreeLabel(m.grade) : 'O primeiro grau começa aqui') + '</p>' +
-      '<p class="gr-caption">Graduação da planilha' + (s.recordedDegrees < m.grade ? ' · entrega sem data registrada' : '') + '</p></div>' +
+      '<p class="gr-caption">' + (s.gradeReviewPending ? 'Grau anterior mantido · divergência na planilha aguardando conferência' : 'Graduação da planilha' + (s.recordedDegrees < m.grade ? ' · entrega sem data registrada' : '')) + '</p></div>' +
       '<div class="gr-progress-panel"><div class="gr-progress-top"><span class="gr-eyebrow">' + esc(m.period ? m.period.label : '') + '</span>' + badge(m.status) + '</div>' +
       '<div class="gr-big-points">' + (m.points == null ? '—' : fmt(m.points)) + '<span> / 50 <small>pontos</small></span></div>' + progress(m.percent, 'Meta de pontos do trimestre') +
       '<h2>' + headline + '</h2><p>' + sub + '</p><div class="gr-hero-foot">' + C.icon('award') + '<span>Um trimestre. Uma oportunidade de ganhar um grau.</span></div></div></section>' +
-      (!future && m.period ? criteria(m.period) : '<p class="gr-future-note">Selecione jul–set/2026 para ver os pontos e próximos degraus da prévia atual.</p>') +
+      (!future && m.period ? criteria(m.period) : '<p class="gr-future-note">Selecione um trimestre apurado para ver os pontos e próximos degraus.</p>') +
       journey(m.grade) + benefits(s) + rules();
+  }
+  function renderMember(root, record, id) {
+    root.innerHTML = memberContent(record, id, false);
     root.onchange = function (event) {
       if (!event.target.matches('[data-gr-period]')) return;
       renderMember(root, record, event.target.value);
@@ -131,7 +137,7 @@
     });
     var counts = {};
     rows.forEach(function (r) { counts[r.model.status] = (counts[r.model.status] || 0) + 1; });
-    root.innerHTML = top(state.period) + '<div class="gr-radar">' + [
+    root.innerHTML = top(state.period, records) + '<div class="gr-radar">' + [
       ['ready','Podem graduar','50 pontos ou mais'],['near','Na reta final','De 35 a 49,9 pontos'],
       ['progress','Em progresso','De 20 a 34,9 pontos'],['starting','Acompanhar','Abaixo de 20 pontos']
     ].map(function (item) {
@@ -183,5 +189,6 @@
   C.graduacao = { model:model, status:scoreStatus, beltName:beltName, belt:belt,
     mountMember:function (root, member) { return load(root, member); },
     mountAdmin:function (root, members) { return load(root, null, members); },
-    renderMember:renderMember, renderAdmin:renderAdmin };
+    renderMember:renderMember, renderAdmin:renderAdmin,
+    summary:function (record, id) { return memberContent(record, id, true); } };
 })();

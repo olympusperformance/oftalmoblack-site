@@ -74,6 +74,28 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRa
    assert.match(await page.locator('#black-ranking [role=alert]').innerText(),/Não foi possível carregar/);
    assert.equal(await page.locator('#black-ranking .cb-table').count(),0);
    await page.evaluate(()=>window.__failRanking=false);await page.locator('#black-ranking [role=alert] [data-cb-reload]').click();await page.locator('#black-ranking .cb-table').waitFor();
+   // A apuração importada aparece no placar principal, sem virar pontos da régua v2.2.
+   await page.evaluate(()=>{
+    window.__savedGraduationFixtures=JSON.parse(JSON.stringify(window.__fixtures));
+    const f=window.__fixtures,id=f.members[0].id,period=f.cb_quarters[0].period;
+    f.cb_quarters=[];f.cb_missions=[];
+    f.member_graduations=[{member_id:id,source_date:'2026-09-30',is_demo:false,snapshot:{grade:2,sourceDate:'2026-09-30',periods:[{id:period,label:'Trimestre de teste',state:'closed',points:108.5,scores:{attendance:16.5,followers:20,videos:12},referrals:2,referralUnitPoints:25,bonus:10,followers:{growth:5100,estimated:true},cutoffDate:'2026-09-24'}]}}];
+   });
+   await page.locator('#rail [data-nav=graduacao]').click();
+   await page.locator('#black-graduacao [data-cb-reload]').click();
+   await page.locator('#black-graduacao .gr-big-points').waitFor();
+   assert.match(await page.locator('#black-graduacao').innerText(),/108,5/);
+   assert.match(await page.locator('#black-graduacao').innerText(),/30\/09\/2026/);
+   assert.match(await page.locator('#black-graduacao').innerText(),/vale 25 pontos/);
+   assert.doesNotMatch(await page.locator('#black-graduacao').innerText(),/Prévia da graduação|Placar v2.2/i);
+   for(const width of [390,1440]){await page.setViewportSize({width,height:1080});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1));await page.screenshot({path:path.join(out,(isAdmin?'admin':'member')+'-graduacao-'+width+'.png'),fullPage:true});}
+   await page.evaluate(()=>{const f=window.__fixtures;f.cb_quarters=[{member_id:f.members[0].id,period:f.member_graduations[0].snapshot.periods[0].id,attended:0,eligible:10}];});
+   await page.locator('#black-graduacao [data-cb-reload]').click();
+   await page.locator('#black-graduacao .cb-score').waitFor();
+   assert.match(await page.locator('#black-graduacao').innerText(),/Placar v2.2/i);
+   assert.doesNotMatch(await page.locator('#black-graduacao').innerText(),/108,5/);
+   await page.evaluate(()=>{for(const key of Object.keys(window.__fixtures))delete window.__fixtures[key];Object.assign(window.__fixtures,window.__savedGraduationFixtures);});
+   await page.locator('#black-graduacao [data-cb-reload]').click();await page.locator('#black-graduacao .cb-score').waitFor();
    await page.locator('#rail [data-nav="modulos"]').click();assert.equal(await page.locator('#black-modulos .cb-module').count(),2);await page.locator('#black-modulos [data-nav=iris]').click();assert.equal(await page.locator('[data-view=iris]').isVisible(),true);
    if(!isAdmin){for(const key of ['cerebro','profile']){await page.locator('header [data-nav='+key+']').click();assert.equal(await page.locator('[data-view='+key+']').isVisible(),true);}}
    await page.locator('#rail [data-nav="subida"]').click();await page.locator('#black-subida .cb-card[data-cb-step=D08]').click();await page.locator('.cb-drawer [data-nav=encontro]').click();assert.equal(await page.locator('[data-view=encontro]').isVisible(),true);assert.equal(await page.locator('.cb-drawer').count(),0);
