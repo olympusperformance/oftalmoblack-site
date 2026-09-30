@@ -27,7 +27,7 @@
     /* tipo e interna chegam com supabase/areas.sql (fase 1 da taxonomia).
        pilar saiu da UI na fase 2 e do banco na fase 4 (limpeza.sql). */
     artifacts: ['member_id', 'nome', 'subtitulo', 'icone', 'status', 'meta', 'url',
-                'group_id', 'ordem', 'responsaveis', 'tipo', 'somente_equipe'],
+                'group_id', 'ordem', 'responsaveis', 'tipo', 'somente_equipe', 'method_steps'],
     artifact_groups: ['nome', 'ordem', 'responsaveis', 'interna'],
     materials: ['titulo', 'descricao', 'categoria', 'visivel_para', 'arquivo_path',
                 'arquivo_nome', 'arquivo_tipo', 'arquivo_bytes', 'publicado_em'],
@@ -76,7 +76,7 @@
       if (NULAVEIS.indexOf(k) !== -1 && (v === '' || v === undefined)) v = null;
       /* Lista de destinatários vazia quer dizer "turma inteira", que no banco
          é nulo — um array vazio não casaria com ninguém. */
-      if (Array.isArray(v) && v.length === 0) v = null;
+      if (Array.isArray(v) && v.length === 0 && k !== 'method_steps') v = null;
       out[k] = v;
     });
     return out;

@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="/assets/club.css">
 <link rel="stylesheet" href="/assets/club-graduacao.css?v=20260924">
 <link rel="stylesheet" href="/assets/club-farol.css?v=20260929">
+<link rel="stylesheet" href="/assets/club-black.css?v=20260930-nav">
 <script src="/assets/club-tema.js"></script>
 </head>
 <body>
@@ -45,7 +46,7 @@
 
     <div class="view" data-view="farol">
       <div id="farolAdmin" class="farol-initial" role="status" aria-live="polite">
-        <div class="farol-loading-note"><i aria-hidden="true"></i>Preparando o Farol…</div>
+        <div class="farol-loading-note"><i aria-hidden="true"></i>Preparando o Visão Geral…</div>
         <div class="farol-initial-heading farol-skel" aria-hidden="true"></div>
         <div class="farol-initial-funnel" aria-hidden="true"><span class="farol-skel"></span><span class="farol-skel"></span><span class="farol-skel"></span><span class="farol-skel"></span><span class="farol-skel"></span></div>
         <div class="farol-initial-cards" aria-hidden="true"><span class="farol-skel"></span><span class="farol-skel"></span><span class="farol-skel"></span></div>
@@ -74,7 +75,7 @@
 
     <div class="view" data-view="graduacao" hidden>
       <div class="hello"><h1>Graduação</h1><p>Quem já atingiu a meta e quem está perto de conquistar mais um grau.</p></div>
-      <div id="graduacaoAdmin"></div>
+      <details class="cb-history"><summary>Consultar graduação histórica · planilha anterior</summary><div id="graduacaoAdmin"></div></details>
     </div>
 
     <div class="view" data-view="agenda" hidden>
@@ -187,7 +188,7 @@
     </div>
 
     <div class="view" data-view="artifacts" hidden>
-      <div class="hello"><h1>Artefatos</h1><p>O catálogo do Club: o que existe, em que área da jornada, quem é o dono e o que precisa acontecer pro 100%.</p></div>
+      <div class="hello"><h1>Processos Black</h1><p>O catálogo do Club: o que existe, em que área da jornada, quem é o dono e o que precisa acontecer pro 100%.</p></div>
       <div class="toolbar">
         <select class="inp" id="filtroArtGrupo" style="max-width:240px"></select>
         <span class="tx-s" id="artResumo"></span>
@@ -195,7 +196,7 @@
         <button class="btn" data-new="group">
           <svg class="ic"><use href="#i-plus"/></svg>Nova área</button>
         <button class="btn btn-primary" data-new="artifact">
-          <svg class="ic"><use href="#i-plus"/></svg>Novo artefato</button>
+          <svg class="ic"><use href="#i-plus"/></svg>Novo processo</button>
       </div>
       <div id="avisoGrupos"></div>
       <div id="listaArtefatos"></div>
@@ -207,13 +208,15 @@
 <script src="/assets/vendor/supabase.js"></script>
 <script src="/config.js"></script>
 <script src="/assets/club-icons.js"></script>
-<script src="/assets/club-ui.js"></script>
+<script src="/assets/club-ui.js?v=20260930-metodo"></script>
 <script src="/assets/club-table.js"></script>
 <script src="/assets/club-supabase.js"></script>
 <script src="/assets/club-auth.js"></script>
-<script src="/assets/club-data.js?v=20260926-tracker-interno"></script>
-<script src="/assets/club-graduacao.js?v=20260924"></script>
-<script src="/assets/club-farol.js?v=20260929"></script>
-<script src="/assets/admin.js?v=20260926-tracker-interno"></script>
+<script src="/assets/club-data.js?v=20260930-metodo"></script>
+<script src="/assets/club-graduacao.js?v=20260930-metodo"></script>
+<script src="/assets/club-farol.js?v=20260930-metodo"></script>
+<script src="/assets/club-metodo.js?v=20260930"></script>
+<script src="/assets/club-black.js?v=20260930-nav"></script>
+<script src="/assets/admin.js?v=20260930-nav"></script>
 </body>
 </html>

@@ -9,7 +9,7 @@ const script = readFileSync(new URL('../public/assets/club-farol.js', import.met
 function deferred() { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; }
 function settle() { return new Promise(resolve => setImmediate(resolve)); }
 
-function setup(hash = '', memberMode = false) {
+function setup(hash = '', memberMode = false, live = null) {
   const clinical = [], graduation = [];
   const listeners = {};
   const location = { hash, pathname:memberMode ? '/membros/' : '/admin/', search:'' };
@@ -28,14 +28,17 @@ function setup(hash = '', memberMode = false) {
     sb:{ functions:{ invoke(_name, params) { const pending = deferred(); clinical.push({ pending, params }); return pending.promise; } },
       from(table) { return {
         select() { return this; }, eq() { return this; }, gte() { return this; }, lte() { return this; },
-        order() { return Promise.resolve({ data:[] }); },
-        maybeSingle() { const pending = deferred(); graduation.push(pending); return pending.promise; },
+        order() { return this; }, limit() { return this; },
+        then(resolve,reject) { return Promise.resolve({ data:[] }).then(resolve,reject); },
+        maybeSingle() { if (table !== 'member_graduations') return Promise.resolve({ data:table === 'cb_scores' ? live : null });
+          const pending = deferred(); graduation.push(pending); return pending.promise; },
       }; } },
   };
   const document = { activeElement:{ getAttribute:() => null }, contains:() => false };
   const context = { window:{ Club }, Club, localStorage:{ getItem:key => store.get(key), setItem:(key,value) => store.set(key,value) },
     location, history:{ replaceState(_a,_b,url) { location.hash = String(url).includes('#') ? String(url).slice(String(url).indexOf('#')) : ''; } },
     document, Intl, URLSearchParams, Date, Number, Math, Promise };
+  vm.runInNewContext(readFileSync(new URL('../public/assets/club-metodo.js', import.meta.url), 'utf8'), context);
   vm.runInNewContext(script, context);
   Club.farol.mount(root, {
     memberMode,
@@ -58,6 +61,12 @@ function snapshot(attended) {
   return { data:{ source_date:'2026-09-10', is_demo:true, snapshot:{ currentPeriod:'2026-T3', grade:1,
     periods:[{ id:'2026-T3', label:'Jul–set 2026', points:25, attendance:{ attended, eligible:5 }, scores:{ attendance:10 } }] } } };
 }
+
+test('Visão Geral usa placar v2.2 quando apurado e mantém o grau histórico',async()=>{
+  const t=setup('',false,{total:57.5,attendance:8});t.Club.farol.enter('#farol/'+MEMBER_A);
+  t.graduation[0].resolve(snapshot(3));await settle();
+  assert.match(t.root.html,/57,5/);assert.match(t.root.html,/PLACAR V2\.2/);assert.doesNotMatch(t.root.html,/PRÉVIA/);
+});
 
 test('resposta tardia do médico A não pinta B nem perde a seleção', async () => {
   const t = setup(); t.Club.farol.enter('#farol/' + MEMBER_A + '?dias=30');

@@ -100,7 +100,7 @@
   function renderMember(root, record, id) {
     var s = record && record.snapshot;
     if (!s) {
-      root.innerHTML = '<div class="gr-empty">' + C.icon('award') + '<h2>Sua graduação começa aqui</h2><p>A equipe ainda não incluiu sua pontuação nesta prévia. Assim que ela for apurada, você verá sua faixa e os próximos passos.</p></div>' + rules();
+      root.innerHTML = '<div class="gr-empty">' + C.icon('award') + '<h2>Sua graduação começa aqui</h2><p>A equipe ainda não incluiu sua pontuação nesta prévia. Assim que ela for apurada, você verá sua faixa e os próximos degraus.</p></div>' + rules();
       return;
     }
     var m = model(s, id), ready = m.status === 'ready', future = m.status === 'future';
@@ -115,7 +115,7 @@
       '<div class="gr-progress-panel"><div class="gr-progress-top"><span class="gr-eyebrow">' + esc(m.period ? m.period.label : '') + '</span>' + badge(m.status) + '</div>' +
       '<div class="gr-big-points">' + (m.points == null ? '—' : fmt(m.points)) + '<span> / 50 <small>pontos</small></span></div>' + progress(m.percent, 'Meta de pontos do trimestre') +
       '<h2>' + headline + '</h2><p>' + sub + '</p><div class="gr-hero-foot">' + C.icon('award') + '<span>Um trimestre. Uma oportunidade de ganhar um grau.</span></div></div></section>' +
-      (!future && m.period ? criteria(m.period) : '<p class="gr-future-note">Selecione jul–set/2026 para ver os pontos e próximos passos da prévia atual.</p>') +
+      (!future && m.period ? criteria(m.period) : '<p class="gr-future-note">Selecione jul–set/2026 para ver os pontos e próximos degraus da prévia atual.</p>') +
       journey(m.grade) + benefits(s) + rules();
     root.onchange = function (event) {
       if (!event.target.matches('[data-gr-period]')) return;
@@ -180,7 +180,7 @@
       root.onclick = function (event) { if (event.target.closest('[data-gr-retry]')) load(root, member, members); };
     });
   }
-  C.graduacao = { model:model, status:scoreStatus, beltName:beltName,
+  C.graduacao = { model:model, status:scoreStatus, beltName:beltName, belt:belt,
     mountMember:function (root, member) { return load(root, member); },
     mountAdmin:function (root, members) { return load(root, null, members); },
     renderMember:renderMember, renderAdmin:renderAdmin };

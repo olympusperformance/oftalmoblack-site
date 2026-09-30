@@ -18,15 +18,18 @@
              baseLoading:true, igLoading:true, matCategoria:'' };
 
   var NAV = [
-    { key:'farol',     label:'Farol',     icon:'eye' },
-    { key:'home',      label:'Início',    icon:'home' },
+    { key:'farol', label:'Visão Geral', icon:'eye', group:'Mentoria' },
+    { key:'subida', label:'Subida: Rumo ao Olympus', icon:'home' },
+    { key:'pendencias', label:'Pendências', icon:'check-square' },
+    { key:'casos', label:'Protocolo Grau Zero', icon:'folder' },
     { key:'graduacao', label:'Graduação', icon:'award' },
+    { key:'ranking', label:'Ranking Black', icon:'award' },
+    { key:'vitrine', label:'Vitrine Black', icon:'box' },
     { key:'instagram', label:'Instagram', icon:'eye' },
-    { key:'artifacts', label:'Artefatos', icon:'box' },
+    { key:'artifacts', label:'Processos Black', icon:'box' },
     { key:'materials', label:'Materiais', icon:'folder' },
-    { key:'agenda',    label:'Agenda',    icon:'calendar' },
-    { key:'cerebro',   label:'Cérebro',   icon:'brain' },
-    { key:'profile',   label:'Perfil',    icon:'user' }
+    { key:'agenda', label:'Agenda', icon:'calendar' },
+    { key:'modulos', label:'Fábrica · Íris Black', icon:'brain', group:'Módulos à parte' }
   ];
 
   /* ── de quem é a área ─────────────────────────────────────────────────── */
@@ -53,7 +56,7 @@
       if (!m) throw new Error('Nenhum membro cadastrado ainda.');
       st.membro = m;
       var inicial = location.hash.slice(1);
-      if (!inicial || inicial.indexOf('farol/') === 0 || inicial === 'farol') {
+      if (inicial.indexOf('farol/') === 0 || inicial === 'farol') {
         renderIdentidade();
         renderNav('farol');
         montarFarol();
@@ -228,7 +231,7 @@
   /* ── artefatos ────────────────────────────────────────────────────────── */
 
   /* O checklist é o mesmo que a administração acompanha no painel: as etapas
-     são do artefato, o que está marcado é deste mentorado. */
+     são do processo, o que está marcado é deste mentorado. */
   function etapasDe(artifactId) {
     return st.steps.filter(function (e) { return e.artifact_id === artifactId; });
   }
@@ -331,12 +334,15 @@
     var corpo =
       '<div class="art-i">' + ico(a.icone || 'box') + '</div>' +
       '<p class="art-n">' + esc(a.nome) + '</p>' +
+      '<div class="cb-tools">' + Club.metodo.artifactSteps(a).map(function (id) {
+        return '<span class="cb-chip">' + id + '</span>';
+      }).join('') + '</div>' +
       '<p class="art-s">' + esc(a.subtitulo) + '</p>' +
       checklist(a, detalhado) +
       '<div class="art-st" style="color:' + chip.color + '">' + ico(chip.icon) + esc(chip.label) + '</div>' +
       '<p class="art-m">' + esc(a.meta) + '</p>';
 
-    /* Só vira link quando há para onde ir e o artefato não está bloqueado. */
+    /* Só vira link quando há para onde ir e o processo não está bloqueado. */
     return (a.url && !locked)
       ? '<a class="art" href="' + esc(a.url) + '" style="text-decoration:none;color:inherit">' +
         corpo + '</a>'
@@ -366,8 +372,8 @@
   }
 
   function renderArtifacts() {
-    var vazio = Club.empty('box', 'Nenhum artefato liberado ainda.');
-    /* Disponibilidade independe de progresso: um artefato liberado aparece
+    var vazio = Club.empty('box', 'Nenhum processo liberado ainda.');
+    /* Disponibilidade independe de progresso: um processo liberado aparece
        mesmo sem aceite ou etapas marcadas para este mentorado. Frente interna
        é da equipe e nunca aparece. */
     var meus = st.artifacts.filter(function (a) {
@@ -562,9 +568,8 @@
   function renderNav(ativo) {
     var m = st.membro;
     $('rail').innerHTML =
-      '<div class="rail-lbl">MENTORIA</div>' +
       NAV.map(function (n) {
-        return '<button class="nav" role="tab" data-nav="' + n.key + '" aria-selected="' +
+        return (n.group ? '<div class="rail-lbl rail-grupo">' + esc(n.group) + '</div>' : '') + '<button class="nav" role="tab" data-nav="' + n.key + '" aria-selected="' +
           (n.key === ativo) + '">' + ico(n.icon) + '<span>' + n.label + '</span></button>';
       }).join('') +
       '<div class="rail-foot"><div class="k">' +
@@ -573,12 +578,18 @@
       esc(Club.fmtMesAno(String(m.criado_em || '').slice(0, 10))) + '.</div></div>';
 
     $('navm').innerHTML = NAV.map(function (n) {
-      return '<button class="chip" role="tab" data-nav="' + n.key + '" aria-selected="' +
+      return (n.group ? '<span class="navm-group">' + esc(n.group) + '</span>' : '') + '<button class="chip" role="tab" data-nav="' + n.key + '" aria-selected="' +
         (n.key === ativo) + '">' + ico(n.icon) + n.label + '</button>';
     }).join('');
   }
 
   function go(key) {
+    if (Club.black) {
+      Club.black.close();
+      if (key !== 'farol') history.replaceState(null, '', location.pathname + location.search + '#' + key +
+        (key === 'subida' && /^#subida\/(D\d{2}|p\d{2})$/.test(location.hash) ? '/' + Club.metodo.canonical(location.hash).split('/')[1] : ''));
+      Club.black.enter(key);
+    }
     Array.prototype.forEach.call(document.querySelectorAll('.view'), function (v) {
       v.hidden = v.dataset.view !== key;
     });
@@ -625,6 +636,8 @@
     renderPerfil();
     Club.graduacao.mountMember($('graduacaoMembro'), st.membro);
     Club.instagramMember.mount($('instagramMembro'), st.membro);
+    Club.black.install({ member:st.membro, members:[st.membro], admin:false,
+      artifacts:st.artifacts, steps:st.steps, progress:st.progress });
   }
 
   /* ── eventos ──────────────────────────────────────────────────────────── */
@@ -652,7 +665,7 @@
       render();
       renderAvisoAdmin();
       var alvoInicial = location.hash.slice(1);
-      go(alvoInicial.indexOf('farol/') === 0 ? 'farol' : NAV.some(function (n) { return n.key === alvoInicial; }) ? alvoInicial : 'farol');
+      go(alvoInicial.indexOf('farol/') === 0 ? 'farol' : alvoInicial.indexOf('subida/') === 0 ? 'subida' : Array.from(document.querySelectorAll('.view')).some(function (v) { return v.dataset.view === alvoInicial; }) ? alvoInicial : 'farol');
     });
   }).catch(function (err) {
     document.querySelector('.main').innerHTML =
@@ -665,6 +678,7 @@
     if (!sessao) return;
     var h = location.hash.slice(1);
     if (h.indexOf('farol/') === 0) { go('farol'); return; }
-    if (NAV.some(function (n) { return n.key === h; })) go(h);
+    if (h.indexOf('subida/') === 0) { go('subida'); return; }
+    if (Array.from(document.querySelectorAll('.view')).some(function (v) { return v.dataset.view === h; })) go(h);
   });
 })();

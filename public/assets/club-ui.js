@@ -612,7 +612,7 @@
     var body = options.map(function (o) {
       var v = typeof o === 'string' ? o : o.value;
       var t = typeof o === 'string' ? o : o.label;
-      return '<option value="' + C.esc(v) + '"' + (String(v) === String(value) ? ' selected' : '') +
+      return '<option value="' + C.esc(v) + '"' + ((Array.isArray(value) ? value.map(String).indexOf(String(v)) !== -1 : String(v) === String(value)) ? ' selected' : '') +
         '>' + C.esc(t) + '</option>';
     }).join('');
     return '<div class="fld"><label for="' + name + '">' + C.esc(label) + '</label>' +

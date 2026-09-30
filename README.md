@@ -3,6 +3,121 @@
 Landing page e área de membros do Club OftalmoBlack. HTML estático, sem build
 step e sem backend — o nginx só entrega arquivos.
 
+## Cérebro Black · 12 degraus
+
+A entrada do membro é a **Visão Geral**, seguida de **Subida: Rumo ao Olympus**
+na navegação. A Visão Geral mantém
+o funil, períodos, Instagram e valor comercial existentes. O endereço `#farol`
+continua funcionando; o catálogo passa a se chamar Processos Black. Os novos
+endereços são `#subida/D01` a `#subida/D12`, `#pendencias`, `#ranking`, `#vitrine`,
+`#casos`, `#encontro` e `#iris`. O administrador mantém o painel anterior e ganha
+as áreas do método com seletor de membro. A pré-visualização do membro não
+mostra os controles administrativos.
+
+O menu segue a hierarquia do protótipo: Mentoria (Visão Geral, Subida,
+Pendências, Protocolo Grau Zero, Graduação, Ranking, Vitrine, Instagram,
+Processos, Materiais, Agenda), Módulos à parte (Fábrica · Íris Black) e,
+somente para a equipe, Administração (A Rede, Progressão). Ferramentas antigas
+da equipe permanecem ao fim, em Operação da equipe. Perfil e Cérebro ficam no
+cabeçalho do membro; Encontro Grau Zero é acessível pela Agenda e pelo D08.
+Os links antigos continuam abrindo as respectivas telas. As áreas novas usam
+a mesma fonte Inter do painel atual, inclusive nos títulos.
+
+`club-metodo.js` contém o catálogo e regras puras; `club-black.js` integra as
+fontes, formulários e painéis; `club-black.css` usa os temas existentes. Nenhum
+dado de demonstração é incluído nos arquivos públicos. Os números usados na QA
+ficam exclusivamente em `tests/`.
+
+### Banco antes da interface
+
+Aplicar **uma única vez** a migração
+`supabase/migrations/20260930182004_cerebro_black_12_degraus.sql` na instalação
+existente, que já deve ter `schema.sql`, `progresso.sql`, `graduacao.sql` e a
+coleta/view `instagram_serie`. Não rodar os SQLs antigos novamente em produção.
+A migração adiciona tabelas `cb_*`, políticas, livro-razão e bucket privado;
+etiqueta os processos e cria os processos novos com seus checklists. Não apaga
+nem renumera IDs de etapas existentes e não modifica a planilha histórica.
+
+O bucket `pgz-exams` aceita PDF até 150 MiB e o cliente usa o hostname direto
+do Storage recomendado para arquivos grandes. O **limite global do Storage e o
+plano do projeto também precisam permitir esse tamanho**. Confirmar esse limite
+e um upload autenticado real antes de liberar a área clínica. O cliente usa
+TUS em blocos de 6 MiB e retoma o offset após falhas transitórias. Após recarregar
+a página, o caso salvo pode receber novos anexos; a retomada de uma sessão de
+upload após fechar o navegador não está implementada. Os nomes no bucket são
+aleatórios, os arquivos são privados e os links de leitura expiram em 60 segundos.
+
+Publicar a interface somente depois da migração e da verificação de Storage.
+Se houver rollback da interface, conservar as novas tabelas e registros;
+reverter o front-end não exige remover dados.
+
+### Operação e fontes
+
+- **Implantação:** parecer por membro/degrau. AUDITADO exige todos os critérios
+  conferidos; autor, data e evidência ficam no livro-razão. As etiquetas D01–D12
+  são editáveis no catálogo de Processos Black.
+- **Pendências:** missões solicitadas, rotinas medidas e a próxima trava de
+  processos efetivamente em andamento. Um checklist ainda não iniciado não
+  vira backlog do membro. A equipe pode converter uma trava em missão, definir
+  peso e prazo; verificar essa missão atualiza a etapa original.
+- **Placar v2.2:** Rotina 40 + Missões 15 + Resultado 5, meta 50. A view
+  `cb_scores` é a fonte do ranking e da Visão Geral. A planilha anterior continua
+  disponível dentro de “Consultar graduação histórica”, com suas regras originais.
+  Os períodos novos começam sem pontuação inventada e precisam de apuração.
+- **Seguidores:** usa a coleta automaticamente quando existe uma medição no dia
+  anterior ao início do trimestre e uma leitura dentro do período; trimestre
+  encerrado exige também a leitura do último dia. Sem essa cobertura, usa uma
+  apuração manual com evidência ou mostra ausência. O funil e o total de
+  seguidores também são lidos das integrações existentes.
+- **Demais fontes da primeira fase:** presença, créditos semanais de vídeo,
+  Sistema vivo e juízes de resultado são apurados pela equipe nos formulários.
+  O membro envia evidência, mas não altera pesos, prazos ou conclusão verificada.
+- **Encontro:** cadastrar todas as edições elegíveis, inclusive entregas ainda
+  não realizadas. Os dois vídeos constituem uma única entrega; cada edição
+  contribui com três oportunidades para o denominador.
+- **Fora da régua:** bônus 10 por trimestre; indicação convertida 25 + voucher,
+  sem teto; módulo 5 uma única vez. Referência da indicação identifica a
+  conversão, sem repetição entre trimestres ou membros. `iris` e `fabrica` são
+  as referências dos módulos. Grau é conferido pela equipe após o fechamento,
+  exige meta atingida, só avança um por trimestre e preserva o histórico.
+- **Ranking:** pseudônimos para outros membros; administração vê os nomes.
+  “Registrar referência semanal” conserva a primeira posição da semana. A
+  seta só aparece quando existe referência da semana anterior, no mesmo trimestre.
+- **Vitrine:** a equipe cadastra condições, janela e estoque real. Solicitações
+  entram em fila; a confirmação reserva estoque sob lock e respeita voucher,
+  pontos e ordem do pedido. Cancelar a reserva devolve vaga e libera o voucher.
+  Não há prateleira ou viagem fictícia: condições e disponibilidade precisam
+  ser publicadas pelo Club.
+- **PGZ:** ficha estruturada, sete critérios por olho, sete de customização,
+  parâmetros numéricos, consentimento, exames privados, decisão/racional da
+  equipe e feedback do membro. Os sinais usam somente os intervalos explícitos
+  do quadro fornecido; lacunas e campos não medidos ficam sem classificação.
+  O painel não recomenda lentes automaticamente.
+
+### Integrações que continuam na fase 2
+
+CAPI/Ads para CPV automático, plataforma de aulas/presença, telemetria da Íris,
+NPS, vínculo das cirurgias aos casos para ROI automático e notificações semanais
+dependem dos respectivos conectores e dados. A tela da Íris sinaliza essa falta
+de conexão. Receita de caso, quando informada, é manual e não é apresentada como
+receita reconciliada do CRM. A decisão comercial sobre a viagem fica nas
+condições cadastradas do benefício; nenhuma das regras divergentes foi presumida.
+
+### Verificação
+
+`node --test tests/*.test.mjs tests/*.test.cjs` executa as regras e regressões.
+`tests/black-access.sql` verifica no Postgres isolado: pontuação, RLS, auditoria,
+missões, isolamento de exames, graus, coleta de seguidores, prioridade de
+voucher e estoque. `tests/black-bootstrap.sql` fornece Auth/Storage mínimos
+**apenas para banco descartável**, nunca para produção.
+
+`tests/black-browser.cjs` usa Playwright 1.63.0. Defina `PLAYWRIGHT_MODULE` para o
+caminho do pacote `@playwright/test` instalado, ou disponibilize-o na resolução
+normal do Node. O teste inicia seu próprio servidor, intercepta todas as fontes
+externas e gera capturas de membro/admin em desktop/mobile e temas claro/escuro.
+O envio de 90 MiB com uma falha e retomada é testado contra um servidor TUS
+simulado; ele não valida credenciais, limites globais ou o Storage hospedado.
+
 ## Estrutura
 
 ```

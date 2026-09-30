@@ -1,4 +1,4 @@
-/* Farol executivo: CRM, Instagram, entregas e graduação de um mentorado. */
+/* Visão Geral executivo: CRM, Instagram, entregas e graduação de um mentorado. */
 (function () {
   'use strict';
   var C = window.Club = window.Club || {};
@@ -160,7 +160,7 @@
     if (sources.deliveriesLoading && sources.deliveriesLoading()) return '<section class="farol-card is-loading" aria-busy="true" data-farol-card="delivery"><div class="farol-card-head"><span>ENTREGAS DO CLUB</span></div>' +
       skel('58%', 'farol-skel-num') + skel('100%', 'farol-skel-bar') + skel('70%') + '<span class="farol-sr">Carregando entregas</span></section>';
     var d = sources.entregas(selected);
-    return '<section class="farol-card" data-farol-card="delivery"><div class="farol-card-head"><span>ENTREGAS DO CLUB</span><small>artefatos aceitos</small></div>' +
+    return '<section class="farol-card" data-farol-card="delivery"><div class="farol-card-head"><span>ENTREGAS DO CLUB</span><small>processos aceitos</small></div>' +
       '<button class="farol-delivery-main farol-detail-button" data-farol-detail="delivery"><strong>' + (d.pcts.length ? d.pct + '%' : '—') + '</strong><span>progresso médio</span></button>' +
       '<div class="farol-progress"><i style="width:' + (d.pcts.length ? d.pct : 0) + '%"></i></div>' +
       '<div class="farol-delivery-details"><button data-farol-detail="delivery:air"><b>' + d.noar + '</b> no ar</button><button data-farol-detail="delivery:team"><b>' + d.equipe + '</b> equipe</button><button class="farol-warn" data-farol-detail="delivery:blocked"><b>' + d.travados + '</b> travados</button></div>' +
@@ -180,7 +180,7 @@
     var s = graduation.snapshot, m = C.graduacao.model(s, periodId(s));
     var attendance = m.period && m.period.attendance;
     var attended = attendance && number(attendance.attended), eligible = attendance && number(attendance.eligible);
-    return '<section class="farol-card" data-farol-card="graduation"><div class="farol-card-head"><span>GRADUAÇÃO</span><small>' + (graduation.is_demo ? '<b class="farol-preview">PRÉVIA</b> ' : '') + 'fonte ' + date(graduation.source_date) + '</small></div>' +
+    return '<section class="farol-card" data-farol-card="graduation"><div class="farol-card-head"><span>GRADUAÇÃO</span><small>' + (graduation.is_demo ? '<b class="farol-preview">PRÉVIA</b> ' : '') + (graduation.is_live ? 'PLACAR V2.2 · AO VIVO' : 'fonte ' + date(graduation.source_date)) + '</small></div>' +
       '<div class="farol-grade"><button data-farol-detail="graduation"><span class="farol-label">' + text(m.period && m.period.label || periodId(s)) + '</span><strong>' + (m.points == null ? '—' : number(m.points)) + '<small> / 50 pts</small></strong></button>' +
       '<button data-farol-detail="graduation"><span class="farol-label">Grau atual</span><strong>' + number(m.grade) + '<small>º grau</small></strong></button></div>' +
       '<div class="farol-progress"><i style="width:' + m.percent + '%"></i></div>' +
@@ -250,7 +250,7 @@
       out.body = '<div class="farol-detail-metrics">' + detailMetric('Neste período', moneyDetail(group && group.amount)) +
         detailMetric('Período anterior', moneyDetail(prevGroup && prevGroup.amount)) +
         detailMetric('Lançamentos', number(group && group.record_count)) + '</div><p>Grupo agregado da base ' +
-        (basisGroup === 'billed' ? 'faturado' : 'recebido') + '. Esta fonte não fornece registros individuais ao Farol.</p>';
+        (basisGroup === 'billed' ? 'faturado' : 'recebido') + '. Esta fonte não fornece registros individuais ao Visão Geral.</p>';
       out.action = crmLink('financeiro');
     } else if (kind === 'commercial') {
       var c = clinic && clinic.commercial && clinic.commercial.data;
@@ -265,7 +265,7 @@
       out.title = 'Comercial · ' + (bits[1] || 'grupo');
       out.body = '<div class="farol-detail-metrics">' + detailMetric('Valor', moneyDetail(groupC && groupC.amount)) +
         detailMetric('Registros', number(groupC && groupC.count)) + detailMetric('Sem preço', number(groupC && groupC.missing_price_count)) +
-        '</div><p>Valor agregado. O Farol não recebe nomes de pacientes nem linhas individuais desta fonte.</p>';
+        '</div><p>Valor agregado. O Visão Geral não recebe nomes de pacientes nem linhas individuais desta fonte.</p>';
       out.action = crmLink('metrics');
     } else if (kind === 'instagram') {
       var ig = igData(), rI = ig.row;
@@ -288,21 +288,21 @@
       if (bits[1] === 'air') arts = arts.filter(function (x) { return C.NO_AR[x.part.estado]; });
       if (bits[1] === 'team') arts = arts.filter(function (x) { return !C.NO_AR[x.part.estado] && x.part.estado !== 'travado'; });
       out.title = 'Entregas' + (bits[1] ? ' · ' + ({ blocked:'travadas', air:'no ar', team:'com a equipe' }[bits[1]] || '') : '');
-      out.body = '<p>Progresso médio dos artefatos aceitos, calculado com as regras da Progressão. Rotinas não entram no denominador do checklist.</p>' +
+      out.body = '<p>Progresso médio dos processos aceitos, calculado com as regras da Progressão. Rotinas não entram no denominador do checklist.</p>' +
         (arts.length ? arts.map(function (x) { return detailButton('artifact:' + x.artifact.id, x.artifact.nome,
-          C.rotuloPar(x.part) + ' · ' + (x.part.total ? x.part.feitas + '/' + x.part.total + ' etapas' : 'sem checklist')); }).join('') : '<p>Nenhum artefato nesta situação.</p>');
-      out.action = '<button class="farol-modal-link" data-farol-progress>Abrir ' + (memberMode ? 'Artefatos' : 'Progressão') + ' ↗</button>';
+          C.rotuloPar(x.part) + ' · ' + (x.part.total ? x.part.feitas + '/' + x.part.total + ' etapas' : 'sem checklist')); }).join('') : '<p>Nenhum processo nesta situação.</p>');
+      out.action = '<button class="farol-modal-link" data-farol-progress>Abrir ' + (memberMode ? 'Processos Black' : 'Progressão') + ' ↗</button>';
     } else if (kind === 'artifact') {
       var art = sources.artefatos(selected).filter(function (x) { return x.artifact.id === bits[1]; })[0];
-      out.title = art ? art.artifact.nome : 'Artefato';
+      out.title = art ? art.artifact.nome : 'Processo Black';
       out.body = art ? '<div class="farol-detail-metrics">' + detailMetric('Situação', C.rotuloPar(art.part)) +
-        detailMetric('Etapas', art.part.feitas + '/' + art.part.total) + '</div><p>Checklist do par médico + artefato.</p>' +
+        detailMetric('Etapas', art.part.feitas + '/' + art.part.total) + '</div><p>Checklist do par médico + processo.</p>' +
         art.steps.map(function (s) { return '<div class="farol-detail-row farol-step"><span>' + text(s.titulo) + '</span><small>' +
           (s.feito ? 'Concluída' : 'Em aberto') + ' · ' + text(C.tipoEtapa(s)) + '</small></div>'; }).join('') +
         (memberMode ? '' : '<h3>Demandas relacionadas</h3>' + (art.demands.length ? art.demands.map(function (d) {
           return detailButton('demand:' + d.id, d.titulo, d.status || '—');
-        }).join('') : '<p>Nenhuma demanda vinculada.</p>')) : '<p>Artefato indisponível.</p>';
-      out.action = '<button class="farol-modal-link" data-farol-progress>Abrir ' + (memberMode ? 'Artefatos' : 'Progressão') + ' ↗</button>';
+        }).join('') : '<p>Nenhuma demanda vinculada.</p>')) : '<p>Processo Black indisponível.</p>';
+      out.action = '<button class="farol-modal-link" data-farol-progress>Abrir ' + (memberMode ? 'Processos Black' : 'Progressão') + ' ↗</button>';
     } else if (kind === 'demand') {
       var dem = sources.demandas().filter(function (d) { return d.id === bits[1] && d.member_id === selected; })[0];
       out.title = dem ? dem.titulo : 'Demanda';
@@ -324,7 +324,7 @@
       else if (kind === 'presence' || kind === 'presenceperiod') {
         out.body = sourceNote + '<div class="farol-detail-metrics">' + detailMetric('Presenças', attLabel) +
           detailMetric('Percentual', validAttendance ? Math.round(Number(att.attended) / Number(att.eligible) * 100) + '%' : '—') +
-          detailMetric('Pontos na planilha', number(pG && pG.scores && pG.scores.attendance)) + '</div>' +
+          detailMetric(graduation.is_live ? 'Pontos apurados' : 'Pontos na planilha', number(pG && pG.scores && pG.scores.attendance)) + '</div>' +
           (validAttendance ? '<div class="farol-progress"><i style="width:' + Math.max(0, Math.min(100, Number(att.attended) / Number(att.eligible) * 100)) + '%"></i></div>' : '') +
           '<p>Contagem agregada de encontros elegíveis e presenças. A planilha não traz a lista de reuniões; os pontos são os apurados na fonte.</p>' +
           (kind === 'presence' ? '<h3>Trimestres apurados</h3>' + (snap.periods || []).map(function (p) {
@@ -339,7 +339,7 @@
             detailMetric('Créditos', number(pG && pG.videos && pG.videos.credits)) + detailMetric('Semanas', number(pG && pG.videos && pG.videos.weeks)) + '</div>' :
           '<p>Sem evidência detalhada disponível para este critério.</p>';
         out.body = sourceNote + '<div class="farol-detail-metrics">' + detailMetric('Pontos apurados', number(score)) + '</div>' + evidence +
-          '<p>A pontuação é a registrada na planilha; o Farol não a recalcula.</p>';
+          '<p>A pontuação é a registrada na planilha; o Visão Geral não a recalcula.</p>';
       } else {
         out.body = sourceNote + '<div class="farol-detail-metrics">' + detailMetric('Pontos', mod.points == null ? '—' : number(mod.points) + ' / 50') +
           detailMetric('Grau atual', number(mod.grade) + 'º') + detailMetric('Presença', attLabel) + '</div>' +
@@ -416,7 +416,7 @@
     root.innerHTML = '<div class="farol"><div class="farol-header"><div class="farol-heading"><span>VISÃO EXECUTIVA <i></i> FAROL</span><h1>' + text(m.nome) + '</h1><p>' + text(m.turma || 'Turma não informada') + ' <b>·</b> ' + (source === null ? '<span class="farol-loading-note"><i aria-hidden="true"></i>Carregando dados da clínica…</span>' : text(source)) + '</p></div>' +
       '<div class="farol-controls">' + (memberMode ? '' : '<label class="farol-search">' + C.icon('search') + '<input type="search" data-farol-search placeholder="Buscar médico" aria-label="Buscar médico"></label>' +
       '<select data-farol-member aria-label="Selecionar médico">' + list.map(function (x) { return '<option value="' + esc(x.id) + '"' + (x.id === selected ? ' selected' : '') + '>' + text(x.nome) + '</option>'; }).join('') + '</select>' +
-      '<button data-farol-prev aria-label="Médico anterior"' + (!position ? ' disabled' : '') + '>‹</button><button data-farol-next aria-label="Próximo médico"' + (position === list.length - 1 ? ' disabled' : '') + '>›</button>') + '<button data-farol-retry aria-label="Atualizar Farol" title="Atualizar Farol">↻</button>' +
+      '<button data-farol-prev aria-label="Médico anterior"' + (!position ? ' disabled' : '') + '>‹</button><button data-farol-next aria-label="Próximo médico"' + (position === list.length - 1 ? ' disabled' : '') + '>›</button>') + '<button data-farol-retry aria-label="Atualizar Visão Geral" title="Atualizar Visão Geral">↻</button>' +
       '<label class="farol-period-picker"><span>Período</span><select data-farol-period aria-label="Período">' + PERIODS.map(function (p) {
         return '<option value="' + p[0] + '"' + (preset === p[0] ? ' selected' : '') + '>' + p[1] + '</option>';
       }).join('') + '</select></label>' +
@@ -453,10 +453,27 @@
         if (version !== request) return;
         igHistory = []; igLoading = false; render();
       });
-    C.sb.from('member_graduations').select('member_id,source_date,is_demo,snapshot').eq('member_id', id).maybeSingle().then(function (res) {
+    Promise.allSettled([
+      C.sb.from('member_graduations').select('member_id,source_date,is_demo,snapshot').eq('member_id', id).maybeSingle(),
+      C.sb.from('cb_scores').select('*').eq('member_id', id).eq('period', C.metodo.quarter()).maybeSingle(),
+      C.sb.from('cb_quarters').select('attended,eligible,updated_at').eq('member_id', id).eq('period', C.metodo.quarter()).maybeSingle(),
+      C.sb.from('cb_grades').select('grade').eq('member_id', id).order('grade', { ascending:false }).limit(1)
+    ]).then(function (results) {
       if (version !== request) return;
-      if (res.error) throw res.error;
-      graduation = res.data || {}; graduationLoading = false; render();
+      var old = results[0].status === 'fulfilled' && !results[0].value.error ? results[0].value.data : null;
+      var live = results[1].status === 'fulfilled' && !results[1].value.error ? results[1].value.data : null;
+      var q = results[2].status === 'fulfilled' && !results[2].value.error ? results[2].value.data : null;
+      var grades = results[3].status === 'fulfilled' && !results[3].value.error ? results[3].value.data : [];
+      if (live) {
+        var current = C.metodo.quarter();
+        graduation = { is_demo:false, is_live:true, source_date:q && q.updated_at, snapshot:{
+          grade:grades.length ? grades[0].grade : old && old.snapshot && old.snapshot.grade || 0,
+          currentPeriod:current, periods:[{ id:current, label:current + ' · Placar v2.2',
+            points:Number(live.total), attendance:q ? { attended:q.attended, eligible:q.eligible } : {},
+            scores:{ attendance:live.attendance }, state:'active' }]
+        }};
+      } else graduation = old || {};
+      graduationLoading = false; render();
     }).catch(function () {
       if (version !== request) return;
       graduation = { error:'Graduação indisponível' }; graduationLoading = false; render();

@@ -39,35 +39,37 @@
                 flutuante (painel). Cada um guarda { id, subId }. */
              detalheModal: null, painel: null };
 
-  /* A navegação é uma árvore de um nível: quem é solto fica solto, quem tem
-     'itens' vira um grupo com título. Agenda e Materiais moram em Mentorados
-     porque são o que o mentorado consome; Artefatos mora em Time porque é o
-     que o time produz. A chave de cada view continua a mesma — só o rótulo de
-     'members' mudou para Progressão. */
+  /* Hierarquia do protótipo; ferramentas operacionais existentes ficam ao fim. */
   var NAV = [
-    { key:'farol', label:'Farol', icon:'eye' },
-    { grupo:'Mentorados', itens: [
-      { key:'members',   label:'Progressão', icon:'users' },
+    { grupo:'Mentoria', itens: [
+      { key:'farol', label:'Visão Geral', icon:'eye' },
+      { key:'subida', label:'Subida: Rumo ao Olympus', icon:'home' },
+      { key:'pendencias', label:'Pendências', icon:'check-square' },
+      { key:'casos', label:'Protocolo Grau Zero', icon:'folder' },
       { key:'graduacao', label:'Graduação', icon:'award' },
-      { key:'agenda',    label:'Agenda',     icon:'calendar' },
-      { key:'materials', label:'Materiais',  icon:'folder' }
+      { key:'ranking', label:'Ranking Black', icon:'award' },
+      { key:'vitrine', label:'Vitrine Black', icon:'box' },
+      { key:'igMetricas', label:'Instagram', icon:'eye' },
+      { key:'artifacts', label:'Processos Black', icon:'box' },
+      { key:'materials', label:'Materiais', icon:'folder' },
+      { key:'agenda', label:'Agenda', icon:'calendar' }
     ] },
-    { grupo:'Instagram', itens: [
-      { key:'igMetricas',  label:'Alcance',         icon:'users' },
+    { grupo:'Módulos à parte', itens: [
+      { key:'modulos', label:'Fábrica · Íris Black', icon:'brain' }
+    ] },
+    { grupo:'Administração', itens: [
+      { key:'rede', label:'A Rede', icon:'users' },
+      { key:'members', label:'Progressão', icon:'check-square' }
+    ] },
+    { grupo:'Operação da equipe', itens: [
+      { key:'demands', label:'Demandas', icon:'check-circle' },
       { key:'botFila',     label:'O bot respondeu', icon:'bell' },
-      { key:'botExemplos', label:'Voz do bot',      icon:'edit' }
-    ] },
-    { grupo:'Time', itens: [
-      { key:'demands',   label:'Demandas',   icon:'check-circle' },
-      { key:'artifacts', label:'Artefatos',  icon:'box' }
-    ] },
-    { grupo:'Imersão', itens: [
+      { key:'botExemplos', label:'Voz do bot', icon:'edit' },
       { key:'qr',        label:'QR da credencial', icon:'link' }
     ] }
   ];
 
-  /* A barra do celular é uma fila de chips: não comporta hierarquia, então lê
-     a mesma árvore achatada, na mesma ordem. */
+  /* A lista plana também valida deep-links. */
   function navPlano() {
     return NAV.reduce(function (acc, n) {
       return acc.concat(n.itens || [n]);
@@ -86,7 +88,7 @@
 
   $('sair').addEventListener('click', function () { Club.auth.logout(); });
   $('verComoMembro').addEventListener('click', function () {
-    var id = Club.farol.selected();
+    var id = st.view === 'farol' ? Club.farol.selected() : Club.black.selected();
     if (id) this.href = '/membros/?membro=' + encodeURIComponent(id);
   });
 
@@ -253,7 +255,7 @@
     return { marcas: n, mentorados: Object.keys(membros).length };
   }
 
-  /* Artefato sem dono vale para a turma inteira — é a mesma regra que decide o
+  /* Processo Black sem dono vale para a turma inteira — é a mesma regra que decide o
      que aparece na área do mentorado. */
   /* Frente interna (tipo 'interna') é da equipe: só agrupa demandas. Não
      entra na Progressão nem nas contas, mesmo estando em st.artifacts. */
@@ -348,23 +350,25 @@
     }
 
     $('rail').innerHTML =
-      '<div class="rail-lbl">ADMINISTRAÇÃO</div>' +
       NAV.map(function (n) {
         if (!n.itens) return botao(n, false);
         return '<div class="rail-lbl rail-grupo">' + esc(n.grupo) + '</div>' +
-          n.itens.map(function (f) { return botao(f, true); }).join('');
+          n.itens.map(function (f) { return botao(f, false); }).join('');
       }).join('') +
       '<div class="rail-foot"><div class="k">' + st.members.length + ' MEMBROS</div>' +
       '<div class="v">' + st.demands.filter(function (d) { return Club.DEM_ABERTOS.indexOf(d.status) !== -1; }).length +
       ' demandas em aberto agora.</div></div>';
 
-    $('navm').innerHTML = navPlano().map(function (n) {
-      return '<button class="chip" role="tab" data-nav="' + n.key + '" aria-selected="' +
-        (n.key === st.view) + '">' + ico(n.icon) + n.label + '</button>';
+    $('navm').innerHTML = NAV.map(function (group) {
+      return '<span class="navm-group">' + esc(group.grupo) + '</span>' + group.itens.map(function (n) {
+        return '<button class="chip" role="tab" data-nav="' + n.key + '" aria-selected="' +
+          (n.key === st.view) + '">' + ico(n.icon) + esc(n.label) + '</button>';
+      }).join('');
     }).join('');
   }
 
   function go(key) {
+    if (Club.black) Club.black.close();
     st.view = key;
     Array.prototype.forEach.call(document.querySelectorAll('.view'), function (v) {
       v.hidden = v.dataset.view !== key;
@@ -373,6 +377,9 @@
     /* Só o quadro escreve na URL: #demandas já era o atalho do favorito, e o
        recorte vai junto dele. As outras abas seguem sem endereço. */
     sincronizarHash();
+    if (key !== 'demands' && key !== 'farol' && !(key === 'subida' && /^#subida\/(D\d{2}|p\d{2})$/.test(location.hash))) {
+      history.replaceState(null, '', location.pathname + location.search + '#' + key);
+    }
     if (key === 'farol') {
       montarFarol();
       Club.farol.enter(lerHash().secao === 'farol' ? location.hash : '');
@@ -382,6 +389,7 @@
     /* O painel destacado é da aba Demandas: some com ela e volta com ela. */
     var painel = $('painelDemanda');
     if (painel) painel.hidden = key !== 'demands' || !st.painel;
+    if (Club.black) Club.black.enter(key);
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
@@ -408,12 +416,12 @@
      Três níveis, como no ClickUp:
 
        Mentorado
-         └ Artefato → etapa do checklist (padrão do artefato)
+         └ Processo Black → etapa do checklist (padrão do processo)
 
      Tarefa do mentorado não existe mais (fase 4 da taxonomia): a ação dele é
-     etapa trava do artefato, cobrada por demanda da CS no quadro.
+     etapa trava do processo, cobrada por demanda da CS no quadro.
 
-     As etapas do artefato são o modelo cadastrado na aba Artefatos; o que está
+     As etapas do processo são o modelo cadastrado na aba Processos Black; o que está
      marcado é deste mentorado. Ver supabase/progresso.sql. */
 
   var ARV_COLS = 'minmax(300px,2.2fr) 148px 200px 120px 180px 150px';
@@ -426,7 +434,7 @@
     return Club.par(etapasDe(a.id), function (id) { return !!marcada(memberId, id); });
   }
 
-  /* Grupo do artefato e ordem de leitura: grupo, depois ordem cadastrada. */
+  /* Grupo do processo e ordem de leitura: grupo, depois ordem cadastrada. */
   function grupoDe(a) {
     return st.groups.filter(function (g) { return g.id === a.group_id; })[0] || null;
   }
@@ -438,7 +446,7 @@
   }
 
   /* Do mentorado: só os pares aceitos contam. Barra = soma das entregas de
-     implantação; o percentual médio é dos artefatos, cada um pesando 1. */
+     implantação; o percentual médio é dos processos, cada um pesando 1. */
   function contaMembro(memberId) {
     var r = { feitas:0, total:0, aceitos:0, definir:0, travados:0, equipe:0, noar:0, pcts:[] };
     artefatosDe(memberId).forEach(function (a) {
@@ -551,12 +559,12 @@
     $('statsMembros').innerHTML =
       cardStat('ENTREGAS', geral.feitas + '/' + geral.total,
                geral.total ? Math.round((geral.feitas / geral.total) * 100) + '% da implantação'
-                           : 'nenhum artefato aceito',
-               'Etapas de entrega e trava marcadas, sobre o total dos artefatos aceitos. Aceite e rotina ficam fora.') +
+                           : 'nenhum processo aceito',
+               'Etapas de entrega e trava marcadas, sobre o total dos processos aceitos. Aceite e rotina ficam fora.') +
       cardStat('COM A EQUIPE', geral.equipe, 'pares cuja próxima etapa é nossa',
-               'Artefatos aceitos em implantação em que a próxima etapa é ato da equipe.') +
+               'Processos Black aceitos em implantação em que a próxima etapa é ato da equipe.') +
       cardStat('TRAVADO NO MENTORADO', geral.travados, 'esperando acesso, dado ou aprovação',
-               'Artefatos aceitos em que a próxima etapa depende do mentorado.') +
+               'Processos Black aceitos em que a próxima etapa depende do mentorado.') +
       cardStat('NO AR', geral.noar, geral.aceitos + ' pares aceitos no total',
                'Entregues (100% sem rotina) e ativos (100% com a rotina ligada).');
 
@@ -716,12 +724,12 @@
       td(etapas.length
         ? '<span class="tx-s">' + esc(detalhePar(p, m)) + '</span>'
         /* Sem checklist não há o que marcar: o atalho leva direto a quem
-           resolve isso, que é o cadastro do artefato. */
+           resolve isso, que é o cadastro do processo. */
         : '<button class="btn btn-sm btn-ghost" data-edit="artifact" data-id="' + a.id +
           '" style="color:var(--gold)">' + ico('plus') + 'Definir etapas</button>') +
       '<div class="td end"><div class="row-acts">' +
         '<button class="btn btn-sm btn-ghost" data-edit="artifact" data-id="' + a.id +
-          '" aria-label="Editar artefato e checklist">' + ico('edit') + '</button>' +
+          '" aria-label="Editar processo e checklist">' + ico('edit') + '</button>' +
       '</div></div>' +
     '</div>';
 
@@ -846,7 +854,7 @@
           (alvo === 'mentorado' ? '' : ' · ' + esc(rotulo)) + '</div>' +
         '<label for="' + esc(id) + '">Observação interna</label>' +
         '<textarea class="inp" id="' + esc(id) + '" data-nota-texto="' + esc(chave) +
-          '" rows="3" maxlength="2000" placeholder="Contexto, pendência ou próximo passo…"' +
+          '" rows="3" maxlength="2000" placeholder="Contexto, pendência ou próximo degrau…"' +
           ' aria-describedby="' + esc(id) + '-ajuda' + (edicao.erro ? ' ' + esc(id) + '-erro' : '') + '"' +
           (edicao.erro ? ' aria-invalid="true"' : '') +
           (edicao.salvando || Club.erroObservacoes ? ' disabled' : '') + '>' + esc(edicao.texto) + '</textarea>' +
@@ -1892,7 +1900,7 @@
   }
 
   /* Quantos mentorados aceitaram, chegaram a 100%, estão ativos ou travados.
-     O denominador é quem pode ter o artefato: a turma, ou o dono quando é dele. */
+     O denominador é quem pode ter o processo: a turma, ou o dono quando é dele. */
   function adocaoDe(a) {
     var alvo = a.member_id
       ? st.members.filter(function (m) { return m.id === a.member_id; })
@@ -1934,7 +1942,7 @@
     '</div>';
   }
 
-  /* Cabeçalho de uma área na aba Artefatos. Área da equipe (interna) só
+  /* Cabeçalho de uma área na aba Processos Black. Área da equipe (interna) só
      agrupa demandas: o rótulo "equipe" e a classe .interna dizem isso. */
   function cabecalhoGrupo(g, n) {
     var interna = !!(g && g.interna);
@@ -1976,8 +1984,8 @@
 
     $('listaArtefatos').innerHTML = tabela(
       'minmax(0,2fr) minmax(0,1.3fr) 128px minmax(0,1.3fr) 118px 88px',
-      ['Artefato', 'Critério de 100%', 'Tipo', 'Adoção', 'Situação', '>Ações'],
-      secoes, 'Nenhum artefato cadastrado ainda.');
+      ['Processo Black', 'Critério de 100%', 'Tipo', 'Adoção', 'Situação', '>Ações'],
+      secoes, 'Nenhum processo cadastrado ainda.');
   }
 
   function opcoesEquipe() {
@@ -2031,13 +2039,17 @@
     var etapasAtuais = a.id ? etapasDe(a.id) : [];
     var comGrupos = !Club.faltaGrupos;
     Club.modal.open({
-      title: a.id ? 'Editar artefato' : 'Novo artefato',
+      title: a.id ? 'Editar processo' : 'Novo processo',
       sub: a.id ? a.nome : 'O que o Club entrega para o mentorado.',
       body:
         Club.field('Nome', 'nome', { value:a.nome, required:true,
           placeholder:'Landing Page VSL' }) +
         Club.field('Descrição curta', 'subtitulo', { value:a.subtitulo,
           placeholder:'Página de vídeo de vendas' }) +
+        Club.select('Degraus do método', 'method_steps', Club.metodo.steps.map(function (s) {
+          return { value:s.id, label:s.id + ' · ' + s.name };
+        }), a.method_steps || Club.metodo.artifactSteps(a), { multiple:true,
+          hint:'Etiquetas D01–D12. Módulos separados e frentes internas ficam sem degrau.' }) +
         (comGrupos
           ? '<div class="fld-row">' +
               Club.select('Área', 'group_id', [{ value:'', label:'Sem área' }].concat(
@@ -2054,7 +2066,7 @@
           Club.select('Ícone', 'icone', Club.ART_ICONES, a.icone) +
         '</div>' +
         Club.select('Tipo', 'tipo', [
-            { value:'artefato', label:'Artefato com checklist e progresso' },
+            { value:'artefato', label:'Processo Black com checklist e progresso' },
             { value:'interna',  label:'Frente interna (só agrupa demandas)' }
           ], a.tipo || 'artefato',
           { hint:'Frente interna nunca aparece para o mentorado nem na Progressão. Use só em área da equipe.' }) +
@@ -2074,9 +2086,10 @@
                'ou apagar linha com marca é barrado. O tipo de cada etapa (aceite, ' +
                'entrega, trava, opcional, rotina) fica como está; linha nova nasce entrega.' }),
       onSubmit: function (d) {
-        if (!d.nome) { Club.toast('O artefato precisa de um nome.', 'alert'); return; }
+        if (!d.nome) { Club.toast('O processo precisa de um nome.', 'alert'); return; }
         d.id = a.id;
         d.tipo = d.tipo === 'interna' ? 'interna' : 'artefato';
+        d.method_steps = d.tipo === 'interna' ? [] : (Array.isArray(d.method_steps) ? d.method_steps : d.method_steps ? [d.method_steps] : []);
         d.somente_equipe = !!d.somente_equipe;
         /* Frente interna é da equipe: não é de mentorado nenhum e não tem checklist. */
         d.member_id = d.tipo === 'interna' ? null : (d.member_id || null);
@@ -2099,14 +2112,14 @@
         }
 
         Club.data.artifacts.save(d).then(function (salvo) {
-          /* O artefato novo só ganha id ao ser gravado, e a etapa precisa dele
+          /* O processo novo só ganha id ao ser gravado, e a etapa precisa dele
              para saber de quem é — daí o checklist ir na sequência, não junto.
              Frente interna não tem checklist: nada a sincronizar. */
           if (d.tipo === 'interna') return null;
           return Club.data.steps.sync(salvo.id, titulos, etapasAtuais);
         }).then(function () {
           Club.modal.close();
-          recarregar(a.id ? 'Artefato atualizado.' : 'Artefato criado.');
+          recarregar(a.id ? 'Processo Black atualizado.' : 'Processo Black criado.');
         }).catch(aviso);
       }
     });
@@ -2158,7 +2171,7 @@
   }
 
   /* ── frente: o eixo de leitura do quadro ──────────────────────────────
-     A demanda aponta para a frente (demands.artifact_id): um artefato do
+     A demanda aponta para a frente (demands.artifact_id): um processo do
      mentorado ou uma frente interna da equipe, sempre dentro de uma área da
      jornada. Demanda de mentorado sem frente ainda se agrupa por ele; sem
      mentorado e sem frente vai para "Sem frente", que é onde a triagem
@@ -2649,7 +2662,7 @@
     return tdCel(celula('d.frente', d.id, '<span class="tx">' + esc(a ? rotuloFrente(a) : 'sem frente') + '</span>', !a));
   }
 
-  /* Artefato exclusivo de um mentorado (member_id) só aparece para demanda
+  /* Processo Black exclusivo de um mentorado (member_id) só aparece para demanda
      desse mentorado; demanda interna ou de outro não o vê. */
   function itensMenuFrente(atual, memberId) {
     var itens = [{ value:'', label:'Sem frente', checked:!atual }];
@@ -4433,6 +4446,8 @@
     renderBotFila();
     renderBotExemplos();
     Club.graduacao.mountAdmin($('graduacaoAdmin'), st.members);
+    Club.black.install({ members:st.members, admin:true, artifacts:st.artifacts,
+      steps:st.steps, progress:st.progress });
     renderQr();
   }
 
@@ -4466,7 +4481,10 @@
       else Club.farol.enter(location.hash);
       return;
     }
-    if (h.secao !== 'demandas') return;
+    if (h.secao !== 'demandas') {
+      if (Array.from(document.querySelectorAll('.view')).some(function (v) { return v.dataset.view === h.secao; })) go(h.secao);
+      return;
+    }
     if (h.foco !== st.demFoco) { st.demFoco = h.foco; renderDemandas(); }
     if (st.view !== 'demands') go('demands');
     if (h.id && h.id !== idEmDestaque() && achar('demand', h.id)) detalheDemanda(h.id);
