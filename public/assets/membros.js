@@ -634,7 +634,6 @@
     var proxima = renderAgenda();
     renderMateriais();
     renderPerfil();
-    Club.graduacao.mountMember($('graduacaoMembro'), st.membro);
     Club.instagramMember.mount($('instagramMembro'), st.membro);
     Club.black.install({ member:st.membro, members:[st.membro], admin:false,
       artifacts:st.artifacts, steps:st.steps, progress:st.progress, onDeliveriesChange:renderArtifacts });

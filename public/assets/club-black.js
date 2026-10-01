@@ -385,15 +385,32 @@
     if(state.loading)return;
     openDelivery(delivery);
   }
-  function enter(key){state.active=key;if(!state.options)return;var parts=M.canonical(location.hash).split('/');if(key==='subida'&&parts[0]==='subida'&&/^(D(0[1-9]|1[0-2])|TREINO)$/.test(parts[1]||''))openStep(parts[1]);}
+  function graduationOverview(){
+    if(!state.options||!admin())return;
+    document.getElementById('graduacaoOverview').hidden=false;
+    document.getElementById('graduacaoDetail').hidden=true;
+    window.scrollTo({top:0,behavior:'instant'});
+  }
+  async function openGraduation(id,period){
+    if(!state.options||!admin())return;
+    if(!state.options.members.some(function(m){return m.id===id&&m.ativo!==false;}))throw new Error('Mentorado não disponível.');
+    if(!/^20\d{2}-T[1-4]$/.test(period))throw new Error('Trimestre inválido.');
+    state.period=period;
+    document.getElementById('graduacaoOverview').hidden=true;
+    document.getElementById('graduacaoDetail').hidden=false;
+    window.scrollTo({top:0,behavior:'instant'});
+    await selectMember(id);
+  }
+  function enter(key){state.active=key;if(!state.options)return;if(key==='graduacao'&&admin())graduationOverview();var parts=M.canonical(location.hash).split('/');if(key==='subida'&&parts[0]==='subida'&&/^(D(0[1-9]|1[0-2])|TREINO)$/.test(parts[1]||''))openStep(parts[1]);}
   document.addEventListener('submit',function(e){var f=e.target.closest('[data-cb-form]');if(f){e.preventDefault();submit(f);}});
   document.addEventListener('change',function(e){if(e.target.matches('[data-cb-edition]')){selectedEdition=e.target.value;render();if(activeDelivery)openDelivery(activeDelivery);else openStep('D08');}if(e.target.matches('[data-cb-member]')){selectMember(e.target.value);}if(e.target.matches('[data-cb-ranking-period]')){state.rankingPeriod=e.target.value;load();}if(e.target.matches('[data-cb-period]')){state.period=e.target.value;close();load();}});
   document.addEventListener('keydown',function(e){if(!drawer)return;if(e.key==='Escape'){e.preventDefault();close();}if(e.key==='Tab'){var nodes=Array.from(drawer.querySelectorAll('button,input,select,textarea,a[href]')).filter(function(n){return !n.disabled&&n.offsetParent!==null;}),first=nodes[0],last=nodes[nodes.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
   document.addEventListener('click',async function(e){
-    var el=e.target.closest('[data-cb-delivery],[data-cb-artifact],[data-cb-item],[data-cb-item-mission],[data-cb-legacy],[data-cb-rank-snapshot],[data-cb-step],[data-cb-tab],[data-cb-close],[data-cb-dismiss],[data-cb-reload],[data-cb-mission],[data-cb-mission-new],[data-cb-quarter],[data-cb-extra],[data-cb-grade],[data-cb-step-edit],[data-cb-module],[data-cb-encontro-new],[data-cb-encontro-edit],[data-cb-reward-new],[data-cb-redeem],[data-cb-redemption],[data-cb-case-new],[data-cb-case],[data-cb-file]');if(!el||!state.options)return;
+    var el=e.target.closest('[data-cb-graduacao-back],[data-cb-delivery],[data-cb-artifact],[data-cb-item],[data-cb-item-mission],[data-cb-legacy],[data-cb-rank-snapshot],[data-cb-step],[data-cb-tab],[data-cb-close],[data-cb-dismiss],[data-cb-reload],[data-cb-mission],[data-cb-mission-new],[data-cb-quarter],[data-cb-extra],[data-cb-grade],[data-cb-step-edit],[data-cb-module],[data-cb-encontro-new],[data-cb-encontro-edit],[data-cb-reward-new],[data-cb-redeem],[data-cb-redemption],[data-cb-case-new],[data-cb-case],[data-cb-file]');if(!el||!state.options)return;
     try{
       var d=el.dataset;
       if('cbClose'in d||'cbDismiss'in d)close();
+      if('cbGraduacaoBack'in d)graduationOverview();
       if('cbReload'in d)await load();
       if('cbStep'in d)openStep(d.cbStep);
       if('cbDelivery'in d)openDelivery(d.cbDelivery);
@@ -422,5 +439,5 @@
       if('cbFile'in d){var file=rows('files').find(function(f){return f.id===d.cbFile;});var url=ok(await C.sb.storage.from('pgz-exams').createSignedUrl(file.path,60));var a=document.createElement('a');a.href=url.signedUrl;a.target='_blank';a.rel='noopener noreferrer';a.click();}
     }catch(err){C.toast(err.message||'Não foi possível concluir a ação.','alert');el.disabled=false;}
   });
-  C.black={openForMember:openForMember,deliveryCards:deliveryCards,memberArtifacts:memberArtifacts,selectMember:selectMember,install:install,enter:enter,selected:function(){return state.member&&state.member.id;},close:close};
+  C.black={openGraduation:openGraduation,openForMember:openForMember,deliveryCards:deliveryCards,memberArtifacts:memberArtifacts,selectMember:selectMember,install:install,enter:enter,selected:function(){return state.member&&state.member.id;},close:close};
 })();

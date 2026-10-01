@@ -152,7 +152,7 @@
       root.querySelector('[data-gr-count]').textContent = shown.length + ' mentorados';
       root.querySelector('[data-gr-table]').innerHTML = shown.length ? '<div class="gr-table-wrap"><table class="gr-table"><thead><tr><th>Mentorado / graduação</th><th>Pontos no trimestre</th><th>Faltam para 50</th><th>Situação</th><th><span class="gr-sr-only">Abrir graduação</span></th></tr></thead><tbody>' + shown.map(function (r) {
         var m = r.model;
-        return '<tr><td><b>' + esc(r.member.nome) + '</b><small>' + (r.record ? esc(beltName(m.grade) + ' · ' + degreeLabel(m.grade)) : 'Aguardando apuração') + '</small></td><td><strong>' + (m.points == null ? '—' : fmt(m.points) + ' pts') + '</strong>' + progress(m.percent, 'Meta de ' + r.member.nome) + '</td><td>' + (m.missing == null ? '—' : fmt(m.missing) + ' pts') + '</td><td>' + badge(m.status) + '</td><td><a class="btn btn-sm" href="/membros/?membro=' + encodeURIComponent(r.member.id) + '&amp;trimestre=' + encodeURIComponent(state.period) + '#graduacao">Ver graduação ' + C.icon('chevron-right') + '</a></td></tr>';
+        return '<tr><td><b>' + esc(r.member.nome) + '</b><small>' + (r.record ? esc(beltName(m.grade) + ' · ' + degreeLabel(m.grade)) : 'Aguardando apuração') + '</small></td><td><strong>' + (m.points == null ? '—' : fmt(m.points) + ' pts') + '</strong>' + progress(m.percent, 'Meta de ' + r.member.nome) + '</td><td>' + (m.missing == null ? '—' : fmt(m.missing) + ' pts') + '</td><td>' + badge(m.status) + '</td><td><button type="button" class="btn btn-sm" data-gr-member="' + esc(r.member.id) + '" data-gr-selected-period="' + esc(state.period) + '">Ver graduação ' + C.icon('chevron-right') + '</button></td></tr>';
       }).join('') + '</tbody></table></div>' : '<div class="gr-empty"><p>Nenhum mentorado neste filtro.</p></div>';
     }
     table();
@@ -161,6 +161,11 @@
       if (event.target.matches('[data-gr-period]')) { state.period = event.target.value; state.status = 'all'; renderAdmin(root, records, members, state); root.querySelector('[data-gr-period]').focus(); }
     };
     root.onclick = function (event) {
+      var memberButton=event.target.closest('[data-gr-member]');
+      if(memberButton){
+        C.black.openGraduation(memberButton.dataset.grMember,memberButton.dataset.grSelectedPeriod).catch(function(error){C.toast(error.message,'alert');});
+        return;
+      }
       var filter = event.target.closest('[data-gr-status]'), all = event.target.closest('[data-gr-all]');
       if (!filter && !all) return;
       state.status = all || state.status === filter.dataset.grStatus ? 'all' : filter.dataset.grStatus;

@@ -74,9 +74,14 @@
     </div>
 
     <div class="view" data-view="graduacao" hidden>
-      <div class="hello"><h1>Graduação</h1><p>Quem já atingiu a meta e quem está perto de conquistar mais um grau.</p></div>
-      <div id="graduacaoAdmin"></div>
-      <details class="cb-history"><summary>Apurar graduação individual</summary><div id="black-graduacao" class="cb"></div></details>
+      <div id="graduacaoOverview">
+        <div class="hello"><h1>Graduação</h1><p>Quem já atingiu a meta e quem está perto de conquistar mais um grau.</p></div>
+        <div id="graduacaoAdmin"></div>
+      </div>
+      <div id="graduacaoDetail" hidden>
+        <button type="button" class="btn" data-cb-graduacao-back>← Voltar ao painel geral</button>
+        <div id="black-graduacao" class="cb"></div>
+      </div>
     </div>
 
     <div class="view" data-view="agenda" hidden>
@@ -220,11 +225,11 @@
 <script src="/assets/club-supabase.js"></script>
 <script src="/assets/club-auth.js"></script>
 <script src="/assets/club-data.js?v=20261001-hierarchy"></script>
-<script src="/assets/club-graduacao.js?v=20261001-ranking-grad"></script>
+<script src="/assets/club-graduacao.js?v=20261001-graduacao-admin"></script>
 <script src="/assets/club-farol.js?v=20260930-metodo"></script>
 <script src="/assets/club-metodo.js?v=20261001-catalog"></script>
 <script src="/assets/club-checklist.js?v=20261001-catalog"></script>
-<script src="/assets/club-black.js?v=20261001-edit-icon"></script>
+<script src="/assets/club-black.js?v=20261001-graduacao-admin"></script>
 <script src="/assets/admin.js?v=20261001-catalog"></script>
 </body>
 </html>
