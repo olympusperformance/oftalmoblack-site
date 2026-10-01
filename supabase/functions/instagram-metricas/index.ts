@@ -39,6 +39,11 @@ const CORS = {
 };
 
 const G = "https://graph.facebook.com/v21.0";
+// Login pelo Instagram: só para contas fora da BM (hoje o @dralexsa), com token
+// próprio em cerebro.instagram_tokens_login. Mesmas métricas, outro host.
+const GI = "https://graph.instagram.com/v21.0";
+// Token do login pelo Instagram vale 60 dias; renova quando faltar menos que isto.
+const RENOVAR_ANTES_MS = 15 * 86400000;
 
 const mensagemErro = (e: unknown) => e instanceof Error ? e.message : String(e);
 
@@ -48,8 +53,8 @@ const json = (body: unknown, status = 200) =>
     headers: { ...CORS, "Content-Type": "application/json" },
   });
 
-async function graph(path: string, params: Record<string, string>) {
-  const u = new URL(`${G}/${path}`);
+async function graph(path: string, params: Record<string, string>, base = G) {
+  const u = new URL(`${base}/${path}`);
   for (const [k, v] of Object.entries(params)) u.searchParams.set(k, v);
   const r = await fetch(u.toString(), { signal: AbortSignal.timeout(15000) });
   const j = await r.json().catch(() => ({}));
@@ -175,6 +180,38 @@ Deno.serve(async (req) => {
       });
     }
 
+    // 2b) Contas do login pelo Instagram que a BM não trouxe. O token se renova
+    //     sozinho aqui; o n8n renova a cópia dele em separado, e uma renovação
+    //     não derruba a outra.
+    type Fonte = { igId: string; username: string; token: string; base: string; path: string };
+    const fontes: Fonte[] = alvos.map((p: any) => ({
+      igId: p.instagram_business_account.id,
+      username: p.instagram_business_account.username ?? p.instagram_business_account.id,
+      token: p.access_token as string,
+      base: G,
+      path: p.instagram_business_account.id,
+    }));
+    const { data: logins, error: erroLogins } = await db.rpc("instagram_tokens_login");
+    if (erroLogins) console.warn(`[instagram-metricas] tokens login: ${erroLogins.message}`);
+    for (const l of (logins ?? []) as Array<{ ig_user_id: string; username: string; token: string; expira_em: string | null }>) {
+      if (fontes.some((f) => f.igId === l.ig_user_id)) continue;
+      let token = l.token;
+      if (!soMapear && l.expira_em && Date.parse(l.expira_em) - Date.now() < RENOVAR_ANTES_MS) {
+        try {
+          const r = await graph("refresh_access_token", { grant_type: "ig_refresh_token", access_token: token }, "https://graph.instagram.com");
+          if (r.access_token) {
+            token = r.access_token;
+            const expira = new Date(Date.now() + Number(r.expires_in ?? 0) * 1000).toISOString();
+            const { error } = await db.rpc("instagram_salvar_token_login", { p_ig_user_id: l.ig_user_id, p_token: token, p_expira_em: expira });
+            if (error) console.warn(`[instagram-metricas] salvar token @${l.username}: ${error.message}`);
+          }
+        } catch (e) {
+          console.warn(`[instagram-metricas] renovar token @${l.username}: ${mensagemErro(e)}`);
+        }
+      }
+      fontes.push({ igId: l.ig_user_id, username: l.username, token, base: GI, path: "me" });
+    }
+
     // 3) Retrato do dia, conta por conta. Uma conta que falha não derruba as
     //    outras: a coleta parcial de hoje vale mais que erro em bloco.
     const desde = new Date(`${dia}T00:00:00Z`);
@@ -206,19 +243,21 @@ Deno.serve(async (req) => {
     const pendenciasAlcance: Array<{ username: string; erro: string }> = [];
 
     // Limita a concorrencia para concluir a turma dentro do tempo da funcao.
-    for (let inicio = 0; inicio < alvos.length; inicio += 3) {
-      await Promise.all(alvos.slice(inicio, inicio + 3).map(async (p: any) => {
-      const ig = p.instagram_business_account;
-      const pageToken = p.access_token as string;
+    for (let inicio = 0; inicio < fontes.length; inicio += 3) {
+      await Promise.all(fontes.slice(inicio, inicio + 3).map(async (f) => {
+      const ig = { id: f.igId, username: f.username };
+      const pageToken = f.token;
+      const ler = (sufixo: string, params: Record<string, string>) =>
+        graph(sufixo ? `${f.path}/${sufixo}` : f.path, params, f.base);
       try {
-        const perfil = await graph(ig.id, {
+        const perfil = await ler("", {
           fields: "followers_count,follows_count,media_count",
           access_token: pageToken,
         });
 
         const janela: Record<string, number | null> = {};
         try {
-          const ins = await graph(`${ig.id}/insights`, {
+          const ins = await ler("insights", {
             metric: "views,reach,total_interactions,accounts_engaged,profile_views",
             metric_type: "total_value",
             period: "day",
@@ -236,7 +275,7 @@ Deno.serve(async (req) => {
 
         let ganhos: number | null = null;
         try {
-          const fc = await graph(`${ig.id}/insights`, {
+          const fc = await ler("insights", {
             metric: "follower_count",
             period: "day",
             since: followerSince,
@@ -257,7 +296,7 @@ Deno.serve(async (req) => {
         }
 
         try {
-          const alcanceDiario = await graph(`${ig.id}/insights`, {
+          const alcanceDiario = await ler("insights", {
             metric: "reach",
             period: "day",
             metric_type: "time_series",
@@ -321,6 +360,7 @@ Deno.serve(async (req) => {
       dia,
       contas: mapeadas.length,
       coletadas: linhas.length,
+      via_login_instagram: fontes.filter((f) => f.base === GI).map((f) => f.username),
       sem_mentorado: semMentorado,
       falhas,
       ganhos: {
