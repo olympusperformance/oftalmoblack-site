@@ -126,9 +126,12 @@
 /* Os mesmos cards do mentorado, com ações de catálogo ao alcance da equipe. */
 .cb-catalog-member{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;min-width:0}
 .cb-catalog-member select{max-width:280px;min-width:0}
-.cb-admin-delivery{min-width:0;display:flex;flex-direction:column;gap:8px}
+.cb-admin-delivery{position:relative;min-width:0;display:flex;flex-direction:column}
 .cb-admin-delivery>.art{flex:1}
-.cb-admin-delivery>.btn{align-self:flex-start}
+.cb-admin-delivery>.cb-edit-process{position:absolute;top:12px;right:12px;z-index:1;width:36px;height:36px;padding:0;display:grid;place-items:center;border-radius:10px;color:var(--muted);background:var(--panel)}
+.cb-edit-process .ic{width:16px;height:16px}
+.cb-admin-delivery>.cb-edit-process:hover{color:var(--gold);border-color:var(--gold-deep)}
+.cb-edit-process:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 .cb-catalog-management{margin-top:32px;border:1px solid var(--border);border-radius:14px;padding:18px;min-width:0}
 .cb-catalog-management>summary{cursor:pointer;font-weight:600;color:var(--gold);list-style-position:inside}
 .cb-catalog-management>p{margin:16px 0}

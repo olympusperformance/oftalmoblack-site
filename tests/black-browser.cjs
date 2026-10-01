@@ -165,6 +165,8 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
     assert.match(await management.textContent(),/Onboarding/,'Processo indisponível segue acessível à gestão');
     assert.equal(await catalog.locator('[data-catalog-stage^=D]').count(),12);
     assert.equal(await catalog.locator('[data-edit=artifact][data-id=shared-training]').count(),4);
+    await catalog.locator('[data-edit=artifact][data-id=site-qa]').scrollIntoViewIfNeeded();
+    await page.screenshot({path:path.join(out,'admin-edit-pencil.png'),fullPage:false});
     await catalog.locator('[data-edit=artifact][data-id=site-qa]').click();
     await page.locator('#modalForm [name=nome]').waitFor();
     assert.equal(await page.locator('#modalForm [name=nome]').inputValue(),'Site Institucional');
