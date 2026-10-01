@@ -47,11 +47,11 @@
       { key:'pendencias', label:'Pendências', icon:'check-square' },
       { key:'casos', label:'Protocolo Grau Zero', icon:'folder' },
       { key:'graduacao', label:'Graduação', icon:'award' },
-      { key:'ranking', label:'Ranking Black', icon:'award' },
-      { key:'vitrine', label:'Vitrine Black', icon:'box' },
-      { key:'igMetricas', label:'Instagram', icon:'eye' },
+      { key:'ranking', label:'Ranking Black', icon:'trophy' },
+      { key:'vitrine', label:'Vitrine Black', icon:'star' },
+      { key:'igMetricas', label:'Instagram', icon:'instagram' },
       { key:'artifacts', label:'Processos Black', icon:'box' },
-      { key:'materials', label:'Materiais', icon:'folder' },
+      { key:'materials', label:'Materiais', icon:'book-open' },
       { key:'agenda', label:'Agenda', icon:'calendar' }
     ] },
     { grupo:'Módulos à parte', itens: [
@@ -59,7 +59,7 @@
     ] },
     { grupo:'Administração', itens: [
       { key:'rede', label:'A Rede', icon:'users' },
-      { key:'members', label:'Progressão', icon:'check-square' }
+      { key:'members', label:'Progressão', icon:'trending-up' }
     ] },
     { grupo:'Operação da equipe', itens: [
       { key:'demands', label:'Demandas', icon:'check-circle' },

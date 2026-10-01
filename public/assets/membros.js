@@ -23,11 +23,11 @@
     { key:'pendencias', label:'Pendências', icon:'check-square' },
     { key:'casos', label:'Protocolo Grau Zero', icon:'folder' },
     { key:'graduacao', label:'Graduação', icon:'award' },
-    { key:'ranking', label:'Ranking Black', icon:'award' },
-    { key:'vitrine', label:'Vitrine Black', icon:'box' },
-    { key:'instagram', label:'Instagram', icon:'eye' },
+    { key:'ranking', label:'Ranking Black', icon:'trophy' },
+    { key:'vitrine', label:'Vitrine Black', icon:'star' },
+    { key:'instagram', label:'Instagram', icon:'instagram' },
     { key:'artifacts', label:'Processos Black', icon:'box' },
-    { key:'materials', label:'Materiais', icon:'folder' },
+    { key:'materials', label:'Materiais', icon:'book-open' },
     { key:'agenda', label:'Agenda', icon:'calendar' },
     { key:'modulos', label:'Fábrica · Íris Black', icon:'brain', group:'Módulos à parte' }
   ];
