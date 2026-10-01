@@ -389,11 +389,11 @@
       ? secoes.map(function (s) {
           return '<section class="art-area">' +
             '<div class="sec"><div class="sec-g">' +
-              '<div class="sec-eb"><span class="sec-dash"></span><span>'+esc(s.kind==='step'?s.id+' · AGRUPADOR':s.kind==='transversal'?'TRANSVERSAL':s.kind==='modules'?'MÓDULOS À PARTE':'A CONFERIR')+'</span></div>' +
+              '<div class="sec-eb"><span class="sec-dash"></span><span>'+esc(s.kind==='step'?s.id+' · DEGRAU':s.kind==='transversal'?'TRANSVERSAL':s.kind==='modules'?'MÓDULOS À PARTE':'A CONFERIR')+'</span></div>' +
               '<h2 class="sec-t">' + esc(s.name) + '</h2>' +
-            '</div>'+((s.kind==='step'||s.kind==='transversal')?'<a class="btn" href="#subida/'+esc(s.id)+'">Ver checklist</a>':'')+'</div>' +
+            '</div>'+((s.kind==='step'||s.kind==='transversal')?'<a class="btn" href="#subida/'+esc(s.id)+'">Ver entregas</a>':'')+'</div>' +
             '<div class="artgrid">' +
-              (s.items.length?s.items.map(function (a) { return cartaoArtefato(a); }).join(''):'<p class="tx-s">As implantações e rotinas estão no checklist deste agrupador.</p>') +
+              ((s.kind==='step'||s.kind==='transversal')?Club.black.deliveryCards(s.id,meus):s.items.map(function(a){return cartaoArtefato(a);}).join('')) +
             '</div>' +
           '</section>';
         }).join('')
@@ -635,7 +635,7 @@
     Club.graduacao.mountMember($('graduacaoMembro'), st.membro);
     Club.instagramMember.mount($('instagramMembro'), st.membro);
     Club.black.install({ member:st.membro, members:[st.membro], admin:false,
-      artifacts:st.artifacts, steps:st.steps, progress:st.progress });
+      artifacts:st.artifacts, steps:st.steps, progress:st.progress, onDeliveriesChange:renderArtifacts });
   }
 
   /* ── eventos ──────────────────────────────────────────────────────────── */

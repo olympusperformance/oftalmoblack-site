@@ -1965,12 +1965,15 @@
     choices.push({id:'AREAS',name:'Áreas operacionais · gestão'});
     $('filtroArtGrupo').innerHTML='<option value="">Todos os degraus e entregas</option>'+choices.map(function(s){return '<option value="'+esc(s.id)+'"'+(s.id===st.artGrupo?' selected':'')+'>'+esc(s.name)+'</option>';}).join('');
     var deliveries=st.artifacts.filter(function(a){return a.tipo!=='interna'&&!a.archived_at;});
-    $('artResumo').textContent=deliveries.length+' entregas únicas · 12 degraus · '+internal.length+' frentes internas';
-    $('avisoGrupos').innerHTML='<p class="tx-s">Degrau → entregas → etapas. Entregas compartilhadas aparecem nos degraus relacionados, mas mantêm um único cadastro e progresso. Áreas operacionais continuam separadas.</p>';
+    $('artResumo').textContent=deliveries.length+' processos cadastrados · 12 degraus · '+internal.length+' frentes internas';
+    $('avisoGrupos').innerHTML='<p class="tx-s">Degrau → entregas → checklist. Entregas compartilhadas aparecem nos degraus relacionados, mas mantêm um único cadastro e progresso. Áreas operacionais continuam separadas.</p>';
     var sections=stages.filter(function(s){return !st.artGrupo||st.artGrupo===s.id;}).map(function(s){
-      var stage=s.kind==='step'||s.kind==='transversal';
-      var heading='<div class="tr grp pai method-group" data-method-group="'+esc(s.id)+'"><span class="grp-n">'+esc((s.kind==='step'?s.id+' · ':'')+s.name)+' <span class="tx-s" style="font-weight:400">'+(stage?'Agrupador · ':'')+s.items.length+' entrega(s)</span></span>'+(stage?'<a class="btn" href="#subida/'+esc(s.id)+'">Checklist do '+(s.kind==='step'?'degrau':'Treino')+'</a>':'')+'</div>';
-      return heading+(s.items.length?s.items.map(linhaCatalogo).join(''):'<div class="method-empty tx-s">Implantações e rotinas acompanhadas no checklist deste agrupador. Nenhuma entrega extra criada.</div>');
+      var stage=s.kind==='step'||s.kind==='transversal', deliveries=stage?Club.metodo.deliveries(s.id,st.artifacts):[];
+      var heading='<div class="tr grp pai method-group" data-method-group="'+esc(s.id)+'"><span class="grp-n">'+esc((s.kind==='step'?s.id+' · ':'')+s.name)+' <span class="tx-s" style="font-weight:400">'+(stage?'Degrau · ':'')+(stage?deliveries.length:s.items.length)+' entrega(s)</span></span>'+(stage?'<a class="btn" href="#subida/'+esc(s.id)+'">Ver entregas</a>':'')+'</div>';
+      return heading+(stage?deliveries.map(function(d){
+        if(d.artifact)return linhaCatalogo(d.artifact);
+        return '<div class="tr method-delivery"><span><b>'+esc(d.name)+'</b></span><span class="tx-s">'+d.items.length+' itens no checklist</span><span class="tx-s">Entrega do método</span><span class="tx-s">Conferência por mentorado</span><span>—</span><span><button class="btn" data-cb-delivery="'+esc(d.id)+'">Ver checklist</button></span></div>';
+      }).join(''):s.items.map(linhaCatalogo).join(''));
     }).join('');
     if(!st.artGrupo||st.artGrupo==='EQUIPE'){
       st.groups.concat([null]).forEach(function(g){

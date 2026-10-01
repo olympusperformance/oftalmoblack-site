@@ -108,6 +108,17 @@
     return items.map(function(m){ m.late=m.due?Math.max(0,Math.round((Date.parse(today)-Date.parse(m.due))/86400000)):0;return m;})
       .sort(function(a,b){return (a.due||'9999').localeCompare(b.due||'9999')||String(a.title).localeCompare(String(b.title));});
   }
+  function deliveries(step,artifacts) {
+    var available=(artifacts||[]).filter(function(a){return !a.archived_at&&a.tipo!=='interna'&&artifactSteps(a).includes(step);});
+    var used=new Set();
+    var result=(C.methodDeliveries||[]).filter(function(d){return d.step===step;}).map(function(d){
+      var artifact=d.match&&available.find(function(a){return !used.has(a.id)&&d.match.test(String(a.nome||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase());});
+      if(artifact)used.add(artifact.id);
+      return {id:d.id,step:step,name:artifact?artifact.nome:d.name,artifact:artifact||null,items:(C.stepChecklist||[]).filter(function(i){return d.items.includes(i.id);})};
+    });
+    available.filter(function(a){return !used.has(a.id);}).forEach(function(a){result.push({id:step+'/processo/'+a.id,step:step,name:a.nome,artifact:a,items:[]});});
+    return result;
+  }
   function canonical(hash) {
     var s=String(hash||'').replace(/^#/,'');
     // p01–p12 são os links do protótipo de 12 degraus, não do método antigo.
@@ -124,6 +135,6 @@
     if(key==='macula'||key==='no')return n===0?'ok':n===1?'warn':n===2||n===3?'crit':'off';
     return 'off';
   }
-  C.metodo={steps:steps,movements:movements,quarter:quarter,bounds:bounds,number:number,score:score,artifactSteps:artifactSteps,catalogGroups:catalogGroups,pending:pending,canonical:canonical,referenceSignal:referenceSignal};
+  C.metodo={steps:steps,movements:movements,quarter:quarter,bounds:bounds,number:number,score:score,artifactSteps:artifactSteps,catalogGroups:catalogGroups,deliveries:deliveries,pending:pending,canonical:canonical,referenceSignal:referenceSignal};
   if (typeof module!=='undefined') module.exports=C.metodo;
 })(typeof window!=='undefined'?window:globalThis);

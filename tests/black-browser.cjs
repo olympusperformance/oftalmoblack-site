@@ -78,13 +78,14 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRa
    await page.locator('header').evaluate(el=>el.style.visibility='');
    await page.locator('#rail').evaluate(el=>{el.style.height='';el.style.position='';});
    await page.locator('#black-subida .cb-card[data-cb-step="D04"]').click();await page.locator('[data-cb-tab="audit"]').click();
+   await page.locator('.cb-drawer [data-cb-delivery="D04/funcoes"]').click();
    assert.match(await page.locator('.cb-drawer').innerText(),/Social Seller/);
    await page.keyboard.press('Escape');assert.equal(await page.locator('.cb-drawer').count(),0);
    await page.locator('#black-subida .cb-card[data-cb-step=D05]').click();
-   assert.equal(await page.locator('.cb-check-item').count(),9);
+   assert.equal(await page.locator('.cb-check-item').count(),0,'Degrau abre somente entregas, nunca checklist direto');
    assert.equal(await page.locator('.cb-drawer [data-cb-artifact=other-qa]').count(),0);
    assert.equal(await page.locator('.cb-drawer [data-cb-artifact=private-qa]').count(),isAdmin?1:0);
-   assert.match(await page.locator('.cb-drawer [data-cb-artifact=site-qa]').innerText(),/1 de 1 etapas/);
+   assert.match(await page.locator('.cb-drawer [data-cb-artifact=site-qa]').innerText(),/Implantação: 1\/1 etapas/);
    assert.equal(await page.locator('[data-cb-item="D05-01"]').count(),0,'AUTO nunca permite marcação manual');
    await page.locator('.cb-drawer [data-cb-artifact=site-qa]').click();
    assert.equal(await page.locator('.cb-popup').count(),1,'Entrega abre em pop-up centralizado');
@@ -104,7 +105,8 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRa
     assert.equal(await page.locator('.cb-drawer [name=status]').count(),1);await page.keyboard.press('Escape');
     await page.locator('#rail [data-nav="subida"]').click();await page.locator('#black-subida .cb-card[data-cb-step="D04"]').click();
     assert.equal(await page.locator('[data-cb-tab=audit]').getAttribute('aria-selected'),'true');
-    assert.equal(await page.locator('.cb-check-item').count(),7);
+    await page.locator('.cb-drawer [data-cb-delivery="D04/funcoes"]').click();
+    assert.equal(await page.locator('.cb-check-item').count(),4);
     await page.locator('[data-cb-item="D04-01"]').click();
     await page.locator('[name=done]').check();await page.locator('[name=evidence]').fill('Dono confirmado pela equipe');
     await page.locator('.cb-drawer [type=submit]').click();
@@ -112,7 +114,7 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRa
     await page.locator('[data-cb-item="D04-01"]').waitFor();
     assert.match(await page.locator('#black-subida .cb-card[data-cb-step=D04]').innerText(),/1 de 7 itens/);
     assert.match(await page.locator('#black-subida .cb-card[data-cb-step=D04]').innerText(),/Rodando/i);
-    await page.locator('[data-cb-tab=metrics]').click();await page.locator('[data-cb-step-edit]').click();
+    await page.locator('.cb-drawer [data-cb-step=D04]').click();await page.locator('[data-cb-tab=metrics]').click();await page.locator('[data-cb-step-edit]').click();
     assert.equal(await page.locator('.cb-drawer [name=status]').count(),0);
     await page.keyboard.press('Escape');
    }
@@ -123,9 +125,10 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRa
    });
    await page.locator('#rail [data-nav=subida]').click();await page.locator('#black-subida [data-cb-reload]').click();
    await page.locator('#black-subida .cb-card[data-cb-step=D08]').click();
-   assert.match(await page.locator('.cb-section').filter({hasText:'Checklist do degrau'}).innerText(),/0 de 6/);
+   await page.locator('.cb-drawer [data-cb-delivery="D08/divulgacao"]').click();
+   assert.match(await page.locator('.cb-section').filter({hasText:'Conferência da entrega'}).innerText(),/0 de 3/);
    await page.locator('[data-cb-edition]').selectOption('2026-10-01');
-   assert.match(await page.locator('.cb-section').filter({hasText:'Checklist do degrau'}).innerText(),/1 de 6/);
+   assert.match(await page.locator('.cb-section').filter({hasText:'Conferência da entrega'}).innerText(),/1 de 3/);
    if(isAdmin){
     await page.locator('[data-cb-item="D08-01"]').click();
     assert.equal(await page.locator('.cb-form').getAttribute('data-cb-form'),'checklist');
@@ -135,6 +138,14 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRa
    await page.evaluate(()=>window.__fixtures.cb_encontros=[]);
    await page.locator('#black-subida [data-cb-reload]').click();await page.locator('#black-subida .cb-card[data-cb-step=D08]').waitFor();
    for(const key of ['ranking','vitrine','modulos','casos','graduacao','farol','artifacts','agenda',...(isAdmin?['rede','members']:[]),'subida']){await page.locator('#rail [data-nav="'+key+'"]').click();assert.equal(await page.locator('.view:not([hidden])').count(),1);}
+   await page.locator('#rail [data-nav=subida]').click();
+   for(const step of ['D07','D08','D09','D10','D11','D12']){
+    await page.locator('#black-subida .cb-card[data-cb-step='+step+']').click();
+    assert.equal(await page.locator('.cb-drawer .cb-check-item').count(),0);
+    assert.ok(await page.locator('.cb-drawer .art-compact').count()>=3,'Cada degrau tem entregas específicas');
+    assert.doesNotMatch(await page.locator('.cb-drawer').innerText(),/Não há uma entrega|checklist deste agrupador/);
+    await page.keyboard.press('Escape');
+   }
    await page.locator('#rail [data-nav=artifacts]').click();
    const catalog=page.locator(isAdmin?'#listaArtefatos':'#artListFull');
    assert.doesNotMatch(await catalog.innerText(),/Agrupador legado arquivado/);
@@ -150,6 +161,23 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRa
     assert.doesNotMatch(await catalog.innerText(),/Tracker privado|Entrega de outro membro/);
     assert.match(await catalog.innerText(),/Vínculo com degrau a confirmar/);
     assert.equal(await catalog.locator('.art-st-list').count(),0,'Checklist não alonga mais os cards');
+    for(const width of [1440,390,320]){
+     await page.setViewportSize({width,height:844});
+     const card=catalog.locator('[data-cb-delivery="D07/prospeccao"]');
+     await card.click();
+     assert.equal(await page.locator('.cb-popup .cb-check-item').count(),2);
+     assert.equal(await page.locator('.cb-popup [data-cb-item]').count(),0,'Membro não ganha controles de conferência');
+     assert.match(await page.locator('.cb-popup').innerText(),/30 DMs/);
+     const box=await page.locator('.cb-popup').boundingBox();
+     assert.ok(box.x>=0&&box.x+box.width<=width+1);
+     if(width!==320)await page.screenshot({path:path.join(out,'delivery-social-seller-'+width+'.png'),fullPage:false});
+     await page.keyboard.press('Escape');
+     assert.equal(await card.evaluate(el=>el===document.activeElement),true);
+    }
+    await page.setViewportSize({width:1440,height:1080});
+    await catalog.locator('[data-cb-delivery="D07/prospeccao"]').scrollIntoViewIfNeeded();
+    await page.screenshot({path:path.join(out,'member-deliveries-catalog.png'),fullPage:false});
+
     const editorial=catalog.locator('button[data-cb-artifact=editorial-qa]');
     assert.ok((await editorial.boundingBox()).height<340,'Card compacto mesmo com 18 etapas');
     assert.match(await editorial.innerText(),/1\/18/,'Resumo mantém o progresso existente');
@@ -160,7 +188,7 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRa
      const popup=page.locator('.cb-popup');await popup.waitFor();
      assert.equal(await popup.getAttribute('role'),'dialog');
      assert.equal(await popup.getAttribute('aria-modal'),'true');
-     assert.equal(await popup.locator('.cb-check-item').count(),18);
+     assert.equal(await popup.locator('.cb-check-item').count(),21,'18 etapas existentes + 3 conferências da entrega preservadas');
      assert.equal(await popup.locator('.cb-check-item.is-done').count(),1);
      assert.match(await popup.innerText(),/Feed e stories na voz do Mestre/);
      assert.equal(await popup.locator('a').getAttribute('href'),url+'/materiais/','Link relativo preservado dentro do pop-up');

@@ -996,5 +996,53 @@
 ];
   items.forEach(function(item){if(/^D11-0[2-7]$/.test(item.id))item.missionWeight=null;});
   root.Club=root.Club||{};root.Club.stepChecklist=items;
+  // Cada item pertence a uma entrega. Os IDs de conferência continuam sendo os
+  // originais; esta organização não cria marcações nem duplica processos no banco.
+  root.Club.methodDeliveries=[
+    ['D01','diagnostico','Diagnóstico das três frentes',[1,2,3,5],/diagnostico|onboarding/],
+    ['D01','prioridades','Prioridades do Dia Zero',[4]],
+    ['D02','identidade','Identidade e posicionamento',[1,2,3],/posicionamento|branding/],
+    ['D02','conteudo','Linha editorial e scripts',[4,5,6],/linha editorial/],
+    ['D03','sistema','CRM, prontuário e agenda',[1,2,3],/sistema black/],
+    ['D03','rastreio','Integração de rastreamento',[4],/tracker|trackeamento|rastreamento/],
+    ['D03','operacao','Operação diária do Sistema',[5,6,7]],
+    ['D04','funcoes','Responsáveis pelas quatro funções',[1,2,3,4],/time premium/],
+    ['D04','formacao','Formação da equipe premium',[5,6],/treinamento comercial/],
+    ['D04','atendimento','Padrões de atendimento',[7]],
+    ['D05','canais','Canais de conteúdo',[1,2,3,4]],
+    ['D05','site','Site institucional e AEO',[5,6],/site institucional/],
+    ['D05','google','Presença no Google',[7],/gbp|google meu negocio/],
+    ['D05','blog','Rotina de artigos',[8],/blog/],
+    ['D05','comentarios','Agente de comentários',[9],/agente de comentarios/],
+    ['D06','vsl','Funil Expresso e VSL',[1,2,3,4,6],/funil expresso|funil vsl|funil de vsl/],
+    ['D06','olympus','Funil Olympus',[5],/funil olympus/],
+    ['D06','meta','Campanhas Meta Ads',[7],/meta ads/],
+    ['D06','google','Campanhas Google Ads',[8],/google ads/],
+    ['D06','rastreio','Rastreamento anúncio → cirurgia',[9],/tracker|trackeamento|rastreamento/],
+    ['D06','gestao','Gestão mensal do tráfego',[10,11,12]],
+    ['D07','prospeccao','Prospecção pelo Social Seller',[1,2]],
+    ['D07','indicacao','Indicação ativa',[3]],
+    ['D07','bonus','Leads Bônus',[4,5]],
+    ['D08','divulgacao','Divulgação da edição',[1,2,3]],
+    ['D08','participacao','Participação no encontro',[4]],
+    ['D08','leads','Acompanhamento dos leads da edição',[5,6]],
+    ['D09','preparo','Preparação da Closer e agenda',[1,2],/treinamento comercial/],
+    ['D09','resgate','Funil de chamadas e resgate',[3,4],/funil olympus/],
+    ['D09','resultado','Acompanhamento das chamadas',[5,6]],
+    ['D10','qualificacao','Qualificação pelo SDR',[1,2]],
+    ['D10','consulta','Preparação da venda consultiva',[3,4],/treinamento comercial|in the bag/],
+    ['D10','fechamento','Fechamento pós-consulta',[5,6]],
+    ['D11','rituais','Rituais de encantamento',[1,2,3,4,5,6,7]],
+    ['D11','experiencia','Medição da experiência e indicações',[8,10]],
+    ['D11','provas','Depoimentos e provas',[9]],
+    ['D12','seguro','Seguro Premium',[1,2],/seguro premium/],
+    ['D12','cuidado','Pacotes Cuidado Premium',[3],/cuidado premium/],
+    ['D12','retorno','Retorno de seis meses',[4]],
+    ['TREINO','vendas','Treinamento de vendas',[1],/treinamento comercial/],
+    ['TREINO','sistema','Treinamento do Sistema Black',[2]],
+    ['TREINO','growth','Treinamento de Growth',[3]],
+    ['TREINO','conteudo','Treinamento de conteúdo',[4]],
+    ['TREINO','rotina','Rotina de formação da equipe',[5,6,7]]
+  ].map(function(d){return {id:d[0]+'/'+d[1],step:d[0],name:d[2],items:d[3].map(function(n){return d[0]+'-'+String(n).padStart(2,'0');}),match:d[4]};});
   if(typeof module!=='undefined'&&module.exports)module.exports=items;
 })(typeof window==='undefined'?globalThis:window);

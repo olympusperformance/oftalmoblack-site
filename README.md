@@ -53,6 +53,17 @@ reverter o front-end não exige remover dados.
 
 ### Operação e fontes
 
+- **Hierarquia uniforme (01/10):** Subida e Processos Black seguem
+  **degrau → entregas específicas → checklist**. Os 90 itens estão distribuídos
+  em entregas por resultado em `Club.methodDeliveries` (`club-checklist.js`).
+  Cada item pertence a uma entrega; os IDs e registros de conferência, evidências,
+  missões, itens automáticos, rituais e edições mensais permanecem os mesmos.
+  `Club.metodo.deliveries` reaproveita os processos existentes pelo vínculo com
+  o degrau e pelos nomes mapeados. Suas etapas de implantação continuam no popup,
+  junto da conferência do resultado, com contagens distintas. Processos adicionais
+  mantêm seu cadastro e acesso. A organização das entregas do método é uma camada
+  de apresentação: não exige migração nem recria os agrupadores arquivados.
+  Degraus mostram cards de entregas; somente a entrega abre seu checklist.
 - **Degraus como agrupadores (01/10):** aplicar
   `20261001091455_degraus_como_agrupadores.sql` antes do front-end. O catálogo
   `cb_method_stages` separa os 12 degraus e o Treino das entregas em `artifacts`;

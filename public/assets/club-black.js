@@ -63,7 +63,7 @@
     });
     return items.sort(function(a,b){return (a.due||'9999').localeCompare(b.due||'9999');});
   }
-  var selectedEdition='';
+  var selectedEdition='', activeDelivery=null;
   function catalog(step){return (C.stepChecklist||[]).filter(function(i){return i.step===step;});}
   function edition(){var es=rows('encontros').slice().sort(function(a,b){return b.edition.localeCompare(a.edition);});return es.find(function(e){return e.edition===selectedEdition;})||es[0];}
   function itemState(item){
@@ -81,19 +81,43 @@
   function completion(step){var items=catalog(step).filter(function(i){return !i.optional;});return {total:items.length,done:items.filter(function(i){return itemState(i).done;}).length};}
   function status(step){var c=completion(step);return c.total&&c.done===c.total?'audited':c.done?'running':'pending';}
   function visibleArtifacts(){return (state.options.artifacts||[]).filter(function(a){return !a.archived_at&&a.tipo!=='interna'&&(admin()||!a.somente_equipe)&&(!a.member_id||a.member_id===state.member.id);});}
-  function related(step){return visibleArtifacts().filter(function(a){return M.artifactSteps(a).indexOf(step)>=0;});}
-  function artifactCards(list,back){return list.length?'<div class="cb-deliveries">'+list.map(function(a){var steps=(state.options.steps||[]).filter(function(s){return s.artifact_id===a.id;}),done=steps.filter(function(s){return (state.options.progress||[]).some(function(p){return p.member_id===state.member.id&&p.step_id===s.id&&p.feito;});}).length;return '<button class="cb-delivery" data-cb-artifact="'+esc(a.id)+'" data-back="'+esc(back||'')+'"><span><b>'+esc(a.nome)+'</b><small>'+done+' de '+steps.length+' etapas do processo'+(a.somente_equipe?' · Equipe':'')+'</small></span><span aria-hidden="true">↗</span></button>';}).join('')+'</div>':empty('Este agrupador acompanha implantações e rotinas pelo checklist abaixo. Não há uma entrega separada cadastrada.');}
-  function checklistBody(id){
-    var c=completion(id),body='<div class="cb-section"><h3>Entregas deste agrupador</h3></div>'+artifactCards(related(id),id)+'<div class="cb-section"><h3>Checklist do degrau</h3><span class="cb-note">'+c.done+' de '+c.total+' itens obrigatórios</span></div>';
+  function artifactCards(list,back){return list.length?'<div class="cb-deliveries">'+list.map(function(a){var steps=(state.options.steps||[]).filter(function(s){return s.artifact_id===a.id;}),done=steps.filter(function(s){return (state.options.progress||[]).some(function(p){return p.member_id===state.member.id&&p.step_id===s.id&&p.feito;});}).length;return '<button class="cb-delivery" data-cb-artifact="'+esc(a.id)+'" data-back="'+esc(back||'')+'"><span><b>'+esc(a.nome)+'</b><small>'+done+' de '+steps.length+' etapas do processo'+(a.somente_equipe?' · Equipe':'')+'</small></span><span aria-hidden="true">↗</span></button>';}).join('')+'</div>':empty('Nenhuma entrega disponível.');}
+  function checklistBody(id,items){
+    var required=items.filter(function(i){return !i.optional;}),done=required.filter(function(i){return itemState(i).done;}).length;
+    var body='<div class="cb-section"><h3>Conferência da entrega</h3><span class="cb-note">'+done+' de '+required.length+' itens obrigatórios</span></div>';
     if(id==='D08')body+='<label class="cb-note">Edição<select class="inp" data-cb-edition>'+rows('encontros').slice().sort(function(a,b){return b.edition.localeCompare(a.edition);}).map(function(e){return '<option value="'+esc(e.edition)+'"'+(edition()&&e.edition===edition().edition?' selected':'')+'>'+date(e.edition)+'</option>';}).join('')+'</select></label>'+(!edition()?empty('Nenhuma edição cadastrada neste trimestre. Cadastre a edição para conferir os itens mensais.'):'')+'<p class="cb-note">Cada edição tem seu próprio checklist; os registros anteriores são preservados.</p>';
-    body+=catalog(id).map(function(item){var r=itemState(item),mission=rows('missions').find(function(m){return m.checklist_item_id===item.id;}),ritual=/^D11-0[1-7]$/.test(item.id);return '<article class="cb-check-item'+(r.done?' is-done':'')+'"><span class="cb-check-icon" aria-hidden="true">'+(r.done?'✓':'○')+'</span><div><b>'+esc(item.title)+'</b><div class="cb-item-meta"><span class="cb-source">'+esc(item.sourceDetail)+'</span><span>'+esc(item.owner)+'</span>'+(item.optional?'<span>Adicional · mínimo de 3 rituais</span>':'')+'</div><small>'+(r.done?'FEITO':'NÃO FEITO')+' · '+(r.updated_at?date(r.updated_at)+' · '+esc(r.actor_name||'Equipe Black'):'Sem marcação')+'</small>'+(r.note?'<p class="cb-note">'+esc(r.note)+'</p>':'')+(r.evidence?'<p class="cb-note">'+esc(r.evidence)+'</p>':'')+'<div class="cb-tools">'+(admin()&&item.source==='MANUAL'&&(!item.monthly||edition())?button('Conferir item','item',item.id):'')+(mission?button(admin()?'Ver missão':'Enviar evidência','mission',mission.id):admin()&&item.missionWeight!=null&&(!ritual||item.id==='D11-01')?button(ritual?'Solicitar missão · 3 rituais':'Solicitar missão','item-mission',item.id):'')+'</div></div></article>';}).join('');
+    body+=items.map(function(item){var r=itemState(item),mission=rows('missions').find(function(m){return m.checklist_item_id===item.id;}),ritual=/^D11-0[1-7]$/.test(item.id);return '<article class="cb-check-item'+(r.done?' is-done':'')+'"><span class="cb-check-icon" aria-hidden="true">'+(r.done?'✓':'○')+'</span><div><b>'+esc(item.title)+'</b><div class="cb-item-meta"><span class="cb-source">'+esc(item.sourceDetail)+'</span><span>'+esc(item.owner)+'</span>'+(item.optional?'<span>Adicional · mínimo de 3 rituais</span>':'')+'</div><small>'+(r.done?'FEITO':'NÃO FEITO')+' · '+(r.updated_at?date(r.updated_at)+' · '+esc(r.actor_name||'Equipe Black'):'Sem marcação')+'</small>'+(r.note?'<p class="cb-note">'+esc(r.note)+'</p>':'')+(r.evidence?'<p class="cb-note">'+esc(r.evidence)+'</p>':'')+'<div class="cb-tools">'+(admin()&&item.source==='MANUAL'&&(!item.monthly||edition())?button('Conferir item','item',item.id):'')+(mission?button(admin()?'Ver missão':'Enviar evidência','mission',mission.id):admin()&&item.missionWeight!=null&&(!ritual||item.id==='D11-01')?button(ritual?'Solicitar missão · 3 rituais':'Solicitar missão','item-mission',item.id):'')+'</div></div></article>';}).join('');
     return body+'<p class="cb-note">A equipe confere os itens manuais. Itens automáticos dependem de uma leitura confirmada. Marcar o checklist não concede pontos: missões precisam ser solicitadas e verificadas.</p>';
+  }
+  function deliveries(step,artifacts){return M.deliveries(step,artifacts||visibleArtifacts());}
+  function deliveryCards(step,artifacts){
+    return deliveries(step,artifacts).map(function(d){
+      var required=d.items.filter(function(i){return !i.optional;}),done=required.filter(function(i){return itemState(i).done;}).length;
+      var a=d.artifact,steps=a&&state.options?(state.options.steps||[]).filter(function(s){return s.artifact_id===a.id;}):[];
+      var part=C.par(steps,function(id){return state.member&&(state.options.progress||[]).some(function(p){return p.member_id===state.member.id&&p.step_id===id&&p.feito;});});
+      var summary=state.loading?'Carregando andamento…':state.error?'Andamento indisponível':required.length?done+' de '+required.length+' itens conferidos':part.feitas+' de '+part.total+' etapas';
+      var progress=required.length?done/required.length:(part.total?part.feitas/part.total:0);
+      var label=a?(part.estado==='travado'?'Esperando você':part.estado==='entregue'?'Entregue':part.estado==='ativo'?'Ativo · acompanhamento':a.status||'A conferir'):(required.length&&done===required.length?'Conferida':done?'Em conferência':'A conferir');
+      var color=a&&part.estado==='travado'?'var(--orange)':progress===1?'var(--success)':'var(--muted)';
+      return '<button type="button" class="art art-compact" '+(a?'data-cb-artifact="'+esc(a.id)+'" data-delivery="'+esc(d.id)+'"':'data-cb-delivery="'+esc(d.id)+'"')+' data-back="'+esc(step)+'" aria-haspopup="dialog" aria-label="Ver detalhes de '+esc(d.name)+'"><div class="art-i">'+C.icon(a&&a.icone||'box')+'</div><p class="art-n">'+esc(d.name)+'</p><span class="cb-chip">'+esc(step)+'</span><div class="cb-bar" aria-hidden="true"><span style="width:'+(!state.loading&&!state.error?progress*100:0)+'%"></span></div><small class="cb-note">'+esc(summary)+'</small>'+(a&&steps.length&&required.length?'<small class="cb-note">Implantação: '+part.feitas+'/'+part.total+' etapas</small>':'')+(!state.loading&&!state.error?'<span class="art-st" style="color:'+color+'">'+esc(label)+'</span>':'')+'<span class="art-detail">Ver checklist <span aria-hidden="true">↗</span></span></button>';
+    }).join('');
+  }
+  function stepDeliveries(id){
+    var c=completion(id);
+    return '<div class="cb-section"><h3>Entregas do '+(id==='TREINO'?'Treino':'degrau')+'</h3><span class="cb-note">'+c.done+' de '+c.total+' itens conferidos</span></div><div class="artgrid cb-delivery-grid">'+deliveryCards(id)+'</div>';
+  }
+  function openDelivery(id){
+    if(state.loading||state.error){open('Entrega',empty(state.error||'Carregando entrega…'),id,true);return;}
+    var d=deliveries(id.split('/')[0]).find(function(d){return d.id===id;});if(!d)return;
+    activeDelivery=id;
+    if(d.artifact){openArtifact(d.artifact.id,d.step,d);return;}
+    open(d.name,button('← Voltar ao degrau','step',d.step)+'<p class="cb-note">'+esc(d.step)+' · '+esc(d.name)+'</p>'+checklistBody(d.step,d.items),id,true);
   }
   function deliveryUrl(value){
     if(!value)return null;
     try{var url=new URL(value,location.href);return /^https?:$/.test(url.protocol)?url.href:null;}catch(e){return null;}
   }
-  function openArtifact(id,back){
+  function openArtifact(id,back,delivery){
     var a=visibleArtifacts().find(function(a){return a.id===id;});if(!a)return;
     var steps=C.ordenaEtapas((state.options.steps||[]).filter(function(s){return s.artifact_id===id;}));
     function progress(s){return (state.options.progress||[]).find(function(p){return p.member_id===state.member.id&&p.step_id===s;})||{};}
@@ -113,7 +137,8 @@
         (s.descricao?'<p class="cb-note">'+esc(s.descricao)+'</p>':'')+
         (material?'<a class="cb-link" href="'+esc(material)+'" target="_blank" rel="noopener noreferrer">Abrir material ↗</a>':'')+'</div></article>';
     }).join('')||empty('Este processo ainda não tem etapas disponíveis para exibição.');
-    open(a.nome,body,null,true);
+    if(delivery&&delivery.items.length)body+=checklistBody(delivery.step,delivery.items);
+    open(a.nome,body,delivery?delivery.id:null,true);
   }
   function itemForm(id){var item=(C.stepChecklist||[]).find(function(i){return i.id===id;});if(!item||item.source!=='MANUAL')return;if(item.monthly&&!edition())return;var r=itemState(item);open('Conferir entrega',form('<p>'+esc(item.title)+'</p><p class="cb-note">'+esc(item.owner)+' · data e autor registrados automaticamente.</p><input type="hidden" name="edition" value="'+esc(item.monthly&&edition()?edition().edition:'')+'">'+check('Entrega conferida e feita','done',r.done)+field('Evidência / observação (opcional)','evidence',r.evidence,'textarea'),'checklist',id));}
   function badge(s){return '<span class="cb-chip '+s+'">'+({pending:'Pendente',running:'Rodando',audited:'Auditado'}[s]||s)+'</span>';}
@@ -213,6 +238,7 @@
       el.innerHTML=state.loading?'<div class="cb-loading" role="status">Carregando '+esc(labels[key]||'placar')+'…</div>':
         state.error?'<div class="cb-notice" role="alert">'+esc(state.error)+' '+button('Tentar novamente','reload')+'</div>':renderers[key]()+footer();
     });
+    if(state.options&&state.options.onDeliveriesChange)state.options.onDeliveriesChange();
     document.querySelectorAll('[data-nav="pendencias"] .cb-badge').forEach(function(n){n.remove();});
     if(!state.loading&&!state.error&&pending().length)document.querySelectorAll('[data-nav="pendencias"]').forEach(function(n){var b=document.createElement('span');b.className='cb-badge';b.textContent=pending().length;n.appendChild(b);});
   }
@@ -242,24 +268,25 @@
     state.data.legacy=others[1].status==='fulfilled'?others[1].value:[];
     state.crm=others[2].status==='fulfilled'?others[2].value:null;state.ig=others[3].status==='fulfilled'?others[3].value:[];
     state.data.history=others[4].status==='fulfilled'?others[4].value:[];
-    render(); if(drawerId&&(/^D\d{2}$/.test(drawerId)||drawerId==='TREINO'))openStep(drawerId);
+    render(); if(drawerId){if(drawerId.includes('/'))openDelivery(drawerId);else if(/^D\d{2}$/.test(drawerId)||drawerId==='TREINO')openStep(drawerId);}
   }
   function open(title,body,id,popup){
     if(!drawer){previousFocus=document.activeElement;previousOverflow=document.body.style.overflow;overlay=document.createElement('div');overlay.className='cb-overlay';drawer=document.createElement('aside');drawer.className='cb cb-drawer';drawer.setAttribute('role','dialog');drawer.setAttribute('aria-modal','true');drawer.setAttribute('aria-label',title);overlay.addEventListener('click',close);document.body.append(overlay,drawer);document.body.style.overflow='hidden';}
     drawerId=id||null;drawer.classList.toggle('cb-popup',!!popup);drawer.setAttribute('aria-label',title);drawer.innerHTML='<button type="button" class="cb-close" data-cb-close aria-label="Fechar painel">×</button><div class="cb-head"><h2>'+esc(title)+'</h2></div>'+(popup?'<div class="cb-popup-content">'+body+'</div>':body);drawer.scrollTop=0;drawer.querySelector('.cb-close').focus();
   }
-  function close(){if(drawer&&/^#subida\/(D\d{2}|TREINO)/.test(location.hash))history.replaceState(null,'',location.pathname+location.search+'#subida');if(drawer)drawer.remove();if(overlay)overlay.remove();drawer=overlay=null;drawerId=null;document.body.style.overflow=previousOverflow;if(previousFocus&&previousFocus.isConnected)previousFocus.focus();}
+  function close(){if(drawer&&/^#subida\/(D\d{2}|TREINO)/.test(location.hash))history.replaceState(null,'',location.pathname+location.search+'#subida');if(drawer)drawer.remove();if(overlay)overlay.remove();drawer=overlay=null;drawerId=null;activeDelivery=null;document.body.style.overflow=previousOverflow;if(previousFocus&&previousFocus.isConnected)previousFocus.focus();}
   function field(label,name,value,type,required){return '<label>'+esc(label)+(type==='textarea'?'<textarea name="'+name+'" maxlength="4000"'+(required?' required':'')+'>'+esc(value||'')+'</textarea>':'<input name="'+name+'" type="'+(type||'text')+'" value="'+esc(value==null?'':value)+'"'+(type==='number'?' step="any"':' maxlength="500"')+(required?' required':'')+'>')+'</label>';}
   function select(label,name,options,value){return '<label>'+esc(label)+'<select name="'+name+'">'+options.map(function(o){return '<option value="'+esc(o[0])+'"'+(String(o[0])===String(value)?' selected':'')+'>'+esc(o[1])+'</option>';}).join('')+'</select></label>';}
   function check(label,name,value){return '<label class="cb-check"><input type="checkbox" name="'+name+'"'+(value?' checked':'')+'>'+esc(label)+'</label>';}
   function form(body,action,id){return '<form class="cb-form" data-cb-form="'+action+'" data-id="'+esc(id||'')+'">'+body+'<div class="cb-form-error" role="alert"></div><button class="btn btn-primary" type="submit">Salvar registro</button></form>';}
   function openStep(id,tab){
+    activeDelivery=null;
     if(state.loading||state.error){open('Entregas do degrau',empty(state.error||'Carregando entregas…'),id);return;}
-    if(id==='TREINO'){open('Treino de Competição',checklistBody(id),id);return;} var step=M.steps.find(function(s){return s.id===id;});if(!step)return;tab=tab||'audit';
+    if(id==='TREINO'){open('Treino de Competição',stepDeliveries(id),id);return;} var step=M.steps.find(function(s){return s.id===id;});if(!step)return;tab=tab||'audit';
     var record=rows('steps').find(function(s){return s.method_step===id;})||{};
-    var body='<span class="cb-kicker">'+id+' · '+step.movement+'</span>'+badge(status(id))+'<p>'+esc(step.definition)+'</p><div class="cb-tabs" role="tablist">'+[['audit','Entregas e checklist'],['metrics','Métricas'],['points','Pontos & missões']].map(function(t){return '<button role="tab" aria-selected="'+(tab===t[0])+'" data-cb-tab="'+t[0]+'" data-step="'+id+'">'+t[1]+'</button>';}).join('')+'</div>';
+    var body='<span class="cb-kicker">'+id+' · '+step.movement+'</span>'+badge(status(id))+'<p>'+esc(step.definition)+'</p><div class="cb-tabs" role="tablist">'+[['audit','Entregas'],['metrics','Métricas'],['points','Pontos & missões']].map(function(t){return '<button role="tab" aria-selected="'+(tab===t[0])+'" data-cb-tab="'+t[0]+'" data-step="'+id+'">'+t[1]+'</button>';}).join('')+'</div>';
     if(tab==='metrics')body+='<table class="cb-table"><thead><tr><th>O que o Cérebro lê</th><th>Valor</th><th>Fonte</th></tr></thead><tbody>'+step.metrics.map(function(x){var m=metric(id,x[0]);return '<tr><td>'+esc(x[1])+'</td><td>'+metricText(m,x[2])+'</td><td><span class="cb-source">'+m.source+'</span><small>'+ (m.stamp?date(m.stamp):'Não medido')+'</small></td></tr>';}).join('')+'</tbody></table><p class="cb-note">CRM e Instagram: '+state.period+'. Lançamentos manuais mostram a data da última conferência.</p>'+(admin()?button('Registrar métricas','step-edit',id):'');
-    if(tab==='audit')body+=checklistBody(id);
+    if(tab==='audit')body+=stepDeliveries(id);
     if(tab==='points')body+='<div class="cb-notice">'+esc(step.points)+'. Entregas do Club têm peso zero. Missões só entram na régua quando solicitadas e verificadas.</div>'+pendingList(pending().filter(function(m){return m.step===id;}))+(admin()?button('Solicitar missão neste degrau','mission-new',id):'');
     if(id==='D08')body+='<div class="cb-section"><button class="btn" data-nav="encontro" data-cb-dismiss>Abrir edições do Encontro Grau Zero</button></div>';
     open(id+' · '+step.name,body,id);
@@ -318,7 +345,7 @@
       if(action==='case-files')await upload(id,Array.from(f.querySelector('[name=files]').files),error);
       if(action==='case-review')await save('cb_cases',{id:id,lens:d.lens,rationale:d.rationale,status:d.status,revenue:M.number(d.revenue)});
       if(action==='case-feedback')await save('cb_cases',{id:id,feedback:d.feedback});
-      var returnStep=action==='checklist'?item.step:action==='encontro'?'D08':null;close();await load();if(returnStep)openStep(returnStep);C.toast('Registro salvo.','check-circle');
+      var returnDelivery=action==='checklist'?activeDelivery:null,returnStep=action==='checklist'?item.step:action==='encontro'?'D08':null;close();await load();if(returnDelivery)openDelivery(returnDelivery);else if(returnStep)openStep(returnStep);C.toast('Registro salvo.','check-circle');
     }catch(err){error.textContent=err.message||'Não foi possível salvar.';b.disabled=false;}
   }
   function install(options){
@@ -331,16 +358,17 @@
   }
   function enter(key){state.active=key;if(!state.options)return;var parts=M.canonical(location.hash).split('/');if(key==='subida'&&parts[0]==='subida'&&/^(D(0[1-9]|1[0-2])|TREINO)$/.test(parts[1]||''))openStep(parts[1]);}
   document.addEventListener('submit',function(e){var f=e.target.closest('[data-cb-form]');if(f){e.preventDefault();submit(f);}});
-  document.addEventListener('change',function(e){if(e.target.matches('[data-cb-edition]')){selectedEdition=e.target.value;openStep('D08');}if(e.target.matches('[data-cb-member]')){state.member=state.options.members.find(function(m){return m.id===e.target.value;});close();load();}if(e.target.matches('[data-cb-period]')){state.period=e.target.value;close();load();}});
+  document.addEventListener('change',function(e){if(e.target.matches('[data-cb-edition]')){selectedEdition=e.target.value;render();if(activeDelivery)openDelivery(activeDelivery);else openStep('D08');}if(e.target.matches('[data-cb-member]')){state.member=state.options.members.find(function(m){return m.id===e.target.value;});close();load();}if(e.target.matches('[data-cb-period]')){state.period=e.target.value;close();load();}});
   document.addEventListener('keydown',function(e){if(!drawer)return;if(e.key==='Escape'){e.preventDefault();close();}if(e.key==='Tab'){var nodes=Array.from(drawer.querySelectorAll('button,input,select,textarea,a[href]')).filter(function(n){return !n.disabled&&n.offsetParent!==null;}),first=nodes[0],last=nodes[nodes.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
   document.addEventListener('click',async function(e){
-    var el=e.target.closest('[data-cb-artifact],[data-cb-item],[data-cb-item-mission],[data-cb-legacy],[data-cb-rank-snapshot],[data-cb-step],[data-cb-tab],[data-cb-close],[data-cb-dismiss],[data-cb-reload],[data-cb-mission],[data-cb-mission-new],[data-cb-quarter],[data-cb-extra],[data-cb-grade],[data-cb-step-edit],[data-cb-module],[data-cb-encontro-new],[data-cb-encontro-edit],[data-cb-reward-new],[data-cb-redeem],[data-cb-redemption],[data-cb-case-new],[data-cb-case],[data-cb-file]');if(!el||!state.options)return;
+    var el=e.target.closest('[data-cb-delivery],[data-cb-artifact],[data-cb-item],[data-cb-item-mission],[data-cb-legacy],[data-cb-rank-snapshot],[data-cb-step],[data-cb-tab],[data-cb-close],[data-cb-dismiss],[data-cb-reload],[data-cb-mission],[data-cb-mission-new],[data-cb-quarter],[data-cb-extra],[data-cb-grade],[data-cb-step-edit],[data-cb-module],[data-cb-encontro-new],[data-cb-encontro-edit],[data-cb-reward-new],[data-cb-redeem],[data-cb-redemption],[data-cb-case-new],[data-cb-case],[data-cb-file]');if(!el||!state.options)return;
     try{
       var d=el.dataset;
       if('cbClose'in d||'cbDismiss'in d)close();
       if('cbReload'in d)await load();
       if('cbStep'in d)openStep(d.cbStep);
-      if('cbArtifact'in d)openArtifact(d.cbArtifact,d.back);
+      if('cbDelivery'in d)openDelivery(d.cbDelivery);
+      if('cbArtifact'in d){if(d.delivery)openDelivery(d.delivery);else{activeDelivery=null;openArtifact(d.cbArtifact,d.back);}}
       if('cbTab'in d)openStep(d.step,d.cbTab);
       if('cbMission'in d)missionForm(d.cbMission);
       if(admin()){
@@ -365,5 +393,5 @@
       if('cbFile'in d){var file=rows('files').find(function(f){return f.id===d.cbFile;});var url=ok(await C.sb.storage.from('pgz-exams').createSignedUrl(file.path,60));var a=document.createElement('a');a.href=url.signedUrl;a.target='_blank';a.rel='noopener noreferrer';a.click();}
     }catch(err){C.toast(err.message||'Não foi possível concluir a ação.','alert');el.disabled=false;}
   });
-  C.black={install:install,enter:enter,selected:function(){return state.member&&state.member.id;},close:close};
+  C.black={deliveryCards:deliveryCards,install:install,enter:enter,selected:function(){return state.member&&state.member.id;},close:close};
 })();
