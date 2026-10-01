@@ -3,13 +3,13 @@
     "memberName": "Anderson Gielo Quinellato",
     "snapshot": {
       "sourceName": "Anderson Gielo Quinellato",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 85.2,
+      "annualPoints": 89.9,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -25,6 +25,7 @@
             "videos": 19.6
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
@@ -32,7 +33,7 @@
             "eligible": 6
           },
           "followers": {
-            "growth": 2866
+            "growth": 2901
           },
           "videos": {
             "count": 34,
@@ -44,26 +45,27 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 38.9,
+          "points": 43.6,
           "scores": {
-            "attendance": 12.7,
-            "followers": 10,
-            "videos": 16.2
+            "attendance": 13.3,
+            "followers": 14,
+            "videos": 16.3
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 7,
-            "eligible": 11
+            "attended": 8,
+            "eligible": 12
           },
           "followers": {
-            "growth": 2950
+            "growth": 3583
           },
           "videos": {
-            "count": 29,
-            "weeks": 10.29,
-            "credits": 8.333333333
+            "count": 35,
+            "weeks": 12.28571429,
+            "credits": 10
           }
         },
         {
@@ -77,6 +79,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -91,6 +94,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -101,13 +105,13 @@
     "memberName": "Arthur Onofre Beltran Filho",
     "snapshot": {
       "sourceName": "Arthur Onofre Beltran Filho",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 81.5,
+      "annualPoints": 83.1,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -123,6 +127,7 @@
             "videos": 3.4
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
@@ -130,7 +135,7 @@
             "eligible": 6
           },
           "followers": {
-            "growth": 6807
+            "growth": 6228
           },
           "videos": {
             "count": 5,
@@ -142,26 +147,27 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 41.4,
+          "points": 43,
           "scores": {
-            "attendance": 9.1,
+            "attendance": 10,
             "followers": 20,
-            "videos": 12.3
+            "videos": 13
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 5,
-            "eligible": 11
+            "attended": 6,
+            "eligible": 12
           },
           "followers": {
-            "growth": 7007
+            "growth": 7693
           },
           "videos": {
-            "count": 24,
-            "weeks": 10.29,
-            "credits": 6.333333333
+            "count": 29,
+            "weeks": 12.28571429,
+            "credits": 8
           }
         },
         {
@@ -175,6 +181,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -189,6 +196,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -199,16 +207,16 @@
     "memberName": "Cintia Santini",
     "snapshot": {
       "sourceName": "Cintia de Oliveira Santini",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
       "grade": 2,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 112.2,
-      "renewalDiscount": 15000,
-      "renewalPrice": 105000,
-      "vouchers": 0,
+      "annualPoints": 161.8,
+      "renewalDiscount": 25000,
+      "renewalPrice": 95000,
+      "vouchers": 2,
       "periods": [
         {
           "id": "2026-T2",
@@ -221,6 +229,7 @@
             "videos": 18.3
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
@@ -228,7 +237,7 @@
             "eligible": 6
           },
           "followers": {
-            "growth": 6947
+            "growth": 6116
           },
           "videos": {
             "count": 33,
@@ -240,26 +249,27 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 63.9,
+          "points": 113.5,
           "scores": {
-            "attendance": 16.4,
+            "attendance": 16.7,
             "followers": 20,
-            "videos": 17.5
+            "videos": 16.8
           },
-          "referrals": null,
+          "referrals": 2,
+          "referralUnitPoints": 25,
           "bonus": 10,
           "bonusReason": "Palestrante · Imersão de Marketing",
           "attendance": {
-            "attended": 9,
-            "eligible": 11
+            "attended": 10,
+            "eligible": 12
           },
           "followers": {
-            "growth": 7151
+            "growth": 7555
           },
           "videos": {
-            "count": 42,
-            "weeks": 10.29,
-            "credits": 9
+            "count": 47,
+            "weeks": 12.28571429,
+            "credits": 10.33333333
           }
         },
         {
@@ -273,6 +283,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -287,6 +298,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -297,13 +309,13 @@
     "memberName": "Daniel Barcellos de Moraes Jardim",
     "snapshot": {
       "sourceName": "Daniel Barcellos de Moraes Jardim",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 57.5,
+      "annualPoints": 57.7,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -319,6 +331,7 @@
             "videos": 0
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
@@ -326,7 +339,7 @@
             "eligible": 6
           },
           "followers": {
-            "growth": 10714
+            "growth": 10493
           },
           "videos": {
             "count": 0,
@@ -338,26 +351,27 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 24.2,
+          "points": 24.4,
           "scores": {
-            "attendance": 3.6,
+            "attendance": 3.3,
             "followers": 20,
-            "videos": 0.6
+            "videos": 1.1
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
             "attended": 2,
-            "eligible": 11
+            "eligible": 12
           },
           "followers": {
-            "growth": 11029
+            "growth": 12963
           },
           "videos": {
-            "count": 1,
-            "weeks": 10.29,
-            "credits": 0.3333333333
+            "count": 2,
+            "weeks": 12.28571429,
+            "credits": 0.6666666667
           }
         },
         {
@@ -371,6 +385,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -385,6 +400,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -395,13 +411,13 @@
     "memberName": "Edney Cabral Silva",
     "snapshot": {
       "sourceName": "Edney Cabral Silva",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
       "grade": 1,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 93.7,
+      "annualPoints": 95.2,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -417,6 +433,7 @@
             "videos": 10.1
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
@@ -424,7 +441,7 @@
             "eligible": 6
           },
           "followers": {
-            "growth": 7011
+            "growth": 7740
           },
           "videos": {
             "count": 21,
@@ -436,26 +453,27 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 43.6,
+          "points": 45.1,
           "scores": {
-            "attendance": 5.5,
+            "attendance": 6.7,
             "followers": 20,
-            "videos": 18.1
+            "videos": 18.4
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 3,
-            "eligible": 11
+            "attended": 4,
+            "eligible": 12
           },
           "followers": {
-            "growth": 7217
+            "growth": 9561
           },
           "videos": {
-            "count": 111,
-            "weeks": 10.29,
-            "credits": 9.333333333
+            "count": 124,
+            "weeks": 12.28571429,
+            "credits": 11.33333333
           }
         },
         {
@@ -469,6 +487,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -483,6 +502,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -493,13 +513,13 @@
     "memberName": "Eduardo Menta Vidal",
     "snapshot": {
       "sourceName": "Eduardo Menta Vidal",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
       "grade": 1,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 92.7,
+      "annualPoints": 95,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -515,6 +535,7 @@
             "videos": 20
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 10,
           "bonusReason": "Palestrante · Imersão Black de Manaus",
           "attendance": {
@@ -522,7 +543,7 @@
             "eligible": 6
           },
           "followers": {
-            "growth": 16467
+            "growth": 14411
           },
           "videos": {
             "count": 54,
@@ -534,26 +555,27 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 39.4,
+          "points": 41.7,
           "scores": {
-            "attendance": 0,
+            "attendance": 1.7,
             "followers": 20,
-            "videos": 19.4
+            "videos": 20
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 0,
-            "eligible": 11
+            "attended": 1,
+            "eligible": 12
           },
           "followers": {
-            "growth": 15498
+            "growth": 16530
           },
           "videos": {
-            "count": 54,
-            "weeks": 10.29,
-            "credits": 10
+            "count": 65,
+            "weeks": 12.28571429,
+            "credits": 12.33333333
           }
         },
         {
@@ -567,6 +589,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -581,6 +604,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -591,13 +615,13 @@
     "memberName": "Gabriela Traiano",
     "snapshot": {
       "sourceName": "Gabriela Traiano",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 54.4,
+      "annualPoints": 72,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -613,6 +637,7 @@
             "videos": 8.1
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
@@ -620,7 +645,7 @@
             "eligible": 6
           },
           "followers": {
-            "growth": 2343
+            "growth": 2256
           },
           "videos": {
             "count": 12,
@@ -632,26 +657,27 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 26.3,
+          "points": 43.9,
           "scores": {
-            "attendance": 12.7,
-            "followers": 0,
-            "videos": 13.6
+            "attendance": 16.7,
+            "followers": 12,
+            "videos": 15.2
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 7,
-            "eligible": 11
+            "attended": 10,
+            "eligible": 12
           },
           "followers": {
-            "growth": 2412
+            "growth": 2787
           },
           "videos": {
-            "count": 26,
-            "weeks": 10.29,
-            "credits": 7
+            "count": 36,
+            "weeks": 12.28571429,
+            "credits": 9.333333333
           }
         },
         {
@@ -665,6 +691,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -679,6 +706,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -689,13 +717,13 @@
     "memberName": "Harymy Costa Barros Teixeira Vidal",
     "snapshot": {
       "sourceName": "Harymy Costa Barros Teixeira Vidal",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
-      "grade": 1,
+      "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 84,
+      "annualPoints": 73.2,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -704,13 +732,14 @@
           "id": "2026-T2",
           "label": "Abr–jun 2026",
           "state": "closed",
-          "points": 57.4,
+          "points": 47.4,
           "scores": {
             "attendance": 20,
-            "followers": 20,
+            "followers": 10,
             "videos": 7.4
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 10,
           "bonusReason": "Palestrante · Imersão Black de Manaus",
           "attendance": {
@@ -718,7 +747,7 @@
             "eligible": 6
           },
           "followers": {
-            "growth": 5370
+            "growth": 4721
           },
           "videos": {
             "count": 14,
@@ -730,26 +759,27 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 36.6,
+          "points": 35.8,
           "scores": {
-            "attendance": 3.6,
+            "attendance": 3.3,
             "followers": 20,
-            "videos": 13
+            "videos": 12.5
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
             "attended": 2,
-            "eligible": 11
+            "eligible": 12
           },
           "followers": {
-            "growth": 5528
+            "growth": 5832
           },
           "videos": {
-            "count": 22,
-            "weeks": 10.29,
-            "credits": 6.666666667
+            "count": 25,
+            "weeks": 12.28571429,
+            "credits": 7.666666667
           }
         },
         {
@@ -763,6 +793,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -777,6 +808,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -787,13 +819,13 @@
     "memberName": "João Vitor Baia Coelho",
     "snapshot": {
       "sourceName": "João Vitor Baia Coelho",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "07/05",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 48,
+      "annualPoints": 70.3,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -809,6 +841,7 @@
             "videos": 7.6
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
@@ -816,7 +849,7 @@
             "eligible": 5
           },
           "followers": {
-            "growth": 1296
+            "growth": 1192
           },
           "videos": {
             "count": 11,
@@ -828,26 +861,27 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 20.4,
+          "points": 42.7,
           "scores": {
-            "attendance": 5.5,
-            "followers": 0,
-            "videos": 14.9
+            "attendance": 20,
+            "followers": 7,
+            "videos": 15.7
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 3,
-            "eligible": 11
+            "attended": 4,
+            "eligible": 12
           },
           "followers": {
-            "growth": 1560
+            "growth": 1744
           },
           "videos": {
-            "count": 29,
-            "weeks": 10.29,
-            "credits": 7.666666667
+            "count": 37,
+            "weeks": 12.28571429,
+            "credits": 9.666666667
           }
         },
         {
@@ -861,6 +895,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -875,6 +910,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -885,13 +921,13 @@
     "memberName": "Luciana da Hora",
     "snapshot": {
       "sourceName": "Luciana Maria Tavares da Hora",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "02/06",
-      "grade": 0,
+      "grade": 1,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 67.4,
+      "annualPoints": 73.1,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -907,6 +943,7 @@
             "videos": 12.9
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
@@ -914,7 +951,7 @@
             "eligible": 3
           },
           "followers": {
-            "growth": 297
+            "growth": 276
           },
           "videos": {
             "count": 11,
@@ -926,26 +963,27 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 44.5,
+          "points": 50.2,
           "scores": {
-            "attendance": 16.4,
-            "followers": 0,
-            "videos": 18.1
+            "attendance": 17.2,
+            "followers": 4,
+            "videos": 19
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 10,
           "bonusReason": "Palestrante · Congresso da Sociedade Brasileira de Oftalmologia (LIOs tóricas)",
           "attendance": {
-            "attended": 9,
-            "eligible": 11
+            "attended": 10,
+            "eligible": 12
           },
           "followers": {
-            "growth": 742
+            "growth": 828
           },
           "videos": {
-            "count": 52,
-            "weeks": 10.29,
-            "credits": 9.333333333
+            "count": 63,
+            "weeks": 12.28571429,
+            "credits": 11.66666667
           }
         },
         {
@@ -959,6 +997,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -973,6 +1012,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -983,13 +1023,13 @@
     "memberName": "Luís Guilherme Vidal",
     "snapshot": {
       "sourceName": "Luís Guilherme Vidal",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
       "grade": 1,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 98.6,
+      "annualPoints": 97,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -1005,6 +1045,7 @@
             "videos": 16.9
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 10,
           "bonusReason": "Palestrante · Imersão Black de Manaus",
           "attendance": {
@@ -1012,7 +1053,7 @@
             "eligible": 6
           },
           "followers": {
-            "growth": 9592
+            "growth": 8306
           },
           "videos": {
             "count": 110,
@@ -1024,26 +1065,27 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 41.7,
+          "points": 40.1,
           "scores": {
-            "attendance": 3.6,
+            "attendance": 3.3,
             "followers": 20,
-            "videos": 18.1
+            "videos": 16.8
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
             "attended": 2,
-            "eligible": 11
+            "eligible": 12
           },
           "followers": {
-            "growth": 9874
+            "growth": 10260
           },
           "videos": {
-            "count": 75,
-            "weeks": 10.29,
-            "credits": 9.333333333
+            "count": 78,
+            "weeks": 12.28571429,
+            "credits": 10.33333333
           }
         },
         {
@@ -1057,6 +1099,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -1071,6 +1114,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -1081,13 +1125,13 @@
     "memberName": "Nauara Naissa",
     "snapshot": {
       "sourceName": "Nauara Naissa Duarte Silva",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 55.3,
+      "annualPoints": 57.8,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -1103,6 +1147,7 @@
             "videos": 8.1
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
@@ -1110,7 +1155,7 @@
             "eligible": 6
           },
           "followers": {
-            "growth": 440
+            "growth": 494
           },
           "videos": {
             "count": 12,
@@ -1122,26 +1167,27 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 43.9,
+          "points": 46.4,
           "scores": {
-            "attendance": 16.4,
-            "followers": 0,
-            "videos": 17.5
+            "attendance": 15,
+            "followers": 3,
+            "videos": 18.4
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 10,
           "bonusReason": "Palestrante — data não localizada",
           "attendance": {
             "attended": 9,
-            "eligible": 11
+            "eligible": 12
           },
           "followers": {
-            "growth": 453
+            "growth": 611
           },
           "videos": {
-            "count": 44,
-            "weeks": 10.29,
-            "credits": 9
+            "count": 62,
+            "weeks": 12.28571429,
+            "credits": 11.33333333
           }
         },
         {
@@ -1155,6 +1201,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -1169,6 +1216,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -1179,13 +1227,13 @@
     "memberName": "Pedro Fábio de Mello Pinese",
     "snapshot": {
       "sourceName": "Pedro Fábio de Mello Pinese",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 76.3,
+      "annualPoints": 75.6,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -1201,6 +1249,7 @@
             "videos": 1.4
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
@@ -1208,7 +1257,7 @@
             "eligible": 6
           },
           "followers": {
-            "growth": 7203
+            "growth": 6996
           },
           "videos": {
             "count": 2,
@@ -1220,26 +1269,27 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 38.2,
+          "points": 37.5,
           "scores": {
-            "attendance": 9.1,
+            "attendance": 8.3,
             "followers": 20,
-            "videos": 9.1
+            "videos": 9.2
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
             "attended": 5,
-            "eligible": 11
+            "eligible": 12
           },
           "followers": {
-            "growth": 7415
+            "growth": 8643
           },
           "videos": {
-            "count": 15,
-            "weeks": 10.29,
-            "credits": 4.666666667
+            "count": 18,
+            "weeks": 12.28571429,
+            "credits": 5.666666667
           }
         },
         {
@@ -1253,6 +1303,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -1267,6 +1318,109 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
+          "bonus": 0,
+          "bonusReason": null
+        }
+      ]
+    }
+  },
+  {
+    "memberName": "Felipe Marcolini Dantas Bertucci",
+    "snapshot": {
+      "sourceName": "Felipe Marcolini Dantas Bertucci",
+      "sourceDate": "2026-10-01",
+      "currentPeriod": "2026-T3",
+      "entry": "11/05",
+      "grade": 1,
+      "initialGrade": 0,
+      "recordedDegrees": 0,
+      "annualPoints": 98.4,
+      "renewalDiscount": 0,
+      "renewalPrice": 120000,
+      "vouchers": 0,
+      "periods": [
+        {
+          "id": "2026-T2",
+          "label": "Abr–jun 2026",
+          "state": "closed",
+          "points": 48.3,
+          "scores": {
+            "attendance": 20,
+            "followers": 10,
+            "videos": 18.3
+          },
+          "referrals": null,
+          "referralUnitPoints": 25,
+          "bonus": 0,
+          "bonusReason": null,
+          "attendance": {
+            "attended": 4,
+            "eligible": 4
+          },
+          "followers": {
+            "growth": 4898
+          },
+          "videos": {
+            "count": 20,
+            "weeks": 7.29,
+            "credits": 6.666666667
+          }
+        },
+        {
+          "id": "2026-T3",
+          "label": "Jul–set 2026",
+          "state": "current",
+          "points": 50.1,
+          "scores": {
+            "attendance": 12.2,
+            "followers": 20,
+            "videos": 17.9
+          },
+          "referrals": null,
+          "referralUnitPoints": 25,
+          "bonus": 0,
+          "bonusReason": null,
+          "attendance": {
+            "attended": 7,
+            "eligible": 12
+          },
+          "followers": {
+            "growth": 6955
+          },
+          "videos": {
+            "count": 37,
+            "weeks": 12.28571429,
+            "credits": 11
+          }
+        },
+        {
+          "id": "2026-T4",
+          "label": "Out–dez 2026",
+          "state": "future",
+          "points": null,
+          "scores": {
+            "attendance": null,
+            "followers": null,
+            "videos": null
+          },
+          "referrals": null,
+          "referralUnitPoints": 25,
+          "bonus": 0,
+          "bonusReason": null
+        },
+        {
+          "id": "2027-T1",
+          "label": "Jan–mar 2027",
+          "state": "future",
+          "points": null,
+          "scores": {
+            "attendance": null,
+            "followers": null,
+            "videos": null
+          },
+          "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -1277,13 +1431,13 @@
     "memberName": "Adriano Fonseca Yamada",
     "snapshot": {
       "sourceName": "Adriano Fonseca Yamada",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "05/06",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 30.4,
+      "annualPoints": 33.2,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -1299,6 +1453,7 @@
             "videos": 9
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
@@ -1306,7 +1461,7 @@
             "eligible": 2
           },
           "followers": {
-            "growth": 470
+            "growth": 380
           },
           "videos": {
             "count": 5,
@@ -1318,26 +1473,27 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 21.4,
+          "points": 24.2,
           "scores": {
-            "attendance": 9.1,
+            "attendance": 11.7,
             "followers": 0,
-            "videos": 12.3
+            "videos": 12.5
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 5,
-            "eligible": 11
+            "attended": 7,
+            "eligible": 12
           },
           "followers": {
-            "growth": 1221
+            "growth": 1203
           },
           "videos": {
-            "count": 32,
-            "weeks": 10.29,
-            "credits": 6.333333333
+            "count": 37,
+            "weeks": 12.28571429,
+            "credits": 7.666666667
           }
         },
         {
@@ -1351,6 +1507,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -1365,6 +1522,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -1375,13 +1533,13 @@
     "memberName": "Affou Madi",
     "snapshot": {
       "sourceName": "Affou Madi",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "09/07",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 8.6,
+      "annualPoints": 7.8,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -1397,6 +1555,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
@@ -1416,26 +1575,27 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 8.6,
+          "points": 7.8,
           "scores": {
-            "attendance": 2,
+            "attendance": 1.8,
             "followers": 0,
-            "videos": 6.6
+            "videos": 6
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
             "attended": 1,
-            "eligible": 10
+            "eligible": 11
           },
           "followers": {
-            "growth": 90
+            "growth": 95
           },
           "videos": {
-            "count": 9,
-            "weeks": 9.14,
-            "credits": 3
+            "count": 10,
+            "weeks": 11.14285714,
+            "credits": 3.333333333
           }
         },
         {
@@ -1449,6 +1609,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -1463,6 +1624,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -1473,13 +1635,13 @@
     "memberName": "Diogo Rodrigues",
     "snapshot": {
       "sourceName": "Diogo Rodrigues",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "30/06",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 10.4,
+      "annualPoints": 12.7,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -1495,6 +1657,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
@@ -1514,26 +1677,27 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 10.4,
+          "points": 12.7,
           "scores": {
-            "attendance": 9.1,
+            "attendance": 10,
             "followers": 0,
-            "videos": 1.3
+            "videos": 2.7
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 5,
-            "eligible": 11
+            "attended": 6,
+            "eligible": 12
           },
           "followers": {
-            "growth": 18
+            "growth": 24
           },
           "videos": {
-            "count": 2,
-            "weeks": 10.29,
-            "credits": 0.6666666667
+            "count": 5,
+            "weeks": 12.28571429,
+            "credits": 1.666666667
           }
         },
         {
@@ -1547,6 +1711,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -1561,6 +1726,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -1571,13 +1737,13 @@
     "memberName": "Felipe Almeida Mota",
     "snapshot": {
       "sourceName": "Felipe Almeida Mota",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "09/07",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 6.2,
+      "annualPoints": 6,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -1593,6 +1759,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
@@ -1612,124 +1779,27 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 6.2,
+          "points": 6,
           "scores": {
-            "attendance": 4,
+            "attendance": 3.6,
             "followers": 0,
-            "videos": 2.2
+            "videos": 2.4
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
             "attended": 2,
-            "eligible": 10
-          },
-          "followers": {
-            "growth": 165
-          },
-          "videos": {
-            "count": 3,
-            "weeks": 9.14,
-            "credits": 1
-          }
-        },
-        {
-          "id": "2026-T4",
-          "label": "Out–dez 2026",
-          "state": "future",
-          "points": null,
-          "scores": {
-            "attendance": null,
-            "followers": null,
-            "videos": null
-          },
-          "referrals": null,
-          "bonus": 0,
-          "bonusReason": null
-        },
-        {
-          "id": "2027-T1",
-          "label": "Jan–mar 2027",
-          "state": "future",
-          "points": null,
-          "scores": {
-            "attendance": null,
-            "followers": null,
-            "videos": null
-          },
-          "referrals": null,
-          "bonus": 0,
-          "bonusReason": null
-        }
-      ]
-    }
-  },
-  {
-    "memberName": "Felipe Marcolini Dantas Bertucci",
-    "snapshot": {
-      "sourceName": "Felipe Marcolini Dantas Bertucci",
-      "sourceDate": "2026-09-17",
-      "currentPeriod": "2026-T3",
-      "entry": "11/05",
-      "grade": 1,
-      "initialGrade": 0,
-      "recordedDegrees": 0,
-      "annualPoints": 106,
-      "renewalDiscount": 15000,
-      "renewalPrice": 105000,
-      "vouchers": 0,
-      "periods": [
-        {
-          "id": "2026-T2",
-          "label": "Abr–jun 2026",
-          "state": "closed",
-          "points": 58.3,
-          "scores": {
-            "attendance": 20,
-            "followers": 20,
-            "videos": 18.3
-          },
-          "referrals": null,
-          "bonus": 0,
-          "bonusReason": null,
-          "attendance": {
-            "attended": 4,
-            "eligible": 4
-          },
-          "followers": {
-            "growth": 5719
-          },
-          "videos": {
-            "count": 20,
-            "weeks": 7.29,
-            "credits": 6.666666667
-          }
-        },
-        {
-          "id": "2026-T3",
-          "label": "Jul–set 2026",
-          "state": "current",
-          "points": 47.7,
-          "scores": {
-            "attendance": 10.9,
-            "followers": 20,
-            "videos": 16.8
-          },
-          "referrals": null,
-          "bonus": 0,
-          "bonusReason": null,
-          "attendance": {
-            "attended": 6,
             "eligible": 11
           },
           "followers": {
-            "growth": 6520
+            "growth": 228
           },
           "videos": {
-            "count": 27,
-            "weeks": 10.29,
-            "credits": 8.666666667
+            "count": 4,
+            "weeks": 11.14285714,
+            "credits": 1.333333333
           }
         },
         {
@@ -1743,6 +1813,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -1757,6 +1828,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -1767,13 +1839,13 @@
     "memberName": "Fernando Bauken",
     "snapshot": {
       "sourceName": "Fernando Bauken",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "03/06",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 16.9,
+      "annualPoints": 18.3,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -1789,6 +1861,7 @@
             "videos": 8.3
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
@@ -1796,7 +1869,7 @@
             "eligible": 3
           },
           "followers": {
-            "growth": 94
+            "growth": 84
           },
           "videos": {
             "count": 5,
@@ -1808,25 +1881,26 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 1.9,
+          "points": 3.3,
           "scores": {
-            "attendance": 0,
+            "attendance": 1.7,
             "followers": 0,
-            "videos": 1.9
+            "videos": 1.6
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 0,
-            "eligible": 11
+            "attended": 1,
+            "eligible": 12
           },
           "followers": {
-            "growth": 153
+            "growth": 180
           },
           "videos": {
             "count": 3,
-            "weeks": 10.29,
+            "weeks": 12.28571429,
             "credits": 1
           }
         },
@@ -1841,6 +1915,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -1855,6 +1930,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -1865,13 +1941,13 @@
     "memberName": "Gibran Volpe Chaves Petter",
     "snapshot": {
       "sourceName": "Gibran Volpe Chaves Petter",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "18/06",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 5.5,
+      "annualPoints": 6.7,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -1887,6 +1963,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
@@ -1906,25 +1983,26 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 5.5,
+          "points": 6.7,
           "scores": {
-            "attendance": 5.5,
+            "attendance": 6.7,
             "followers": 0,
             "videos": 0
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 3,
-            "eligible": 11
+            "attended": 4,
+            "eligible": 12
           },
           "followers": {
-            "growth": 44
+            "growth": 56
           },
           "videos": {
             "count": 0,
-            "weeks": 10.29,
+            "weeks": 12.28571429,
             "credits": 0
           }
         },
@@ -1939,6 +2017,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -1953,6 +2032,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -1963,13 +2043,13 @@
     "memberName": "Gustavo Ribeiro",
     "snapshot": {
       "sourceName": "Gustavo Ramos Ribeiro",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 35,
+      "annualPoints": 41.6,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -1985,6 +2065,7 @@
             "videos": 6.1
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
@@ -1992,7 +2073,7 @@
             "eligible": 6
           },
           "followers": {
-            "growth": 1312
+            "growth": 1086
           },
           "videos": {
             "count": 9,
@@ -2004,25 +2085,26 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 22.2,
+          "points": 28.8,
           "scores": {
-            "attendance": 10.9,
-            "followers": 0,
-            "videos": 1.3
+            "attendance": 11.7,
+            "followers": 6,
+            "videos": 1.1
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 10,
           "bonusReason": "Palestrante — data não localizada",
           "attendance": {
-            "attended": 6,
-            "eligible": 11
+            "attended": 7,
+            "eligible": 12
           },
           "followers": {
-            "growth": 1351
+            "growth": 1341
           },
           "videos": {
             "count": 2,
-            "weeks": 10.29,
+            "weeks": 12.28571429,
             "credits": 0.6666666667
           }
         },
@@ -2037,6 +2119,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -2051,6 +2134,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -2061,13 +2145,13 @@
     "memberName": "Helcio Valerio Passos Junior",
     "snapshot": {
       "sourceName": "Helcio Valerio Passos Junior",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "20/05",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 9.1,
+      "annualPoints": 10,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -2083,6 +2167,7 @@
             "videos": 0
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
@@ -2102,25 +2187,26 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 9.1,
+          "points": 10,
           "scores": {
-            "attendance": 9.1,
+            "attendance": 10,
             "followers": 0,
             "videos": 0
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 5,
-            "eligible": 11
+            "attended": 6,
+            "eligible": 12
           },
           "followers": {
             "growth": 4
           },
           "videos": {
             "count": 0,
-            "weeks": 10.29,
+            "weeks": 12.28571429,
             "credits": 0
           }
         },
@@ -2135,6 +2221,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -2149,6 +2236,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -2159,13 +2247,13 @@
     "memberName": "Higrant Sampaio Monte",
     "snapshot": {
       "sourceName": "Higrant Sampaio Monte",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 28.8,
+      "annualPoints": 31.8,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -2181,6 +2269,7 @@
             "videos": 6.8
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
@@ -2188,7 +2277,7 @@
             "eligible": 6
           },
           "followers": {
-            "growth": 771
+            "growth": 684
           },
           "videos": {
             "count": 10,
@@ -2200,25 +2289,26 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 8.7,
+          "points": 11.7,
           "scores": {
-            "attendance": 5.5,
-            "followers": 0,
-            "videos": 3.2
+            "attendance": 5,
+            "followers": 4,
+            "videos": 2.7
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
             "attended": 3,
-            "eligible": 11
+            "eligible": 12
           },
           "followers": {
-            "growth": 782
+            "growth": 835
           },
           "videos": {
             "count": 5,
-            "weeks": 10.29,
+            "weeks": 12.28571429,
             "credits": 1.666666667
           }
         },
@@ -2233,6 +2323,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -2247,6 +2338,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -2257,13 +2349,13 @@
     "memberName": "Leo Felyppe Ferreira Sappi",
     "snapshot": {
       "sourceName": "Leo Felyppe Ferreira Sappi",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "10/06",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 29.2,
+      "annualPoints": 30.9,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -2272,13 +2364,14 @@
           "id": "2026-T2",
           "label": "Abr–jun 2026",
           "state": "closed",
-          "points": 10,
+          "points": 12.2,
           "scores": {
             "attendance": 10,
             "followers": 0,
-            "videos": 0
+            "videos": 2.2
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
@@ -2286,37 +2379,38 @@
             "eligible": 2
           },
           "followers": {
-            "growth": 18
+            "growth": 14
           },
           "videos": {
-            "count": 0,
+            "count": 1,
             "weeks": 3,
-            "credits": 0
+            "credits": 0.3333333333
           }
         },
         {
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 19.2,
+          "points": 18.7,
           "scores": {
-            "attendance": 12.7,
+            "attendance": 13.3,
             "followers": 0,
-            "videos": 6.5
+            "videos": 5.4
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 7,
-            "eligible": 11
+            "attended": 8,
+            "eligible": 12
           },
           "followers": {
-            "growth": 56
+            "growth": 55
           },
           "videos": {
             "count": 10,
-            "weeks": 10.29,
+            "weeks": 12.28571429,
             "credits": 3.333333333
           }
         },
@@ -2331,6 +2425,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -2345,6 +2440,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -2355,13 +2451,13 @@
     "memberName": "Lucas Ferreira de Sales",
     "snapshot": {
       "sourceName": "Lucas Ferreira de Sales",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "16/05",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 24.3,
+      "annualPoints": 23.2,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -2377,6 +2473,7 @@
             "videos": 1
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
@@ -2384,7 +2481,7 @@
             "eligible": 4
           },
           "followers": {
-            "growth": 43
+            "growth": 39
           },
           "videos": {
             "count": 1,
@@ -2396,25 +2493,26 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 13.3,
+          "points": 12.2,
           "scores": {
-            "attendance": 12.7,
+            "attendance": 11.7,
             "followers": 0,
-            "videos": 0.6
+            "videos": 0.5
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
             "attended": 7,
-            "eligible": 11
+            "eligible": 12
           },
           "followers": {
-            "growth": 62
+            "growth": 68
           },
           "videos": {
             "count": 1,
-            "weeks": 10.29,
+            "weeks": 12.28571429,
             "credits": 0.3333333333
           }
         },
@@ -2429,6 +2527,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -2443,6 +2542,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -2453,13 +2553,13 @@
     "memberName": "Marcelo Rosa Gameiro",
     "snapshot": {
       "sourceName": "Marcelo Rosa Gameiro",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "05/06",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 33.5,
+      "annualPoints": 32.7,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -2475,6 +2575,7 @@
             "videos": 0
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
@@ -2482,7 +2583,7 @@
             "eligible": 2
           },
           "followers": {
-            "growth": 16
+            "growth": 12
           },
           "videos": {
             "count": 0,
@@ -2494,25 +2595,26 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 23.5,
+          "points": 22.7,
           "scores": {
-            "attendance": 16.4,
+            "attendance": 16.7,
             "followers": 0,
-            "videos": 7.1
+            "videos": 6
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 9,
-            "eligible": 11
+            "attended": 10,
+            "eligible": 12
           },
           "followers": {
-            "growth": 38
+            "growth": 39
           },
           "videos": {
             "count": 14,
-            "weeks": 10.29,
+            "weeks": 12.28571429,
             "credits": 3.666666667
           }
         },
@@ -2527,6 +2629,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -2541,6 +2644,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -2551,13 +2655,13 @@
     "memberName": "Marina Vilas Boas Braga",
     "snapshot": {
       "sourceName": "Marina Vilas Boas Braga",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "24/06",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 15.6,
+      "annualPoints": 13.7,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -2573,6 +2677,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
@@ -2580,7 +2685,7 @@
             "eligible": 1
           },
           "followers": {
-            "growth": 7
+            "growth": 6
           },
           "videos": {
             "count": null,
@@ -2592,25 +2697,26 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 15.6,
+          "points": 13.7,
           "scores": {
-            "attendance": 9.1,
+            "attendance": 8.3,
             "followers": 0,
-            "videos": 6.5
+            "videos": 5.4
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
             "attended": 5,
-            "eligible": 11
+            "eligible": 12
           },
           "followers": {
-            "growth": 72
+            "growth": 73
           },
           "videos": {
             "count": 13,
-            "weeks": 10.29,
+            "weeks": 12.28571429,
             "credits": 3.333333333
           }
         },
@@ -2625,6 +2731,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -2639,6 +2746,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -2649,13 +2757,13 @@
     "memberName": "Oswaldo Cardoso Frazão Neto",
     "snapshot": {
       "sourceName": "Oswaldo Cardoso Frazão Neto",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "23/04",
-      "grade": 0,
+      "grade": 1,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 80.6,
+      "annualPoints": 85.7,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -2671,6 +2779,7 @@
             "videos": 20
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
@@ -2678,7 +2787,7 @@
             "eligible": 6
           },
           "followers": {
-            "growth": 3394
+            "growth": 2902
           },
           "videos": {
             "count": 90,
@@ -2690,26 +2799,27 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 47.3,
+          "points": 52.4,
           "scores": {
-            "attendance": 7.3,
-            "followers": 10,
-            "videos": 20
+            "attendance": 10,
+            "followers": 15,
+            "videos": 17.4
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 10,
           "bonusReason": "Palestrante — data não localizada",
           "attendance": {
-            "attended": 4,
-            "eligible": 11
+            "attended": 6,
+            "eligible": 12
           },
           "followers": {
-            "growth": 3494
+            "growth": 3584
           },
           "videos": {
-            "count": 107,
-            "weeks": 10.29,
-            "credits": 10.33333333
+            "count": 108,
+            "weeks": 12.28571429,
+            "credits": 10.66666667
           }
         },
         {
@@ -2723,6 +2833,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -2737,6 +2848,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }
@@ -2747,13 +2859,13 @@
     "memberName": "Rachell Raymundo Ribeiro",
     "snapshot": {
       "sourceName": "Rachell Raymundo Ribeiro",
-      "sourceDate": "2026-09-17",
+      "sourceDate": "2026-10-01",
       "currentPeriod": "2026-T3",
       "entry": "10/06",
       "grade": 0,
       "initialGrade": 0,
       "recordedDegrees": 0,
-      "annualPoints": 3.6,
+      "annualPoints": 5,
       "renewalDiscount": 0,
       "renewalPrice": 120000,
       "vouchers": 0,
@@ -2769,6 +2881,7 @@
             "videos": 0
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
@@ -2788,25 +2901,26 @@
           "id": "2026-T3",
           "label": "Jul–set 2026",
           "state": "current",
-          "points": 3.6,
+          "points": 5,
           "scores": {
-            "attendance": 3.6,
+            "attendance": 5,
             "followers": 0,
             "videos": 0
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null,
           "attendance": {
-            "attended": 2,
-            "eligible": 11
+            "attended": 3,
+            "eligible": 12
           },
           "followers": {
-            "growth": 50
+            "growth": 51
           },
           "videos": {
             "count": 0,
-            "weeks": 10.29,
+            "weeks": 12.28571429,
             "credits": 0
           }
         },
@@ -2821,6 +2935,7 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         },
@@ -2835,6 +2950,211 @@
             "videos": null
           },
           "referrals": null,
+          "referralUnitPoints": 25,
+          "bonus": 0,
+          "bonusReason": null
+        }
+      ]
+    }
+  },
+  {
+    "memberName": "Jesus Óscar Moya Romero",
+    "snapshot": {
+      "sourceName": "Jesus Óscar Moya Romero",
+      "sourceDate": "2026-10-01",
+      "currentPeriod": "2026-T3",
+      "entry": "46280",
+      "grade": 0,
+      "initialGrade": 0,
+      "recordedDegrees": 0,
+      "annualPoints": 20,
+      "renewalDiscount": 0,
+      "renewalPrice": 120000,
+      "vouchers": 0,
+      "periods": [
+        {
+          "id": "2026-T2",
+          "label": "Abr–jun 2026",
+          "state": "closed",
+          "points": 0,
+          "scores": {
+            "attendance": null,
+            "followers": null,
+            "videos": null
+          },
+          "referrals": null,
+          "referralUnitPoints": 25,
+          "bonus": 0,
+          "bonusReason": null,
+          "attendance": {
+            "attended": null,
+            "eligible": null
+          },
+          "followers": {
+            "growth": null
+          },
+          "videos": {
+            "count": null,
+            "weeks": null,
+            "credits": null
+          }
+        },
+        {
+          "id": "2026-T3",
+          "label": "Jul–set 2026",
+          "state": "current",
+          "points": 20,
+          "scores": {
+            "attendance": 20,
+            "followers": null,
+            "videos": null
+          },
+          "referrals": null,
+          "referralUnitPoints": 25,
+          "bonus": 0,
+          "bonusReason": null,
+          "attendance": {
+            "attended": 2,
+            "eligible": 2
+          },
+          "followers": {
+            "growth": null
+          },
+          "videos": {
+            "count": null,
+            "weeks": null,
+            "credits": null
+          }
+        },
+        {
+          "id": "2026-T4",
+          "label": "Out–dez 2026",
+          "state": "future",
+          "points": null,
+          "scores": {
+            "attendance": null,
+            "followers": null,
+            "videos": null
+          },
+          "referrals": null,
+          "referralUnitPoints": 25,
+          "bonus": 0,
+          "bonusReason": null
+        },
+        {
+          "id": "2027-T1",
+          "label": "Jan–mar 2027",
+          "state": "future",
+          "points": null,
+          "scores": {
+            "attendance": null,
+            "followers": null,
+            "videos": null
+          },
+          "referrals": null,
+          "referralUnitPoints": 25,
+          "bonus": 0,
+          "bonusReason": null
+        }
+      ]
+    }
+  },
+  {
+    "memberName": "Marcelo Felipe Stumpf",
+    "snapshot": {
+      "sourceName": "Marcelo Felipe Stumpf",
+      "sourceDate": "2026-10-01",
+      "currentPeriod": "2026-T3",
+      "entry": "46289",
+      "grade": 0,
+      "initialGrade": 0,
+      "recordedDegrees": 0,
+      "annualPoints": 20,
+      "renewalDiscount": 0,
+      "renewalPrice": 120000,
+      "vouchers": 0,
+      "periods": [
+        {
+          "id": "2026-T2",
+          "label": "Abr–jun 2026",
+          "state": "closed",
+          "points": 0,
+          "scores": {
+            "attendance": null,
+            "followers": null,
+            "videos": null
+          },
+          "referrals": null,
+          "referralUnitPoints": 25,
+          "bonus": 0,
+          "bonusReason": null,
+          "attendance": {
+            "attended": null,
+            "eligible": null
+          },
+          "followers": {
+            "growth": null
+          },
+          "videos": {
+            "count": null,
+            "weeks": null,
+            "credits": null
+          }
+        },
+        {
+          "id": "2026-T3",
+          "label": "Jul–set 2026",
+          "state": "current",
+          "points": 20,
+          "scores": {
+            "attendance": 20,
+            "followers": null,
+            "videos": null
+          },
+          "referrals": null,
+          "referralUnitPoints": 25,
+          "bonus": 0,
+          "bonusReason": null,
+          "attendance": {
+            "attended": 1,
+            "eligible": 1
+          },
+          "followers": {
+            "growth": null
+          },
+          "videos": {
+            "count": null,
+            "weeks": null,
+            "credits": null
+          }
+        },
+        {
+          "id": "2026-T4",
+          "label": "Out–dez 2026",
+          "state": "future",
+          "points": null,
+          "scores": {
+            "attendance": null,
+            "followers": null,
+            "videos": null
+          },
+          "referrals": null,
+          "referralUnitPoints": 25,
+          "bonus": 0,
+          "bonusReason": null
+        },
+        {
+          "id": "2027-T1",
+          "label": "Jan–mar 2027",
+          "state": "future",
+          "points": null,
+          "scores": {
+            "attendance": null,
+            "followers": null,
+            "videos": null
+          },
+          "referrals": null,
+          "referralUnitPoints": 25,
           "bonus": 0,
           "bonusReason": null
         }

@@ -50,6 +50,8 @@ const NOMES = new Set(painelLinhas.map(l => txt(l[0])));
 const painel = porNome('Painel'), part = porNome('Participacao'), pres = porNome('Presenca');
 const seg = porNome('Seguidores'), vid = porNome('Videos'), ind = porNome('Indicacao');
 const bon = porNome('Bonus'), vit = porNome('Vitrine'), hist = porNome('Historico Graus');
+// Pontos por indicação ficam na célula dourada M5 da aba Indicacao (era 50 fixo; desde 01/10/2026, 25).
+const PONTOS_INDICACAO = num((S['Indicacao'][4] || [])[11]) ?? 50;
 
 const registros = painelLinhas.map(linhaPainel => {
   const nome = txt(linhaPainel[0]);
@@ -66,6 +68,7 @@ const registros = painelLinhas.map(linhaPainel => {
         ? { attendance: null, followers: null, videos: null }
         : { attendance: num(p[2 + i * 4]), followers: num(p[3 + i * 4]), videos: num(p[4 + i * 4]) },
       referrals: meta.state === 'future' ? null : num(ic[1 + i * 2]),
+      referralUnitPoints: PONTOS_INDICACAO,
       bonus, bonusReason: bonus ? txt(bn[6]) : null,
     };
     if (meta.state === 'future') return { ...base, ...comum };
@@ -100,7 +103,7 @@ const registros = painelLinhas.map(linhaPainel => {
 const divergencias = [];
 for (const { memberName, snapshot } of registros) for (const p of snapshot.periods) {
   if (p.state === 'future') continue;
-  const soma = Object.values(p.scores).reduce((s, v) => s + (v || 0), 0) + (p.referrals || 0) * 50 + (p.bonus || 0);
+  const soma = Object.values(p.scores).reduce((s, v) => s + (v || 0), 0) + (p.referrals || 0) * (p.referralUnitPoints ?? 50) + (p.bonus || 0);
   if (Math.abs(p.points - soma) >= 0.11) divergencias.push(`${memberName} ${p.id}: painel ${p.points}, soma ${soma.toFixed(1)}`);
 }
 if (divergencias.length) { console.error('Pontuação não reconcilia:\n  ' + divergencias.join('\n  ')); process.exit(1); }
@@ -129,7 +132,7 @@ const js = raiz + 'public/assets/club-graduacao.js';
 writeFileSync(js, readFileSync(js, 'utf8').replace(/Dados da planilha de \d{2}\/\d{2}\/\d{4}/, `Dados da planilha de ${dia}/${mes}/${ano}`));
 
 const atual = registros.map(r => ({ nome: r.memberName, pontos: r.snapshot.periods[1].points }));
-console.log(`${registros.length} mentorados · pontuação reconcilia em todos os trimestres`);
+console.log(`${registros.length} mentorados · pontuação reconcilia em todos os trimestres · ${PONTOS_INDICACAO} pts por indicação`);
 console.log('graduam no T3:', atual.filter(r => r.pontos >= 50).map(r => r.nome).join(', ') || 'ninguém');
 console.log('reta final (35–49,9):', atual.filter(r => r.pontos >= 35 && r.pontos < 50).length);
 console.log('Confira com a aba Graduação e aplique: supabase db query --linked -f supabase/graduacao-preview-dados.sql');

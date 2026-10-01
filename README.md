@@ -360,6 +360,13 @@ node --test tests/graduacao.test.mjs     # ajuste os números esperados que muda
 supabase db query --linked -f supabase/graduacao-preview-dados.sql
 ```
 
+Desde 30/09/2026 os registros de produção estão fora do modo de demonstração
+(`is_demo=false`), e o SQL de carga só substitui registros de demonstração. Para
+atualizar a produção, troque o `snapshot` de cada linha pelo da fixture nova,
+mantendo `sourceFile`, `sourceRange` e o `cutoffDate` de cada trimestre (foi assim
+na carga de 01/10/2026). Os pontos por indicação vêm da célula M5 da aba
+Indicacao (25 desde 30/09).
+
 O gerador não toca no banco. Quatro nomes da planilha diferem do cadastro e
 estão mapeados em `NOME_NO_BANCO`; mentorado novo com nome diferente entra ali.
 Ajuste feito à mão no banco some na próxima carga: corrija na planilha.

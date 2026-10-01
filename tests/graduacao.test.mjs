@@ -31,34 +31,35 @@ test('falta de pontos é exibida como aguardando apuração, não faltam zero', 
   assert.doesNotMatch(html,/Faltam 0 pontos/);
 });
 
-test('radar reproduz os 29 mentorados, 1 graduação e 11 na reta final', () => {
-  assert.equal(rows.length, 29);
+test('radar reproduz os 31 mentorados, 4 graduações e 10 na reta final', () => {
+  assert.equal(rows.length, 31);
   const models = rows.map(r => G.model(r.snapshot, '2026-T3'));
-  assert.equal(models.filter(m => m.status === 'ready').length, 1);
-  assert.equal(models.filter(m => m.status === 'near').length, 11);
+  assert.equal(models.filter(m => m.status === 'ready').length, 4);
+  assert.equal(models.filter(m => m.status === 'near').length, 10);
 });
 test('pontuação do trimestre reconcilia participação, indicação e bônus', () => {
   rows.forEach(({ memberName, snapshot }) => snapshot.periods.filter(p => p.state !== 'future').forEach(p => {
-    const expected = Object.values(p.scores).reduce((sum, v) => sum + (v || 0), 0) + (p.referrals || 0) * 50 + (p.bonus || 0);
+    const expected = Object.values(p.scores).reduce((sum, v) => sum + (v || 0), 0) + (p.referrals || 0) * (p.referralUnitPoints ?? 50) + (p.bonus || 0);
     assert.ok(Math.abs(p.points - expected) < 0.11, memberName + ' ' + p.id);
   }));
 });
-test('Cintia tem 63,9 pontos e dois graus, sem ganhar um terceiro ao renderizar', () => {
+test('Cintia tem 113,5 pontos e dois graus, sem ganhar um terceiro ao renderizar', () => {
   const row = rows.find(r => r.memberName === 'Cintia Santini');
   const m = G.model(row.snapshot, '2026-T3');
-  assert.equal(m.points, 63.9); assert.equal(m.grade, 2); assert.equal(m.missing, 0); assert.equal(m.percent, 100);
+  assert.equal(m.points, 113.5); assert.equal(m.grade, 2); assert.equal(m.missing, 0); assert.equal(m.percent, 100);
   assert.equal(row.snapshot.recordedDegrees, 0);
 });
-test('Adriano e Oswaldo mostram o saldo exato, sem arredondar um ponto a mais', () => {
+test('Adriano e Nauara mostram o saldo exato, sem arredondar um ponto a mais', () => {
   const adriano = G.model(rows.find(r => r.memberName.startsWith('Adriano')).snapshot, '2026-T3');
-  const oswaldo = G.model(rows.find(r => r.memberName.startsWith('Oswaldo')).snapshot, '2026-T3');
-  assert.equal(adriano.missing, 28.6); assert.equal(oswaldo.missing, 2.7); assert.equal(oswaldo.status, 'near');
+  const nauara = G.model(rows.find(r => r.memberName.startsWith('Nauara')).snapshot, '2026-T3');
+  assert.equal(adriano.missing, 25.8); assert.equal(nauara.missing, 3.6); assert.equal(nauara.status, 'near');
 });
 test('trimestres futuros e membros sem apuração não aparecem com zero pontos confirmado', () => {
   const future = G.model(rows[0].snapshot, '2026-T4');
   assert.equal(future.points, null); assert.equal(future.status, 'future'); assert.equal(future.missing, null);
   assert.equal(G.model(null, '2026-T3').status, 'missing');
-  assert.ok(rows.every(r => r.snapshot.periods[1].referrals === null));
+  // Só a Cintia tem indicação apurada no T3 (Marcelo e Regina Stumpf), a 25 pontos cada.
+  assert.deepEqual(rows.filter(r => r.snapshot.periods[1].referrals !== null).map(r => [r.memberName, r.snapshot.periods[1].referrals, r.snapshot.periods[1].referralUnitPoints]), [['Cintia Santini', 2, 25]]);
 });
 test('limiares da régua e dez graus são preservados', () => {
   assert.equal(G.status(19.9), 'starting'); assert.equal(G.status(20), 'progress');
