@@ -80,7 +80,7 @@
     if (Array.isArray(a.method_steps)) return a.method_steps;
     var name=String(a.nome||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
     if (/fabrica|iris/.test(name)) return [];
-    var map=[[/onboarding|diagnostico/,['D01']],[/posicionamento|linha editorial/,['D02']],[/tracker|trackeamento/,['D03','D06']],[/sistema black/,['D03']],[/time premium/,['D04']],[/site institucional|gbp|aeo|google meu negocio/,['D05']],[/meta ads|google ads|trafego|funil expresso/,['D06']],[/captacao ativa/,['D07']],[/encontro grau zero/,['D08']],[/chamada consultiva/,['D09']],[/in the bag|closer/,['D10']],[/encantamento/,['D11']],[/recorrencia|seguro premium/,['D12']]];
+    var map=[[/onboarding|diagnostico/,['D01']],[/posicionamento|linha editorial/,['D02']],[/tracker|trackeamento/,['D03','D06']],[/sistema black/,['D03']],[/treinamento comercial/,['D04','D09','D10']],[/funil olympus/,['D06','D09']],[/time premium/,['D04']],[/site institucional|gbp|aeo|google meu negocio|agente de comentarios/,['D05']],[/meta ads|google ads|trafego|funil expresso|funil vsl/,['D06']],[/captacao ativa/,['D07']],[/encontro grau zero/,['D08']],[/chamada consultiva/,['D09']],[/in the bag|closer/,['D10']],[/encantamento/,['D11']],[/recorrencia|seguro premium/,['D12']]];
     var found=map.find(function(x){return x[0].test(name);}); return found?found[1]:[];
   }
   function pending(missions,artifacts,steps,progress,today) {

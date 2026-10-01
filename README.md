@@ -53,9 +53,21 @@ reverter o front-end não exige remover dados.
 
 ### Operação e fontes
 
-- **Implantação:** parecer por membro/degrau. AUDITADO exige todos os critérios
-  conferidos; autor, data e evidência ficam no livro-razão. As etiquetas D01–D12
-  são editáveis no catálogo de Processos Black.
+- **Entregas por degrau (01/10):** o clique abre primeiro o conjunto de processos
+  relacionados e o checklist desmembrado. `club-checklist.js` contém os 90 itens
+  do documento, incluindo Treino e sete rituais (três obrigatórios). Aplicar antes
+  do front-end `20261001084347_desmembramento_degraus_checklist.sql`.
+- **Implantação:** status derivado dos itens obrigatórios, com data/autor
+  carimbados no servidor e RLS. O checklist novo não infere conclusão a partir
+  de uma etapa antiga mais ampla; os registros antigos ficam acessíveis dentro
+  do processo. D08 utiliza a conferência existente por edição para preservar
+  também a apuração da rotina. Missões só pontuam quando pedidas e verificadas;
+  os três rituais são uma única missão de peso 1. As etiquetas D01–D12 continuam
+  editáveis no catálogo de Processos Black.
+- **Leituras do checklist:** crescimento de seguidores usa a apuração automática
+  do Instagram; elegibilidade dos Leads Bônus deriva de D03/D05/D06 auditados.
+  Os demais itens AUTO aguardam integração específica e não aceitam marcação
+  manual. Não confundir métricas lançadas pela equipe com leituras automáticas.
 - **Pendências:** missões solicitadas, rotinas medidas e a próxima trava de
   processos efetivamente em andamento. Um checklist ainda não iniciado não
   vira backlog do membro. A equipe pode converter uma trava em missão, definir

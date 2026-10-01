@@ -15,6 +15,9 @@ window.Club.cfg={supabaseUrl:'http://local.test',supabaseAnonKey:'test'};
 const member={id:'10000000-0000-4000-8000-000000000001',nome:'Dra. Clínica de Teste',email:'test@example.test',iniciais:'CT',ativo:true,turma:'Black',fase:'Implantação',criado_em:'2026-04-01'};
 const period=new Date().getFullYear()+'-T'+(Math.floor(new Date().getMonth()/3)+1);
 const fixtures={members:[member],cb_quarters:[{member_id:member.id,period,attended:8,eligible:10,video_credits:8,weeks:10,followers_growth:2500,orphan_leads:0,sla_recorded:true,outcomes_percent:96,call_conversion:62,evidence:'Apuração de teste'}],cb_missions:[{id:'mission1',member_id:member.id,period,method_step:'D04',title:'Concluir a trilha Cultura Premium',weight:1,status:'requested',requested_on:'2026-09-01',due_on:'2026-09-10'}],cb_steps:[],cb_extras:[],cb_encontros:[],cb_grades:[],cb_cases:[],cb_case_files:[],cb_rewards:[],cb_redemptions:[],member_graduations:[]};
+fixtures.artifacts=[{id:'site-qa',nome:'Site Institucional',tipo:'artefato',method_steps:['D05'],status:'Em andamento',url:'https://example.test/entrega'},{id:'private-qa',nome:'Tracker privado',tipo:'artefato',somente_equipe:true,method_steps:['D05']},{id:'other-qa',nome:'Entrega de outro membro',tipo:'artefato',member_id:'other-member',method_steps:['D05']}];
+fixtures.artifact_steps=[{id:'step-qa',artifact_id:'site-qa',titulo:'Site publicado',ordem:1,tipo:'entrega'}];
+fixtures.step_progress=[{member_id:member.id,step_id:'step-qa',feito:true,feito_em:'2026-09-01'}];
 window.__writes=[];window.__fixtures=fixtures;window.__failTable=null;
 window.Club.sb={supabaseUrl:'http://local.test',auth:{getSession:async()=>({data:{session:{access_token:'test',user:{id:'user1',email:'test@example.test'}}}}),signOut:async()=>({})},
 rpc:async(name,args)=>({data:name==='me'?{is_admin:${isAdmin},email:member.email,member:${isAdmin?'null':'member'}}:name==='cb_ranking'?[{position:1,alias:member.nome,member_id:member.id,total:28.5,grade:1,movement:null}]:[]}),
@@ -56,7 +59,7 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRa
    for(const selector of ['#black-subida h1','#black-subida h2','#black-subida .cb-number']){
     assert.match(await page.locator(selector).first().evaluate(el=>getComputedStyle(el).fontFamily),/InterOB/,'Áreas novas devem manter a Inter do painel atual');
    }
-   assert.equal(await page.locator('#black-subida [data-cb-step]').count(),13); // 12 cartões + CTA da pendência
+   assert.equal(await page.locator('#black-subida [data-cb-step]').count(),14); // 12 cartões + CTA da pendência + Treino
    await page.screenshot({path:path.join(out,isAdmin?'admin-desktop.png':'member-desktop.png'),fullPage:true});
    await page.locator('#rail').evaluate(el=>{el.style.height='auto';el.style.position='static';});
    await page.locator('header').evaluate(el=>el.style.visibility='hidden');
@@ -66,9 +69,59 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRa
    await page.locator('#black-subida .cb-card[data-cb-step="D04"]').click();await page.locator('[data-cb-tab="audit"]').click();
    assert.match(await page.locator('.cb-drawer').innerText(),/Social Seller/);
    await page.keyboard.press('Escape');assert.equal(await page.locator('.cb-drawer').count(),0);
+   await page.locator('#black-subida .cb-card[data-cb-step=D05]').click();
+   assert.equal(await page.locator('.cb-check-item').count(),9);
+   assert.equal(await page.locator('[data-cb-artifact=other-qa]').count(),0);
+   assert.equal(await page.locator('[data-cb-artifact=private-qa]').count(),isAdmin?1:0);
+   assert.match(await page.locator('[data-cb-artifact=site-qa]').innerText(),/1 de 1 etapas/);
+   assert.equal(await page.locator('[data-cb-item="D05-01"]').count(),0,'AUTO nunca permite marcação manual');
+   await page.locator('[data-cb-artifact=site-qa]').click();
+   assert.match(await page.locator('.cb-drawer').innerText(),/Site publicado/);
+   assert.equal(await page.locator('.cb-drawer a').getAttribute('href'),'https://example.test/entrega');
+   await page.locator('.cb-drawer [data-cb-step=D05]').click();
+   for(const width of [320,390,1440]){
+    await page.setViewportSize({width,height:1080});
+    assert.ok(await page.locator('.cb-drawer').evaluate(el=>el.scrollWidth<=el.clientWidth+1),'Drawer deve caber no celular');
+    if(width!==320)await page.screenshot({path:path.join(out,(isAdmin?'admin':'member')+'-entregas-'+width+'.png'),fullPage:true});
+   }
+   await page.keyboard.press('Escape');
+
    await page.locator('#rail [data-nav="pendencias"]').click();await page.locator('#black-pendencias [data-cb-mission]').click();
    if(!isAdmin){assert.equal(await page.locator('.cb-drawer [name=status]').count(),0);await page.locator('.cb-drawer textarea[name=evidence]').fill('Entrega para conferência');await page.locator('.cb-drawer [type=submit]').click();await page.waitForFunction(()=>window.__writes.length>0);assert.equal((await page.evaluate(()=>window.__writes))[0].row.status,'submitted');}
-   else {assert.equal(await page.locator('.cb-drawer [name=status]').count(),1);await page.keyboard.press('Escape');await page.locator('#rail [data-nav="subida"]').click();await page.locator('#black-subida .cb-card[data-cb-step="D04"]').click();await page.locator('[data-cb-step-edit]').click();await page.locator('[name=status]').selectOption('audited');await page.locator('[name=evidence]').fill('Critérios ainda incompletos');await page.locator('.cb-drawer [type=submit]').click();assert.match(await page.locator('.cb-form-error').innerText(),/todos os critérios/);await page.keyboard.press('Escape');}
+   else {
+    assert.equal(await page.locator('.cb-drawer [name=status]').count(),1);await page.keyboard.press('Escape');
+    await page.locator('#rail [data-nav="subida"]').click();await page.locator('#black-subida .cb-card[data-cb-step="D04"]').click();
+    assert.equal(await page.locator('[data-cb-tab=audit]').getAttribute('aria-selected'),'true');
+    assert.equal(await page.locator('.cb-check-item').count(),7);
+    await page.locator('[data-cb-item="D04-01"]').click();
+    await page.locator('[name=done]').check();await page.locator('[name=evidence]').fill('Dono confirmado pela equipe');
+    await page.locator('.cb-drawer [type=submit]').click();
+    await page.waitForFunction(()=>window.__writes.some(w=>w.table==='cb_checklist_progress'));
+    await page.locator('[data-cb-item="D04-01"]').waitFor();
+    assert.match(await page.locator('#black-subida .cb-card[data-cb-step=D04]').innerText(),/1 de 7 itens/);
+    assert.match(await page.locator('#black-subida .cb-card[data-cb-step=D04]').innerText(),/Rodando/i);
+    await page.locator('[data-cb-tab=metrics]').click();await page.locator('[data-cb-step-edit]').click();
+    assert.equal(await page.locator('.cb-drawer [name=status]').count(),0);
+    await page.keyboard.press('Escape');
+   }
+   // Meses independentes; marcação usa o registro auditado da edição já existente.
+   await page.evaluate(()=>{
+    const f=window.__fixtures,m=f.members[0],period=f.cb_quarters[0].period;
+    f.cb_encontros=[{id:'oct',member_id:m.id,period,edition:'2026-10-01',publicized:true,video_group:false,video_ads:false,attended:false,evidence:'Conferência anterior',updated_at:'2026-10-01',updated_by:'team'},{id:'nov',member_id:m.id,period,edition:'2026-11-01',publicized:false,video_group:false,video_ads:false,attended:false}];
+   });
+   await page.locator('#rail [data-nav=subida]').click();await page.locator('#black-subida [data-cb-reload]').click();
+   await page.locator('#black-subida .cb-card[data-cb-step=D08]').click();
+   assert.match(await page.locator('.cb-section').filter({hasText:'Checklist do degrau'}).innerText(),/0 de 6/);
+   await page.locator('[data-cb-edition]').selectOption('2026-10-01');
+   assert.match(await page.locator('.cb-section').filter({hasText:'Checklist do degrau'}).innerText(),/1 de 6/);
+   if(isAdmin){
+    await page.locator('[data-cb-item="D08-01"]').click();
+    assert.equal(await page.locator('.cb-form').getAttribute('data-cb-form'),'checklist');
+    assert.equal(await page.locator('[name=edition]').inputValue(),'2026-10-01');
+   }
+   await page.keyboard.press('Escape');
+   await page.evaluate(()=>window.__fixtures.cb_encontros=[]);
+   await page.locator('#black-subida [data-cb-reload]').click();await page.locator('#black-subida .cb-card[data-cb-step=D08]').waitFor();
    for(const key of ['ranking','vitrine','modulos','casos','graduacao','farol','artifacts','agenda',...(isAdmin?['rede','members']:[]),'subida']){await page.locator('#rail [data-nav="'+key+'"]').click();assert.equal(await page.locator('.view:not([hidden])').count(),1);}
    await page.locator('#rail [data-nav="agenda"]').click();await page.locator('[data-view=agenda] [data-nav=encontro]').click();assert.equal(await page.locator('[data-view=encontro]').isVisible(),true);
    await page.locator('#rail [data-nav=ranking]').click();await page.locator('#black-ranking .cb-ranking-list').waitFor();
@@ -169,6 +222,6 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRa
    assert.equal(await page.locator('#black-subida .cb-card').count(),0,'Fonte indisponível não deve parecer um painel zerado');
    await context.close();
   }
-  assert.deepEqual(errors,[]);console.log('Browser: navegação, drawer, permissão, evidência, auditoria incompleta, erro de fonte, mobile e PDF de 90 MB com retomada OK.');console.log('Capturas: '+out);
+  assert.deepEqual(errors,[]);console.log('Browser: navegação, drawer, permissão, evidência, checklist individual, entregas relacionadas, edições mensais, erro de fonte, mobile e PDF de 90 MB com retomada OK.');console.log('Capturas: '+out);
  }finally{await browser.close();await new Promise(r=>server.close(r));}
 })().catch(e=>{console.error(e);process.exitCode=1;server.close();});

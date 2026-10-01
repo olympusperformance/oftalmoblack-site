@@ -93,3 +93,13 @@
   .cb-vitrine-summary>div{padding:17px}.cb-vitrine-summary>div:last-child{grid-column:1 / -1}
   .cb-vitrine-heading{align-items:flex-start;flex-direction:column}
 }
+/* Entregas dentro de cada degrau: mantém a paleta preto e gold existente. */
+.cb-deliveries{display:grid;gap:10px;margin-bottom:24px}
+.cb-delivery{display:flex;justify-content:space-between;align-items:center;gap:16px;width:100%;text-align:left;padding:16px;border:1px solid var(--border);border-radius:12px;background:var(--panel);color:var(--text);font:inherit;cursor:pointer}
+.cb-delivery:hover,.cb-delivery:focus-visible{border-color:var(--gold)}
+.cb-delivery small,.cb-check-item small{display:block;color:var(--muted);margin-top:6px}
+.cb-delivery>span:last-child,.cb-check-icon{color:var(--gold)}
+.cb-check-item{display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;padding:16px;margin:10px 0;border:1px solid var(--border);border-radius:12px;background:var(--panel);overflow-wrap:anywhere}
+.cb-check-item.is-done{border-color:color-mix(in srgb,var(--gold) 45%,var(--border))}
+.cb-item-meta{display:flex;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin:8px 0}
+.cb-check-item .cb-tools{margin-top:12px;flex-wrap:wrap}
