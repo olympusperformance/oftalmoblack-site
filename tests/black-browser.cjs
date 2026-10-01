@@ -19,6 +19,9 @@ fixtures.artifacts=[{id:'site-qa',nome:'Site Institucional',tipo:'artefato',meth
 fixtures.artifacts.push({id:'archived-stage',nome:'Agrupador legado arquivado',tipo:'artefato',method_steps:['D04'],archived_at:'2026-10-01'},{id:'shared-training',nome:'Treinamento comercial',tipo:'artefato',method_steps:['D04','D09','D10','TREINO'],status:'Disponível'},{id:'quiz',nome:'Quiz',tipo:'artefato',method_steps:[],status:'Disponível'},{id:'iris',nome:'Íris Black',tipo:'artefato',method_steps:[],status:'Disponível'});
 fixtures.artifact_steps=[{id:'step-qa',artifact_id:'site-qa',titulo:'Site publicado',ordem:1,tipo:'entrega'}];
 fixtures.step_progress=[{member_id:member.id,step_id:'step-qa',feito:true,feito_em:'2026-09-01'}];
+fixtures.artifacts.push({id:'editorial-qa',nome:'Linha Editorial',subtitulo:'Feed e stories na voz do Mestre',meta:'Entrega em 2 dias',tipo:'artefato',method_steps:['D02'],status:'Disponível',url:'/materiais/'});
+fixtures.artifact_steps.push(...Array.from({length:18},(_,i)=>({id:'editorial-step-'+i,artifact_id:'editorial-qa',titulo:'Etapa de implantação '+(i+1),ordem:i,tipo:'entrega'})));
+fixtures.step_progress.push({member_id:member.id,step_id:'editorial-step-0',feito:true,feito_em:'2026-09-01'});
 window.__writes=[];window.__fixtures=fixtures;window.__failTable=null;
 window.Club.sb={supabaseUrl:'http://local.test',auth:{getSession:async()=>({data:{session:{access_token:'test',user:{id:'user1',email:'test@example.test'}}}}),signOut:async()=>({})},
 rpc:async(name,args)=>({data:name==='me'?{is_admin:${isAdmin},email:member.email,member:${isAdmin?'null':'member'}}:name==='cb_ranking'?[{position:1,alias:member.nome,member_id:member.id,total:28.5,grade:1,movement:null}]:[]}),
@@ -79,11 +82,12 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRa
    await page.keyboard.press('Escape');assert.equal(await page.locator('.cb-drawer').count(),0);
    await page.locator('#black-subida .cb-card[data-cb-step=D05]').click();
    assert.equal(await page.locator('.cb-check-item').count(),9);
-   assert.equal(await page.locator('[data-cb-artifact=other-qa]').count(),0);
-   assert.equal(await page.locator('[data-cb-artifact=private-qa]').count(),isAdmin?1:0);
-   assert.match(await page.locator('[data-cb-artifact=site-qa]').innerText(),/1 de 1 etapas/);
+   assert.equal(await page.locator('.cb-drawer [data-cb-artifact=other-qa]').count(),0);
+   assert.equal(await page.locator('.cb-drawer [data-cb-artifact=private-qa]').count(),isAdmin?1:0);
+   assert.match(await page.locator('.cb-drawer [data-cb-artifact=site-qa]').innerText(),/1 de 1 etapas/);
    assert.equal(await page.locator('[data-cb-item="D05-01"]').count(),0,'AUTO nunca permite marcação manual');
-   await page.locator('[data-cb-artifact=site-qa]').click();
+   await page.locator('.cb-drawer [data-cb-artifact=site-qa]').click();
+   assert.equal(await page.locator('.cb-popup').count(),1,'Entrega abre em pop-up centralizado');
    assert.match(await page.locator('.cb-drawer').innerText(),/Site publicado/);
    assert.equal(await page.locator('.cb-drawer a').getAttribute('href'),'https://example.test/entrega');
    await page.locator('.cb-drawer [data-cb-step=D05]').click();
@@ -145,6 +149,40 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRa
    }else{
     assert.doesNotMatch(await catalog.innerText(),/Tracker privado|Entrega de outro membro/);
     assert.match(await catalog.innerText(),/Vínculo com degrau a confirmar/);
+    assert.equal(await catalog.locator('.art-st-list').count(),0,'Checklist não alonga mais os cards');
+    const editorial=catalog.locator('button[data-cb-artifact=editorial-qa]');
+    assert.ok((await editorial.boundingBox()).height<340,'Card compacto mesmo com 18 etapas');
+    assert.match(await editorial.innerText(),/1\/18/,'Resumo mantém o progresso existente');
+    const before=await page.evaluate(()=>window.__writes.length);
+    for(const width of [1440,390,320]){
+     await page.setViewportSize({width,height:844});
+     await editorial.focus();await page.keyboard.press('Enter');
+     const popup=page.locator('.cb-popup');await popup.waitFor();
+     assert.equal(await popup.getAttribute('role'),'dialog');
+     assert.equal(await popup.getAttribute('aria-modal'),'true');
+     assert.equal(await popup.locator('.cb-check-item').count(),18);
+     assert.equal(await popup.locator('.cb-check-item.is-done').count(),1);
+     assert.match(await popup.innerText(),/Feed e stories na voz do Mestre/);
+     assert.equal(await popup.locator('a').getAttribute('href'),url+'/materiais/','Link relativo preservado dentro do pop-up');
+     const box=await popup.boundingBox();
+     assert.ok(box.x>=0&&box.y>=0&&box.x+box.width<=width+1&&box.y+box.height<=844,'Pop-up contido na tela');
+     assert.ok(Math.abs(box.x+box.width/2-width/2)<2,'Pop-up centralizado');
+     assert.ok(await popup.locator('.cb-popup-content').evaluate(el=>el.scrollHeight>el.clientHeight),'Checklist longo rola dentro do pop-up');
+     await page.keyboard.press('Shift+Tab');
+     assert.equal(await popup.locator('a').evaluate(el=>el===document.activeElement),true,'Foco não escapa do modal');
+     await page.keyboard.press('Tab');
+     assert.equal(await popup.locator('.cb-close').evaluate(el=>el===document.activeElement),true);
+     if(width!==320)await page.screenshot({path:path.join(out,'member-process-popup-'+width+'.png'),fullPage:true});
+     await page.keyboard.press('Escape');
+     assert.equal(await popup.count(),0);
+     assert.equal(await editorial.evaluate(el=>el===document.activeElement),true,'Fechar devolve o foco ao card');
+    }
+    await editorial.click();await page.locator('.cb-overlay').click({position:{x:2,y:2}});
+    assert.equal(await page.locator('.cb-popup').count(),0,'Clique fora fecha');
+    await editorial.click();await page.locator('.cb-popup .cb-close').click();
+    assert.equal(await page.locator('.cb-popup').count(),0,'Botão fechar funciona');
+    assert.equal(await page.evaluate(()=>window.__writes.length),before,'Abrir e fechar detalhes não grava dados');
+    await page.setViewportSize({width:1440,height:1080});
    }
    await page.screenshot({path:path.join(out,(isAdmin?'admin':'member')+'-hierarquia.png'),fullPage:true});
    for(const width of [320,390]){

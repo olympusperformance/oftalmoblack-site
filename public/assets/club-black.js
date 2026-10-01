@@ -80,7 +80,7 @@
   }
   function completion(step){var items=catalog(step).filter(function(i){return !i.optional;});return {total:items.length,done:items.filter(function(i){return itemState(i).done;}).length};}
   function status(step){var c=completion(step);return c.total&&c.done===c.total?'audited':c.done?'running':'pending';}
-  function visibleArtifacts(){return (state.options.artifacts||[]).filter(function(a){return a.tipo!=='interna'&&(admin()||!a.somente_equipe)&&(!a.member_id||a.member_id===state.member.id);});}
+  function visibleArtifacts(){return (state.options.artifacts||[]).filter(function(a){return !a.archived_at&&a.tipo!=='interna'&&(admin()||!a.somente_equipe)&&(!a.member_id||a.member_id===state.member.id);});}
   function related(step){return visibleArtifacts().filter(function(a){return M.artifactSteps(a).indexOf(step)>=0;});}
   function artifactCards(list,back){return list.length?'<div class="cb-deliveries">'+list.map(function(a){var steps=(state.options.steps||[]).filter(function(s){return s.artifact_id===a.id;}),done=steps.filter(function(s){return (state.options.progress||[]).some(function(p){return p.member_id===state.member.id&&p.step_id===s.id&&p.feito;});}).length;return '<button class="cb-delivery" data-cb-artifact="'+esc(a.id)+'" data-back="'+esc(back||'')+'"><span><b>'+esc(a.nome)+'</b><small>'+done+' de '+steps.length+' etapas do processo'+(a.somente_equipe?' · Equipe':'')+'</small></span><span aria-hidden="true">↗</span></button>';}).join('')+'</div>':empty('Este agrupador acompanha implantações e rotinas pelo checklist abaixo. Não há uma entrega separada cadastrada.');}
   function checklistBody(id){
@@ -89,10 +89,31 @@
     body+=catalog(id).map(function(item){var r=itemState(item),mission=rows('missions').find(function(m){return m.checklist_item_id===item.id;}),ritual=/^D11-0[1-7]$/.test(item.id);return '<article class="cb-check-item'+(r.done?' is-done':'')+'"><span class="cb-check-icon" aria-hidden="true">'+(r.done?'✓':'○')+'</span><div><b>'+esc(item.title)+'</b><div class="cb-item-meta"><span class="cb-source">'+esc(item.sourceDetail)+'</span><span>'+esc(item.owner)+'</span>'+(item.optional?'<span>Adicional · mínimo de 3 rituais</span>':'')+'</div><small>'+(r.done?'FEITO':'NÃO FEITO')+' · '+(r.updated_at?date(r.updated_at)+' · '+esc(r.actor_name||'Equipe Black'):'Sem marcação')+'</small>'+(r.note?'<p class="cb-note">'+esc(r.note)+'</p>':'')+(r.evidence?'<p class="cb-note">'+esc(r.evidence)+'</p>':'')+'<div class="cb-tools">'+(admin()&&item.source==='MANUAL'&&(!item.monthly||edition())?button('Conferir item','item',item.id):'')+(mission?button(admin()?'Ver missão':'Enviar evidência','mission',mission.id):admin()&&item.missionWeight!=null&&(!ritual||item.id==='D11-01')?button(ritual?'Solicitar missão · 3 rituais':'Solicitar missão','item-mission',item.id):'')+'</div></div></article>';}).join('');
     return body+'<p class="cb-note">A equipe confere os itens manuais. Itens automáticos dependem de uma leitura confirmada. Marcar o checklist não concede pontos: missões precisam ser solicitadas e verificadas.</p>';
   }
-  function openArtifact(id,back){var a=visibleArtifacts().find(function(a){return a.id===id;});if(!a)return;var steps=(state.options.steps||[]).filter(function(s){return s.artifact_id===id;}).sort(function(a,b){return a.ordem-b.ordem;}),body=(back?button('← Voltar ao degrau','step',back):'')+'<p class="cb-note">Processo original · etapas e progresso preservados.</p>';
-    if(a.url&&/^https?:\/\//i.test(a.url)&&a.status!=='Bloqueado')body+='<p><a class="btn btn-primary" href="'+esc(a.url)+'" target="_blank" rel="noopener noreferrer">Abrir entrega ↗</a></p>';
-    body+=steps.map(function(s){var p=(state.options.progress||[]).find(function(p){return p.member_id===state.member.id&&p.step_id===s.id;})||{},url=a.status!=='Bloqueado'&&s.url&&/^https?:\/\//i.test(s.url)?s.url:null;return '<article class="cb-check-item"><span class="cb-check-icon">'+(p.feito?'✓':'○')+'</span><div><b>'+esc(s.titulo)+'</b><small>'+(p.feito?'FEITO':'NÃO FEITO')+(p.feito_em?' · '+date(p.feito_em):'')+'</small>'+(s.descricao?'<p class="cb-note">'+esc(s.descricao)+'</p>':'')+(url?'<a class="cb-link" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">Abrir material ↗</a>':'')+'</div></article>';}).join('')||empty('Este processo ainda não tem etapas cadastradas.');
-    open(a.nome,body);
+  function deliveryUrl(value){
+    if(!value)return null;
+    try{var url=new URL(value,location.href);return /^https?:$/.test(url.protocol)?url.href:null;}catch(e){return null;}
+  }
+  function openArtifact(id,back){
+    var a=visibleArtifacts().find(function(a){return a.id===id;});if(!a)return;
+    var steps=C.ordenaEtapas((state.options.steps||[]).filter(function(s){return s.artifact_id===id;}));
+    function progress(s){return (state.options.progress||[]).find(function(p){return p.member_id===state.member.id&&p.step_id===s;})||{};}
+    var part=C.par(steps,function(id){return !!progress(id).feito;}),url=a.status!=='Bloqueado'&&deliveryUrl(a.url);
+    var body=(back?button('← Voltar ao degrau','step',back):'')+
+      (a.subtitulo?'<p>'+esc(a.subtitulo)+'</p>':'')+
+      '<div class="cb-tools">'+(a.status?'<span class="cb-chip">'+esc(a.status)+'</span>':'')+
+      M.artifactSteps(a).map(function(step){return '<span class="cb-chip">'+esc(step)+'</span>';}).join('')+'</div>'+
+      (a.meta?'<p class="cb-note">'+esc(a.meta)+'</p>':'');
+    if(url)body+='<p><a class="btn btn-primary" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">Abrir entrega ↗</a></p>';
+    if(steps.length)body+='<div class="cb-section"><h3>Checklist do processo</h3><span class="cb-note">'+part.feitas+' de '+part.total+' etapas de implantação</span></div>';
+    var shown=steps.filter(function(s){var type=C.tipoEtapa(s);return admin()||(type!=='aceite'&&(type!=='opcional'||progress(s.id).feito)&&(type!=='rotina'||part.completo));});
+    body+=shown.map(function(s){
+      var p=progress(s.id),type=C.tipoEtapa(s),routine=type==='rotina',material=a.status!=='Bloqueado'&&deliveryUrl(s.url);
+      return '<article class="cb-check-item'+(p.feito?' is-done':'')+'"><span class="cb-check-icon" aria-hidden="true">'+(routine?'↻':p.feito?'✓':'○')+'</span><div><b>'+esc(s.titulo)+'</b><small>'+
+        (routine?'ACOMPANHAMENTO · '+esc(C.cadenciaRotulo(s.cadencia_dias)):p.feito?'FEITO':type==='trava'?'ESPERANDO VOCÊ':'NÃO FEITO')+(p.feito_em?' · '+date(p.feito_em):'')+'</small>'+
+        (s.descricao?'<p class="cb-note">'+esc(s.descricao)+'</p>':'')+
+        (material?'<a class="cb-link" href="'+esc(material)+'" target="_blank" rel="noopener noreferrer">Abrir material ↗</a>':'')+'</div></article>';
+    }).join('')||empty('Este processo ainda não tem etapas disponíveis para exibição.');
+    open(a.nome,body,null,true);
   }
   function itemForm(id){var item=(C.stepChecklist||[]).find(function(i){return i.id===id;});if(!item||item.source!=='MANUAL')return;if(item.monthly&&!edition())return;var r=itemState(item);open('Conferir entrega',form('<p>'+esc(item.title)+'</p><p class="cb-note">'+esc(item.owner)+' · data e autor registrados automaticamente.</p><input type="hidden" name="edition" value="'+esc(item.monthly&&edition()?edition().edition:'')+'">'+check('Entrega conferida e feita','done',r.done)+field('Evidência / observação (opcional)','evidence',r.evidence,'textarea'),'checklist',id));}
   function badge(s){return '<span class="cb-chip '+s+'">'+({pending:'Pendente',running:'Rodando',audited:'Auditado'}[s]||s)+'</span>';}
@@ -223,9 +244,9 @@
     state.data.history=others[4].status==='fulfilled'?others[4].value:[];
     render(); if(drawerId&&(/^D\d{2}$/.test(drawerId)||drawerId==='TREINO'))openStep(drawerId);
   }
-  function open(title,body,id){
+  function open(title,body,id,popup){
     if(!drawer){previousFocus=document.activeElement;previousOverflow=document.body.style.overflow;overlay=document.createElement('div');overlay.className='cb-overlay';drawer=document.createElement('aside');drawer.className='cb cb-drawer';drawer.setAttribute('role','dialog');drawer.setAttribute('aria-modal','true');drawer.setAttribute('aria-label',title);overlay.addEventListener('click',close);document.body.append(overlay,drawer);document.body.style.overflow='hidden';}
-    drawerId=id||null;drawer.setAttribute('aria-label',title);drawer.innerHTML='<button type="button" class="cb-close" data-cb-close aria-label="Fechar painel">×</button><div class="cb-head"><h2>'+esc(title)+'</h2></div>'+body;drawer.querySelector('.cb-close').focus();
+    drawerId=id||null;drawer.classList.toggle('cb-popup',!!popup);drawer.setAttribute('aria-label',title);drawer.innerHTML='<button type="button" class="cb-close" data-cb-close aria-label="Fechar painel">×</button><div class="cb-head"><h2>'+esc(title)+'</h2></div>'+(popup?'<div class="cb-popup-content">'+body+'</div>':body);drawer.scrollTop=0;drawer.querySelector('.cb-close').focus();
   }
   function close(){if(drawer&&/^#subida\/(D\d{2}|TREINO)/.test(location.hash))history.replaceState(null,'',location.pathname+location.search+'#subida');if(drawer)drawer.remove();if(overlay)overlay.remove();drawer=overlay=null;drawerId=null;document.body.style.overflow=previousOverflow;if(previousFocus&&previousFocus.isConnected)previousFocus.focus();}
   function field(label,name,value,type,required){return '<label>'+esc(label)+(type==='textarea'?'<textarea name="'+name+'" maxlength="4000"'+(required?' required':'')+'>'+esc(value||'')+'</textarea>':'<input name="'+name+'" type="'+(type||'text')+'" value="'+esc(value==null?'':value)+'"'+(type==='number'?' step="any"':' maxlength="500"')+(required?' required':'')+'>')+'</label>';}

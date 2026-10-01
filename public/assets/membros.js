@@ -319,7 +319,7 @@
     return barra + '<ul class="art-st-list">' + itens.join('') + '</ul>';
   }
 
-  function cartaoArtefato(a, detalhado) {
+  function cartaoArtefato(a) {
     var s = Club.ART_ST[a.status] || Club.ART_ST['Bloqueado'];
     var locked = a.status === 'Bloqueado';
     var r = parDe(a);
@@ -337,16 +337,14 @@
       '<div class="cb-tools">' + Club.metodo.artifactSteps(a).map(function (id) {
         return '<span class="cb-chip">' + id + '</span>';
       }).join('') + '</div>' +
-      '<p class="art-s">' + esc(a.subtitulo) + '</p>' +
-      checklist(a, detalhado) +
+      checklist(a, false) +
       '<div class="art-st" style="color:' + chip.color + '">' + ico(chip.icon) + esc(chip.label) + '</div>' +
-      '<p class="art-m">' + esc(a.meta) + '</p>';
+      '<span class="art-detail">Ver detalhes <span aria-hidden="true">↗</span></span>';
 
-    /* Só vira link quando há para onde ir e o processo não está bloqueado. */
-    return (a.url && !locked)
-      ? '<a class="art" href="' + esc(a.url) + '" style="text-decoration:none;color:inherit">' +
-        corpo + '</a>'
-      : '<div class="art' + (locked ? ' locked' : '') + '">' + corpo + '</div>';
+    /* O card abre os detalhes; o link da entrega fica dentro do pop-up. */
+    return '<button type="button" class="art art-compact' + (locked ? ' locked' : '') +
+      '" data-cb-artifact="' + esc(a.id) + '" aria-haspopup="dialog" aria-label="Ver detalhes de ' +
+      esc(a.nome) + '">' + corpo + '</button>';
   }
 
   /* ── artefatos por área ───────────────────────────────────────────────── */
@@ -384,10 +382,9 @@
     var secoes = Club.metodo.catalogGroups(meus, true);
     var ordenados = meus.slice();
 
-    /* Na capa cabe uma grade só, na ordem das áreas; na aba cheia, uma seção
-       por área com o checklist inteiro. */
+    /* Cards compactos na capa e no catálogo; o checklist abre no pop-up. */
     $('artList').innerHTML = ordenados.length
-      ? ordenados.map(function (a) { return cartaoArtefato(a, false); }).join('') : vazio;
+      ? ordenados.map(function (a) { return cartaoArtefato(a); }).join('') : vazio;
     $('artListFull').innerHTML = secoes.length
       ? secoes.map(function (s) {
           return '<section class="art-area">' +
@@ -396,7 +393,7 @@
               '<h2 class="sec-t">' + esc(s.name) + '</h2>' +
             '</div>'+((s.kind==='step'||s.kind==='transversal')?'<a class="btn" href="#subida/'+esc(s.id)+'">Ver checklist</a>':'')+'</div>' +
             '<div class="artgrid">' +
-              (s.items.length?s.items.map(function (a) { return cartaoArtefato(a, true); }).join(''):'<p class="tx-s">As implantações e rotinas estão no checklist deste agrupador.</p>') +
+              (s.items.length?s.items.map(function (a) { return cartaoArtefato(a); }).join(''):'<p class="tx-s">As implantações e rotinas estão no checklist deste agrupador.</p>') +
             '</div>' +
           '</section>';
         }).join('')
