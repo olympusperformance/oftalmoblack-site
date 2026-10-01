@@ -53,6 +53,18 @@ reverter o front-end não exige remover dados.
 
 ### Operação e fontes
 
+- **Degraus como agrupadores (01/10):** aplicar
+  `20261001091455_degraus_como_agrupadores.sql` antes do front-end. O catálogo
+  `cb_method_stages` separa os 12 degraus e o Treino das entregas em `artifacts`;
+  `cb_stage_deliveries` expõe os vínculos com `security_invoker`, sem copiar
+  entregas. `method_steps` é a fonte desses vínculos e aceita também `TREINO`.
+  Os oito agrupadores criados como artefatos em 30/09 são arquivados apenas se
+  não têm progresso, notas, missões ou demandas; IDs e etapas permanecem no banco.
+  O arquivo é reversível por `archived_at`/`archive_reason`. A camada de dados
+  exclui arquivados das telas. As áreas operacionais e os vínculos de demandas
+  não são alterados e podem ser geridos pelo filtro “Áreas operacionais”.
+  Quiz e Automação Instagram ficam com vínculo a confirmar: não há de-para
+  explícito para eles no documento (a cópia “(1)” tem conteúdo idêntico).
 - **Entregas por degrau (01/10):** o clique abre primeiro o conjunto de processos
   relacionados e o checklist desmembrado. `club-checklist.js` contém os 90 itens
   do documento, incluindo Treino e sete rituais (três obrigatórios). Aplicar antes

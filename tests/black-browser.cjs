@@ -16,6 +16,7 @@ const member={id:'10000000-0000-4000-8000-000000000001',nome:'Dra. Clínica de T
 const period=new Date().getFullYear()+'-T'+(Math.floor(new Date().getMonth()/3)+1);
 const fixtures={members:[member],cb_quarters:[{member_id:member.id,period,attended:8,eligible:10,video_credits:8,weeks:10,followers_growth:2500,orphan_leads:0,sla_recorded:true,outcomes_percent:96,call_conversion:62,evidence:'Apuração de teste'}],cb_missions:[{id:'mission1',member_id:member.id,period,method_step:'D04',title:'Concluir a trilha Cultura Premium',weight:1,status:'requested',requested_on:'2026-09-01',due_on:'2026-09-10'}],cb_steps:[],cb_extras:[],cb_encontros:[],cb_grades:[],cb_cases:[],cb_case_files:[],cb_rewards:[],cb_redemptions:[],member_graduations:[]};
 fixtures.artifacts=[{id:'site-qa',nome:'Site Institucional',tipo:'artefato',method_steps:['D05'],status:'Em andamento',url:'https://example.test/entrega'},{id:'private-qa',nome:'Tracker privado',tipo:'artefato',somente_equipe:true,method_steps:['D05']},{id:'other-qa',nome:'Entrega de outro membro',tipo:'artefato',member_id:'other-member',method_steps:['D05']}];
+fixtures.artifacts.push({id:'archived-stage',nome:'Agrupador legado arquivado',tipo:'artefato',method_steps:['D04'],archived_at:'2026-10-01'},{id:'shared-training',nome:'Treinamento comercial',tipo:'artefato',method_steps:['D04','D09','D10','TREINO'],status:'Disponível'},{id:'quiz',nome:'Quiz',tipo:'artefato',method_steps:[],status:'Disponível'},{id:'iris',nome:'Íris Black',tipo:'artefato',method_steps:[],status:'Disponível'});
 fixtures.artifact_steps=[{id:'step-qa',artifact_id:'site-qa',titulo:'Site publicado',ordem:1,tipo:'entrega'}];
 fixtures.step_progress=[{member_id:member.id,step_id:'step-qa',feito:true,feito_em:'2026-09-01'}];
 window.__writes=[];window.__fixtures=fixtures;window.__failTable=null;
@@ -130,6 +131,35 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRa
    await page.evaluate(()=>window.__fixtures.cb_encontros=[]);
    await page.locator('#black-subida [data-cb-reload]').click();await page.locator('#black-subida .cb-card[data-cb-step=D08]').waitFor();
    for(const key of ['ranking','vitrine','modulos','casos','graduacao','farol','artifacts','agenda',...(isAdmin?['rede','members']:[]),'subida']){await page.locator('#rail [data-nav="'+key+'"]').click();assert.equal(await page.locator('.view:not([hidden])').count(),1);}
+   await page.locator('#rail [data-nav=artifacts]').click();
+   const catalog=page.locator(isAdmin?'#listaArtefatos':'#artListFull');
+   assert.doesNotMatch(await catalog.innerText(),/Agrupador legado arquivado/);
+   if(isAdmin){
+    assert.equal(await page.locator('[data-method-group^=D]').count(),12);
+    assert.equal(await page.locator('[data-edit=artifact][data-id=shared-training]').count(),4,'Uma entrega compartilhada, mesmo ID nos quatro agrupadores');
+    assert.equal(await page.locator('[data-method-group=D04] [data-edit]').count(),0,'Degrau não é uma entrega editável');
+    await page.locator('#filtroArtGrupo').selectOption('D05');
+    assert.equal(await page.locator('[data-method-group]').count(),1);
+    assert.equal(await page.locator('[data-edit=artifact][data-id=site-qa]').count(),1);
+    await page.locator('#filtroArtGrupo').selectOption('');
+   }else{
+    assert.doesNotMatch(await catalog.innerText(),/Tracker privado|Entrega de outro membro/);
+    assert.match(await catalog.innerText(),/Vínculo com degrau a confirmar/);
+   }
+   await page.screenshot({path:path.join(out,(isAdmin?'admin':'member')+'-hierarquia.png'),fullPage:true});
+   for(const width of [320,390]){
+    await page.setViewportSize({width,height:844});
+    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1),'Catálogo por degraus deve caber no celular');
+    if(width===390)await page.screenshot({path:path.join(out,(isAdmin?'admin':'member')+'-hierarquia-mobile.png'),fullPage:true});
+   }
+   await page.setViewportSize({width:1440,height:1080});
+   await catalog.locator('a[href="#subida/D05"]').click();
+   await page.locator('.cb-drawer').waitFor();assert.match(await page.locator('.cb-drawer').innerText(),/Site Institucional/);
+   await page.keyboard.press('Escape');
+   await page.locator('#rail [data-nav=artifacts]').click();
+   await catalog.locator('a[href="#subida/TREINO"]').click();
+   await page.locator('.cb-drawer').waitFor();assert.match(await page.locator('.cb-drawer').innerText(),/Treinamento comercial/);
+   await page.keyboard.press('Escape');
    await page.locator('#rail [data-nav="agenda"]').click();await page.locator('[data-view=agenda] [data-nav=encontro]').click();assert.equal(await page.locator('[data-view=encontro]').isVisible(),true);
    await page.locator('#rail [data-nav=ranking]').click();await page.locator('#black-ranking .cb-ranking-list').waitFor();
    assert.match(await page.locator('#black-ranking .cb-own').innerText(),/63,9/);

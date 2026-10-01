@@ -13,7 +13,7 @@ const black={id:'black',nome:'Sistema Black',tipo:'artefato',somente_equipe:fals
 const groups=[{id:'tech',nome:'Tecnologia e dados',ordem:1}];
 test('visão do mentorado, inclusive preview admin, remove Tracker da capa, catálogo e contagem',()=>{
  const nodes={artList:{},artListFull:{}};
- const ctx=vm.createContext({st:{artifacts:[tracker,black],groups},Club:{empty:()=>'',esc:s=>s},esc:s=>s,
+ const ctx=vm.createContext({st:{artifacts:[tracker,black],groups},Club:{empty:()=>'',esc:s=>s,metodo:require('../public/assets/club-metodo.js')},esc:s=>s,
   $:id=>nodes[id],etapasDe:()=>[{id:'step'}],parDe:()=>({estado:'ativo'}),cartaoArtefato:a=>a.nome});
  vm.runInContext(extract('public/assets/membros.js','  function agruparPorArea(','  /* ── agenda'),ctx);
  assert.equal(ctx.renderArtifacts(),1);

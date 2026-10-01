@@ -214,7 +214,7 @@
     artifacts: {
       list: function (o) {
         return doMembro(sb().from('artifacts').select('*'), opt(o, 'memberId'))
-          .then(lista).then(function (r) { return r.sort(byOrdemNome); });
+          .then(lista).then(function (r) { return r.filter(function(a){return !a.archived_at;}).sort(byOrdemNome); });
       },
       save: function (a) {
         /* Antes de frentes.sql rodar as colunas não existem e o PostgREST

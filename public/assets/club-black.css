@@ -107,3 +107,5 @@
 :root:not([data-theme="light"]) :is(#black-subida,.cb-drawer) :is(.cb-card,.cb-score-card,.cb-stats,.cb-pending,.cb-delivery,.cb-check-item){background-color:#151219}
 :root:not([data-theme="light"]) #black-subida :is(.cb-card,.cb-score-card,.cb-stats){border-color:rgba(232,192,122,.18)}
 :root:not([data-theme="light"]) #black-subida .cb-card:hover{background-color:#1B171F;border-color:var(--gold)}
+.method-group{gap:16px;align-items:center}.method-group .btn{white-space:nowrap}
+.method-empty{padding:16px 20px;border-bottom:1px solid var(--border-soft);background:var(--surface-lo);line-height:1.6}

@@ -77,11 +77,23 @@
     return { parts:parts,routine:round(routine),missions:round(parts.missions),result:parts.result,extra:bonus+referrals*25+modules*5,total:round(total),referrals:referrals,vouchers:referrals,asked:asked,done:done,complete:Object.keys(parts).every(function(k){return parts[k]!==null;}) };
   }
   function artifactSteps(a) {
+    if(a.archived_at)return [];
     if (Array.isArray(a.method_steps)) return a.method_steps;
     var name=String(a.nome||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
     if (/fabrica|iris/.test(name)) return [];
     var map=[[/onboarding|diagnostico/,['D01']],[/posicionamento|linha editorial/,['D02']],[/tracker|trackeamento/,['D03','D06']],[/sistema black/,['D03']],[/treinamento comercial/,['D04','D09','D10']],[/funil olympus/,['D06','D09']],[/time premium/,['D04']],[/site institucional|gbp|aeo|google meu negocio|agente de comentarios/,['D05']],[/meta ads|google ads|trafego|funil expresso|funil vsl/,['D06']],[/captacao ativa/,['D07']],[/encontro grau zero/,['D08']],[/chamada consultiva/,['D09']],[/in the bag|closer/,['D10']],[/encantamento/,['D11']],[/recorrencia|seguro premium/,['D12']]];
     var found=map.find(function(x){return x[0].test(name);}); return found?found[1]:[];
+  }
+  // Agrupadores nunca são cadastros de entrega. Itens compartilhados mantêm o mesmo ID.
+  function catalogGroups(artifacts,includeEmpty) {
+    var active=(artifacts||[]).filter(function(a){return !a.archived_at&&a.tipo!=='interna';});
+    var moduleName=function(a){return /f[aá]brica de conte[uú]do|[ií]ris black/i.test(a.nome||'');};
+    var ordered=function(list){return list.slice().sort(function(a,b){return (Number(a.ordem)||0)-(Number(b.ordem)||0)||String(a.nome).localeCompare(String(b.nome),'pt-BR');});};
+    var groups=steps.map(function(s){return {id:s.id,name:s.name,kind:'step',movement:s.movement,items:ordered(active.filter(function(a){return !moduleName(a)&&artifactSteps(a).includes(s.id);}))};});
+    groups.push({id:'TREINO',name:'Treino de Competição',kind:'transversal',items:ordered(active.filter(function(a){return artifactSteps(a).includes('TREINO');}))});
+    groups.push({id:'MODULOS',name:'Módulos à parte · Fábrica e Íris Black',kind:'modules',items:ordered(active.filter(moduleName))});
+    groups.push({id:'SEM_VINCULO',name:'Vínculo com degrau a confirmar',kind:'unassigned',items:ordered(active.filter(function(a){return !moduleName(a)&&!artifactSteps(a).length;}))});
+    return groups.filter(function(g){return g.items.length||(includeEmpty&&(g.kind==='step'||g.kind==='transversal'));});
   }
   function pending(missions,artifacts,steps,progress,today) {
     today=today||new Date().toISOString().slice(0,10);
@@ -112,6 +124,6 @@
     if(key==='macula'||key==='no')return n===0?'ok':n===1?'warn':n===2||n===3?'crit':'off';
     return 'off';
   }
-  C.metodo={steps:steps,movements:movements,quarter:quarter,bounds:bounds,number:number,score:score,artifactSteps:artifactSteps,pending:pending,canonical:canonical,referenceSignal:referenceSignal};
+  C.metodo={steps:steps,movements:movements,quarter:quarter,bounds:bounds,number:number,score:score,artifactSteps:artifactSteps,catalogGroups:catalogGroups,pending:pending,canonical:canonical,referenceSignal:referenceSignal};
   if (typeof module!=='undefined') module.exports=C.metodo;
 })(typeof window!=='undefined'?window:globalThis);

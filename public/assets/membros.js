@@ -377,11 +377,12 @@
        mesmo sem aceite ou etapas marcadas para este mentorado. Frente interna
        é da equipe e nunca aparece. */
     var meus = st.artifacts.filter(function (a) {
-      return a.tipo !== 'interna' && !a.somente_equipe &&
+      return !a.archived_at && a.tipo !== 'interna' && !a.somente_equipe &&
+        (!a.member_id || (st.membro && a.member_id === st.membro.id)) &&
         (a.status === 'Disponível' || !etapasDe(a.id).length || parDe(a).estado !== 'definir');
     });
-    var secoes = agruparPorArea(meus, st.groups);
-    var ordenados = secoes.reduce(function (acc, s) { return acc.concat(s.itens); }, []);
+    var secoes = Club.metodo.catalogGroups(meus, true);
+    var ordenados = meus.slice();
 
     /* Na capa cabe uma grade só, na ordem das áreas; na aba cheia, uma seção
        por área com o checklist inteiro. */
@@ -391,11 +392,11 @@
       ? secoes.map(function (s) {
           return '<section class="art-area">' +
             '<div class="sec"><div class="sec-g">' +
-              '<div class="sec-eb"><span class="sec-dash"></span><span>ÁREA</span></div>' +
-              '<h2 class="sec-t">' + esc(s.grupo ? s.grupo.nome : 'Outros') + '</h2>' +
-            '</div></div>' +
+              '<div class="sec-eb"><span class="sec-dash"></span><span>'+esc(s.kind==='step'?s.id+' · AGRUPADOR':s.kind==='transversal'?'TRANSVERSAL':s.kind==='modules'?'MÓDULOS À PARTE':'A CONFERIR')+'</span></div>' +
+              '<h2 class="sec-t">' + esc(s.name) + '</h2>' +
+            '</div>'+((s.kind==='step'||s.kind==='transversal')?'<a class="btn" href="#subida/'+esc(s.id)+'">Ver checklist</a>':'')+'</div>' +
             '<div class="artgrid">' +
-              s.itens.map(function (a) { return cartaoArtefato(a, true); }).join('') +
+              (s.items.length?s.items.map(function (a) { return cartaoArtefato(a, true); }).join(''):'<p class="tx-s">As implantações e rotinas estão no checklist deste agrupador.</p>') +
             '</div>' +
           '</section>';
         }).join('')
@@ -587,7 +588,7 @@
     if (Club.black) {
       Club.black.close();
       if (key !== 'farol') history.replaceState(null, '', location.pathname + location.search + '#' + key +
-        (key === 'subida' && /^#subida\/(D\d{2}|p\d{2})$/.test(location.hash) ? '/' + Club.metodo.canonical(location.hash).split('/')[1] : ''));
+        (key === 'subida' && /^#subida\/(D\d{2}|p\d{2}|TREINO)$/.test(location.hash) ? '/' + Club.metodo.canonical(location.hash).split('/')[1] : ''));
       Club.black.enter(key);
     }
     Array.prototype.forEach.call(document.querySelectorAll('.view'), function (v) {

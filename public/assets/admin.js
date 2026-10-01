@@ -377,7 +377,7 @@
     /* Só o quadro escreve na URL: #demandas já era o atalho do favorito, e o
        recorte vai junto dele. As outras abas seguem sem endereço. */
     sincronizarHash();
-    if (key !== 'demands' && key !== 'farol' && !(key === 'subida' && /^#subida\/(D\d{2}|p\d{2})$/.test(location.hash))) {
+    if (key !== 'demands' && key !== 'farol' && !(key === 'subida' && /^#subida\/(D\d{2}|p\d{2}|TREINO)$/.test(location.hash))) {
       history.replaceState(null, '', location.pathname + location.search + '#' + key);
     }
     if (key === 'farol') {
@@ -1930,7 +1930,7 @@
       '<div class="td"><span class="art-i" style="width:28px;height:28px;border-radius:8px;' +
         'font-size:14px;margin:0;flex-shrink:0">' + ico(a.icone || 'box') + '</span>' +
         '<div class="tx"><div class="tx tx-t" title="' + esc(a.nome) + '">' + esc(a.nome) + '</div>' +
-        '<div class="tx tx-s">' + esc([a.subtitulo, a.somente_equipe ? 'Somente equipe' : null, a.member_id ? 'só ' + escopo(a.member_id) : null,
+        '<div class="tx tx-s">' + esc([Club.metodo.artifactSteps(a).length>1?'Entrega compartilhada · '+Club.metodo.artifactSteps(a).join(' / '):null, a.subtitulo, a.somente_equipe ? 'Somente equipe' : null, a.member_id ? 'só ' + escopo(a.member_id) : null,
           siglas(a.responsaveis) ? 'dono ' + siglas(a.responsaveis) : null].filter(Boolean).join(' · ')) +
         '</div></div></div>' +
       '<div class="td"><div class="tx">' + (interna
@@ -1958,34 +1958,31 @@
   }
 
   function renderArtifacts() {
-    var grupos = st.groups.slice().concat([null]);
-    $('filtroArtGrupo').innerHTML = '<option value="">Todas as áreas</option>' +
-      st.groups.map(function (g) {
-        return '<option value="' + esc(g.id) + '"' + (g.id === st.artGrupo ? ' selected' : '') + '>' +
-          esc(g.nome) + '</option>';
-      }).join('') + '<option value="sem"' + (st.artGrupo === 'sem' ? ' selected' : '') + '>Sem área</option>';
-
-    var semCriterio = st.artifacts.filter(function (a) { return a.tipo !== 'interna' && !etapasDe(a.id).length; }).length;
-    $('artResumo').textContent = st.artifacts.length + ' frentes · ' + st.groups.length + ' áreas' +
-      (semCriterio ? ' · ' + semCriterio + ' sem critério' : '');
-    $('avisoGrupos').innerHTML = Club.faltaGrupos
-      ? '<div class="notice">' + ico('alert') + '<div>' + esc(Club.faltaGrupos) + '</div></div>' : '';
-
-    var secoes = grupos.map(function (g) {
-      var gid = g ? g.id : 'sem';
-      if (st.artGrupo && st.artGrupo !== gid) return '';
-      var arts = st.artifacts.filter(function (a) {
-        return (g ? a.group_id === g.id : !a.group_id);
-      }).sort(porGrupoOrdem);
-      /* "Sem área" some quando está vazia: seria uma seção sem assunto. */
-      if (!arts.length && !g) return '';
-      return cabecalhoGrupo(g, arts.length) + arts.map(linhaCatalogo).join('');
+    var stages=Club.metodo.catalogGroups(st.artifacts,true);
+    var internal=st.artifacts.filter(function(a){return a.tipo==='interna'&&!a.archived_at;});
+    var choices=stages.map(function(s){return {id:s.id,name:(s.kind==='step'?s.id+' · ':'')+s.name};});
+    if(internal.length)choices.push({id:'EQUIPE',name:'Operação interna da equipe'});
+    choices.push({id:'AREAS',name:'Áreas operacionais · gestão'});
+    $('filtroArtGrupo').innerHTML='<option value="">Todos os degraus e entregas</option>'+choices.map(function(s){return '<option value="'+esc(s.id)+'"'+(s.id===st.artGrupo?' selected':'')+'>'+esc(s.name)+'</option>';}).join('');
+    var deliveries=st.artifacts.filter(function(a){return a.tipo!=='interna'&&!a.archived_at;});
+    $('artResumo').textContent=deliveries.length+' entregas únicas · 12 degraus · '+internal.length+' frentes internas';
+    $('avisoGrupos').innerHTML='<p class="tx-s">Degrau → entregas → etapas. Entregas compartilhadas aparecem nos degraus relacionados, mas mantêm um único cadastro e progresso. Áreas operacionais continuam separadas.</p>';
+    var sections=stages.filter(function(s){return !st.artGrupo||st.artGrupo===s.id;}).map(function(s){
+      var stage=s.kind==='step'||s.kind==='transversal';
+      var heading='<div class="tr grp pai method-group" data-method-group="'+esc(s.id)+'"><span class="grp-n">'+esc((s.kind==='step'?s.id+' · ':'')+s.name)+' <span class="tx-s" style="font-weight:400">'+(stage?'Agrupador · ':'')+s.items.length+' entrega(s)</span></span>'+(stage?'<a class="btn" href="#subida/'+esc(s.id)+'">Checklist do '+(s.kind==='step'?'degrau':'Treino')+'</a>':'')+'</div>';
+      return heading+(s.items.length?s.items.map(linhaCatalogo).join(''):'<div class="method-empty tx-s">Implantações e rotinas acompanhadas no checklist deste agrupador. Nenhuma entrega extra criada.</div>');
     }).join('');
-
-    $('listaArtefatos').innerHTML = tabela(
-      'minmax(0,2fr) minmax(0,1.3fr) 128px minmax(0,1.3fr) 118px 88px',
-      ['Processo Black', 'Critério de 100%', 'Tipo', 'Adoção', 'Situação', '>Ações'],
-      secoes, 'Nenhum processo cadastrado ainda.');
+    if(!st.artGrupo||st.artGrupo==='EQUIPE'){
+      st.groups.concat([null]).forEach(function(g){
+        var arts=internal.filter(function(a){return g?a.group_id===g.id:!st.groups.some(function(x){return x.id===a.group_id;});}).sort(porGrupoOrdem);
+        if(arts.length)sections+=cabecalhoGrupo(g,arts.length)+arts.map(linhaCatalogo).join('');
+      });
+    }
+    if(st.artGrupo==='AREAS')sections=st.groups.concat([null]).map(function(g){
+      var arts=st.artifacts.filter(function(a){return !a.archived_at&&(g?a.group_id===g.id:!st.groups.some(function(x){return x.id===a.group_id;}));}).sort(porGrupoOrdem);
+      return !g&&!arts.length?'':cabecalhoGrupo(g,arts.length)+arts.map(linhaCatalogo).join('');
+    }).join('');
+    $('listaArtefatos').innerHTML=tabela('minmax(0,2fr) minmax(0,1.3fr) 128px minmax(0,1.3fr) 118px 88px',['Entrega / processo','Etapas e critério de 100%','Tipo','Adoção','Situação','>Ações'],sections,'Nenhuma entrega neste agrupador.');
   }
 
   function opcoesEquipe() {
@@ -2034,7 +2031,7 @@
 
   function modalArtefato(a) {
     a = a || { nome:'', subtitulo:'', icone:'box', status:'Em produção', meta:'',
-               url:'', member_id:null, group_id: st.artGrupo && st.artGrupo !== 'sem' ? st.artGrupo : null,
+               url:'', member_id:null, group_id:null, method_steps: /^(D(0[1-9]|1[0-2])|TREINO)$/.test(st.artGrupo) ? [st.artGrupo] : [],
                ordem:0, responsaveis:[], tipo:'artefato' };
     var etapasAtuais = a.id ? etapasDe(a.id) : [];
     var comGrupos = !Club.faltaGrupos;
@@ -2046,15 +2043,15 @@
           placeholder:'Landing Page VSL' }) +
         Club.field('Descrição curta', 'subtitulo', { value:a.subtitulo,
           placeholder:'Página de vídeo de vendas' }) +
-        Club.select('Degraus do método', 'method_steps', Club.metodo.steps.map(function (s) {
+        Club.select('Agrupadores do método', 'method_steps', Club.metodo.steps.concat([{id:'TREINO',name:'Treino de Competição'}]).map(function (s) {
           return { value:s.id, label:s.id + ' · ' + s.name };
         }), a.method_steps || Club.metodo.artifactSteps(a), { multiple:true,
-          hint:'Etiquetas D01–D12. Módulos separados e frentes internas ficam sem degrau.' }) +
+          hint:'Esta entrega pode atender vários degraus sem ser duplicada. Fábrica e Íris continuam como módulos separados.' }) +
         (comGrupos
           ? '<div class="fld-row">' +
-              Club.select('Área', 'group_id', [{ value:'', label:'Sem área' }].concat(
+              Club.select('Área operacional da equipe', 'group_id', [{ value:'', label:'Sem área' }].concat(
                 st.groups.map(function (g) { return { value:g.id, label:g.nome + (g.interna ? ' (equipe)' : '') }; })), a.group_id || '') +
-              Club.field('Ordem na área', 'ordem', { value:a.ordem || 0, type:'number' }) +
+              Club.field('Ordem da entrega', 'ordem', { value:a.ordem || 0, type:'number' }) +
             '</div>' +
             (opcoesEquipe().length
               ? Club.select('Dono', 'responsaveis', opcoesEquipe(), (a.responsaveis || [])[0],
