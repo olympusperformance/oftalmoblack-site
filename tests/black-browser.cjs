@@ -38,8 +38,9 @@ q.eq=(key,value)=>{filters.push([key,value]);return q;};q.maybeSingle=q.single=(
 q.insert=q.upsert=q.update=(row)=>{write=row;window.__writes.push({table,row});return q;};
 q.then=(resolve,reject)=>{if(window.__failTable===table)return Promise.resolve({data:null,error:{message:'Fonte indisponível'}}).then(resolve,reject);let data=fixtures[table]||[];if(write){const old=data.find(r=>write.id&&r.id===write.id);const merged={...old,...write,id:write.id||'new-id'};fixtures[table]=old?data.map(r=>r===old?merged:r):[...data,merged];data=[merged];}else for(const [k,v] of filters)data=data.filter(r=>r[k]===v);return Promise.resolve({data:one?(data[0]||null):data}).then(resolve,reject);};return q;}};
 const rpc=window.Club.sb.rpc;window.__failRanking=false;
+window.__rankingRequests=[];
 window.__ranking=[{position:1,alias:member.nome,member_id:member.id,total:63.9,grade:2,source:'graduacao',is_demo:true,source_date:'2026-09-20',complete:false,movement:null},...['Clínica Aurora','Clínica Horizonte','Clínica Novo Olhar','Consultório Central','Clínica Vista'].map((alias,i)=>({position:[2,2,3,4,5][i],alias:${isAdmin} ? alias:'Mestre '+['A12B34','B23C45','C34D56','D45E67','E56F78'][i],member_id:${isAdmin}?'synthetic-'+i:null,total:[58,58,49.6,27,0][i],grade:[2,1,0,1,0][i],source:'graduacao',is_demo:false,source_date:'2026-09-30',movement:[2,-1,0,null,null][i]}))];
-window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRanking)return {data:null,error:{message:'Ranking indisponível'}};return {data:window.__ranking};}return rpc(name,args);};
+window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRequests.push(args.p_period);if(window.__failRanking)return {data:null,error:{message:'Ranking indisponível'}};return {data:window.__ranking};}return rpc(name,args);};
 `;}
 (function testDirectStorageHost(){const source=fs.readFileSync(path.join(root,'assets/club-black.js'),'utf8');assert.match(source,/\.storage\.supabase\.co/,'Upload grande deve usar o host direto recomendado pelo Storage');})();
 (async()=>{
@@ -296,6 +297,15 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRa
    await page.keyboard.press('Escape');
    await page.locator('#rail [data-nav="agenda"]').click();await page.locator('[data-view=agenda] [data-nav=encontro]').click();assert.equal(await page.locator('[data-view=encontro]').isVisible(),true);
    await page.locator('#rail [data-nav=ranking]').click();await page.locator('#black-ranking .cb-ranking-list').waitFor();
+   assert.equal(await page.locator('#black-ranking [data-cb-ranking-period]').inputValue(),'2026-T3');
+   assert.equal(await page.locator('#black-ranking .cb-ranking-list').getAttribute('aria-label'),'Ranking do trimestre 2026-T3');
+   assert.ok(await page.evaluate(()=>window.__rankingRequests.includes('2026-T3')));
+   await page.locator('#black-ranking [data-cb-ranking-period]').selectOption('2026-T2');
+   await page.waitForFunction(()=>window.__rankingRequests.includes('2026-T2'));
+   await page.locator('#black-ranking .cb-ranking-list').waitFor();
+   assert.equal(await page.locator('#black-subida [data-cb-period]').inputValue(),await page.evaluate(()=>Club.metodo.quarter()),'Mudar ranking não altera apuração das outras telas');
+   await page.locator('#black-ranking [data-cb-ranking-period]').selectOption('2026-T3');
+   await page.locator('#black-ranking .cb-ranking-list').waitFor();
    assert.match(await page.locator('#black-ranking .cb-own').innerText(),/63,9/);
    assert.match(await page.locator('#black-ranking .cb-own').innerText(),/Prévia da graduação/);
    assert.match(await page.locator('#black-ranking .cb-notice').innerText(),/dados de prévia/);
@@ -342,6 +352,26 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRa
     f.member_graduations=[{member_id:id,source_date:'2026-09-30',is_demo:false,snapshot:{grade:2,sourceDate:'2026-09-30',periods:[{id:period,label:'Trimestre de teste',state:'closed',points:108.5,scores:{attendance:16.5,followers:20,videos:12},referrals:2,referralUnitPoints:25,bonus:10,followers:{growth:5100,estimated:true},cutoffDate:'2026-09-24'}]}}];
    });
    await page.locator('#rail [data-nav=graduacao]').click();
+   if(isAdmin){
+    await page.locator('#graduacaoAdmin .gr-radar').waitFor();
+    assert.equal(await page.locator('#black-graduacao').isVisible(),false,'Admin abre primeiro o painel geral');
+    assert.equal(await page.locator('#graduacaoAdmin [data-gr-period]').inputValue(),'2026-T3');
+    await page.locator('#graduacaoAdmin [data-gr-search]').fill('Outro');
+    assert.equal(await page.locator('#graduacaoAdmin tbody tr').count(),1);
+    const memberUrl=await page.locator('#graduacaoAdmin tbody a').getAttribute('href');
+    assert.match(memberUrl,/membro=10000000-0000-4000-8000-000000000002&trimestre=2026-T3#graduacao$/);
+    const selected=await context.newPage();
+    await selected.route('**/assets/club-supabase.js',route=>route.fulfill({contentType:'text/javascript',body:stub(true)}));
+    await selected.route('https://**',route=>route.abort());
+    await selected.goto(url+memberUrl);
+    await selected.locator('#black-graduacao [data-cb-period]').waitFor();
+    assert.equal(await selected.locator('#black-graduacao [data-cb-period]').inputValue(),'2026-T3');
+    assert.match(await selected.locator('#black-graduacao .cb-kicker').first().innerText(),/Outro mentorado/i);
+    await selected.close();
+    await page.locator('#graduacaoAdmin [data-gr-search]').fill('');
+    await page.screenshot({path:path.join(out,'admin-graduacao-painel-geral.png'),fullPage:true});
+    await page.locator('[data-view=graduacao] > details > summary').click();
+   }
    await page.locator('#black-graduacao [data-cb-reload]').click();
    await page.locator('#black-graduacao .gr-big-points').waitFor();
    assert.match(await page.locator('#black-graduacao').innerText(),/108,5/);
