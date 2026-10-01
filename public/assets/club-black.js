@@ -30,7 +30,8 @@
     return p?{record:record,period:p}:null;
   }
   function grade(){var gs=rows('grades');var legacy=rows('legacy')[0];return gs.length?Math.max.apply(null,gs.map(function(g){return g.grade;})):Number(legacy&&legacy.snapshot&&legacy.snapshot.grade)||0;}
-  function vouchers(){return rows('extras').filter(function(e){return e.kind==='referral'&&!rows('redemptions').some(function(r){return r.voucher_id===e.id&&r.status!=='cancelled';});}).length;}
+  // Vouchers em mãos, concedidos à mão pela equipe (cb_vouchers). Não somam pontos.
+  function vouchers(){return rows('vouchers').filter(function(v){return v.status==='em_maos';}).length;}
   function accumulated(){
     var index=function(p){return Number(p.slice(0,4))*4+Number(p.slice(-1));},end=index(state.period),values={};
     var legacy=rows('legacy')[0];((legacy&&legacy.snapshot&&legacy.snapshot.periods)||[]).forEach(function(p){if(p.points!=null&&p.state!=='future')values[p.id]=p.points;});
@@ -230,22 +231,35 @@
     }).join('')+'</ol>':emptyCard('award','O ranking começa na apuração','Ainda não há pontuação na Graduação ou no placar v2.2 para este trimestre.');
     return heading+preview+(admin()?'<div class="cb-ranking-actions">'+button('Registrar referência semanal','rank-snapshot')+'</div>':'')+cards+(own?'<div class="cb-ranking-fixed"><span>'+own.position+'º · '+esc(state.member.nome)+'</span><b>'+fmt(own.total)+' pts</b></div>':'')+'<p class="cb-note">Variação semanal disponível após a primeira comparação registrada. A ausência de histórico aparece como —. Quando apurado, o placar v2.2 tem prioridade sobre a planilha.</p>';
   }
+  // Catálogo fixo da Vitrine, confirmado pelo Dr. Alex em 01/10/2026 (viagem só com passagem).
+  var VITRINE=[
+    {title:'Mentoria Olympus · Cirurgia de Catarata',tag:'6 vagas / tri',text:'Opere na escala do Dr. Alex, em Manaus. A antiga mentoria de catarata agora existe só aqui — exclusiva do Black. Vagas abertas no fechamento do trimestre.',foot:'Resgata: voucher ou graduado (50+ pts), pela fila.'},
+    {title:'Mentoria Grau Zero · Espectador',tag:'5 vagas / edição',text:'Acompanhe a mentoria hands-on em lentes de alta tecnologia: toda a teoria e toda a prática, caso a caso — sem operar.',foot:'Resgata: voucher ou graduado (50+ pts), pela fila.'},
+    {title:'Viagem do trimestre',tag:'Dezembro',html:'<b>Family Circle · Lake Paradise</b> (data a confirmar). A cada trimestre, um destino novo — liberado à medida que o clube converte.',foot:'1 indicação convertida = passagem. Voucher tem prioridade na escolha.'}
+  ];
+  function trimestre(d){var m=/^(\d{4})-(\d{2})/.exec(d||'');return m?'T'+Math.ceil(+m[2]/3)+'/'+m[1].slice(2):'—';}
   function vitrine(){
-    var eligible=score().total>=50||vouchers()>0,known=hasScore();
-    var summary='<dl class="cb-vitrine-summary"><div><dt>'+C.icon('award')+' Vouchers disponíveis</dt><dd>'+vouchers()+'</dd><p>Uma indicação, um voucher.</p></div>'+
-      '<div><dt>'+C.icon('award')+' Pontos para resgate</dt><dd>'+(known?fmt(score().total):'—')+' <small>/ 50</small></dd><p>Apuração do placar v2.2.</p></div>'+
-      '<div class="cb-vitrine-status"><dt>'+C.icon('box')+' Sua Vitrine</dt><dd>'+(eligible?'Resgate disponível':known?'A caminho do resgate':'Aguardando apuração')+'</dd><p>'+(eligible?'Consulte as vagas e a janela de cada benefício.':'Os resgates dependem de pontos ou voucher e da abertura do estoque.')+'</p></div></dl>';
-    var rewards=rows('rewards').map(function(r){
-      var requested=rows('redemptions').some(function(d){return d.reward_id===r.id&&d.status!=='cancelled';});
-      var open=new Date()>=new Date(r.opens_at)&&new Date()<=new Date(r.closes_at);
-      return '<article class="cb-score-card"><span class="cb-kicker">'+esc(r.period)+'</span><h3>'+esc(r.title)+'</h3><p>'+esc(r.description)+'</p><strong>'+r.stock+' vagas</strong><p class="cb-note">Abertura: '+date(r.opens_at)+' · até '+date(r.closes_at)+'</p>'+
-        (!requested&&eligible&&open&&r.stock>0?button('Solicitar resgate','redeem',r.id,true):'<span class="cb-chip">'+(requested?'Solicitado':!open?'Fora da janela':r.stock<=0?'Sem vagas':'Ainda não elegível')+'</span>')+'</article>';
-    }).join('');
-    return head('vitrine','Conquistas que abrem novas experiências. Vouchers primeiro; depois, a pontuação do trimestre.')+summary+
-      '<div class="cb-section cb-vitrine-heading"><h2>Benefícios do trimestre</h2>'+(admin()?button('Cadastrar benefício','reward-new','',true):'')+'</div>'+
-      (rewards?'<div class="cb-grid">'+rewards+'</div>':emptyCard('box','A próxima Vitrine está sendo preparada','A equipe ainda não publicou os benefícios deste trimestre. Quando o estoque abrir, as opções e os prazos aparecerão aqui.'))+
-      '<div class="cb-section cb-vitrine-heading"><h2>'+(admin()?'Fila de resgates da Rede':'Meus resgates')+'</h2></div>'+redemptions()+
-      '<p class="cb-note">Vaga não resgatada não acumula. O grau abre benefícios de carreira; o resgate da Vitrine depende de pontos ou voucher. As condições da viagem são publicadas junto ao benefício de cada trimestre.</p>';
+    var h=historical(),pts=h?h.period.points:hasScore()?score().total:null;
+    var own=rows('ranking').find(function(r){return r.member_id===state.member.id;});
+    var nv=vouchers(),fim=M.bounds(state.period).end,tri=state.period.slice(-2);
+    var posicao=own?' (hoje: '+Number(own.position)+'ª)':'';
+    var regra=pts==null?'pontos ainda não apurados':pts>=50?'— graduado: você entra pela posição no ranking'+posicao:'— graduando com 50, você entra pela posição no ranking'+posicao;
+    var barra='<div class="cb-vit-elig"><span class="cb-kicker">Sua elegibilidade · '+esc(tri)+'</span><b>'+(state.error?'—':nv)+' Voucher'+(nv===1?'':'s')+' em mãos</b><span class="cb-vit-dot">·</span><b>'+(pts==null?'—':fmt(pts))+' pts</b><span class="cb-vit-rule">'+esc(regra)+'</span><span class="cb-vit-open">Vitrine abre em <b>'+date(fim).slice(0,5)+'</b></span></div>';
+    var cards='<div class="cb-vit-grid">'+VITRINE.map(function(v){return '<article class="cb-vit-card"><div class="cb-vit-top"><h3>'+esc(v.title)+'</h3><span class="cb-vit-tag">'+esc(v.tag)+'</span></div><p>'+(v.html||esc(v.text))+'</p><small>'+esc(v.foot)+'</small></article>';}).join('')+'</div>';
+    var linhas=rows('vouchers').slice().sort(function(a,b){return String(b.granted_on).localeCompare(String(a.granted_on));}).map(function(v){
+      var st={em_maos:['Em mãos · vale até a renovação','gold'],resgatado:['Resgatado','ok'],expirado:['Expirado','muted']}[v.status]||['—','muted'];
+      return '<div class="cb-vit-row"><span class="cb-vit-when">'+trimestre(v.granted_on)+'</span><span class="cb-vit-what"><b>Voucher Black</b> — '+esc(v.origin)+(admin()&&v.note?'<small>'+esc(v.note)+'</small>':'')+'</span><span class="cb-vit-st '+st[1]+'">'+st[0]+'</span>'+(admin()?'<span class="cb-vit-acts">'+(v.status==='em_maos'?'<button type="button" class="btn btn-sm" data-cb-voucher-status="'+esc(v.id)+'" data-status="resgatado">Marcar resgatado</button>':'<button type="button" class="btn btn-sm" data-cb-voucher-status="'+esc(v.id)+'" data-status="em_maos">Voltar para em mãos</button>')+'<button type="button" class="btn btn-sm btn-ghost" data-cb-voucher-del="'+esc(v.id)+'">Remover</button></span>':'')+'</div>';
+    }).concat(rows('redemptions').map(function(d){
+      var r=rows('allRewards').find(function(r){return r.id===d.reward_id;});
+      var st={requested:['Na fila','gold'],confirmed:['Agendado','gold'],completed:['Concluído','ok'],cancelled:['Cancelado','muted']}[d.status]||['—','muted'];
+      return '<div class="cb-vit-row"><span class="cb-vit-when">'+trimestre(d.requested_at||(r&&r.opens_at))+'</span><span class="cb-vit-what"><b>'+esc(r?r.title:'Benefício')+'</b></span><span class="cb-vit-st '+st[1]+'">'+st[0]+'</span></div>';
+    })).join('');
+    var gestao=admin()?'<div class="cb-section cb-vitrine-heading"><h2>Vouchers de '+esc(state.member.nome)+'</h2>'+button('Conceder voucher','voucher-new','',true)+'</div><p class="cb-note">Concessão manual da equipe. O mentorado vê o voucher na Vitrine dele, mas ainda não resgata pelo sistema: o resgate é combinado com a equipe.</p>':'';
+    return '<div class="cb-vit-head"><span class="cb-kicker">Sistema de Graduação Black</span><h1>Vitrine Black</h1><p>O que você tem direito de resgatar — e o que já conquistou. A Vitrine abre no fechamento de cada trimestre: primeiro escolhe quem tem <b>Voucher</b>, depois quem graduou (50+ pts), na ordem do ranking. Estoque limitado: o que não sai, volta.</p></div>'+
+      (admin()?controls('vitrine'):'')+barra+cards+gestao+
+      '<div class="cb-section cb-vitrine-heading"><h2>'+(admin()?'Vouchers e resgates':'Meus resgates')+'</h2></div>'+
+      (linhas?'<div class="cb-vit-list">'+linhas+'</div>':emptyCard('award','Nenhum voucher ou resgate por enquanto',admin()?'Use Conceder voucher para registrar o voucher deste mentorado.':'Quando você tiver um voucher ou fizer um resgate, ele aparece aqui.'))+
+      '<p class="cb-note">Abaixo de 50 pts e sem voucher, não há resgate no trimestre. Vaga não resgatada não acumula. Grau não compra Vitrine — grau abre o que não está à venda (palco, mesa, jantar, resort anual).</p>';
   }
   function redemptions(){var rs=admin()?rows('queue').filter(function(d){return rows('rewards').some(function(r){return r.id===d.reward_id;});}).sort(function(a,b){var ap=rows('benefitRanking').find(function(x){return x.member_id===a.member_id;}),bp=rows('benefitRanking').find(function(x){return x.member_id===b.member_id;});return Number(!!b.voucher_id)-Number(!!a.voucher_id)||(bp?bp.total:0)-(ap?ap.total:0)||String(a.requested_at).localeCompare(String(b.requested_at));}):rows('redemptions');return rs.length?'<div class="cb-table-wrap"><table class="cb-table"><thead><tr><th>Benefício</th><th>Prioridade</th><th>Situação</th><th></th></tr></thead><tbody>'+rs.map(function(d){var r=rows('allRewards').find(function(r){return r.id===d.reward_id;});return '<tr><td>'+esc(r?r.title:'Benefício')+(admin()?'<small>'+esc((state.options.members.find(function(m){return m.id===d.member_id;})||{}).nome||'Mestre')+'</small>':'')+'<small>'+esc(r?r.period:'')+'</small></td><td>'+(d.voucher_id?'Voucher':'Pontuação')+'</td><td>'+({requested:'Na fila',confirmed:'Agendado',completed:'Concluído',cancelled:'Cancelado'}[d.status])+'</td><td>'+(admin()&&d.status==='requested'?button('Confirmar','redemption',d.id):admin()&&d.status==='confirmed'?button('Concluir','redemption',d.id):'')+'</td></tr>';}).join('')+'</tbody></table></div>':emptyCard('award','Nenhum resgate por enquanto',admin()?'As solicitações dos Mestres aparecerão aqui para acompanhamento e confirmação.':'Quando você solicitar um benefício, poderá acompanhar a confirmação por aqui.');}
   function encontro(){return head('encontro','Três entregas por edição: divulgação, vídeos para grupo e tráfego, presença no pitch.')+(admin()?button('Registrar edição / entregas','encontro-new')+'<br><br>':'')+(rows('encontros').length?'<div class="cb-grid">'+rows('encontros').map(function(e){var count=+e.publicized+ +(e.video_group&&e.video_ads)+ +e.attended;return '<article class="cb-score-card"><span class="cb-kicker">'+date(e.edition)+'</span><h3>'+count+' de 3 entregas</h3>'+[['Divulgou marcando @dralexsa',e.publicized],['Vídeo para o grupo',e.video_group],['Vídeo para o tráfego',e.video_ads],['Presença no pitch',e.attended]].map(function(x){return '<div class="cb-check">'+(x[1]?'✓':'○')+' '+x[0]+'</div>';}).join('')+'<p>Leads direcionados: '+fmt(e.leads)+'</p>'+(admin()?button('Atualizar','encontro-edit',e.id):'')+'</article>';}).join('')+'</div>':empty('Nenhuma edição registrada para você neste trimestre.'))+'<p class="cb-note">Os dois vídeos formam uma única entrega. A régua usa as edições elegíveis registradas pela equipe, incluindo as entregas ainda pendentes.</p>';}
@@ -279,7 +293,7 @@
   async function load(){
     var version=++state.request,id=state.member.id,period=state.period;
     state.loading=true;state.error=null;state.rankingLoading=true;state.rankingError=false;state.data={};state.crm=null;state.ig=[];render();
-    var tasks={checklistProgress:['cb_checklist_progress',{member_id:id}],checklistRequests:['cb_checklist_requests',{member_id:id}],quarters:['cb_quarters',{member_id:id,period:period}],steps:['cb_steps',{member_id:id}],missions:['cb_missions',{member_id:id,period:period}],extras:['cb_extras',{member_id:id}],encontros:['cb_encontros',{member_id:id,period:period}],grades:['cb_grades',{member_id:id}],redemptions:['cb_redemptions',{member_id:id}],cases:['cb_cases',{member_id:id}],files:['cb_case_files',{member_id:id}],allRewards:['cb_rewards',{}]};
+    var tasks={checklistProgress:['cb_checklist_progress',{member_id:id}],vouchers:['cb_vouchers',{member_id:id}],checklistRequests:['cb_checklist_requests',{member_id:id}],quarters:['cb_quarters',{member_id:id,period:period}],steps:['cb_steps',{member_id:id}],missions:['cb_missions',{member_id:id,period:period}],extras:['cb_extras',{member_id:id}],encontros:['cb_encontros',{member_id:id,period:period}],grades:['cb_grades',{member_id:id}],redemptions:['cb_redemptions',{member_id:id}],cases:['cb_cases',{member_id:id}],files:['cb_case_files',{member_id:id}],allRewards:['cb_rewards',{}]};
     if(admin())tasks.queue=['cb_redemptions',{}];
     var keys=Object.keys(tasks);var results=await Promise.allSettled(keys.map(function(k){return list(tasks[k][0],tasks[k][1]);}));
     if(version!==state.request)return;
@@ -400,6 +414,15 @@ if(alvo&&!alvo.isConnected&&alvo.dataset){var chave=['cbDelivery','cbArtifact','
     try{await save('cb_checklist_requests',{member_id:state.member.id,item_id:id,edition:ed?ed.edition:''});await load();C.toast('Pedido enviado. A equipe vai conferir.','check-circle');}
     catch(err){btn.disabled=false;C.toast(err.message||'Não foi possível enviar o pedido.');}
   }
+  function voucherForm(){open('Conceder voucher · '+state.member.nome,form(field('Origem do voucher (ex.: indicação convertida · Dra. M., Mentoria Grau Zero)','origin','','text',true)+field('Data da concessão','granted_on',today(),'date',true)+field('Observação da equipe (opcional, o mentorado não vê)','note','','textarea'),'voucher'));}
+  async function voucherAction(el){
+    if(!admin())return;el.disabled=true;
+    try{
+      if(el.dataset.cbVoucherDel){ok(await C.sb.from('cb_vouchers').delete().eq('id',el.dataset.cbVoucherDel));C.toast('Voucher removido.','check-circle');}
+      else await save('cb_vouchers',{id:el.dataset.cbVoucherStatus,status:el.dataset.status});
+      await load();
+    }catch(err){el.disabled=false;C.toast(err.message||'Não foi possível atualizar o voucher.');}
+  }
   async function submit(f){
     var action=f.dataset.cbForm,d=Object.fromEntries(new FormData(f)),row={member_id:state.member.id},id=f.dataset.id,b=f.querySelector('[type=submit]'),error=f.querySelector('.cb-form-error');
     b.disabled=true;error.textContent='';
@@ -408,6 +431,7 @@ if(alvo&&!alvo.isConnected&&alvo.dataset){var chave=['cbDelivery','cbArtifact','
       if(action==='checklist'){var item=(C.stepChecklist||[]).find(function(i){return i.id===id;});if(!admin()||!item)throw new Error('Somente a equipe pode conferir itens.');Object.assign(row,{item_id:id,edition:d.edition||'',done:!!d.done,evidence:d.evidence||null});await save('cb_checklist_progress',row,'member_id,item_id,edition');}
       if(action==='mission'){row.id=id||undefined;row.evidence=d.evidence;if(admin()){Object.assign(row,{period:state.period,title:d.title,artifact_step_id:d.artifact_step_id||null,checklist_item_id:d.checklist_item_id||null,method_step:d.method_step,weight:Number(d.weight),requested_on:d.requested_on,due_on:d.due_on,status:d.status});}else{row.status='submitted';}await save('cb_missions',row);}
       if(action==='quarter'){row.period=state.period;['attended','eligible','video_credits','weeks','followers_growth','orphan_leads','outcomes_percent','cpv_percent','call_conversion'].forEach(function(k){row[k]=M.number(d[k]);});row.sla_recorded=d.sla_recorded===''?null:d.sla_recorded==='true';row.evidence=d.evidence;await save('cb_quarters',row,'member_id,period');}
+      if(action==='voucher'){if(!admin())throw new Error('Somente a equipe concede vouchers.');Object.assign(row,{origin:d.origin.trim(),granted_on:d.granted_on,note:d.note||null});await save('cb_vouchers',row);}
       if(action==='extra'){Object.assign(row,{period:state.period,kind:d.kind,reference:d.reference.trim(),evidence:d.evidence});await save('cb_extras',row);}
       if(action==='grade'){Object.assign(row,{period:state.period,grade:Number(d.grade),evidence:d.evidence});await save('cb_grades',row);}
       if(action==='encontro'){Object.assign(row,{id:id||undefined,period:state.period,edition:d.edition,publicized:!!d.publicized,video_group:!!d.video_group,video_ads:!!d.video_ads,attended:!!d.attended,leads:M.number(d.leads),evidence:d.evidence});await save('cb_encontros',row);}
@@ -459,7 +483,7 @@ if(alvo&&!alvo.isConnected&&alvo.dataset){var chave=['cbDelivery','cbArtifact','
   }
   function enter(key){state.active=key;if(!state.options)return;if(key==='graduacao'&&admin())graduationOverview();var parts=M.canonical(location.hash).split('/');if(key==='subida'&&parts[0]==='subida'&&/^(D(0[1-9]|1[0-2])|TREINO)$/.test(parts[1]||''))openStep(parts[1]);}
   document.addEventListener('submit',function(e){var f=e.target.closest('[data-cb-form]');if(f){e.preventDefault();submit(f);}});
-  document.addEventListener('click',function(e){var b=e.target.closest('[data-cb-request-check]');if(b&&state.options){e.preventDefault();requestCheck(b);}});
+  document.addEventListener('click',function(e){var v=e.target.closest('[data-cb-voucher-new],[data-cb-voucher-del],[data-cb-voucher-status]');if(v&&state.options){e.preventDefault();if('cbVoucherNew'in v.dataset)voucherForm();else voucherAction(v);return;}var b=e.target.closest('[data-cb-request-check]');if(b&&state.options){e.preventDefault();requestCheck(b);}});
   document.addEventListener('change',function(e){if(e.target.matches('[data-cb-toggle-item]')){toggleItem(e.target);return;}if(e.target.matches('[data-cb-toggle-step]')){toggleStep(e.target);return;}if(e.target.matches('[data-cb-edition]')){selectedEdition=e.target.value;render();if(activeDelivery)openDelivery(activeDelivery);else openStep('D08');}if(e.target.matches('[data-cb-member]')){selectMember(e.target.value);}if(e.target.matches('[data-cb-ranking-period]')){state.rankingPeriod=e.target.value;load();}if(e.target.matches('[data-cb-period]')){state.period=e.target.value;close();load();}});
   document.addEventListener('keydown',function(e){if(!drawer)return;if(e.key==='Escape'){e.preventDefault();close();}if(e.key==='Tab'){var nodes=Array.from(drawer.querySelectorAll('button,input,select,textarea,a[href]')).filter(function(n){return !n.disabled&&n.offsetParent!==null;}),first=nodes[0],last=nodes[nodes.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
   document.addEventListener('click',async function(e){

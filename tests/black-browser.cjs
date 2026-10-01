@@ -29,6 +29,7 @@ const methodCatalog=${JSON.stringify(methodCatalog)};
 fixtures.cb_method_stages=methodCatalog.stages;fixtures.cb_deliveries=methodCatalog.deliveries;fixtures.cb_checklist_catalog=methodCatalog.items;
 fixtures.cb_delivery_artifacts=methodCatalog.bindings.flatMap(b=>fixtures.artifacts.filter(a=>a.nome===b.artifact_name&&a.method_steps.includes(b.stage_id)).map(a=>({...b,artifact_id:a.id})));
 if(${isAdmin})fixtures.cb_checklist_requests=[{id:'pedido-1',member_id:member.id,item_id:'D07-02',edition:'',requested_at:'2026-10-01T12:00:00Z',resolved_at:null}];
+fixtures.cb_vouchers=[{id:'voucher-1',member_id:member.id,origin:'indicação convertida (Dra. M., Mentoria Grau Zero)',note:'Nota interna',status:'em_maos',granted_on:'2026-06-10'}];
 window.__writes=[];window.__fixtures=fixtures;window.__failTable=null;
 window.Club.sb={supabaseUrl:'http://local.test',auth:{getSession:async()=>({data:{session:{access_token:'test',user:{id:'user1',email:'test@example.test'}}}}),signOut:async()=>({})},
 rpc:async(name,args)=>name==='marcar_etapa'?(window.__writes.push({table:'marcar_etapa',row:args}),{data:{member_id:args.p_member_id,step_id:args.p_step_id,feito:args.p_feito,feito_em:args.p_feito?new Date().toISOString():null}}):({data:name==='me'?{is_admin:${isAdmin},email:member.email,member:${isAdmin?'null':'member'}}:name==='cb_ranking'?[{position:1,alias:member.nome,member_id:member.id,total:28.5,grade:1,movement:null}]:[]}),
@@ -385,7 +386,18 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
       if(view==='ranking'){
        assert.equal(await page.locator('#black-ranking .cb-own').count(),1);
        assert.match(await page.locator('#black-ranking .cb-rank').first().evaluate(el=>getComputedStyle(el).fontFamily),/InterOB/);
-      }else{assert.equal(await page.locator('#black-vitrine .cb-vitrine-summary>div').count(),3);assert.equal(await page.locator('#black-vitrine .cb-empty-card').count(),2);}
+      }else{
+       const vit=page.locator('#black-vitrine');
+       assert.equal(await vit.locator('.cb-vit-card').count(),3,'Catálogo fixo: catarata, Grau Zero e viagem');
+       const texto=await vit.innerText();
+       assert.match(texto,/6 vagas \/ tri/i);assert.match(texto,/5 vagas \/ edição/i);
+       assert.doesNotMatch(texto,/hospedagem/i,'Viagem só com passagem, sem hotel (Dr. Alex, 01/10)');
+       assert.match(await vit.locator('.cb-vit-elig').innerText(),/1 Voucher em mãos/i);
+       assert.match(texto,/Voucher Black — indicação convertida/);
+       assert.equal(await vit.locator('[data-cb-redeem]').count(),0,'Mentorado ainda não resgata pelo sistema');
+       assert.equal(await vit.locator('[data-cb-voucher-new]').count(),isAdmin?1:0,'Só a equipe concede voucher');
+       if(!isAdmin)assert.doesNotMatch(texto,/Nota interna/,'Observação da equipe não aparece para o mentorado');
+      }
       if([390,1440].includes(width))await page.screenshot({path:path.join(out,(isAdmin?'admin':'member')+'-'+view+'-'+theme+'-'+width+'.png'),fullPage:true});
      }
     }
