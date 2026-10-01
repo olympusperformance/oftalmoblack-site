@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const M=require('../public/assets/club-metodo.js');
 test('12 degraus: novos pilares, movimentos e vínculos sem pontuar módulos como degrau',()=>{
   assert.equal(M.steps.length,12);assert.equal(M.steps[3].name,'Time Premium');assert.equal(M.steps[8].name,'Chamada Consultiva');assert.equal(M.steps[9].name,'Método In The Bag');
-  assert.deepEqual(M.artifactSteps({nome:'Tracker Black'}),['D03','D06']);assert.deepEqual(M.artifactSteps({nome:'Fábrica de Conteúdo'}),[]);
+  assert.deepEqual(M.artifactSteps({nome:'Tracker Black',method_steps:['D03','D06']}),['D03','D06']);assert.deepEqual(M.artifactSteps({nome:'Fábrica de Conteúdo'}),[]);
   assert.deepEqual(M.artifactSteps({nome:'Nome personalizado',method_steps:['D04']}),['D04']);
   assert.deepEqual(M.artifactSteps({nome:'Tracker Black',method_steps:[]}),[]);
 });

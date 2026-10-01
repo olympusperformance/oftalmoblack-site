@@ -2,6 +2,7 @@
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),os=require('node:os');
 const assert=require('node:assert/strict');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'@playwright/test');
+const methodCatalog=require('./fixtures/method-catalog.json');
 const root=path.resolve(__dirname,'../public');
 const out=process.env.BLACK_QA_DIR||fs.mkdtempSync(path.join(os.tmpdir(),'black-qa-'));
 fs.mkdirSync(out,{recursive:true});
@@ -24,6 +25,9 @@ fixtures.step_progress=[{member_id:member.id,step_id:'step-qa',feito:true,feito_
 fixtures.artifacts.push({id:'editorial-qa',nome:'Linha Editorial',subtitulo:'Feed e stories na voz do Mestre',meta:'Entrega em 2 dias',tipo:'artefato',method_steps:['D02'],status:'Disponível',url:'/materiais/'});
 fixtures.artifact_steps.push(...Array.from({length:18},(_,i)=>({id:'editorial-step-'+i,artifact_id:'editorial-qa',titulo:'Etapa de implantação '+(i+1),ordem:i,tipo:'entrega'})));
 fixtures.step_progress.push({member_id:member.id,step_id:'editorial-step-0',feito:true,feito_em:'2026-09-01'});
+const methodCatalog=${JSON.stringify(methodCatalog)};
+fixtures.cb_method_stages=methodCatalog.stages;fixtures.cb_deliveries=methodCatalog.deliveries;fixtures.cb_checklist_catalog=methodCatalog.items;
+fixtures.cb_delivery_artifacts=methodCatalog.bindings.flatMap(b=>fixtures.artifacts.filter(a=>a.nome===b.artifact_name&&a.method_steps.includes(b.stage_id)).map(a=>({...b,artifact_id:a.id})));
 window.__writes=[];window.__fixtures=fixtures;window.__failTable=null;
 window.Club.sb={supabaseUrl:'http://local.test',auth:{getSession:async()=>({data:{session:{access_token:'test',user:{id:'user1',email:'test@example.test'}}}}),signOut:async()=>({})},
 rpc:async(name,args)=>({data:name==='me'?{is_admin:${isAdmin},email:member.email,member:${isAdmin?'null':'member'}}:name==='cb_ranking'?[{position:1,alias:member.nome,member_id:member.id,total:28.5,grade:1,movement:null}]:[]}),
@@ -61,7 +65,7 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRa
    else assert.equal(await page.locator('[data-view=rede]').count(),0);
    for(const key of ['home','encontro','iris','cerebro','profile'])assert.equal(await page.locator('#rail [data-nav="'+key+'"]').count(),0);
    assert.deepEqual(await page.locator('#navm [data-nav]').evaluateAll(nodes=>nodes.map(n=>n.dataset.nav)),await page.locator('#rail [data-nav]').evaluateAll(nodes=>nodes.map(n=>n.dataset.nav)));
-   await page.locator('#rail [data-nav="subida"]').click();await page.locator('#black-subida .cb-card[data-cb-step]').last().waitFor();
+   await page.locator('#rail [data-nav="subida"]').click();await page.locator('#black-subida .cb-card[data-cb-step]').last().waitFor().catch(async e=>{console.error(await page.locator('body').innerText());console.error(await page.evaluate(()=>({hash:location.hash,stages:Club.methodStages,items:Club.stepChecklist?.length,selected:Club.black.selected()})));throw e;});
    for(const selector of ['#black-subida h1','#black-subida h2','#black-subida .cb-number']){
     assert.match(await page.locator(selector).first().evaluate(el=>getComputedStyle(el).fontFamily),/InterOB/,'Áreas novas devem manter a Inter do painel atual');
    }
@@ -194,6 +198,33 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRa
     assert.equal(await catalog.locator('[data-cb-artifact=other-qa]').count(),0);
     await catalog.locator('[data-cb-delivery="D07/prospeccao"]').scrollIntoViewIfNeeded();
     await page.screenshot({path:path.join(out,'admin-deliveries-catalog.png'),fullPage:false});
+    await page.locator('#rail [data-nav=members]').click();
+    await page.locator('#filtroArvMembro').selectOption('10000000-0000-4000-8000-000000000002');
+    await page.locator('#btnExpandir').click();
+    const progression=page.locator('#listaMembros');
+    const headings=await progression.locator('.grp-n').allTextContents();
+    assert.deepEqual(headings.slice(0,13),methodCatalog.stages.map(s=>s.id+' · '+s.name));
+    assert.doesNotMatch(headings.join(' '),/Tecnologia e dados|Presença e conteúdo|Geração de demanda/);
+    assert.equal(await progression.locator('[data-progress-delivery="D07/prospeccao"]').count(),1);
+    assert.equal(await progression.locator('[data-progress-delivery^="D04/"]').count(),3);
+    await progression.locator('[data-progress-delivery="D07/prospeccao"]').click();
+    await page.locator('.cb-popup [data-cb-item="D07-01"]').waitFor();
+    assert.equal(await page.evaluate(()=>Club.black.selected()),'10000000-0000-4000-8000-000000000002');
+    await page.locator('.cb-popup [data-cb-item="D07-01"]').click();
+    await page.locator('[data-cb-form=checklist] input[name=done]').check();
+    await page.locator('[data-cb-form=checklist] button[type=submit]').click();
+    await page.waitForFunction(()=>window.__writes.some(w=>w.table==='cb_checklist_progress'&&w.row.item_id==='D07-01'));
+    const write=await page.evaluate(()=>window.__writes.find(w=>w.table==='cb_checklist_progress'&&w.row.item_id==='D07-01').row);
+    assert.equal(write.member_id,'10000000-0000-4000-8000-000000000002');
+    await page.keyboard.press('Escape');
+    await progression.locator('[data-progress-delivery="D05/site"]').click();
+    await page.locator('.cb-popup').waitFor();
+    assert.match(await page.locator('.cb-popup').innerText(),/Site publicado/);
+    await page.keyboard.press('Escape');
+    await page.screenshot({path:path.join(out,'admin-progressao-catalogo.png'),fullPage:false});
+    await page.locator('#rail [data-nav=artifacts]').click();
+    await page.locator('#processosMembro').selectOption('10000000-0000-4000-8000-000000000001');
+
    }else{
     assert.doesNotMatch(await catalog.innerText(),/Tracker privado|Entrega de outro membro/);
     assert.match(await catalog.innerText(),/Vínculo com degrau a confirmar/);
@@ -257,11 +288,11 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRa
    }
    await page.setViewportSize({width:1440,height:1080});
    await catalog.locator(isAdmin?'[data-cb-step=D05]':'a[href="#subida/D05"]').click();
-   await page.locator('.cb-drawer').waitFor();assert.match(await page.locator('.cb-drawer').innerText(),/Site Institucional/);
+   await page.locator('.cb-drawer').waitFor();assert.match(await page.locator('.cb-drawer').innerText(),/Site institucional e AEO/);
    await page.keyboard.press('Escape');
    await page.locator('#rail [data-nav=artifacts]').click();
    await catalog.locator(isAdmin?'[data-cb-step=TREINO]':'a[href="#subida/TREINO"]').click();
-   await page.locator('.cb-drawer').waitFor();assert.match(await page.locator('.cb-drawer').innerText(),/Treinamento comercial/);
+   await page.locator('.cb-drawer').waitFor();assert.match(await page.locator('.cb-drawer').innerText(),/Treinamento de vendas/);
    await page.keyboard.press('Escape');
    await page.locator('#rail [data-nav="agenda"]').click();await page.locator('[data-view=agenda] [data-nav=encontro]').click();assert.equal(await page.locator('[data-view=encontro]').isVisible(),true);
    await page.locator('#rail [data-nav=ranking]').click();await page.locator('#black-ranking .cb-ranking-list').waitFor();
@@ -363,5 +394,5 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRa
    await context.close();
   }
   assert.deepEqual(errors,[]);console.log('Browser: navegação, drawer, permissão, evidência, checklist individual, entregas relacionadas, edições mensais, erro de fonte, mobile e PDF de 90 MB com retomada OK.');console.log('Capturas: '+out);
- }finally{await browser.close();await new Promise(r=>server.close(r));}
+ }finally{if(errors.length)console.error('Browser errors:',errors);await browser.close();await new Promise(r=>server.close(r));}
 })().catch(e=>{console.error(e);process.exitCode=1;server.close();});

@@ -112,7 +112,8 @@
       Club.data.groups.list(),
       Club.data.progressNotes.list(),
       Club.data.qrLinks.list(),
-      Club.data.qrScans.list()
+      Club.data.qrScans.list(),
+      Club.loadMethodCatalog()
     ]).then(function (r) {
       st.members = r[0]; st.events = r[1];
       st.artifacts = r[2]; st.materials = r[3];
@@ -425,7 +426,7 @@
      marcado é deste mentorado. Ver supabase/progresso.sql. */
 
   var ARV_COLS = 'minmax(300px,2.2fr) 148px 200px 120px 180px 150px';
-  var ARV_HEAD = ['Mentorado · artefato · etapa', 'Situação', 'Observação', 'Progresso',
+  var ARV_HEAD = ['Mentorado · degrau · entrega', 'Situação', 'Observação', 'Progresso',
                   'Detalhe', '>Ações'];
 
   /* Estado do par (mentorado, artefato): Club.par decide aceite, denominador,
@@ -598,7 +599,7 @@
     }).sort(porGrupoOrdem);
     var c = contaMembro(m.id);
     var ultima = ultimaMarcacao(m.id);
-    var temFilho = arts.length > 0;
+    var temFilho = arts.length > 0 || Club.methodDeliveries.length > 0;
 
     var situacao = !m.ativo
       ? status('var(--faint)', 'Acesso inativo')
@@ -649,18 +650,19 @@
     linha += linhaNota(m, 'mentorado', m.nome);
     if (!aberto || !temFilho) return linha;
 
-    /* Faixa por área dentro do mentorado: com uma dezena de artefatos por
-       pessoa, a lista não se lê sem agrupar. É cabeçalho, não nível: sem
-       toggle, sem chave nova em abrirTudo. */
-    var saida = '', grupoAtual;
-    arts.forEach(function (a) {
-      var g = grupoDe(a), gid = g ? g.id : 'sem';
-      if (gid !== grupoAtual) {
-        grupoAtual = gid;
-        saida += faixaGrupo(m, g, arts.filter(function (x) { return (grupoDe(x) ? grupoDe(x).id : 'sem') === gid; }));
-      }
-      saida += linhaArtefato(m, a);
-    });
+    var saida = Club.metodo.catalogGroups(arts, st.arvFiltro === 'all').map(function(g){
+      var method=g.kind==='step'||g.kind==='transversal';
+      var ds=method?Club.metodo.deliveries(g.id,g.items):g.items.map(function(a){return {name:a.nome,artifact:a,items:[]};});
+      if(st.arvFiltro!=='all')ds=ds.filter(function(d){return d.artifact;});
+      return faixaGrupo(m,{nome:(method?g.id+' · ':'')+g.name},g.items)+ds.map(function(d){
+        if(d.artifact)return linhaArtefato(m,d.artifact,d);
+        return '<div class="tr lv1" data-progress-delivery-row="'+esc(d.id)+'">'+
+          '<div class="td nm"><span class="tx tx-t">'+esc(d.name)+'</span></div>'+td('<span class="tx-s">Checklist do método</span>')+
+          td('—')+td('<span class="tx-s">'+d.items.length+' itens</span>')+
+          td('<span class="tx-s">Conferência por item'+(d.items.some(function(i){return i.monthly;})?' · por edição':'')+'</span>')+
+          td(botaoEntrega(m,d))+'</div>';
+      }).join('');
+    }).join('');
     return linha + saida;
   }
 
@@ -678,7 +680,7 @@
     var s = Club.PAR_ST[pior];
     return '<div class="tr grp sub">' +
       '<span class="grp-n">' + esc(g ? g.nome : 'Sem área') + '</span>' +
-      '<span class="tx-s">' + (pct === null ? 'nada aceito' : status(s.cor, s.label) + ' · ' + pct + '%') + '</span>' +
+      '<span class="tx-s">' + (pct === null ? 'Conferência nas entregas' : 'Implantação: '+status(s.cor, s.label) + ' · ' + pct + '%') + '</span>' +
     '</div>';
   }
 
@@ -703,24 +705,28 @@
     return n > 0 ? ' · há ' + n + ' d' : '';
   }
 
-  function linhaArtefato(m, a) {
+  function botaoEntrega(m,d){
+    return '<button type="button" class="btn btn-sm" data-progress-delivery="'+esc(d.id)+'" data-member="'+esc(m.id)+'">Ver checklist</button>';
+  }
+
+  function linhaArtefato(m, a, delivery) {
     var chave = 'a:' + m.id + ':' + a.id;
     var aberto = !!st.abertos[chave];
     var etapas = Club.ordenaEtapas(etapasDe(a.id));
     var p = contaPar(m.id, a);
     var s = Club.PAR_ST[p.estado];
 
-    var linha = '<div class="tr lv1' + (p.estado === 'definir' ? ' off' : '') + '">' +
+    var linha = '<div class="tr lv1' + (p.estado === 'definir' && !(delivery&&delivery.items.length) ? ' off' : '') + '">' +
       '<div class="td nm">' + toggleTree(chave, etapas.length) +
         '<span style="color:var(--gold);font-size:15px;flex-shrink:0">' +
           ico(a.icone || 'box') + '</span>' +
-        '<div class="tx"><div class="tx tx-t" title="' + esc(a.nome) + '">' + esc(a.nome) + '</div>' +
+        '<div class="tx"><div class="tx tx-t" title="' + esc(a.nome) + '">' + esc(delivery?delivery.name:a.nome) + '</div>' +
         '<div class="tx tx-s">' + (a.member_id ? 'artefato dele' : 'artefato da turma') +
           (p.rotinas.length ? ' · com rotina' : '') +
         '</div></div></div>' +
       td(status(s.cor, Club.rotuloPar(p))) +
       celulaNota(m, 'artefato:' + a.id, a.nome) +
-      td(p.total || p.temEtapas ? barra(p.feitas, p.total) : '<span class="tx tx-s">sem checklist</span>') +
+      td(p.total || p.temEtapas ? barra(p.feitas, p.total) : '<span class="tx tx-s">'+(delivery&&delivery.items.length?delivery.items.length+' itens de conferência':'sem checklist')+'</span>') +
       td(etapas.length
         ? '<span class="tx-s">' + esc(detalhePar(p, m)) + '</span>'
         /* Sem checklist não há o que marcar: o atalho leva direto a quem
@@ -728,6 +734,7 @@
         : '<button class="btn btn-sm btn-ghost" data-edit="artifact" data-id="' + a.id +
           '" style="color:var(--gold)">' + ico('plus') + 'Definir etapas</button>') +
       '<div class="td end"><div class="row-acts">' +
+        (delivery&&delivery.id?botaoEntrega(m,delivery):'') +
         '<button class="btn btn-sm btn-ghost" data-edit="artifact" data-id="' + a.id +
           '" aria-label="Editar processo e checklist">' + ico('edit') + '</button>' +
       '</div></div>' +
@@ -4159,6 +4166,9 @@
 
     var novo = e.target.closest('[data-new]');
     if (novo) { MODAIS[novo.dataset.new](); return; }
+
+    var entrega = e.target.closest('[data-progress-delivery]');
+    if(entrega){Club.black.openForMember(entrega.dataset.member,entrega.dataset.progressDelivery).catch(function(err){Club.toast(err.message,'alert');});return;}
 
     var editar = e.target.closest('[data-edit]');
     if (editar) { MODAIS[editar.dataset.edit](achar(editar.dataset.edit, editar.dataset.id)); return; }

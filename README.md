@@ -55,14 +55,20 @@ reverter o front-end não exige remover dados.
 
 - **Hierarquia uniforme (01/10):** Subida e Processos Black seguem
   **degrau → entregas específicas → checklist**. Os 90 itens estão distribuídos
-  em entregas por resultado em `Club.methodDeliveries` (`club-checklist.js`).
-  Cada item pertence a uma entrega; os IDs e registros de conferência, evidências,
-  missões, itens automáticos, rituais e edições mensais permanecem os mesmos.
-  `Club.metodo.deliveries` reaproveita os processos existentes pelo vínculo com
-  o degrau e pelos nomes mapeados. Suas etapas de implantação continuam no popup,
-  junto da conferência do resultado, com contagens distintas. Processos adicionais
-  mantêm seu cadastro e acesso. A organização das entregas do método é uma camada
-  de apresentação: não exige migração nem recria os agrupadores arquivados.
+  em 44 entregas por resultado em `cb_deliveries`. Aplicar
+  `20261001135602_catalogo_unico_entregas.sql` antes deste front-end.
+  Progressão, Processos e Subida carregam `cb_method_stages`, `cb_deliveries`,
+  `cb_delivery_artifacts` e `cb_checklist_catalog` do banco. Falha de leitura
+  impede renderização; não há catálogo fixo alternativo no navegador.
+  Cada item aponta para uma entrega do próprio degrau por FK composta.
+  Vínculos explícitos reutilizam os IDs dos processos e resistem a renomes.
+  Alterar `artifacts.method_steps` limita os vínculos ativos; processos sem
+  entrega canônica continuam aparecendo como entregas adicionais do degrau.
+  A Progressão mantém edição das etapas e notas antigas, e abre a conferência
+  do método no mentorado da linha. Os totais de implantação contam cada
+  processo uma vez, mesmo quando ele participa de vários degraus. Conferências
+  do método continuam separadas da implantação, sem converter progresso antigo
+  em conclusão automática. Áreas operacionais ficam na gestão de demandas.
   Degraus mostram cards de entregas; somente a entrega abre seu checklist.
   O admin usa os mesmos cards, nomes e critérios de disponibilidade do mentorado
   selecionado, com edição dos processos e conferência dos itens. O seletor
@@ -82,7 +88,7 @@ reverter o front-end não exige remover dados.
   Quiz e Automação Instagram ficam com vínculo a confirmar: não há de-para
   explícito para eles no documento (a cópia “(1)” tem conteúdo idêntico).
 - **Entregas por degrau (01/10):** o clique abre primeiro o conjunto de processos
-  relacionados e o checklist desmembrado. `club-checklist.js` contém os 90 itens
+  relacionados e o checklist desmembrado. `cb_checklist_catalog` contém os 90 itens
   do documento, incluindo Treino e sete rituais (três obrigatórios). Aplicar antes
   do front-end `20261001084347_desmembramento_degraus_checklist.sql`.
 - **Implantação:** status derivado dos itens obrigatórios, com data/autor
@@ -152,7 +158,8 @@ condições cadastradas do benefício; nenhuma das regras divergentes foi presum
 ### Verificação
 
 `node --test tests/*.test.mjs tests/*.test.cjs` executa as regras e regressões.
-`tests/black-access.sql` verifica no Postgres isolado: pontuação, RLS, auditoria,
+`tests/black-catalog.sql` verifica a hierarquia comum, vínculos estáveis,
+permissões e isolamento de processos privados. `tests/black-access.sql` verifica no Postgres isolado: pontuação, RLS, auditoria,
 missões, isolamento de exames, graus, coleta de seguidores, prioridade de
 voucher e estoque. `tests/black-bootstrap.sql` fornece Auth/Storage mínimos
 **apenas para banco descartável**, nunca para produção.

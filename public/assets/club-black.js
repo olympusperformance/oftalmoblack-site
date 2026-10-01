@@ -119,7 +119,7 @@
   }
   function openDelivery(id){
     if(state.loading||state.error){open('Entrega',empty(state.error||'Carregando entrega…'),id,true);return;}
-    var d=deliveries(id.split('/')[0]).find(function(d){return d.id===id;});if(!d)return;
+    var d=deliveries(id.split('/')[0],admin()&&location.hash==='#members'?visibleArtifacts():undefined).find(function(d){return d.id===id;});if(!d)return;
     activeDelivery=id;
     if(d.artifact){openArtifact(d.artifact.id,d.step,d);return;}
     open(d.name,button('← Voltar ao degrau','step',d.step)+'<p class="cb-note">'+esc(d.step)+' · '+esc(d.name)+'</p>'+checklistBody(d.step,d.items),id,true);
@@ -149,7 +149,7 @@
         (material?'<a class="cb-link" href="'+esc(material)+'" target="_blank" rel="noopener noreferrer">Abrir material ↗</a>':'')+'</div></article>';
     }).join('')||empty('Este processo ainda não tem etapas disponíveis para exibição.');
     if(delivery&&delivery.items.length)body+=checklistBody(delivery.step,delivery.items);
-    open(a.nome,body,delivery?delivery.id:null,true);
+    open(delivery?delivery.name:a.nome,body,delivery?delivery.id:null,true);
   }
   function itemForm(id){var item=(C.stepChecklist||[]).find(function(i){return i.id===id;});if(!item||item.source!=='MANUAL')return;if(item.monthly&&!edition())return;var r=itemState(item);open('Conferir entrega',form('<p>'+esc(item.title)+'</p><p class="cb-note">'+esc(item.owner)+' · data e autor registrados automaticamente.</p><input type="hidden" name="edition" value="'+esc(item.monthly&&edition()?edition().edition:'')+'">'+check('Entrega conferida e feita','done',r.done)+field('Evidência / observação (opcional)','evidence',r.evidence,'textarea'),'checklist',id));}
   function badge(s){return '<span class="cb-chip '+s+'">'+({pending:'Pendente',running:'Rodando',audited:'Auditado'}[s]||s)+'</span>';}
@@ -372,7 +372,14 @@
     var member=state.options.members.find(function(m){return m.id===id&&m.ativo!==false;});if(!member)return;
     state.member=member;close();
     var url=new URL(location.href);url.searchParams.set('membro',id);history.replaceState(null,'',url.pathname+url.search+url.hash);
-    load();
+    return load();
+  }
+  async function openForMember(id,delivery){
+    if(!admin())return;
+    await selectMember(id);
+    if(state.member.id!==id)throw new Error('Este mentorado não está ativo. Ative o acesso para conferir o método.');
+    if(state.loading)return;
+    openDelivery(delivery);
   }
   function enter(key){state.active=key;if(!state.options)return;var parts=M.canonical(location.hash).split('/');if(key==='subida'&&parts[0]==='subida'&&/^(D(0[1-9]|1[0-2])|TREINO)$/.test(parts[1]||''))openStep(parts[1]);}
   document.addEventListener('submit',function(e){var f=e.target.closest('[data-cb-form]');if(f){e.preventDefault();submit(f);}});
@@ -411,5 +418,5 @@
       if('cbFile'in d){var file=rows('files').find(function(f){return f.id===d.cbFile;});var url=ok(await C.sb.storage.from('pgz-exams').createSignedUrl(file.path,60));var a=document.createElement('a');a.href=url.signedUrl;a.target='_blank';a.rel='noopener noreferrer';a.click();}
     }catch(err){C.toast(err.message||'Não foi possível concluir a ação.','alert');el.disabled=false;}
   });
-  C.black={deliveryCards:deliveryCards,memberArtifacts:memberArtifacts,selectMember:selectMember,install:install,enter:enter,selected:function(){return state.member&&state.member.id;},close:close};
+  C.black={openForMember:openForMember,deliveryCards:deliveryCards,memberArtifacts:memberArtifacts,selectMember:selectMember,install:install,enter:enter,selected:function(){return state.member&&state.member.id;},close:close};
 })();

@@ -79,18 +79,15 @@
   function artifactSteps(a) {
     if(a.archived_at)return [];
     if (Array.isArray(a.method_steps)) return a.method_steps;
-    var name=String(a.nome||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-    if (/fabrica|iris/.test(name)) return [];
-    var map=[[/onboarding|diagnostico/,['D01']],[/posicionamento|linha editorial/,['D02']],[/tracker|trackeamento/,['D03','D06']],[/sistema black/,['D03']],[/treinamento comercial/,['D04','D09','D10']],[/funil olympus/,['D06','D09']],[/time premium/,['D04']],[/site institucional|gbp|aeo|google meu negocio|agente de comentarios/,['D05']],[/meta ads|google ads|trafego|funil expresso|funil vsl/,['D06']],[/captacao ativa/,['D07']],[/encontro grau zero/,['D08']],[/chamada consultiva/,['D09']],[/in the bag|closer/,['D10']],[/encantamento/,['D11']],[/recorrencia|seguro premium/,['D12']]];
-    var found=map.find(function(x){return x[0].test(name);}); return found?found[1]:[];
+    return [];
   }
   // Agrupadores nunca são cadastros de entrega. Itens compartilhados mantêm o mesmo ID.
   function catalogGroups(artifacts,includeEmpty) {
     var active=(artifacts||[]).filter(function(a){return !a.archived_at&&a.tipo!=='interna';});
     var moduleName=function(a){return /f[aá]brica de conte[uú]do|[ií]ris black/i.test(a.nome||'');};
     var ordered=function(list){return list.slice().sort(function(a,b){return (Number(a.ordem)||0)-(Number(b.ordem)||0)||String(a.nome).localeCompare(String(b.nome),'pt-BR');});};
-    var groups=steps.map(function(s){return {id:s.id,name:s.name,kind:'step',movement:s.movement,items:ordered(active.filter(function(a){return !moduleName(a)&&artifactSteps(a).includes(s.id);}))};});
-    groups.push({id:'TREINO',name:'Treino de Competição',kind:'transversal',items:ordered(active.filter(function(a){return artifactSteps(a).includes('TREINO');}))});
+    var groups=(C.methodStages||steps).filter(function(s){return s.kind!=='transversal';}).map(function(s){return {id:s.id,name:s.name,kind:'step',movement:s.movement,items:ordered(active.filter(function(a){return !moduleName(a)&&artifactSteps(a).includes(s.id);}))};});
+    groups.push({id:'TREINO',name:((C.methodStages||[]).find(function(s){return s.id==='TREINO';})||{name:'Treino de Competição'}).name,kind:'transversal',items:ordered(active.filter(function(a){return artifactSteps(a).includes('TREINO');}))});
     groups.push({id:'MODULOS',name:'Módulos à parte · Fábrica e Íris Black',kind:'modules',items:ordered(active.filter(moduleName))});
     groups.push({id:'SEM_VINCULO',name:'Vínculo com degrau a confirmar',kind:'unassigned',items:ordered(active.filter(function(a){return !moduleName(a)&&!artifactSteps(a).length;}))});
     return groups.filter(function(g){return g.items.length||(includeEmpty&&(g.kind==='step'||g.kind==='transversal'));});
@@ -112,9 +109,9 @@
     var available=(artifacts||[]).filter(function(a){return !a.archived_at&&a.tipo!=='interna'&&artifactSteps(a).includes(step);});
     var used=new Set();
     var result=(C.methodDeliveries||[]).filter(function(d){return d.step===step;}).map(function(d){
-      var artifact=d.match&&available.find(function(a){return !used.has(a.id)&&d.match.test(String(a.nome||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase());});
+      var artifact=available.find(function(a){return !used.has(a.id)&&(d.artifactIds||[]).includes(a.id);});
       if(artifact)used.add(artifact.id);
-      return {id:d.id,step:step,name:artifact?artifact.nome:d.name,artifact:artifact||null,items:(C.stepChecklist||[]).filter(function(i){return d.items.includes(i.id);})};
+      return {id:d.id,step:step,name:d.name,artifact:artifact||null,items:(C.stepChecklist||[]).filter(function(i){return d.items.includes(i.id);})};
     });
     available.filter(function(a){return !used.has(a.id);}).forEach(function(a){result.push({id:step+'/processo/'+a.id,step:step,name:a.nome,artifact:a,items:[]});});
     return result;

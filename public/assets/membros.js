@@ -78,7 +78,8 @@
         Club.data.progress.list({ memberId: m.id }),
         /* Áreas da jornada, para agrupar os cartões. O RLS só entrega as que
            não são da equipe (supabase/areas.sql). */
-        Club.data.groups.list()
+        Club.data.groups.list(),
+        Club.loadMethodCatalog()
       ]);
     }).then(function (r) {
       st.events = r[0]; st.artifacts = r[1]; st.materials = r[2];

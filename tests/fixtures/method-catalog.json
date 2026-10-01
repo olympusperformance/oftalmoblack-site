@@ -1,0 +1,1520 @@
+{
+  "stages": [
+    {
+      "id": "D01",
+      "name": "Diagnóstico Black",
+      "movement": "Preparar",
+      "position": 1,
+      "kind": "step"
+    },
+    {
+      "id": "D02",
+      "name": "Posicionamento Black",
+      "movement": "Preparar",
+      "position": 2,
+      "kind": "step"
+    },
+    {
+      "id": "D03",
+      "name": "Sistema Black",
+      "movement": "Preparar",
+      "position": 3,
+      "kind": "step"
+    },
+    {
+      "id": "D04",
+      "name": "Time Premium",
+      "movement": "Preparar",
+      "position": 4,
+      "kind": "step"
+    },
+    {
+      "id": "D05",
+      "name": "Referência Black",
+      "movement": "Criar",
+      "position": 5,
+      "kind": "step"
+    },
+    {
+      "id": "D06",
+      "name": "Máquina de Tráfego",
+      "movement": "Criar",
+      "position": 6,
+      "kind": "step"
+    },
+    {
+      "id": "D07",
+      "name": "Captação Ativa",
+      "movement": "Capturar",
+      "position": 7,
+      "kind": "step"
+    },
+    {
+      "id": "D08",
+      "name": "Encontro Grau Zero",
+      "movement": "Capturar",
+      "position": 8,
+      "kind": "step"
+    },
+    {
+      "id": "D09",
+      "name": "Chamada Consultiva",
+      "movement": "Converter",
+      "position": 9,
+      "kind": "step"
+    },
+    {
+      "id": "D10",
+      "name": "Método In The Bag",
+      "movement": "Converter",
+      "position": 10,
+      "kind": "step"
+    },
+    {
+      "id": "D11",
+      "name": "Protocolo de Encantamento",
+      "movement": "Perpetuar",
+      "position": 11,
+      "kind": "step"
+    },
+    {
+      "id": "D12",
+      "name": "Recorrência Black",
+      "movement": "Perpetuar",
+      "position": 12,
+      "kind": "step"
+    },
+    {
+      "id": "TREINO",
+      "name": "Treino de Competição",
+      "movement": null,
+      "position": 13,
+      "kind": "transversal"
+    }
+  ],
+  "deliveries": [
+    {
+      "id": "D01/diagnostico",
+      "stage_id": "D01",
+      "name": "Diagnóstico das três frentes",
+      "position": 1
+    },
+    {
+      "id": "D01/prioridades",
+      "stage_id": "D01",
+      "name": "Prioridades do Dia Zero",
+      "position": 2
+    },
+    {
+      "id": "D02/identidade",
+      "stage_id": "D02",
+      "name": "Identidade e posicionamento",
+      "position": 3
+    },
+    {
+      "id": "D02/conteudo",
+      "stage_id": "D02",
+      "name": "Linha editorial e scripts",
+      "position": 4
+    },
+    {
+      "id": "D03/sistema",
+      "stage_id": "D03",
+      "name": "CRM, prontuário e agenda",
+      "position": 5
+    },
+    {
+      "id": "D03/rastreio",
+      "stage_id": "D03",
+      "name": "Integração de rastreamento",
+      "position": 6
+    },
+    {
+      "id": "D03/operacao",
+      "stage_id": "D03",
+      "name": "Operação diária do Sistema",
+      "position": 7
+    },
+    {
+      "id": "D04/funcoes",
+      "stage_id": "D04",
+      "name": "Responsáveis pelas quatro funções",
+      "position": 8
+    },
+    {
+      "id": "D04/formacao",
+      "stage_id": "D04",
+      "name": "Formação da equipe premium",
+      "position": 9
+    },
+    {
+      "id": "D04/atendimento",
+      "stage_id": "D04",
+      "name": "Padrões de atendimento",
+      "position": 10
+    },
+    {
+      "id": "D05/canais",
+      "stage_id": "D05",
+      "name": "Canais de conteúdo",
+      "position": 11
+    },
+    {
+      "id": "D05/site",
+      "stage_id": "D05",
+      "name": "Site institucional e AEO",
+      "position": 12
+    },
+    {
+      "id": "D05/google",
+      "stage_id": "D05",
+      "name": "Presença no Google",
+      "position": 13
+    },
+    {
+      "id": "D05/blog",
+      "stage_id": "D05",
+      "name": "Rotina de artigos",
+      "position": 14
+    },
+    {
+      "id": "D05/comentarios",
+      "stage_id": "D05",
+      "name": "Agente de comentários",
+      "position": 15
+    },
+    {
+      "id": "D06/vsl",
+      "stage_id": "D06",
+      "name": "Funil Expresso e VSL",
+      "position": 16
+    },
+    {
+      "id": "D06/olympus",
+      "stage_id": "D06",
+      "name": "Funil Olympus",
+      "position": 17
+    },
+    {
+      "id": "D06/meta",
+      "stage_id": "D06",
+      "name": "Campanhas Meta Ads",
+      "position": 18
+    },
+    {
+      "id": "D06/google",
+      "stage_id": "D06",
+      "name": "Campanhas Google Ads",
+      "position": 19
+    },
+    {
+      "id": "D06/rastreio",
+      "stage_id": "D06",
+      "name": "Rastreamento anúncio → cirurgia",
+      "position": 20
+    },
+    {
+      "id": "D06/gestao",
+      "stage_id": "D06",
+      "name": "Gestão mensal do tráfego",
+      "position": 21
+    },
+    {
+      "id": "D07/prospeccao",
+      "stage_id": "D07",
+      "name": "Prospecção pelo Social Seller",
+      "position": 22
+    },
+    {
+      "id": "D07/indicacao",
+      "stage_id": "D07",
+      "name": "Indicação ativa",
+      "position": 23
+    },
+    {
+      "id": "D07/bonus",
+      "stage_id": "D07",
+      "name": "Leads Bônus",
+      "position": 24
+    },
+    {
+      "id": "D08/divulgacao",
+      "stage_id": "D08",
+      "name": "Divulgação da edição",
+      "position": 25
+    },
+    {
+      "id": "D08/participacao",
+      "stage_id": "D08",
+      "name": "Participação no encontro",
+      "position": 26
+    },
+    {
+      "id": "D08/leads",
+      "stage_id": "D08",
+      "name": "Acompanhamento dos leads da edição",
+      "position": 27
+    },
+    {
+      "id": "D09/preparo",
+      "stage_id": "D09",
+      "name": "Preparação da Closer e agenda",
+      "position": 28
+    },
+    {
+      "id": "D09/resgate",
+      "stage_id": "D09",
+      "name": "Funil de chamadas e resgate",
+      "position": 29
+    },
+    {
+      "id": "D09/resultado",
+      "stage_id": "D09",
+      "name": "Acompanhamento das chamadas",
+      "position": 30
+    },
+    {
+      "id": "D10/qualificacao",
+      "stage_id": "D10",
+      "name": "Qualificação pelo SDR",
+      "position": 31
+    },
+    {
+      "id": "D10/consulta",
+      "stage_id": "D10",
+      "name": "Preparação da venda consultiva",
+      "position": 32
+    },
+    {
+      "id": "D10/fechamento",
+      "stage_id": "D10",
+      "name": "Fechamento pós-consulta",
+      "position": 33
+    },
+    {
+      "id": "D11/rituais",
+      "stage_id": "D11",
+      "name": "Rituais de encantamento",
+      "position": 34
+    },
+    {
+      "id": "D11/experiencia",
+      "stage_id": "D11",
+      "name": "Medição da experiência e indicações",
+      "position": 35
+    },
+    {
+      "id": "D11/provas",
+      "stage_id": "D11",
+      "name": "Depoimentos e provas",
+      "position": 36
+    },
+    {
+      "id": "D12/seguro",
+      "stage_id": "D12",
+      "name": "Seguro Premium",
+      "position": 37
+    },
+    {
+      "id": "D12/cuidado",
+      "stage_id": "D12",
+      "name": "Pacotes Cuidado Premium",
+      "position": 38
+    },
+    {
+      "id": "D12/retorno",
+      "stage_id": "D12",
+      "name": "Retorno de seis meses",
+      "position": 39
+    },
+    {
+      "id": "TREINO/vendas",
+      "stage_id": "TREINO",
+      "name": "Treinamento de vendas",
+      "position": 40
+    },
+    {
+      "id": "TREINO/sistema",
+      "stage_id": "TREINO",
+      "name": "Treinamento do Sistema Black",
+      "position": 41
+    },
+    {
+      "id": "TREINO/growth",
+      "stage_id": "TREINO",
+      "name": "Treinamento de Growth",
+      "position": 42
+    },
+    {
+      "id": "TREINO/conteudo",
+      "stage_id": "TREINO",
+      "name": "Treinamento de conteúdo",
+      "position": 43
+    },
+    {
+      "id": "TREINO/rotina",
+      "stage_id": "TREINO",
+      "name": "Rotina de formação da equipe",
+      "position": 44
+    }
+  ],
+  "items": [
+    {
+      "id": "D01-01",
+      "method_step": "D01",
+      "title": "Foto do Dia Zero — frente Funil (leads/mês, taxas)",
+      "source": "MANUAL",
+      "source_detail": "MANUAL (no CRM)",
+      "owner": "CLUB + MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D01/diagnostico"
+    },
+    {
+      "id": "D01-02",
+      "method_step": "D01",
+      "title": "Foto do Dia Zero — frente Atração",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "CLUB + MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D01/diagnostico"
+    },
+    {
+      "id": "D01-03",
+      "method_step": "D01",
+      "title": "Foto do Dia Zero — frente Entrega",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "CLUB + MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D01/diagnostico"
+    },
+    {
+      "id": "D01-04",
+      "method_step": "D01",
+      "title": "Presbiopia Mental: 3 lentes prioritárias identificadas",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D01/prioridades"
+    },
+    {
+      "id": "D01-05",
+      "method_step": "D01",
+      "title": "Data do Dia Zero registrada",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "CLUB",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D01/diagnostico"
+    },
+    {
+      "id": "D02-01",
+      "method_step": "D02",
+      "title": "Mecanismo Grau Zero nomeado",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "CLUB",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D02/identidade"
+    },
+    {
+      "id": "D02-02",
+      "method_step": "D02",
+      "title": "Black Branding aplicado",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "CLUB",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D02/identidade"
+    },
+    {
+      "id": "D02-03",
+      "method_step": "D02",
+      "title": "Arquétipo definido",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "CLUB",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D02/identidade"
+    },
+    {
+      "id": "D02-04",
+      "method_step": "D02",
+      "title": "Linha editorial entregue",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "CLUB",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D02/conteudo"
+    },
+    {
+      "id": "D02-05",
+      "method_step": "D02",
+      "title": "Scripts de conteúdo + roteiro de VSL entregues",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "CLUB",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D02/conteudo"
+    },
+    {
+      "id": "D02-06",
+      "method_step": "D02",
+      "title": "Linha editorial e scripts APROVADOS no prazo",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO (colaboração ½)",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": 0.5,
+      "delivery_id": "D02/conteudo"
+    },
+    {
+      "id": "D03-01",
+      "method_step": "D03",
+      "title": "CRM Black implantado (funil 8 etapas)",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "CLUB",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D03/sistema"
+    },
+    {
+      "id": "D03-02",
+      "method_step": "D03",
+      "title": "Prontuário Black implantado",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "CLUB",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D03/sistema"
+    },
+    {
+      "id": "D03-03",
+      "method_step": "D03",
+      "title": "Agenda integrada",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "CLUB",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D03/sistema"
+    },
+    {
+      "id": "D03-04",
+      "method_step": "D03",
+      "title": "Conexão com trackeamento (CAPI ligado)",
+      "source": "AUTO",
+      "source_detail": "AUTO",
+      "owner": "CLUB",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D03/rastreio"
+    },
+    {
+      "id": "D03-05",
+      "method_step": "D03",
+      "title": "Equipe registrando 100% (sem lead órfão)",
+      "source": "AUTO",
+      "source_detail": "AUTO",
+      "owner": "MEMBRO (missão peso 1)",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": 1,
+      "delivery_id": "D03/operacao"
+    },
+    {
+      "id": "D03-06",
+      "method_step": "D03",
+      "title": "SLA de 1º contato dentro da meta",
+      "source": "AUTO",
+      "source_detail": "AUTO",
+      "owner": "MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D03/operacao"
+    },
+    {
+      "id": "D03-07",
+      "method_step": "D03",
+      "title": "Desfechos registrados ≥ 95%",
+      "source": "AUTO",
+      "source_detail": "AUTO",
+      "owner": "MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D03/operacao"
+    },
+    {
+      "id": "D04-01",
+      "method_step": "D04",
+      "title": "Social Seller com dono definido",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO (missão peso 1)",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": 1,
+      "delivery_id": "D04/funcoes"
+    },
+    {
+      "id": "D04-02",
+      "method_step": "D04",
+      "title": "SDR com dono definido (Íris Black ou humana)",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D04/funcoes"
+    },
+    {
+      "id": "D04-03",
+      "method_step": "D04",
+      "title": "Closer (Orientadora Cirúrgica) com dono definido",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D04/funcoes"
+    },
+    {
+      "id": "D04-04",
+      "method_step": "D04",
+      "title": "Equipe clínica com dono definido",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D04/funcoes"
+    },
+    {
+      "id": "D04-05",
+      "method_step": "D04",
+      "title": "Trilha Cultura Premium concluída pela equipe",
+      "source": "MANUAL",
+      "source_detail": "MANUAL (plataforma de aulas)",
+      "owner": "MEMBRO (missão peso 1)",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": 1,
+      "delivery_id": "D04/formacao"
+    },
+    {
+      "id": "D04-06",
+      "method_step": "D04",
+      "title": "Trilha Atendimento Premium concluída pela equipe",
+      "source": "MANUAL",
+      "source_detail": "MANUAL (plataforma)",
+      "owner": "MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D04/formacao"
+    },
+    {
+      "id": "D04-07",
+      "method_step": "D04",
+      "title": "Padrões de atendimento implantados no balcão",
+      "source": "MANUAL",
+      "source_detail": "MANUAL (auditoria)",
+      "owner": "MEMBRO (missão peso 1)",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": 1,
+      "delivery_id": "D04/atendimento"
+    },
+    {
+      "id": "D05-01",
+      "method_step": "D05",
+      "title": "Instagram ativo com constância (3+ vídeos/sem)",
+      "source": "AUTO",
+      "source_detail": "AUTO (API IG)",
+      "owner": "MEMBRO (Rotina 10)",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D05/canais"
+    },
+    {
+      "id": "D05-02",
+      "method_step": "D05",
+      "title": "Crescimento de seguidores no trimestre",
+      "source": "AUTO",
+      "source_detail": "AUTO (API IG)",
+      "owner": "MEMBRO (Rotina 5)",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D05/canais"
+    },
+    {
+      "id": "D05-03",
+      "method_step": "D05",
+      "title": "YouTube ativo",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D05/canais"
+    },
+    {
+      "id": "D05-04",
+      "method_step": "D05",
+      "title": "TikTok ativo",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D05/canais"
+    },
+    {
+      "id": "D05-05",
+      "method_step": "D05",
+      "title": "Site institucional no ar",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "CLUB",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D05/site"
+    },
+    {
+      "id": "D05-06",
+      "method_step": "D05",
+      "title": "Site preparado para IAs de busca (AEO)",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "CLUB",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D05/site"
+    },
+    {
+      "id": "D05-07",
+      "method_step": "D05",
+      "title": "GBP (Google Meu Negócio) gerido com artigo semanal",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "CLUB",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D05/google"
+    },
+    {
+      "id": "D05-08",
+      "method_step": "D05",
+      "title": "Rotina de artigos em blog rodando",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "CLUB",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D05/blog"
+    },
+    {
+      "id": "D05-09",
+      "method_step": "D05",
+      "title": "Agente de comentários humanizados ativo (SLA)",
+      "source": "AUTO",
+      "source_detail": "AUTO",
+      "owner": "CLUB",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D05/comentarios"
+    },
+    {
+      "id": "D06-01",
+      "method_step": "D06",
+      "title": "Funil de VSL (Funil Expresso): página qualificadora no ar",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "CLUB",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D06/vsl"
+    },
+    {
+      "id": "D06-02",
+      "method_step": "D06",
+      "title": "Funil de VSL: VSL gravada pelo médico",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO (missão peso 1)",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": 1,
+      "delivery_id": "D06/vsl"
+    },
+    {
+      "id": "D06-03",
+      "method_step": "D06",
+      "title": "Funil de VSL: VSL hospedada + % de vídeo assistido medido",
+      "source": "AUTO",
+      "source_detail": "AUTO",
+      "owner": "CLUB",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D06/vsl"
+    },
+    {
+      "id": "D06-04",
+      "method_step": "D06",
+      "title": "Funil de VSL: pedágios configurados (0–5)",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "CLUB",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D06/vsl"
+    },
+    {
+      "id": "D06-05",
+      "method_step": "D06",
+      "title": "Funil Olympus implantado (como consta hoje no sistema; conecta no D09)",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "CLUB",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D06/olympus"
+    },
+    {
+      "id": "D06-06",
+      "method_step": "D06",
+      "title": "Link da bio trocado para a página qualificadora",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO (missão peso 1)",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": 1,
+      "delivery_id": "D06/vsl"
+    },
+    {
+      "id": "D06-07",
+      "method_step": "D06",
+      "title": "Meta Ads no ar — estrutura 2×4 (Andrômeda)",
+      "source": "AUTO",
+      "source_detail": "AUTO",
+      "owner": "CLUB",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D06/meta"
+    },
+    {
+      "id": "D06-08",
+      "method_step": "D06",
+      "title": "Google Ads ativo",
+      "source": "AUTO",
+      "source_detail": "AUTO",
+      "owner": "CLUB",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D06/google"
+    },
+    {
+      "id": "D06-09",
+      "method_step": "D06",
+      "title": "Trackeamento anúncio→cirurgia (CAPI) validado",
+      "source": "AUTO",
+      "source_detail": "AUTO",
+      "owner": "CLUB",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D06/rastreio"
+    },
+    {
+      "id": "D06-10",
+      "method_step": "D06",
+      "title": "Verba acordada mantida no mês",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO (missão peso 1)",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": 1,
+      "delivery_id": "D06/gestao"
+    },
+    {
+      "id": "D06-11",
+      "method_step": "D06",
+      "title": "Leitura mensal do funil pilotada com o Club",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D06/gestao"
+    },
+    {
+      "id": "D06-12",
+      "method_step": "D06",
+      "title": "CPV-Cirurgia medido (juiz: < 15% do ticket)",
+      "source": "AUTO",
+      "source_detail": "AUTO",
+      "owner": "— (Resultado)",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D06/gestao"
+    },
+    {
+      "id": "D07-01",
+      "method_step": "D07",
+      "title": "Rotina do Social Seller implantada (~30 DMs/dia)",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO (missão peso 1)",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": 1,
+      "delivery_id": "D07/prospeccao"
+    },
+    {
+      "id": "D07-02",
+      "method_step": "D07",
+      "title": "5+ agendamentos/semana do Social Seller",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D07/prospeccao"
+    },
+    {
+      "id": "D07-03",
+      "method_step": "D07",
+      "title": "Indicação pedida em 100% das altas",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO (missão peso 1)",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": 1,
+      "delivery_id": "D07/indicacao"
+    },
+    {
+      "id": "D07-04",
+      "method_step": "D07",
+      "title": "Leads Bônus: desbloqueio (D03+D05+D06 auditados)",
+      "source": "AUTO",
+      "source_detail": "AUTO (derivado)",
+      "owner": "—",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D07/bonus"
+    },
+    {
+      "id": "D07-05",
+      "method_step": "D07",
+      "title": "Leads Bônus: 100% com desfecho registrado",
+      "source": "AUTO",
+      "source_detail": "AUTO",
+      "owner": "MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D07/bonus"
+    },
+    {
+      "id": "D08-01",
+      "method_step": "D08",
+      "title": "Divulgou no perfil marcando @dralexsa",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO",
+      "monthly": true,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D08/divulgacao"
+    },
+    {
+      "id": "D08-02",
+      "method_step": "D08",
+      "title": "Vídeo enviado para o grupo de aquecimento",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO",
+      "monthly": true,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D08/divulgacao"
+    },
+    {
+      "id": "D08-03",
+      "method_step": "D08",
+      "title": "Vídeo enviado para o tráfego da edição",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO",
+      "monthly": true,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D08/divulgacao"
+    },
+    {
+      "id": "D08-04",
+      "method_step": "D08",
+      "title": "Presença ao vivo no pitch",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO",
+      "monthly": true,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D08/participacao"
+    },
+    {
+      "id": "D08-05",
+      "method_step": "D08",
+      "title": "Leads da edição recebidos por região",
+      "source": "AUTO",
+      "source_detail": "AUTO",
+      "owner": "CLUB",
+      "monthly": true,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D08/leads"
+    },
+    {
+      "id": "D08-06",
+      "method_step": "D08",
+      "title": "Desfecho dos leads da edição registrado",
+      "source": "AUTO",
+      "source_detail": "AUTO",
+      "owner": "MEMBRO",
+      "monthly": true,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D08/leads"
+    },
+    {
+      "id": "D09-01",
+      "method_step": "D09",
+      "title": "Closer treinada na chamada (leitura: Apostila In The Bag)",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO (missão peso 1)",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": 1,
+      "delivery_id": "D09/preparo"
+    },
+    {
+      "id": "D09-02",
+      "method_step": "D09",
+      "title": "Agenda com dupla de horários ativa",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D09/preparo"
+    },
+    {
+      "id": "D09-03",
+      "method_step": "D09",
+      "title": "Funil B configurado (qualificado travado → oferta de chamada)",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "CLUB",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D09/resgate"
+    },
+    {
+      "id": "D09-04",
+      "method_step": "D09",
+      "title": "Ciclo mensal de resgate dos leads parados rodando",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO (missão peso 1)",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": 1,
+      "delivery_id": "D09/resgate"
+    },
+    {
+      "id": "D09-05",
+      "method_step": "D09",
+      "title": "Chamadas realizadas/semana medidas",
+      "source": "AUTO",
+      "source_detail": "AUTO (CRM)",
+      "owner": "—",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D09/resultado"
+    },
+    {
+      "id": "D09-06",
+      "method_step": "D09",
+      "title": "Chamada→consulta ≥ 60% (juiz do Resultado)",
+      "source": "AUTO",
+      "source_detail": "AUTO",
+      "owner": "—",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D09/resultado"
+    },
+    {
+      "id": "D10-01",
+      "method_step": "D10",
+      "title": "Função SDR estruturada (Íris Black contratada OU SDR humana treinada)",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO (missão peso 1)",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": 1,
+      "delivery_id": "D10/qualificacao"
+    },
+    {
+      "id": "D10-02",
+      "method_step": "D10",
+      "title": "SLA do SDR em minutos, medido",
+      "source": "AUTO",
+      "source_detail": "AUTO",
+      "owner": "MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D10/qualificacao"
+    },
+    {
+      "id": "D10-03",
+      "method_step": "D10",
+      "title": "Closer treinada no Método In The Bag (8 passos + temperamentos)",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO (missão peso 1)",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": 1,
+      "delivery_id": "D10/consulta"
+    },
+    {
+      "id": "D10-04",
+      "method_step": "D10",
+      "title": "Agenda do médico protegida (só recebe quem está pronto)",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO (missão peso 1)",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": 1,
+      "delivery_id": "D10/consulta"
+    },
+    {
+      "id": "D10-05",
+      "method_step": "D10",
+      "title": "Cadência de fechamento pós-consulta ativa (D+1·D+5·D+9·D+16·D+21)",
+      "source": "AUTO",
+      "source_detail": "AUTO (CRM)",
+      "owner": "MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D10/fechamento"
+    },
+    {
+      "id": "D10-06",
+      "method_step": "D10",
+      "title": "Objeções registradas por raiz",
+      "source": "AUTO",
+      "source_detail": "AUTO",
+      "owner": "MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D10/fechamento"
+    },
+    {
+      "id": "D11-01",
+      "method_step": "D11",
+      "title": "Ritual 1 padronizado",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO (missão peso 1 p/ 3 rituais)",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": 1,
+      "delivery_id": "D11/rituais"
+    },
+    {
+      "id": "D11-02",
+      "method_step": "D11",
+      "title": "Ritual 2 padronizado",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO (missão peso 1 p/ 3 rituais)",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D11/rituais"
+    },
+    {
+      "id": "D11-03",
+      "method_step": "D11",
+      "title": "Ritual 3 padronizado",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO (missão peso 1 p/ 3 rituais)",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D11/rituais"
+    },
+    {
+      "id": "D11-04",
+      "method_step": "D11",
+      "title": "Ritual 4 padronizado",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO (missão peso 1 p/ 3 rituais)",
+      "monthly": false,
+      "optional": true,
+      "mission_weight": null,
+      "delivery_id": "D11/rituais"
+    },
+    {
+      "id": "D11-05",
+      "method_step": "D11",
+      "title": "Ritual 5 padronizado",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO (missão peso 1 p/ 3 rituais)",
+      "monthly": false,
+      "optional": true,
+      "mission_weight": null,
+      "delivery_id": "D11/rituais"
+    },
+    {
+      "id": "D11-06",
+      "method_step": "D11",
+      "title": "Ritual 6 padronizado",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO (missão peso 1 p/ 3 rituais)",
+      "monthly": false,
+      "optional": true,
+      "mission_weight": null,
+      "delivery_id": "D11/rituais"
+    },
+    {
+      "id": "D11-07",
+      "method_step": "D11",
+      "title": "Ritual 7 padronizado",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO (missão peso 1 p/ 3 rituais)",
+      "monthly": false,
+      "optional": true,
+      "mission_weight": null,
+      "delivery_id": "D11/rituais"
+    },
+    {
+      "id": "D11-08",
+      "method_step": "D11",
+      "title": "NPS implantado",
+      "source": "AUTO",
+      "source_detail": "AUTO",
+      "owner": "MEMBRO (missão peso 1)",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": 1,
+      "delivery_id": "D11/experiencia"
+    },
+    {
+      "id": "D11-09",
+      "method_step": "D11",
+      "title": "Provas registradas/mês (depoimentos)",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D11/provas"
+    },
+    {
+      "id": "D11-10",
+      "method_step": "D11",
+      "title": "Indicações espontâneas medidas",
+      "source": "AUTO",
+      "source_detail": "AUTO",
+      "owner": "—",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D11/experiencia"
+    },
+    {
+      "id": "D12-01",
+      "method_step": "D12",
+      "title": "Seguro Premium estruturado e lançado",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO (missão peso 1)",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": 1,
+      "delivery_id": "D12/seguro"
+    },
+    {
+      "id": "D12-02",
+      "method_step": "D12",
+      "title": "% das altas com oferta feita",
+      "source": "AUTO",
+      "source_detail": "AUTO",
+      "owner": "MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D12/seguro"
+    },
+    {
+      "id": "D12-03",
+      "method_step": "D12",
+      "title": "Pacotes Cuidado Premium ativos",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D12/cuidado"
+    },
+    {
+      "id": "D12-04",
+      "method_step": "D12",
+      "title": "Régua de retorno 6 meses rodando no Sistema",
+      "source": "AUTO",
+      "source_detail": "AUTO",
+      "owner": "CLUB",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "D12/retorno"
+    },
+    {
+      "id": "TREINO-01",
+      "method_step": "TREINO",
+      "title": "Treinamento de Vendas — participação do time",
+      "source": "MANUAL",
+      "source_detail": "MANUAL (plataforma)",
+      "owner": "MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "TREINO/vendas"
+    },
+    {
+      "id": "TREINO-02",
+      "method_step": "TREINO",
+      "title": "Treinamento de Sistema Black (com suporte)",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "TREINO/sistema"
+    },
+    {
+      "id": "TREINO-03",
+      "method_step": "TREINO",
+      "title": "Treinamento de Growth (alinhamento de tráfego)",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "TREINO/growth"
+    },
+    {
+      "id": "TREINO-04",
+      "method_step": "TREINO",
+      "title": "Treinamento de Conteúdo",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "TREINO/conteudo"
+    },
+    {
+      "id": "TREINO-05",
+      "method_step": "TREINO",
+      "title": "Presença nos encontros (Rotina, até 10)",
+      "source": "AUTO",
+      "source_detail": "AUTO (página de presença atual)",
+      "owner": "MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "TREINO/rotina"
+    },
+    {
+      "id": "TREINO-06",
+      "method_step": "TREINO",
+      "title": "Roleplay mensal feito",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "TREINO/rotina"
+    },
+    {
+      "id": "TREINO-07",
+      "method_step": "TREINO",
+      "title": "Aulão da equipe do mês (presença)",
+      "source": "MANUAL",
+      "source_detail": "MANUAL",
+      "owner": "MEMBRO",
+      "monthly": false,
+      "optional": false,
+      "mission_weight": null,
+      "delivery_id": "TREINO/rotina"
+    }
+  ],
+  "bindings": [
+    {
+      "delivery_id": "D01/diagnostico",
+      "stage_id": "D01",
+      "artifact_name": "Onboarding"
+    },
+    {
+      "delivery_id": "D02/conteudo",
+      "stage_id": "D02",
+      "artifact_name": "Linha Editorial"
+    },
+    {
+      "delivery_id": "D03/sistema",
+      "stage_id": "D03",
+      "artifact_name": "Sistema Black"
+    },
+    {
+      "delivery_id": "D03/rastreio",
+      "stage_id": "D03",
+      "artifact_name": "Tracker Black"
+    },
+    {
+      "delivery_id": "D04/formacao",
+      "stage_id": "D04",
+      "artifact_name": "Treinamento comercial"
+    },
+    {
+      "delivery_id": "D05/site",
+      "stage_id": "D05",
+      "artifact_name": "Site Institucional"
+    },
+    {
+      "delivery_id": "D05/google",
+      "stage_id": "D05",
+      "artifact_name": "GBP"
+    },
+    {
+      "delivery_id": "D05/comentarios",
+      "stage_id": "D05",
+      "artifact_name": "Agente de comentários"
+    },
+    {
+      "delivery_id": "D06/vsl",
+      "stage_id": "D06",
+      "artifact_name": "Funil VSL"
+    },
+    {
+      "delivery_id": "D06/meta",
+      "stage_id": "D06",
+      "artifact_name": "Meta Ads"
+    },
+    {
+      "delivery_id": "D06/google",
+      "stage_id": "D06",
+      "artifact_name": "Google Ads"
+    },
+    {
+      "delivery_id": "D06/rastreio",
+      "stage_id": "D06",
+      "artifact_name": "Tracker Black"
+    },
+    {
+      "delivery_id": "D09/preparo",
+      "stage_id": "D09",
+      "artifact_name": "Treinamento comercial"
+    },
+    {
+      "delivery_id": "D10/consulta",
+      "stage_id": "D10",
+      "artifact_name": "Treinamento comercial"
+    },
+    {
+      "delivery_id": "TREINO/vendas",
+      "stage_id": "TREINO",
+      "artifact_name": "Treinamento comercial"
+    }
+  ]
+}

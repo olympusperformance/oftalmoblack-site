@@ -1,7 +1,11 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
-const items=require('../public/assets/club-checklist.js');
 const M=require('../public/assets/club-metodo.js');
+const {hydrate}=require('../public/assets/club-checklist.js');
+const fixture=require('./fixtures/method-catalog.json');
+const bindings=fixture.bindings.map(b=>({...b,artifact_id:b.artifact_name==='Site Institucional'?'site':b.artifact_name==='Treinamento comercial'?'training':b.artifact_name}));
+hydrate(fixture.stages,fixture.deliveries,fixture.items,bindings);
+const items=globalThis.Club.stepChecklist;
 test('Desmembramento: 90 itens, IDs estáveis e contagem de cada degrau',()=>{
  assert.equal(items.length,90);assert.equal(new Set(items.map(i=>i.id)).size,90);
  assert.deepEqual(['D01','D02','D03','D04','D05','D06','D07','D08','D09','D10','D11','D12','TREINO'].map(step=>items.filter(i=>i.step===step).length),[5,6,7,7,9,12,5,6,6,6,10,4,7]);
@@ -16,9 +20,9 @@ test('Rituais: sete itens independentes, três obrigatórios, uma missão de pes
  assert.equal(items.find(i=>i.id==='D02-06').missionWeight,0.5);
 });
 test('Entregas agrupadas sem confundir módulos e Funil Olympus com Quiz',()=>{
- assert.deepEqual(M.artifactSteps({nome:'Funil VSL'}),['D06']);
- assert.deepEqual(M.artifactSteps({nome:'Funil Olympus'}),['D06','D09']);
- assert.deepEqual(M.artifactSteps({nome:'Agente de comentários'}),['D05']);
+ assert.deepEqual(M.artifactSteps({nome:'Funil VSL',method_steps:['D06']}),['D06']);
+ assert.deepEqual(M.artifactSteps({nome:'Funil Olympus',method_steps:['D06','D09']}),['D06','D09']);
+ assert.deepEqual(M.artifactSteps({nome:'Agente de comentários',method_steps:['D05']}),['D05']);
  assert.deepEqual(M.artifactSteps({nome:'Íris Black'}),[]);
  assert.deepEqual(M.artifactSteps({nome:'Quiz'}),[]);
  assert.deepEqual(M.artifactSteps({nome:'Site Institucional',method_steps:[]}),[]);
@@ -48,4 +52,23 @@ test('Entregas existentes são reaproveitadas sem duplicar o cadastro ou perder 
  assert.deepEqual(deliveries.filter(d=>d.artifact).map(d=>d.artifact.id),['site','extra']);
  for(const step of training.method_steps)assert.strictEqual(M.deliveries(step,catalog).find(d=>d.artifact).artifact,training);
  assert.equal(JSON.stringify(catalog),before);
+});
+
+test('Vínculo usa ID e nome canônico, sem inferir por nome do processo',()=>{
+ const renamed={id:'site',nome:'Site renomeado',method_steps:['D05']};
+ const impostor={id:'another',nome:'Site Institucional',method_steps:['D05']};
+ const ds=M.deliveries('D05',[renamed,impostor]);
+ assert.strictEqual(ds.find(d=>d.id==='D05/site').artifact,renamed);
+ assert.equal(ds.find(d=>d.id==='D05/site').name,'Site institucional e AEO');
+ assert.equal(M.deliveries('D05',[{...renamed,method_steps:[]}]).find(d=>d.id==='D05/site').artifact,null);
+ assert.deepEqual(M.artifactSteps({nome:'Site Institucional'}),[]);
+});
+test('Catálogo incompleto falha sem substituir a última estrutura válida',()=>{
+ const before=globalThis.Club.methodDeliveries;
+ assert.throws(()=>hydrate(fixture.stages,fixture.deliveries,[{id:'bad',method_step:'D05',delivery_id:'D07/bonus'}],[]),/incompleto/);
+ assert.strictEqual(globalThis.Club.methodDeliveries,before);
+});
+test('Falha ao ler catálogo não cria uma estrutura alternativa',async()=>{
+ globalThis.Club.sb={from:()=>({select(){return this;},order(){return this;},range(){return Promise.resolve({error:{message:'Fonte indisponível'}});}})};
+ await assert.rejects(globalThis.Club.loadMethodCatalog(),/carregar o catálogo de entregas/);
 });
