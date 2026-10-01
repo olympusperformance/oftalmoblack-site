@@ -4481,7 +4481,8 @@
     renderBotExemplos();
     Club.graduacao.mountAdmin($('graduacaoAdmin'), st.members);
     Club.black.install({ members:st.members, admin:true, artifacts:st.artifacts,
-      steps:st.steps, progress:st.progress, onDeliveriesChange:renderDeliveryCards });
+      steps:st.steps, progress:st.progress, onDeliveriesChange:renderDeliveryCards,
+      onProgressChange:function () { indexar(); renderMembers(); if (farolMontado) Club.farol.refresh(); } });
     renderQr();
   }
 

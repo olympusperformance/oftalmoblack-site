@@ -70,8 +70,9 @@
   function edition(){var es=rows('encontros').slice().sort(function(a,b){return b.edition.localeCompare(a.edition);});return es.find(function(e){return e.edition===selectedEdition;})||es[0];}
   function itemState(item){
     var ed=item.monthly&&edition(),key=item.monthly?(ed&&ed.edition):'';
+    // A conferência da equipe vale para qualquer item, inclusive AUTO sem integração.
+    var r=rows('checklistProgress').find(function(r){return r.item_id===item.id&&r.edition===key;});if(r)return r;
     if(item.source==='MANUAL'){
-      var r=rows('checklistProgress').find(function(r){return r.item_id===item.id&&r.edition===key;});if(r)return r;
       var fieldName={'D08-01':'publicized','D08-02':'video_group','D08-03':'video_ads','D08-04':'attended'}[item.id];
       if(ed&&fieldName&&ed[fieldName])return {done:true,updated_at:ed.updated_at,actor_name:'Equipe · '+String(ed.updated_by||'registro da edição').slice(0,36),evidence:ed.evidence};
       return {done:false};
@@ -88,8 +89,8 @@
     var required=items.filter(function(i){return !i.optional;}),done=required.filter(function(i){return itemState(i).done;}).length;
     var body='<div class="cb-section"><h3>Conferência da entrega</h3><span class="cb-note">'+done+' de '+required.length+' itens obrigatórios</span></div>';
     if(id==='D08')body+='<label class="cb-note">Edição<select class="inp" data-cb-edition>'+rows('encontros').slice().sort(function(a,b){return b.edition.localeCompare(a.edition);}).map(function(e){return '<option value="'+esc(e.edition)+'"'+(edition()&&e.edition===edition().edition?' selected':'')+'>'+date(e.edition)+'</option>';}).join('')+'</select></label>'+(!edition()?empty('Nenhuma edição cadastrada neste trimestre. Cadastre a edição para conferir os itens mensais.'):'')+'<p class="cb-note">Cada edição tem seu próprio checklist; os registros anteriores são preservados.</p>';
-    body+=items.map(function(item){var r=itemState(item),mission=rows('missions').find(function(m){return m.checklist_item_id===item.id;}),ritual=/^D11-0[1-7]$/.test(item.id);var toggle=admin()&&item.source==='MANUAL'&&(!item.monthly||edition());return '<article class="cb-check-item'+(r.done?' is-done':'')+'">'+(toggle?'<input type="checkbox" class="cb-check-toggle" data-cb-toggle-item="'+esc(item.id)+'"'+(r.done?' checked':'')+' aria-label="Conferido: '+esc(item.title)+'">':'<span class="cb-check-icon" aria-hidden="true">'+(r.done?'✓':'○')+'</span>')+'<div><b>'+esc(item.title)+'</b><div class="cb-item-meta"><span class="cb-source">'+esc(item.sourceDetail)+'</span><span>'+esc(item.owner)+'</span>'+(item.optional?'<span>Adicional · mínimo de 3 rituais</span>':'')+'</div><small>'+(r.done?'FEITO':'NÃO FEITO')+' · '+(r.updated_at?date(r.updated_at)+' · '+esc(r.actor_name||'Equipe Black'):'Sem marcação')+'</small>'+(r.note?'<p class="cb-note">'+esc(r.note)+'</p>':'')+(r.evidence?'<p class="cb-note">'+esc(r.evidence)+'</p>':'')+'<div class="cb-tools">'+(mission?button(admin()?'Ver missão':'Enviar evidência','mission',mission.id):admin()&&item.missionWeight!=null&&(!ritual||item.id==='D11-01')?button(ritual?'Solicitar missão · 3 rituais':'Solicitar missão','item-mission',item.id):'')+'</div></div></article>';}).join('');
-    return body+'<p class="cb-note">A equipe confere os itens manuais. Itens automáticos dependem de uma leitura confirmada. Marcar o checklist não concede pontos: missões precisam ser solicitadas e verificadas.</p>';
+    body+=items.map(function(item){var r=itemState(item),mission=rows('missions').find(function(m){return m.checklist_item_id===item.id;}),ritual=/^D11-0[1-7]$/.test(item.id);var toggle=admin()&&(!item.monthly||edition());return '<article class="cb-check-item'+(r.done?' is-done':'')+'">'+(toggle?'<input type="checkbox" class="cb-check-toggle" data-cb-toggle-item="'+esc(item.id)+'"'+(r.done?' checked':'')+' aria-label="Conferido: '+esc(item.title)+'">':'<span class="cb-check-icon" aria-hidden="true">'+(r.done?'✓':'○')+'</span>')+'<div><b>'+esc(item.title)+'</b><div class="cb-item-meta"><span class="cb-source">'+esc(item.sourceDetail)+'</span><span>'+esc(item.owner)+'</span>'+(item.optional?'<span>Adicional · mínimo de 3 rituais</span>':'')+'</div><small>'+(r.done?'FEITO':'NÃO FEITO')+' · '+(r.updated_at?date(r.updated_at)+' · '+esc(r.actor_name||'Equipe Black'):'Sem marcação')+'</small>'+(r.note?'<p class="cb-note">'+esc(r.note)+'</p>':'')+(r.evidence?'<p class="cb-note">'+esc(r.evidence)+'</p>':'')+'<div class="cb-tools">'+(mission?button(admin()?'Ver missão':'Enviar evidência','mission',mission.id):admin()&&item.missionWeight!=null&&(!ritual||item.id==='D11-01')?button(ritual?'Solicitar missão · 3 rituais':'Solicitar missão','item-mission',item.id):'')+'</div></div></article>';}).join('');
+    return body+'<p class="cb-note">A equipe confere os itens. Itens AUTO também se marcam sozinhos quando há leitura da integração. Marcar o checklist não concede pontos: missões precisam ser solicitadas e verificadas.</p>';
   }
   function memberArtifacts(){
     if(!state.options||!state.member)return [];
@@ -131,7 +132,9 @@
     if(!value)return null;
     try{var url=new URL(value,location.href);return /^https?:$/.test(url.protocol)?url.href:null;}catch(e){return null;}
   }
+  var lastArtifact=null;
   function openArtifact(id,back,delivery){
+    lastArtifact=[id,back,delivery];
     var a=visibleArtifacts().find(function(a){return a.id===id;});if(!a)return;
     var steps=C.ordenaEtapas((state.options.steps||[]).filter(function(s){return s.artifact_id===id;}));
     function progress(s){return (state.options.progress||[]).find(function(p){return p.member_id===state.member.id&&p.step_id===s;})||{};}
@@ -146,7 +149,7 @@
     var shown=steps.filter(function(s){var type=C.tipoEtapa(s);return admin()||(type!=='aceite'&&(type!=='opcional'||progress(s.id).feito)&&(type!=='rotina'||part.completo));});
     body+=shown.map(function(s){
       var p=progress(s.id),type=C.tipoEtapa(s),routine=type==='rotina',material=a.status!=='Bloqueado'&&deliveryUrl(s.url);
-      return '<article class="cb-check-item'+(p.feito?' is-done':'')+'"><span class="cb-check-icon" aria-hidden="true">'+(routine?'↻':p.feito?'✓':'○')+'</span><div><b>'+esc(s.titulo)+'</b><small>'+
+      return '<article class="cb-check-item'+(p.feito?' is-done':'')+'">'+(admin()?'<input type="checkbox" class="cb-check-toggle" data-cb-toggle-step="'+esc(s.id)+'"'+(p.feito?' checked':'')+' aria-label="Feito: '+esc(s.titulo)+'">':'<span class="cb-check-icon" aria-hidden="true">'+(routine?'↻':p.feito?'✓':'○')+'</span>')+'<div><b>'+esc(s.titulo)+'</b><small>'+
         (routine?'ACOMPANHAMENTO · '+esc(C.cadenciaRotulo(s.cadencia_dias)):p.feito?'FEITO':type==='trava'?'ESPERANDO VOCÊ':'NÃO FEITO')+(p.feito_em?' · '+date(p.feito_em):'')+'</small>'+
         (s.descricao?'<p class="cb-note">'+esc(s.descricao)+'</p>':'')+
         (material?'<a class="cb-link" href="'+esc(material)+'" target="_blank" rel="noopener noreferrer">Abrir material ↗</a>':'')+'</div></article>';
@@ -154,7 +157,7 @@
     if(delivery&&delivery.items.length)body+=checklistBody(delivery.step,delivery.items);
     open(delivery?delivery.name:a.nome,body,delivery?delivery.id:null,true);
   }
-  function itemForm(id){var item=(C.stepChecklist||[]).find(function(i){return i.id===id;});if(!item||item.source!=='MANUAL')return;if(item.monthly&&!edition())return;var r=itemState(item);open('Conferir entrega',form('<p>'+esc(item.title)+'</p><p class="cb-note">'+esc(item.owner)+' · data e autor registrados automaticamente.</p><input type="hidden" name="edition" value="'+esc(item.monthly&&edition()?edition().edition:'')+'">'+check('Entrega conferida e feita','done',r.done)+field('Evidência / observação (opcional)','evidence',r.evidence,'textarea'),'checklist',id));}
+  function itemForm(id){var item=(C.stepChecklist||[]).find(function(i){return i.id===id;});if(!item)return;if(item.monthly&&!edition())return;var r=itemState(item);open('Conferir entrega',form('<p>'+esc(item.title)+'</p><p class="cb-note">'+esc(item.owner)+' · data e autor registrados automaticamente.</p><input type="hidden" name="edition" value="'+esc(item.monthly&&edition()?edition().edition:'')+'">'+check('Entrega conferida e feita','done',r.done)+field('Evidência / observação (opcional)','evidence',r.evidence,'textarea'),'checklist',id));}
   function badge(s){return '<span class="cb-chip '+s+'">'+({pending:'Pendente',running:'Rodando',audited:'Auditado'}[s]||s)+'</span>';}
   function metric(step,key){
     var r=rows('steps').find(function(r){return r.method_step===step;});var val=r&&r.metrics&&r.metrics[key];
@@ -348,7 +351,7 @@
   // Conferência direto no checklist do pop-up: marca e salva, sem abrir o formulário lateral.
   async function toggleItem(input){
     var id=input.dataset.cbToggleItem,item=(C.stepChecklist||[]).find(function(i){return i.id===id;}),ed=item&&item.monthly?edition():null;
-    if(!admin()||!item||item.source!=='MANUAL'||(item.monthly&&!ed))return;
+    if(!admin()||!item||(item.monthly&&!ed))return;
     var done=input.checked,scroller=drawer&&drawer.querySelector('.cb-popup-content'),top=[drawer?drawer.scrollTop:0,scroller?scroller.scrollTop:0];
     input.disabled=true;
     try{
@@ -357,12 +360,28 @@
       if(drawer){drawer.scrollTop=top[0];var again=drawer.querySelector('.cb-popup-content');if(again)again.scrollTop=top[1];var next=drawer.querySelector('[data-cb-toggle-item="'+id+'"]');if(next)next.focus();}
     }catch(err){input.checked=!done;input.disabled=false;C.toast(err.message||'Não foi possível salvar.');}
   }
+  // Etapa de implantação marcada no pop-up: mesma gravação da Progressão (marcar_etapa).
+  async function toggleStep(input){
+    var stepId=input.dataset.cbToggleStep,done=input.checked,list=state.options.progress||[];
+    if(!admin()||!lastArtifact)return;
+    var scroller=drawer&&drawer.querySelector('.cb-popup-content'),top=[drawer?drawer.scrollTop:0,scroller?scroller.scrollTop:0];
+    input.disabled=true;
+    try{
+      var row=await C.data.progress.marcar(state.member.id,stepId,done);
+      // Troca no mesmo array que a Progressão usa, para as duas telas lerem igual.
+      for(var i=list.length-1;i>=0;i--)if(list[i].member_id===state.member.id&&list[i].step_id===stepId)list.splice(i,1);
+      list.push(row);
+      if(state.options.onProgressChange)state.options.onProgressChange();
+      render();openArtifact.apply(null,lastArtifact);
+      if(drawer){drawer.scrollTop=top[0];var again=drawer.querySelector('.cb-popup-content');if(again)again.scrollTop=top[1];var next=drawer.querySelector('[data-cb-toggle-step="'+stepId+'"]');if(next)next.focus();}
+    }catch(err){input.checked=!done;input.disabled=false;C.toast(err.message||'Não foi possível marcar a etapa.');}
+  }
   async function submit(f){
     var action=f.dataset.cbForm,d=Object.fromEntries(new FormData(f)),row={member_id:state.member.id},id=f.dataset.id,b=f.querySelector('[type=submit]'),error=f.querySelector('.cb-form-error');
     b.disabled=true;error.textContent='';
     try{
       if(action==='step'){var s=M.steps.find(function(s){return s.id===id;});row.method_step=id;var previous=rows('steps').find(function(r){return r.method_step===id;})||{};row.status=previous.status||'pending';row.checks=previous.checks||[];row.metrics={};s.metrics.filter(function(m){return !scoreMetric(id,m[0]);}).forEach(function(m){var v=d['metric_'+m[0]];row.metrics[m[0]]=v===''?null:M.number(v)==null?v:Number(v);});row.evidence=d.evidence;await save('cb_steps',row,'member_id,method_step');}
-      if(action==='checklist'){var item=(C.stepChecklist||[]).find(function(i){return i.id===id;});if(!admin()||!item||item.source!=='MANUAL')throw new Error('Somente a equipe pode conferir itens manuais.');Object.assign(row,{item_id:id,edition:d.edition||'',done:!!d.done,evidence:d.evidence||null});await save('cb_checklist_progress',row,'member_id,item_id,edition');}
+      if(action==='checklist'){var item=(C.stepChecklist||[]).find(function(i){return i.id===id;});if(!admin()||!item)throw new Error('Somente a equipe pode conferir itens.');Object.assign(row,{item_id:id,edition:d.edition||'',done:!!d.done,evidence:d.evidence||null});await save('cb_checklist_progress',row,'member_id,item_id,edition');}
       if(action==='mission'){row.id=id||undefined;row.evidence=d.evidence;if(admin()){Object.assign(row,{period:state.period,title:d.title,artifact_step_id:d.artifact_step_id||null,checklist_item_id:d.checklist_item_id||null,method_step:d.method_step,weight:Number(d.weight),requested_on:d.requested_on,due_on:d.due_on,status:d.status});}else{row.status='submitted';}await save('cb_missions',row);}
       if(action==='quarter'){row.period=state.period;['attended','eligible','video_credits','weeks','followers_growth','orphan_leads','outcomes_percent','cpv_percent','call_conversion'].forEach(function(k){row[k]=M.number(d[k]);});row.sla_recorded=d.sla_recorded===''?null:d.sla_recorded==='true';row.evidence=d.evidence;await save('cb_quarters',row,'member_id,period');}
       if(action==='extra'){Object.assign(row,{period:state.period,kind:d.kind,reference:d.reference.trim(),evidence:d.evidence});await save('cb_extras',row);}
@@ -416,7 +435,7 @@
   }
   function enter(key){state.active=key;if(!state.options)return;if(key==='graduacao'&&admin())graduationOverview();var parts=M.canonical(location.hash).split('/');if(key==='subida'&&parts[0]==='subida'&&/^(D(0[1-9]|1[0-2])|TREINO)$/.test(parts[1]||''))openStep(parts[1]);}
   document.addEventListener('submit',function(e){var f=e.target.closest('[data-cb-form]');if(f){e.preventDefault();submit(f);}});
-  document.addEventListener('change',function(e){if(e.target.matches('[data-cb-toggle-item]')){toggleItem(e.target);return;}if(e.target.matches('[data-cb-edition]')){selectedEdition=e.target.value;render();if(activeDelivery)openDelivery(activeDelivery);else openStep('D08');}if(e.target.matches('[data-cb-member]')){selectMember(e.target.value);}if(e.target.matches('[data-cb-ranking-period]')){state.rankingPeriod=e.target.value;load();}if(e.target.matches('[data-cb-period]')){state.period=e.target.value;close();load();}});
+  document.addEventListener('change',function(e){if(e.target.matches('[data-cb-toggle-item]')){toggleItem(e.target);return;}if(e.target.matches('[data-cb-toggle-step]')){toggleStep(e.target);return;}if(e.target.matches('[data-cb-edition]')){selectedEdition=e.target.value;render();if(activeDelivery)openDelivery(activeDelivery);else openStep('D08');}if(e.target.matches('[data-cb-member]')){selectMember(e.target.value);}if(e.target.matches('[data-cb-ranking-period]')){state.rankingPeriod=e.target.value;load();}if(e.target.matches('[data-cb-period]')){state.period=e.target.value;close();load();}});
   document.addEventListener('keydown',function(e){if(!drawer)return;if(e.key==='Escape'){e.preventDefault();close();}if(e.key==='Tab'){var nodes=Array.from(drawer.querySelectorAll('button,input,select,textarea,a[href]')).filter(function(n){return !n.disabled&&n.offsetParent!==null;}),first=nodes[0],last=nodes[nodes.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
   document.addEventListener('click',async function(e){
     var el=e.target.closest('[data-cb-graduacao-back],[data-cb-delivery],[data-cb-artifact],[data-cb-item],[data-cb-item-mission],[data-cb-legacy],[data-cb-rank-snapshot],[data-cb-step],[data-cb-tab],[data-cb-close],[data-cb-dismiss],[data-cb-reload],[data-cb-mission],[data-cb-mission-new],[data-cb-quarter],[data-cb-extra],[data-cb-grade],[data-cb-step-edit],[data-cb-module],[data-cb-encontro-new],[data-cb-encontro-edit],[data-cb-reward-new],[data-cb-redeem],[data-cb-redemption],[data-cb-case-new],[data-cb-case],[data-cb-file]');if(!el||!state.options)return;

@@ -30,7 +30,7 @@ fixtures.cb_method_stages=methodCatalog.stages;fixtures.cb_deliveries=methodCata
 fixtures.cb_delivery_artifacts=methodCatalog.bindings.flatMap(b=>fixtures.artifacts.filter(a=>a.nome===b.artifact_name&&a.method_steps.includes(b.stage_id)).map(a=>({...b,artifact_id:a.id})));
 window.__writes=[];window.__fixtures=fixtures;window.__failTable=null;
 window.Club.sb={supabaseUrl:'http://local.test',auth:{getSession:async()=>({data:{session:{access_token:'test',user:{id:'user1',email:'test@example.test'}}}}),signOut:async()=>({})},
-rpc:async(name,args)=>({data:name==='me'?{is_admin:${isAdmin},email:member.email,member:${isAdmin?'null':'member'}}:name==='cb_ranking'?[{position:1,alias:member.nome,member_id:member.id,total:28.5,grade:1,movement:null}]:[]}),
+rpc:async(name,args)=>name==='marcar_etapa'?(window.__writes.push({table:'marcar_etapa',row:args}),{data:{member_id:args.p_member_id,step_id:args.p_step_id,feito:args.p_feito,feito_em:args.p_feito?new Date().toISOString():null}}):({data:name==='me'?{is_admin:${isAdmin},email:member.email,member:${isAdmin?'null':'member'}}:name==='cb_ranking'?[{position:1,alias:member.nome,member_id:member.id,total:28.5,grade:1,movement:null}]:[]}),
 functions:{invoke:async()=>({data:{status:'unlinked'}})},
 from(table){let one=false,filters=[],write=null;let q={};
 for(const key of ['select','order','gte','lte','gt','lt','or','in','is','not','limit','range'])q[key]=()=>q;
@@ -93,11 +93,23 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
    assert.equal(await page.locator('.cb-drawer [data-cb-artifact=other-qa]').count(),0);
    assert.equal(await page.locator('.cb-drawer [data-cb-artifact=private-qa]').count(),0,'Processos internos ficam na gestão, fora da jornada do mentorado');
    assert.match(await page.locator('.cb-drawer [data-cb-artifact=site-qa]').innerText(),/Implantação: 1\/1 etapas/);
-   assert.equal(await page.locator('[data-cb-toggle-item="D05-01"]').count(),0,'AUTO nunca permite marcação manual');
    await page.locator('.cb-drawer [data-cb-artifact=site-qa]').click();
    assert.equal(await page.locator('.cb-popup').count(),1,'Entrega abre em pop-up centralizado');
    assert.match(await page.locator('.cb-drawer').innerText(),/Site publicado/);
    assert.equal(await page.locator('.cb-drawer a').getAttribute('href'),'https://example.test/entrega');
+   if(isAdmin){
+    const step=page.locator('.cb-popup [data-cb-toggle-step]').first();
+    assert.ok(await step.isChecked(),'Etapa feita aparece marcada');
+    await step.uncheck();
+    await page.waitForFunction(()=>window.__writes.some(w=>w.table==='marcar_etapa'&&w.row.p_feito===false));
+    assert.equal(await page.locator('.cb-popup').count(),1,'Pop-up continua aberto ao marcar etapa');
+    assert.equal(await page.locator('.cb-popup [data-cb-toggle-step]').first().isChecked(),false);
+    await page.locator('.cb-popup [data-cb-toggle-step]').first().check();
+    await page.waitForFunction(()=>window.__writes.some(w=>w.table==='marcar_etapa'&&w.row.p_feito===true));
+    await page.locator('.cb-popup [data-cb-toggle-step]:checked').first().waitFor();
+   }else{
+    assert.equal(await page.locator('.cb-popup .cb-check-toggle').count(),0,'Mentorado não marca etapas nem itens');
+   }
    await page.locator('.cb-drawer [data-cb-step=D05]').click();
    for(const width of [320,390,1440]){
     await page.setViewportSize({width,height:1080});
@@ -174,6 +186,13 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
     await page.keyboard.press('Escape');
     await catalog.locator('[data-cb-delivery="D07/prospeccao"]').click();
     assert.equal(await page.locator('.cb-popup [data-cb-toggle-item]').count(),2,'Admin mantém conferência dos itens manuais');
+    await page.keyboard.press('Escape');
+    await catalog.locator('[data-cb-delivery="D03/rastreio"]').click();
+    await page.locator('.cb-popup [data-cb-toggle-item="D03-04"]').check();
+    await page.waitForFunction(()=>window.__writes.some(w=>w.table==='cb_checklist_progress'&&w.row.item_id==='D03-04'&&w.row.done===true));
+    await page.locator('.cb-popup [data-cb-toggle-item="D03-04"]:checked').waitFor();
+    assert.equal(await page.locator('.cb-popup .cb-check-icon').count(),0,'Para a equipe todo item tem a mesma caixinha, inclusive AUTO');
+    await page.screenshot({path:path.join(out,'admin-checklist-auto-1440.png'),fullPage:false});
     await page.keyboard.press('Escape');
     await page.locator('#filtroArtGrupo').selectOption('D05');
     assert.equal(await catalog.locator('[data-catalog-stage]').count(),1);

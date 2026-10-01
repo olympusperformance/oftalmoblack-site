@@ -19,8 +19,7 @@ do $$begin
  if not exists(select 1 from public.cb_audit_log where entity='cb_checklist_progress' and actor=auth.uid()) then raise exception 'Auditoria ausente'; end if;
  begin
   insert into public.cb_checklist_progress(member_id,item_id,done) values('10000000-0000-0000-0000-000000000001','D03-04',true);
-  raise exception 'AUTO_MANUAL';
- exception when raise_exception then if sqlerrm='AUTO_MANUAL' then raise; end if; end;
+ exception when others then raise exception 'AUTO_MANUAL: item AUTO sem integração precisa aceitar conferência da equipe (%)',sqlerrm; end;
  begin
   update public.cb_checklist_progress set member_id='10000000-0000-0000-0000-000000000002';
   raise exception 'MOVED_OWNER';
