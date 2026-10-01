@@ -939,9 +939,12 @@
     renderMembers();
 
     Club.data.progress.marcar(memberId, stepId, !antes).then(function (linha) {
-      st.progress = st.progress.filter(function (p) {
-        return !(p.member_id === memberId && p.step_id === stepId);
-      }).concat([linha]);
+      /* Troca no mesmo array: o Club.black recebeu esta referência no install,
+         e um array novo deixava os cards e pop-ups dos degraus com o estado antigo. */
+      for (var i = st.progress.length - 1; i >= 0; i--) {
+        if (st.progress[i].member_id === memberId && st.progress[i].step_id === stepId) st.progress.splice(i, 1);
+      }
+      st.progress.push(linha);
       indexar();
       renderMembers();
       if (farolMontado) Club.farol.refresh();
