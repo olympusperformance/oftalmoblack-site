@@ -145,7 +145,7 @@
 /* Vitrine Black (01/10/2026): elegibilidade, catálogo fixo e lista de vouchers/resgates */
 .cb-vit-head{max-width:780px;margin:0 0 22px}.cb-vit-head h1{margin:6px 0 12px}.cb-vit-head p{line-height:1.6}.cb-vit-head b{color:var(--gold)}
 .cb-vit-elig{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:18px 22px;border:1px solid color-mix(in srgb,var(--gold) 55%,var(--border));border-radius:14px;background:linear-gradient(120deg,var(--halo),transparent),var(--panel);margin:0 0 18px}
-.cb-vit-elig>b{font-size:16px}.cb-vit-dot{color:var(--muted)}.cb-vit-rule{color:var(--muted);font-size:13px}.cb-vit-open{margin-left:auto;font-size:13px;color:var(--muted)}.cb-vit-open b{color:var(--gold)}
+.cb-vit-elig .cb-kicker{margin:0}.cb-vit-elig>b{font-size:16px}.cb-vit-dot{color:var(--muted)}.cb-vit-rule{color:var(--muted);font-size:13px}.cb-vit-open{margin-left:auto;font-size:13px;color:var(--muted)}.cb-vit-open b{color:var(--gold)}
 .cb-vit-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .cb-vit-card{display:flex;flex-direction:column;gap:12px;padding:22px;border:1px solid var(--border);border-radius:14px;background:var(--panel)}
 .cb-vit-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.cb-vit-top h3{font-size:19px;font-weight:500;line-height:1.35}

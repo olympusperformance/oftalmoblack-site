@@ -243,8 +243,8 @@
     var own=rows('ranking').find(function(r){return r.member_id===state.member.id;});
     var nv=vouchers(),fim=M.bounds(state.period).end,tri=state.period.slice(-2);
     var posicao=own?' (hoje: '+Number(own.position)+'ª)':'';
-    var regra=pts==null?'pontos ainda não apurados':pts>=50?'— graduado: você entra pela posição no ranking'+posicao:'— graduando com 50, você entra pela posição no ranking'+posicao;
-    var barra='<div class="cb-vit-elig"><span class="cb-kicker">Sua elegibilidade · '+esc(tri)+'</span><b>'+(state.error?'—':nv)+' Voucher'+(nv===1?'':'s')+' em mãos</b><span class="cb-vit-dot">·</span><b>'+(pts==null?'—':fmt(pts))+' pts</b><span class="cb-vit-rule">'+esc(regra)+'</span><span class="cb-vit-open">Vitrine abre em <b>'+date(fim).slice(0,5)+'</b></span></div>';
+    var regra=pts==null?'':pts>=50?'— graduado: você entra pela posição no ranking'+posicao:'— graduando com 50, você entra pela posição no ranking'+posicao;
+    var barra='<div class="cb-vit-elig"><span class="cb-kicker">Sua elegibilidade · '+esc(tri)+'</span><b>'+(state.error?'—':nv)+' Voucher'+(nv===1?'':'s')+' em mãos</b>'+(pts==null?'':'<span class="cb-vit-dot">·</span><b>'+fmt(pts)+' pts</b><span class="cb-vit-rule">'+esc(regra)+'</span>')+'<span class="cb-vit-open">Vitrine abre em <b>'+date(fim).slice(0,5)+'</b></span></div>';
     var cards='<div class="cb-vit-grid">'+VITRINE.map(function(v){return '<article class="cb-vit-card"><div class="cb-vit-top"><h3>'+esc(v.title)+'</h3><span class="cb-vit-tag">'+esc(v.tag)+'</span></div><p>'+(v.html||esc(v.text))+'</p><small>'+esc(v.foot)+'</small></article>';}).join('')+'</div>';
     var linhas=rows('vouchers').slice().sort(function(a,b){return String(b.granted_on).localeCompare(String(a.granted_on));}).map(function(v){
       var st={em_maos:['Em mãos · vale até a renovação','gold'],resgatado:['Resgatado','ok'],expirado:['Expirado','muted']}[v.status]||['—','muted'];
