@@ -10,7 +10,7 @@ for (const [nome, arquivo] of [
   test(`${nome}: área do alcance não atravessa dias sem medição`, () => {
     const fonte = fs.readFileSync(arquivo, 'utf8');
     const ini = fonte.indexOf('  function grafico(');
-    const fim = fonte.indexOf('  function serieSeguidores30(', ini);
+    const fim = fonte.indexOf('  function barras(', ini);
     assert.ok(ini >= 0 && fim > ini);
     const contexto = {
       st: {},
