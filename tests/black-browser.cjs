@@ -93,7 +93,7 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
    assert.equal(await page.locator('.cb-drawer [data-cb-artifact=other-qa]').count(),0);
    assert.equal(await page.locator('.cb-drawer [data-cb-artifact=private-qa]').count(),0,'Processos internos ficam na gestão, fora da jornada do mentorado');
    assert.match(await page.locator('.cb-drawer [data-cb-artifact=site-qa]').innerText(),/Implantação: 1\/1 etapas/);
-   assert.equal(await page.locator('[data-cb-item="D05-01"]').count(),0,'AUTO nunca permite marcação manual');
+   assert.equal(await page.locator('[data-cb-toggle-item="D05-01"]').count(),0,'AUTO nunca permite marcação manual');
    await page.locator('.cb-drawer [data-cb-artifact=site-qa]').click();
    assert.equal(await page.locator('.cb-popup').count(),1,'Entrega abre em pop-up centralizado');
    assert.match(await page.locator('.cb-drawer').innerText(),/Site publicado/);
@@ -114,11 +114,10 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
     assert.equal(await page.locator('[data-cb-tab=audit]').getAttribute('aria-selected'),'true');
     await page.locator('.cb-drawer [data-cb-delivery="D04/funcoes"]').click();
     assert.equal(await page.locator('.cb-check-item').count(),4);
-    await page.locator('[data-cb-item="D04-01"]').click();
-    await page.locator('[name=done]').check();await page.locator('[name=evidence]').fill('Dono confirmado pela equipe');
-    await page.locator('.cb-drawer [type=submit]').click();
-    await page.waitForFunction(()=>window.__writes.some(w=>w.table==='cb_checklist_progress'));
-    await page.locator('[data-cb-item="D04-01"]').waitFor();
+    await page.locator('[data-cb-toggle-item="D04-01"]').check();
+    await page.waitForFunction(()=>window.__writes.some(w=>w.table==='cb_checklist_progress'&&w.row.item_id==='D04-01'&&w.row.done===true));
+    await page.locator('[data-cb-toggle-item="D04-01"]:checked').waitFor();
+    assert.equal(await page.locator('[data-cb-form=checklist]').count(),0,'Conferir marca direto no checklist, sem formulário lateral');
     assert.match(await page.locator('#black-subida .cb-card[data-cb-step=D04]').innerText(),/1 de 7 itens/);
     assert.match(await page.locator('#black-subida .cb-card[data-cb-step=D04]').innerText(),/Rodando/i);
     await page.locator('.cb-drawer [data-cb-step=D04]').click();await page.locator('[data-cb-tab=metrics]').click();await page.locator('[data-cb-step-edit]').click();
@@ -137,9 +136,9 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
    await page.locator('[data-cb-edition]').selectOption('2026-10-01');
    assert.match(await page.locator('.cb-section').filter({hasText:'Conferência da entrega'}).innerText(),/1 de 3/);
    if(isAdmin){
-    await page.locator('[data-cb-item="D08-01"]').click();
-    assert.equal(await page.locator('.cb-form').getAttribute('data-cb-form'),'checklist');
-    assert.equal(await page.locator('[name=edition]').inputValue(),'2026-10-01');
+    await page.locator('[data-cb-toggle-item="D08-01"]').click();
+    await page.waitForFunction(()=>window.__writes.some(w=>w.table==='cb_checklist_progress'&&w.row.item_id==='D08-01'));
+    assert.equal(await page.evaluate(()=>window.__writes.find(w=>w.table==='cb_checklist_progress'&&w.row.item_id==='D08-01').row.edition),'2026-10-01','Item mensal grava na edição escolhida');
    }
    await page.keyboard.press('Escape');
    await page.evaluate(()=>window.__fixtures.cb_encontros=[]);
@@ -172,7 +171,7 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
     assert.equal(await page.locator('#modalForm [name=nome]').inputValue(),'Site Institucional');
     await page.keyboard.press('Escape');
     await catalog.locator('[data-cb-delivery="D07/prospeccao"]').click();
-    assert.equal(await page.locator('.cb-popup [data-cb-item]').count(),2,'Admin mantém conferência dos itens manuais');
+    assert.equal(await page.locator('.cb-popup [data-cb-toggle-item]').count(),2,'Admin mantém conferência dos itens manuais');
     await page.keyboard.press('Escape');
     await page.locator('#filtroArtGrupo').selectOption('D05');
     assert.equal(await catalog.locator('[data-catalog-stage]').count(),1);
@@ -211,14 +210,14 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
     assert.equal(await progression.locator('[data-progress-delivery="D07/prospeccao"]').count(),1);
     assert.equal(await progression.locator('[data-progress-delivery^="D04/"]').count(),3);
     await progression.locator('[data-progress-delivery="D07/prospeccao"]').click();
-    await page.locator('.cb-popup [data-cb-item="D07-01"]').waitFor();
+    await page.locator('.cb-popup [data-cb-toggle-item="D07-01"]').waitFor();
     assert.equal(await page.evaluate(()=>Club.black.selected()),'10000000-0000-4000-8000-000000000002');
-    await page.locator('.cb-popup [data-cb-item="D07-01"]').click();
-    await page.locator('[data-cb-form=checklist] input[name=done]').check();
-    await page.locator('[data-cb-form=checklist] button[type=submit]').click();
+    await page.locator('.cb-popup [data-cb-toggle-item="D07-01"]').check();
     await page.waitForFunction(()=>window.__writes.some(w=>w.table==='cb_checklist_progress'&&w.row.item_id==='D07-01'));
     const write=await page.evaluate(()=>window.__writes.find(w=>w.table==='cb_checklist_progress'&&w.row.item_id==='D07-01').row);
     assert.equal(write.member_id,'10000000-0000-4000-8000-000000000002');
+    await page.locator('.cb-popup [data-cb-toggle-item="D07-01"]:checked').waitFor();
+    await page.screenshot({path:path.join(out,'admin-checklist-toggle-1440.png'),fullPage:false});
     await page.keyboard.press('Escape');
     await progression.locator('[data-progress-delivery="D05/site"]').click();
     await page.locator('.cb-popup').waitFor();
@@ -237,7 +236,7 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
      const card=catalog.locator('[data-cb-delivery="D07/prospeccao"]');
      await card.click();
      assert.equal(await page.locator('.cb-popup .cb-check-item').count(),2);
-     assert.equal(await page.locator('.cb-popup [data-cb-item]').count(),0,'Membro não ganha controles de conferência');
+     assert.equal(await page.locator('.cb-popup [data-cb-toggle-item]').count(),0,'Membro não ganha controles de conferência');
      assert.match(await page.locator('.cb-popup').innerText(),/30 DMs/);
      const box=await page.locator('.cb-popup').boundingBox();
      assert.ok(box.x>=0&&box.x+box.width<=width+1);
