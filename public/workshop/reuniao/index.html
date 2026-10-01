@@ -47,7 +47,7 @@ gtag('config','G-5NMXL3LD47',{transport_type:'beacon'});
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5NMXL3LD47"></script>
 <script>
 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-fbq('init','919253591198015');fbq('track','PageView');
+fbq('init','919253591198015');
 /* Shared ob_trk contract: last touch and click IDs, 90-day TTL. */
 (function(){
   'use strict';
@@ -68,7 +68,7 @@ fbq('init','919253591198015');fbq('track','PageView');
 }());
 </script>
 </head>
-<body data-trk-version="club-meeting-20261001-v1">
+<body data-trk-version="club-meeting-capi-20261001-v1" data-uptime-version="club-meeting-20261001-v1">
 <!--
 THESIS: A short invitation that turns workshop interest into a conversation with the commercial team.
 OWN-WORLD: Existing v2 black, warm gold, DM Sans, Georgia emphasis, pill actions, 7px fields, 14px panels.
@@ -129,15 +129,17 @@ FINISH: Code checks by builder; desktop/mobile and real submission by planner.
 <script>
 (function(){
   'use strict';
-  var ENDPOINT='https://script.google.com/macros/s/AKfycbxg1Kgjg07mwdGwZgeIUOJdqruEoOhPoOetMWaWuX8Zq2_wzK-SOu2D_X-f6-k7vJar/exec';
-  var META={content_name:'reuniao_club_oftalmoblack'};
+  var ENDPOINT='/api/club-meeting/request';
+  var META={content_name:'reuniao_club_oftalmoblack',content_category:'oftalmoblack_b2b'};
   var ATTR=['utm_source','utm_medium','utm_campaign','utm_content','utm_term','aid','fbclid','gclid','gbraid','wbraid','fbp','fbc'];
   var form=document.getElementById('cadastro'),fields=document.getElementById('contact-fields'),button=document.getElementById('submit-meeting'),errorBox=document.getElementById('form-error');
-  var busy=false,started=false,request=null,signature='';
+  var busy=false,started=false,request=null,signature='',receipt='',contactSent=false;
   function phone(value){var d=String(value||'').replace(/\D/g,'');if((d.length===12||d.length===13)&&d.slice(0,2)==='55')d=d.slice(2);var ddds=['11','12','13','14','15','16','17','18','19','21','22','24','27','28','31','32','33','34','35','37','38','41','42','43','44','45','46','47','48','49','51','53','54','55','61','62','63','64','65','66','67','68','69','71','73','74','75','77','79','81','82','83','84','85','86','87','88','89','91','92','93','94','95','96','97','98','99'];return /^[1-9]{2}(?:9\d{8}|[2-9]\d{7})$/.test(d)&&ddds.indexOf(d.slice(0,2))!==-1?'55'+d:'';}
   function validate(d){if(!/^\S+\s+\S+/.test(d.nome)||d.nome.length<5||d.nome.length>160)return {field:'nome',message:'Escreva seu nome completo, com sobrenome.'};if(!phone(d.whatsapp))return {field:'whatsapp',message:'Confira seu WhatsApp, incluindo o DDD brasileiro.'};if(d.email.length>254||!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email))return {field:'email',message:'Confira seu e-mail, como nome@exemplo.com.'};if(d.cidade.length<2||d.cidade.length>120||!/[A-Za-zÀ-ÿ]/.test(d.cidade))return {field:'cidade',message:'Informe sua cidade e estado, como Manaus/AM.'};return null;}
   function uuid(){if(window.crypto&&typeof window.crypto.randomUUID==='function')return window.crypto.randomUUID();if(!window.crypto||!window.crypto.getRandomValues)throw new Error('UUID');var bytes=new Uint8Array(16);window.crypto.getRandomValues(bytes);bytes[6]=(bytes[6]&15)|64;bytes[8]=(bytes[8]&63)|128;var h=Array.from(bytes,function(b){return b.toString(16).padStart(2,'0');}).join('');return h.slice(0,8)+'-'+h.slice(8,12)+'-'+h.slice(12,16)+'-'+h.slice(16,20)+'-'+h.slice(20);}
-  function isQA(){var q=new URLSearchParams(location.search);return String(q.get('utm_source')||(window.obTrk?window.obTrk().utm_source:'')||'').toLowerCase()==='qa';}
+  function isQA(){var q=new URLSearchParams(location.search);return q.get('qa')==='1'||String(q.get('utm_source')||(window.obTrk?window.obTrk().utm_source:'')||'').toLowerCase()==='qa';}
+  function eventId(lid,name){return 'club-meeting:'+lid+':'+name;}
+  function collect(name,lid,proof){var trk=window.obTrk?window.obTrk():{};return fetch('/api/club-meeting/event',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',keepalive:true,body:JSON.stringify({event_name:name,lid:lid,receipt:proof||'',fbp:trk.fbp||'',fbc:trk.fbc||'',qa:isQA()})}).catch(function(){});}
   function ga(event){try{gtag('event',event,META);}catch(e){}}
   function alert(message){errorBox.textContent=message||'';errorBox.hidden=!message;}
   function setBusy(value){busy=value;button.disabled=value;fields.disabled=value;form.setAttribute('aria-busy',String(value));button.textContent=value?'Enviando sua solicitação...':'Solicitar reunião com Dr. Alex';}
@@ -145,11 +147,10 @@ FINISH: Code checks by builder; desktop/mobile and real submission by planner.
   async function post(payload){
     var controller=new AbortController(),timer=setTimeout(function(){controller.abort();},18000);
     try{
-      var response=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify(payload),redirect:'follow',signal:controller.signal});
-      var missingReply=response.status===404&&response.redirected&&/^https:\/\/script\.googleusercontent\.com\/macros\/echo(?:\?|$)/.test(response.url||'');
-      if(!response.ok)throw fail('HTTP'+response.status,missingReply||response.status===429||response.status>=500);
+      var response=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(payload),redirect:'follow',signal:controller.signal});
+      if(!response.ok)throw fail('HTTP'+response.status,response.status===429||response.status>=500);
       var result=await response.json();
-      if(!result||result.ok!==true||result.lid!==payload.lid)throw fail('ACK',false);
+      if(!result||result.ok!==true||result.lid!==payload.lid||!result.receipt||result.event_id!==eventId(payload.lid,'SolicitacaoReuniaoClub'))throw fail('ACK',false);
       return result;
     }catch(e){if(typeof e.retryable==='boolean')throw e;if(e.name==='AbortError'||controller.signal.aborted)throw fail('TIMEOUT',true);if(e.name==='TypeError')throw fail('NETWORK',true);throw fail('RESPONSE',false);}finally{clearTimeout(timer);}
   }
@@ -164,14 +165,15 @@ FINISH: Code checks by builder; desktop/mobile and real submission by planner.
     d.whatsapp=phone(d.whatsapp);setBusy(true);
     try{
       var nextSignature=JSON.stringify(d);
-      if(!request||signature!==nextSignature){var trk=window.obTrk?window.obTrk():{};request=Object.assign({kind:'club_meeting',schema:1,lid:uuid()},d,{site:'',origem:'workshop-reuniao-club',ts:new Date().toISOString(),page:location.href,referrer:document.referrer||''});ATTR.forEach(function(k){request[k]=trk[k]||'';});signature=nextSignature;}
-      await save(request);
-      if(!isQA()){ga('generate_lead');ga('club_meeting_request');try{fbq('trackCustom','SolicitacaoReuniaoClub',META);}catch(err){}}
+      if(!request||signature!==nextSignature){var trk=window.obTrk?window.obTrk():{};request=Object.assign({kind:'club_meeting',schema:1,lid:uuid()},d,{site:'',origem:'workshop-reuniao-club',ts:new Date().toISOString(),page:location.href,referrer:document.referrer||'',qa:isQA()});ATTR.forEach(function(k){request[k]=trk[k]||'';});signature=nextSignature;}
+      var saved=await save(request);receipt=saved.receipt;
+      if(!isQA()){ga('generate_lead');ga('club_meeting_request');try{fbq('trackCustom','SolicitacaoReuniaoClub',META,{eventID:saved.event_id});}catch(err){}}
       var whatsapp=document.getElementById('commercial-whatsapp');whatsapp.href='https://wa.me/559284654390?text='+encodeURIComponent('Olá! Acabei de solicitar uma reunião com o Dr. Alex para conhecer melhor o Club OftalmoBlack.');
       form.hidden=true;document.getElementById('success').hidden=false;document.getElementById('success-title').focus();
     }catch(err){setBusy(false);alert('Não conseguimos salvar sua solicitação agora. Seus dados continuam aqui. Confira sua conexão e tente novamente.');}
   });
-  document.getElementById('commercial-whatsapp').addEventListener('click',function(){if(!this.href||document.getElementById('success').hidden)return;if(!isQA()){ga('whatsapp_click');try{fbq('track','Contact',META);}catch(e){}}});
+  document.getElementById('commercial-whatsapp').addEventListener('click',function(){if(!this.href||document.getElementById('success').hidden||contactSent)return;contactSent=true;if(!isQA()){ga('whatsapp_click');try{fbq('track','Contact',META,{eventID:eventId(request.lid,'Contact')});}catch(e){}collect('Contact',request.lid,receipt);}});
+  if(!isQA()){var visitId=uuid();try{fbq('track','PageView',META,{eventID:eventId(visitId,'PageView')});}catch(e){}collect('PageView',visitId);}
   button.disabled=false;
 }());
 </script>
