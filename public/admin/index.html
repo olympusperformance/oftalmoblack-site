@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="/assets/club.css">
 <link rel="stylesheet" href="/assets/club-graduacao.css?v=20260924">
 <link rel="stylesheet" href="/assets/club-farol.css?v=20260929">
-<link rel="stylesheet" href="/assets/club-black.css?v=20261001-deliveries">
+<link rel="stylesheet" href="/assets/club-black.css?v=20261001-admin-cards">
 <script src="/assets/club-tema.js"></script>
 </head>
 <body>
@@ -188,8 +188,9 @@
     </div>
 
     <div class="view" data-view="artifacts" hidden>
-      <div class="hello"><h1>Processos Black</h1><p>Os degraus organizam as entregas. Cada entrega mantém suas etapas, responsáveis e histórico, sem duplicação.</p></div>
+      <div class="hello"><h1>Processos Black</h1><p>As entregas do mentorado, organizadas por degrau. Abra o checklist para conferir os itens e acompanhar o andamento.</p></div>
       <div class="toolbar">
+        <label class="cb-catalog-member">Mentorado <select class="inp" id="processosMembro" data-cb-member></select></label>
         <select class="inp" id="filtroArtGrupo" style="max-width:240px"></select>
         <span class="tx-s" id="artResumo"></span>
         <span class="sp"></span>
@@ -199,7 +200,12 @@
           <svg class="ic"><use href="#i-plus"/></svg>Novo processo</button>
       </div>
       <div id="avisoGrupos"></div>
-      <div id="listaArtefatos"></div>
+      <div id="cardsArtefatos"></div>
+      <details id="gestaoCatalogo" class="cb-catalog-management">
+        <summary>Gerenciar catálogo e frentes internas</summary>
+        <p class="tx-s">Processos de toda a rede, responsáveis, disponibilidade e áreas operacionais.</p>
+        <div id="listaArtefatos"></div>
+      </details>
     </div>
 
   </main>
@@ -217,7 +223,7 @@
 <script src="/assets/club-farol.js?v=20260930-metodo"></script>
 <script src="/assets/club-metodo.js?v=20261001-deliveries"></script>
 <script src="/assets/club-checklist.js?v=20261001-deliveries"></script>
-<script src="/assets/club-black.js?v=20261001-deliveries"></script>
-<script src="/assets/admin.js?v=20261001-deliveries"></script>
+<script src="/assets/club-black.js?v=20261001-admin-cards"></script>
+<script src="/assets/admin.js?v=20261001-admin-cards"></script>
 </body>
 </html>

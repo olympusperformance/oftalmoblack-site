@@ -89,7 +89,7 @@
   $('sair').addEventListener('click', function () { Club.auth.logout(); });
   $('verComoMembro').addEventListener('click', function () {
     var id = st.view === 'farol' ? Club.farol.selected() : Club.black.selected();
-    if (id) this.href = '/membros/?membro=' + encodeURIComponent(id);
+    if (id) this.href = '/membros/?membro=' + encodeURIComponent(id) + (st.view==='artifacts'?'#artifacts':'');
   });
 
   /* ── dados ────────────────────────────────────────────────────────────── */
@@ -1957,7 +1957,23 @@
     '</div>';
   }
 
+  function renderDeliveryCards(){
+    var id=Club.black.selected(),members=st.members.filter(function(m){return m.ativo!==false;});
+    $('processosMembro').innerHTML=members.map(function(m){return '<option value="'+esc(m.id)+'"'+(m.id===id?' selected':'')+'>'+esc(m.nome)+'</option>';}).join('');
+    if(!id){$('cardsArtefatos').innerHTML='<p class="tx-s">Selecione um mentorado para ver as entregas.</p>';return;}
+    var artifacts=Club.black.memberArtifacts();
+    var groups=Club.metodo.catalogGroups(artifacts,true).filter(function(g){return !st.artGrupo||g.id===st.artGrupo;});
+    $('cardsArtefatos').innerHTML=groups.map(function(g){
+      var stage=g.kind==='step'||g.kind==='transversal';
+      return '<section class="art-area" data-catalog-stage="'+esc(g.id)+'"><div class="sec"><div class="sec-g"><div class="sec-eb"><span class="sec-dash"></span><span>'+esc(g.kind==='step'?g.id+' · DEGRAU':g.kind==='transversal'?'TRANSVERSAL':g.kind==='modules'?'MÓDULOS À PARTE':'A CONFERIR')+'</span></div><h2 class="sec-t">'+esc(g.name)+'</h2></div>'+(stage?'<button class="btn" data-cb-step="'+esc(g.id)+'">Ver entregas</button>':'')+'</div><div class="artgrid">'+Club.black.deliveryCards(stage?g.id:null,stage?artifacts:g.items,{adminActions:true})+'</div></section>';
+    }).join('');
+    var management=st.artGrupo==='AREAS'||st.artGrupo==='EQUIPE';
+    $('cardsArtefatos').hidden=management;
+    if(management)$('gestaoCatalogo').open=true;
+  }
+
   function renderArtifacts() {
+    renderDeliveryCards();
     var stages=Club.metodo.catalogGroups(st.artifacts,true);
     var internal=st.artifacts.filter(function(a){return a.tipo==='interna'&&!a.archived_at;});
     var choices=stages.map(function(s){return {id:s.id,name:(s.kind==='step'?s.id+' · ':'')+s.name};});
@@ -4447,7 +4463,7 @@
     renderBotExemplos();
     Club.graduacao.mountAdmin($('graduacaoAdmin'), st.members);
     Club.black.install({ members:st.members, admin:true, artifacts:st.artifacts,
-      steps:st.steps, progress:st.progress });
+      steps:st.steps, progress:st.progress, onDeliveriesChange:renderDeliveryCards });
     renderQr();
   }
 

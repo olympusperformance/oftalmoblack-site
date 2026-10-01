@@ -89,9 +89,19 @@
     body+=items.map(function(item){var r=itemState(item),mission=rows('missions').find(function(m){return m.checklist_item_id===item.id;}),ritual=/^D11-0[1-7]$/.test(item.id);return '<article class="cb-check-item'+(r.done?' is-done':'')+'"><span class="cb-check-icon" aria-hidden="true">'+(r.done?'✓':'○')+'</span><div><b>'+esc(item.title)+'</b><div class="cb-item-meta"><span class="cb-source">'+esc(item.sourceDetail)+'</span><span>'+esc(item.owner)+'</span>'+(item.optional?'<span>Adicional · mínimo de 3 rituais</span>':'')+'</div><small>'+(r.done?'FEITO':'NÃO FEITO')+' · '+(r.updated_at?date(r.updated_at)+' · '+esc(r.actor_name||'Equipe Black'):'Sem marcação')+'</small>'+(r.note?'<p class="cb-note">'+esc(r.note)+'</p>':'')+(r.evidence?'<p class="cb-note">'+esc(r.evidence)+'</p>':'')+'<div class="cb-tools">'+(admin()&&item.source==='MANUAL'&&(!item.monthly||edition())?button('Conferir item','item',item.id):'')+(mission?button(admin()?'Ver missão':'Enviar evidência','mission',mission.id):admin()&&item.missionWeight!=null&&(!ritual||item.id==='D11-01')?button(ritual?'Solicitar missão · 3 rituais':'Solicitar missão','item-mission',item.id):'')+'</div></div></article>';}).join('');
     return body+'<p class="cb-note">A equipe confere os itens manuais. Itens automáticos dependem de uma leitura confirmada. Marcar o checklist não concede pontos: missões precisam ser solicitadas e verificadas.</p>';
   }
-  function deliveries(step,artifacts){return M.deliveries(step,artifacts||visibleArtifacts());}
-  function deliveryCards(step,artifacts){
-    return deliveries(step,artifacts).map(function(d){
+  function memberArtifacts(){
+    if(!state.options||!state.member)return [];
+    return visibleArtifacts().filter(function(a){
+      if(a.somente_equipe)return false;
+      var steps=(state.options.steps||[]).filter(function(s){return s.artifact_id===a.id;});
+      var part=C.par(steps,function(id){return (state.options.progress||[]).some(function(p){return p.member_id===state.member.id&&p.step_id===id&&p.feito;});});
+      return a.status==='Disponível'||!steps.length||part.estado!=='definir';
+    });
+  }
+  function deliveries(step,artifacts){return M.deliveries(step,artifacts||memberArtifacts());}
+  function deliveryCards(step,artifacts,options){
+    var list=step?deliveries(step,artifacts):(artifacts||[]).map(function(a){return {name:a.nome,artifact:a,items:[]};});
+    return list.map(function(d){
       var required=d.items.filter(function(i){return !i.optional;}),done=required.filter(function(i){return itemState(i).done;}).length;
       var a=d.artifact,steps=a&&state.options?(state.options.steps||[]).filter(function(s){return s.artifact_id===a.id;}):[];
       var part=C.par(steps,function(id){return state.member&&(state.options.progress||[]).some(function(p){return p.member_id===state.member.id&&p.step_id===id&&p.feito;});});
@@ -99,7 +109,8 @@
       var progress=required.length?done/required.length:(part.total?part.feitas/part.total:0);
       var label=a?(part.estado==='travado'?'Esperando você':part.estado==='entregue'?'Entregue':part.estado==='ativo'?'Ativo · acompanhamento':a.status||'A conferir'):(required.length&&done===required.length?'Conferida':done?'Em conferência':'A conferir');
       var color=a&&part.estado==='travado'?'var(--orange)':progress===1?'var(--success)':'var(--muted)';
-      return '<button type="button" class="art art-compact" '+(a?'data-cb-artifact="'+esc(a.id)+'" data-delivery="'+esc(d.id)+'"':'data-cb-delivery="'+esc(d.id)+'"')+' data-back="'+esc(step)+'" aria-haspopup="dialog" aria-label="Ver detalhes de '+esc(d.name)+'"><div class="art-i">'+C.icon(a&&a.icone||'box')+'</div><p class="art-n">'+esc(d.name)+'</p><span class="cb-chip">'+esc(step)+'</span><div class="cb-bar" aria-hidden="true"><span style="width:'+(!state.loading&&!state.error?progress*100:0)+'%"></span></div><small class="cb-note">'+esc(summary)+'</small>'+(a&&steps.length&&required.length?'<small class="cb-note">Implantação: '+part.feitas+'/'+part.total+' etapas</small>':'')+(!state.loading&&!state.error?'<span class="art-st" style="color:'+color+'">'+esc(label)+'</span>':'')+'<span class="art-detail">Ver checklist <span aria-hidden="true">↗</span></span></button>';
+      var card='<button type="button" class="art art-compact" '+(a?'data-cb-artifact="'+esc(a.id)+'"'+(d.id?' data-delivery="'+esc(d.id)+'"':''):'data-cb-delivery="'+esc(d.id)+'"')+' data-back="'+esc(step)+'" aria-haspopup="dialog" aria-label="Ver detalhes de '+esc(d.name)+'"><div class="art-i">'+C.icon(a&&a.icone||'box')+'</div><p class="art-n">'+esc(d.name)+'</p>'+(step?'<span class="cb-chip">'+esc(step)+'</span>':'')+'<div class="cb-bar" aria-hidden="true"><span style="width:'+(!state.loading&&!state.error?progress*100:0)+'%"></span></div><small class="cb-note">'+esc(summary)+'</small>'+(a&&steps.length&&required.length?'<small class="cb-note">Implantação: '+part.feitas+'/'+part.total+' etapas</small>':'')+(!state.loading&&!state.error?'<span class="art-st" style="color:'+color+'">'+esc(label)+'</span>':'')+'<span class="art-detail">Ver checklist <span aria-hidden="true">↗</span></span></button>';
+      return options&&options.adminActions&&a?'<div class="cb-admin-delivery">'+card+'<button type="button" class="btn btn-sm" data-edit="artifact" data-id="'+esc(a.id)+'" aria-label="Editar processo '+esc(a.nome)+'">Editar processo</button></div>':card;
     }).join('');
   }
   function stepDeliveries(id){
@@ -349,16 +360,23 @@
     }catch(err){error.textContent=err.message||'Não foi possível salvar.';b.disabled=false;}
   }
   function install(options){
-    var previous=state.member&&state.member.id;
+    var previous=state.member&&state.member.id||new URLSearchParams(location.search).get('membro');
     state.options=options;state.member=options.member||options.members.find(function(m){return m.id===previous&&m.ativo!==false;})||options.members.find(function(m){return m.ativo!==false;});if(!state.member)return;
     views.forEach(function(k){if(k==='rede'&&!admin())return;if(document.getElementById('black-'+k))return;var el=document.createElement('section');el.className='view';el.dataset.view=k;el.hidden=true;el.innerHTML='<div class="cb" id="black-'+k+'"></div>';document.querySelector('.main').appendChild(el);});
     var agenda=document.querySelector('[data-view=agenda]');if(agenda&&!agenda.querySelector('[data-nav=encontro]')){var shortcut=document.createElement('div');shortcut.className='cb-section';shortcut.innerHTML='<button class="btn" data-nav="encontro">Edições e entregas · Encontro Grau Zero</button>';agenda.prepend(shortcut);}
     var grad=document.querySelector('[data-view=graduacao]');if(grad&&!document.getElementById('black-graduacao')){var el=document.createElement('div');el.id='black-graduacao';el.className='cb';grad.prepend(el);}
     load();
   }
+  function selectMember(id){
+    if(!state.options||!admin())return;
+    var member=state.options.members.find(function(m){return m.id===id&&m.ativo!==false;});if(!member)return;
+    state.member=member;close();
+    var url=new URL(location.href);url.searchParams.set('membro',id);history.replaceState(null,'',url.pathname+url.search+url.hash);
+    load();
+  }
   function enter(key){state.active=key;if(!state.options)return;var parts=M.canonical(location.hash).split('/');if(key==='subida'&&parts[0]==='subida'&&/^(D(0[1-9]|1[0-2])|TREINO)$/.test(parts[1]||''))openStep(parts[1]);}
   document.addEventListener('submit',function(e){var f=e.target.closest('[data-cb-form]');if(f){e.preventDefault();submit(f);}});
-  document.addEventListener('change',function(e){if(e.target.matches('[data-cb-edition]')){selectedEdition=e.target.value;render();if(activeDelivery)openDelivery(activeDelivery);else openStep('D08');}if(e.target.matches('[data-cb-member]')){state.member=state.options.members.find(function(m){return m.id===e.target.value;});close();load();}if(e.target.matches('[data-cb-period]')){state.period=e.target.value;close();load();}});
+  document.addEventListener('change',function(e){if(e.target.matches('[data-cb-edition]')){selectedEdition=e.target.value;render();if(activeDelivery)openDelivery(activeDelivery);else openStep('D08');}if(e.target.matches('[data-cb-member]')){selectMember(e.target.value);}if(e.target.matches('[data-cb-period]')){state.period=e.target.value;close();load();}});
   document.addEventListener('keydown',function(e){if(!drawer)return;if(e.key==='Escape'){e.preventDefault();close();}if(e.key==='Tab'){var nodes=Array.from(drawer.querySelectorAll('button,input,select,textarea,a[href]')).filter(function(n){return !n.disabled&&n.offsetParent!==null;}),first=nodes[0],last=nodes[nodes.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
   document.addEventListener('click',async function(e){
     var el=e.target.closest('[data-cb-delivery],[data-cb-artifact],[data-cb-item],[data-cb-item-mission],[data-cb-legacy],[data-cb-rank-snapshot],[data-cb-step],[data-cb-tab],[data-cb-close],[data-cb-dismiss],[data-cb-reload],[data-cb-mission],[data-cb-mission-new],[data-cb-quarter],[data-cb-extra],[data-cb-grade],[data-cb-step-edit],[data-cb-module],[data-cb-encontro-new],[data-cb-encontro-edit],[data-cb-reward-new],[data-cb-redeem],[data-cb-redemption],[data-cb-case-new],[data-cb-case],[data-cb-file]');if(!el||!state.options)return;
@@ -393,5 +411,5 @@
       if('cbFile'in d){var file=rows('files').find(function(f){return f.id===d.cbFile;});var url=ok(await C.sb.storage.from('pgz-exams').createSignedUrl(file.path,60));var a=document.createElement('a');a.href=url.signedUrl;a.target='_blank';a.rel='noopener noreferrer';a.click();}
     }catch(err){C.toast(err.message||'Não foi possível concluir a ação.','alert');el.disabled=false;}
   });
-  C.black={deliveryCards:deliveryCards,install:install,enter:enter,selected:function(){return state.member&&state.member.id;},close:close};
+  C.black={deliveryCards:deliveryCards,memberArtifacts:memberArtifacts,selectMember:selectMember,install:install,enter:enter,selected:function(){return state.member&&state.member.id;},close:close};
 })();

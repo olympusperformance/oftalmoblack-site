@@ -64,6 +64,11 @@ reverter o front-end não exige remover dados.
   mantêm seu cadastro e acesso. A organização das entregas do método é uma camada
   de apresentação: não exige migração nem recria os agrupadores arquivados.
   Degraus mostram cards de entregas; somente a entrega abre seu checklist.
+  O admin usa os mesmos cards, nomes e critérios de disponibilidade do mentorado
+  selecionado, com edição dos processos e conferência dos itens. O seletor
+  identifica de quem é o andamento; a ida e volta da pré-visualização preserva
+  mentorado e aba pela URL. A gestão completa de cadastros, processos ainda não
+  liberados e frentes internas fica em “Gerenciar catálogo e frentes internas”.
 - **Degraus como agrupadores (01/10):** aplicar
   `20261001091455_degraus_como_agrupadores.sql` antes do front-end. O catálogo
   `cb_method_stages` separa os 12 degraus e o Treino das entregas em `artifacts`;

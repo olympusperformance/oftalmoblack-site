@@ -213,7 +213,7 @@
         '<div style="flex:1 1 220px"><b>Pré-visualização.</b> Você está vendo a área como ' +
         esc(st.membro.nome) + '.</div>' +
         '<div class="pick pick-sm" id="trocaMembro" style="max-width:230px"></div>' +
-        '<a class="btn btn-sm" href="/admin/">' + ico('arrow-left') + 'Painel</a>';
+        '<a class="btn btn-sm" id="voltarPainel" href="/admin/?membro='+encodeURIComponent(st.membro.id)+esc(location.hash)+'">' + ico('arrow-left') + 'Painel</a>';
 
       var main = document.querySelector('.main');
       main.insertBefore(barra, main.firstChild);
@@ -393,7 +393,7 @@
               '<h2 class="sec-t">' + esc(s.name) + '</h2>' +
             '</div>'+((s.kind==='step'||s.kind==='transversal')?'<a class="btn" href="#subida/'+esc(s.id)+'">Ver entregas</a>':'')+'</div>' +
             '<div class="artgrid">' +
-              ((s.kind==='step'||s.kind==='transversal')?Club.black.deliveryCards(s.id,meus):s.items.map(function(a){return cartaoArtefato(a);}).join('')) +
+              Club.black.deliveryCards((s.kind==='step'||s.kind==='transversal')?s.id:null,(s.kind==='step'||s.kind==='transversal')?meus:s.items) +
             '</div>' +
           '</section>';
         }).join('')
@@ -592,6 +592,7 @@
       v.hidden = v.dataset.view !== key;
     });
     renderNav(key);
+    if(admin&&$('voltarPainel'))$('voltarPainel').href='/admin/?membro='+encodeURIComponent(st.membro.id)+'#'+key;
     if (key === 'farol') {
       montarFarol();
       Club.farol.enter(location.hash.indexOf('#farol/') === 0 ? location.hash : '');

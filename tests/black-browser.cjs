@@ -15,9 +15,11 @@ window.Club.cfg={supabaseUrl:'http://local.test',supabaseAnonKey:'test'};
 const member={id:'10000000-0000-4000-8000-000000000001',nome:'Dra. Clínica de Teste',email:'test@example.test',iniciais:'CT',ativo:true,turma:'Black',fase:'Implantação',criado_em:'2026-04-01'};
 const period=new Date().getFullYear()+'-T'+(Math.floor(new Date().getMonth()/3)+1);
 const fixtures={members:[member],cb_quarters:[{member_id:member.id,period,attended:8,eligible:10,video_credits:8,weeks:10,followers_growth:2500,orphan_leads:0,sla_recorded:true,outcomes_percent:96,call_conversion:62,evidence:'Apuração de teste'}],cb_missions:[{id:'mission1',member_id:member.id,period,method_step:'D04',title:'Concluir a trilha Cultura Premium',weight:1,status:'requested',requested_on:'2026-09-01',due_on:'2026-09-10'}],cb_steps:[],cb_extras:[],cb_encontros:[],cb_grades:[],cb_cases:[],cb_case_files:[],cb_rewards:[],cb_redemptions:[],member_graduations:[]};
-fixtures.artifacts=[{id:'site-qa',nome:'Site Institucional',tipo:'artefato',method_steps:['D05'],status:'Em andamento',url:'https://example.test/entrega'},{id:'private-qa',nome:'Tracker privado',tipo:'artefato',somente_equipe:true,method_steps:['D05']},{id:'other-qa',nome:'Entrega de outro membro',tipo:'artefato',member_id:'other-member',method_steps:['D05']}];
+fixtures.artifacts=[{id:'site-qa',nome:'Site Institucional',tipo:'artefato',method_steps:['D05'],status:'Em andamento',url:'https://example.test/entrega'},{id:'private-qa',nome:'Tracker privado',tipo:'artefato',somente_equipe:true,method_steps:['D05']},{id:'other-qa',nome:'Entrega de outro membro',tipo:'artefato',member_id:'10000000-0000-4000-8000-000000000002',method_steps:['D05']}];
 fixtures.artifacts.push({id:'archived-stage',nome:'Agrupador legado arquivado',tipo:'artefato',method_steps:['D04'],archived_at:'2026-10-01'},{id:'shared-training',nome:'Treinamento comercial',tipo:'artefato',method_steps:['D04','D09','D10','TREINO'],status:'Disponível'},{id:'quiz',nome:'Quiz',tipo:'artefato',method_steps:[],status:'Disponível'},{id:'iris',nome:'Íris Black',tipo:'artefato',method_steps:[],status:'Disponível'});
-fixtures.artifact_steps=[{id:'step-qa',artifact_id:'site-qa',titulo:'Site publicado',ordem:1,tipo:'entrega'}];
+fixtures.members.push({...member,id:'10000000-0000-4000-8000-000000000002',nome:'Outro mentorado'});
+fixtures.artifacts.push({id:'onboarding-qa',nome:'Onboarding',tipo:'artefato',method_steps:['D01'],status:'Em produção'});
+fixtures.artifact_steps=[{id:'onboarding-accept',artifact_id:'onboarding-qa',titulo:'Aceite',ordem:0,tipo:'aceite'},{id:'step-qa',artifact_id:'site-qa',titulo:'Site publicado',ordem:1,tipo:'entrega'}];
 fixtures.step_progress=[{member_id:member.id,step_id:'step-qa',feito:true,feito_em:'2026-09-01'}];
 fixtures.artifacts.push({id:'editorial-qa',nome:'Linha Editorial',subtitulo:'Feed e stories na voz do Mestre',meta:'Entrega em 2 dias',tipo:'artefato',method_steps:['D02'],status:'Disponível',url:'/materiais/'});
 fixtures.artifact_steps.push(...Array.from({length:18},(_,i)=>({id:'editorial-step-'+i,artifact_id:'editorial-qa',titulo:'Etapa de implantação '+(i+1),ordem:i,tipo:'entrega'})));
@@ -38,7 +40,7 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRa
 (function testDirectStorageHost(){const source=fs.readFileSync(path.join(root,'assets/club-black.js'),'utf8');assert.match(source,/\.storage\.supabase\.co/,'Upload grande deve usar o host direto recomendado pelo Storage');})();
 (async()=>{
  await new Promise(r=>server.listen(0,'127.0.0.1',r));const url='http://127.0.0.1:'+server.address().port;
- const browser=await chromium.launch({headless:true});const errors=[];
+ const browser=await chromium.launch({headless:true});const errors=[];let memberCatalogNames;
  try{
   for(const isAdmin of [false,true]){
    const context=await browser.newContext({viewport:{width:1440,height:1080}});const page=await context.newPage();
@@ -84,7 +86,7 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRa
    await page.locator('#black-subida .cb-card[data-cb-step=D05]').click();
    assert.equal(await page.locator('.cb-check-item').count(),0,'Degrau abre somente entregas, nunca checklist direto');
    assert.equal(await page.locator('.cb-drawer [data-cb-artifact=other-qa]').count(),0);
-   assert.equal(await page.locator('.cb-drawer [data-cb-artifact=private-qa]').count(),isAdmin?1:0);
+   assert.equal(await page.locator('.cb-drawer [data-cb-artifact=private-qa]').count(),0,'Processos internos ficam na gestão, fora da jornada do mentorado');
    assert.match(await page.locator('.cb-drawer [data-cb-artifact=site-qa]').innerText(),/Implantação: 1\/1 etapas/);
    assert.equal(await page.locator('[data-cb-item="D05-01"]').count(),0,'AUTO nunca permite marcação manual');
    await page.locator('.cb-drawer [data-cb-artifact=site-qa]').click();
@@ -147,16 +149,51 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRa
     await page.keyboard.press('Escape');
    }
    await page.locator('#rail [data-nav=artifacts]').click();
-   const catalog=page.locator(isAdmin?'#listaArtefatos':'#artListFull');
+   const catalog=page.locator(isAdmin?'#cardsArtefatos':'#artListFull');
+   if(!isAdmin)memberCatalogNames=await catalog.locator('.art-n').allTextContents();
    assert.doesNotMatch(await catalog.innerText(),/Agrupador legado arquivado/);
    if(isAdmin){
-    assert.equal(await page.locator('[data-method-group^=D]').count(),12);
-    assert.equal(await page.locator('[data-edit=artifact][data-id=shared-training]').count(),4,'Uma entrega compartilhada, mesmo ID nos quatro agrupadores');
-    assert.equal(await page.locator('[data-method-group=D04] [data-edit]').count(),0,'Degrau não é uma entrega editável');
+    assert.deepEqual(await catalog.locator('.art-n').allTextContents(),memberCatalogNames,'Admin e mentorado têm exatamente os mesmos cards e nomes');
+    assert.doesNotMatch(await catalog.innerText(),/Tracker privado|Entrega de outro membro|Onboarding/);
+    assert.equal(await page.locator('#gestaoCatalogo').getAttribute('open'),null);
+    const management=page.locator('#listaArtefatos');
+    assert.match(await management.textContent(),/Onboarding/,'Processo indisponível segue acessível à gestão');
+    assert.equal(await catalog.locator('[data-catalog-stage^=D]').count(),12);
+    assert.equal(await catalog.locator('[data-edit=artifact][data-id=shared-training]').count(),4);
+    await catalog.locator('[data-edit=artifact][data-id=site-qa]').click();
+    await page.locator('#modalForm [name=nome]').waitFor();
+    assert.equal(await page.locator('#modalForm [name=nome]').inputValue(),'Site Institucional');
+    await page.keyboard.press('Escape');
+    await catalog.locator('[data-cb-delivery="D07/prospeccao"]').click();
+    assert.equal(await page.locator('.cb-popup [data-cb-item]').count(),2,'Admin mantém conferência dos itens manuais');
+    await page.keyboard.press('Escape');
     await page.locator('#filtroArtGrupo').selectOption('D05');
-    assert.equal(await page.locator('[data-method-group]').count(),1);
-    assert.equal(await page.locator('[data-edit=artifact][data-id=site-qa]').count(),1);
+    assert.equal(await catalog.locator('[data-catalog-stage]').count(),1);
+    assert.equal(await catalog.locator('[data-edit=artifact][data-id=site-qa]').count(),1);
     await page.locator('#filtroArtGrupo').selectOption('');
+    await page.locator('#processosMembro').selectOption('10000000-0000-4000-8000-000000000002');
+    await catalog.locator('[data-cb-artifact=other-qa]').waitFor();
+    assert.match(page.url(),/membro=10000000-0000-4000-8000-000000000002/);
+    const previewHref=await page.locator('#verComoMembro').evaluate(el=>{el.addEventListener('click',e=>e.preventDefault(),{once:true});el.click();return el.href;});
+    assert.match(previewHref,/membro=10000000-0000-4000-8000-000000000002#artifacts$/);
+    const preview=await context.newPage();
+    preview.on('pageerror',e=>errors.push(e.message));
+    await preview.route('**/assets/club-supabase.js',route=>route.fulfill({contentType:'text/javascript',body:stub(true)}));
+    await preview.route('https://**',route=>route.abort());
+    await preview.goto(previewHref);
+    await preview.locator('#voltarPainel').waitFor();
+    assert.equal(await preview.locator('#artListFull [data-edit]').count(),0,'Pré-visualização não recebe ações administrativas');
+    assert.match(await preview.locator('#voltarPainel').getAttribute('href'),/membro=10000000-0000-4000-8000-000000000002#artifacts$/);
+    await preview.locator('#voltarPainel').click();
+    await preview.locator('#cardsArtefatos [data-cb-artifact=other-qa]').waitFor();
+    assert.equal(await preview.locator('#processosMembro').inputValue(),'10000000-0000-4000-8000-000000000002');
+    assert.equal(await preview.locator('[data-view=artifacts]').isVisible(),true,'Voltar ao painel mantém mentorado e aba');
+    await preview.close();
+    await page.locator('#processosMembro').selectOption('10000000-0000-4000-8000-000000000001');
+    await page.waitForFunction(()=>document.querySelector('#cardsArtefatos').textContent.includes('1/18 etapas'));
+    assert.equal(await catalog.locator('[data-cb-artifact=other-qa]').count(),0);
+    await catalog.locator('[data-cb-delivery="D07/prospeccao"]').scrollIntoViewIfNeeded();
+    await page.screenshot({path:path.join(out,'admin-deliveries-catalog.png'),fullPage:false});
    }else{
     assert.doesNotMatch(await catalog.innerText(),/Tracker privado|Entrega de outro membro/);
     assert.match(await catalog.innerText(),/Vínculo com degrau a confirmar/);
@@ -219,11 +256,11 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRa
     if(width===390)await page.screenshot({path:path.join(out,(isAdmin?'admin':'member')+'-hierarquia-mobile.png'),fullPage:true});
    }
    await page.setViewportSize({width:1440,height:1080});
-   await catalog.locator('a[href="#subida/D05"]').click();
+   await catalog.locator(isAdmin?'[data-cb-step=D05]':'a[href="#subida/D05"]').click();
    await page.locator('.cb-drawer').waitFor();assert.match(await page.locator('.cb-drawer').innerText(),/Site Institucional/);
    await page.keyboard.press('Escape');
    await page.locator('#rail [data-nav=artifacts]').click();
-   await catalog.locator('a[href="#subida/TREINO"]').click();
+   await catalog.locator(isAdmin?'[data-cb-step=TREINO]':'a[href="#subida/TREINO"]').click();
    await page.locator('.cb-drawer').waitFor();assert.match(await page.locator('.cb-drawer').innerText(),/Treinamento comercial/);
    await page.keyboard.press('Escape');
    await page.locator('#rail [data-nav="agenda"]').click();await page.locator('[data-view=agenda] [data-nav=encontro]').click();assert.equal(await page.locator('[data-view=encontro]').isVisible(),true);
