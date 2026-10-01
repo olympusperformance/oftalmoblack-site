@@ -1392,20 +1392,6 @@
       '<span>' + esc(Club.fmtDataCurta(pontos[ultimo].dia)) + '</span></div>';
   }
 
-  /* A API entrega no maximo 30 dias. Completar o calendario impede que uma
-     falha de coleta comprima o eixo e pareca pertencer a outra data. */
-  function serieSeguidores30(pontos, hoje) {
-    var porDia = {};
-    pontos.forEach(function (p) { porDia[p.dia] = p; });
-    var fim = new Date((hoje || new Date().toISOString().slice(0, 10)) + 'T00:00:00Z');
-    var saida = [];
-    for (var i = 29; i >= 0; i--) {
-      var d = new Date(fim); d.setUTCDate(d.getUTCDate() - i);
-      var dia = d.toISOString().slice(0, 10);
-      saida.push(porDia[dia] || { dia:dia, seguidores_ganhos:null });
-    }
-    return saida;
-  }
 
   /* Barras de ganho diário. Cada dia é uma coluna que ocupa a altura toda e
      ancora a barra na base — com `top` em elemento relative, como estava, a
@@ -1442,15 +1428,75 @@
      então quanto mais longe do hoje, mais a linha erra. Por isso 30 dias e o
      aviso ao lado do título. */
   function curvaSeguidores(pontos, totalHoje) {
-    var acc = totalHoje, saida = [], confiavel = true;
+    /* Onde há retrato do dia, vale o total medido; onde não há, a linha volta
+       para trás descontando o que entrou — estimativa, porque o Instagram conta
+       quem chegou e não quem saiu. Um dia sem ganho interrompe a estimativa até
+       o próximo total medido. */
+    var acc = totalHoje, saida = [], confiavel = true, estimados = 0;
     for (var i = pontos.length - 1; i >= 0; i--) {
+      var medido = pontos[i].seguidores;
+      if (medido !== null && medido !== undefined) { acc = medido; confiavel = true; }
+      else if (confiavel && i < pontos.length - 1) estimados++;
       saida.unshift({ dia: pontos[i].dia, seguidores: confiavel ? acc : null });
       var ganho = pontos[i].seguidores_ganhos;
       if (ganho === null || ganho === undefined) confiavel = false;
       else if (confiavel) acc -= ganho;
     }
+    saida.estimados = estimados;
     return saida;
   }
+
+  /* Calendário completo do período escolhido: dia sem coleta vira ponto vazio,
+     senão uma falha de coleta comprimiria o eixo e pareceria outra data. */
+  function serieDoPeriodo(pontos, dias, hoje) {
+    var porDia = {};
+    pontos.forEach(function (p) { porDia[p.dia] = p; });
+    var fim = new Date((hoje || new Date().toISOString().slice(0, 10)) + 'T00:00:00Z');
+    var saida = [];
+    for (var i = dias - 1; i >= 0; i--) {
+      var d = new Date(fim); d.setUTCDate(d.getUTCDate() - i);
+      var dia = d.toISOString().slice(0, 10);
+      saida.push(porDia[dia] || { dia:dia, seguidores:null, seguidores_ganhos:null });
+    }
+    return saida;
+  }
+
+  /* Visualizações, interações e visitas chegam como janela de 7 dias. Somar o
+     retrato de cada dia contaria a mesma semana sete vezes; somamos só retratos
+     a 7 dias um do outro, voltando a partir do último. Publicações saem da
+     diferença do total do perfil entre o começo e o fim do período. */
+  function resumoDoPeriodo(todos, dias) {
+    var snaps = todos.filter(function (p) { return p.visualizacoes !== null && p.visualizacoes !== undefined; })
+                     .sort(function (a, b) { return a.dia < b.dia ? -1 : 1; });
+    var ultimo = snaps[snaps.length - 1];
+    var r = { semanas:0, previstas:Math.max(1, Math.floor(dias / 7)), visualizacoes:null,
+              interacoes:null, visitas_perfil:null, alcance:null, publicacoes:null, pubDesde:null };
+    if (!ultimo) return r;
+    var porDia = {};
+    snaps.forEach(function (p) { porDia[p.dia] = p; });
+    var somaAlc = 0, fim = new Date(ultimo.dia + 'T00:00:00Z');
+    for (var k = 0; k < r.previstas; k++) {
+      var d = new Date(fim); d.setUTCDate(d.getUTCDate() - 7 * k);
+      var p = porDia[d.toISOString().slice(0, 10)];
+      if (!p) continue;
+      r.semanas++;
+      r.visualizacoes = (r.visualizacoes || 0) + (p.visualizacoes || 0);
+      r.interacoes = (r.interacoes || 0) + (p.interacoes || 0);
+      r.visitas_perfil = (r.visitas_perfil || 0) + (p.visitas_perfil || 0);
+      somaAlc += p.alcance || 0;
+    }
+    if (r.semanas) r.alcance = Math.round(somaAlc / r.semanas);
+    var inicio = new Date(fim); inicio.setUTCDate(inicio.getUTCDate() - dias);
+    var corte = inicio.toISOString().slice(0, 10);
+    var pubs = todos.filter(function (p) { return p.publicacoes !== null && p.publicacoes !== undefined && p.dia >= corte; })
+                    .sort(function (a, b) { return a.dia < b.dia ? -1 : 1; });
+    if (pubs.length > 1) {
+      r.publicacoes = Math.max(0, pubs[pubs.length - 1].publicacoes - pubs[0].publicacoes);
+      if (pubs[0].dia > corte) r.pubDesde = pubs[0].dia;
+    }
+    return r;
+  }
+
 
   /* ── a legenda que segue o mouse ───────────────────────────────────────── */
   /* Uma caixa só, movida por JS. O `title` do navegador demora quase um segundo
@@ -1573,20 +1619,22 @@
     var username = l.username;
     var corte = new Date(); corte.setHours(0, 0, 0, 0); corte.setDate(corte.getDate() - dias + 1);
     var serie = todos.filter(function (p) { return new Date(p.dia + 'T12:00') >= corte; });
-    var serie30 = serieSeguidores30(todos);
+    var serieP = serieDoPeriodo(todos, dias);
+    var per = resumoDoPeriodo(todos, dias);
 
     var alc = serie.map(function (p) { return p.alcance_dia; })
                    .filter(function (v) { return v !== null && v !== undefined; });
     var media = alc.length ? Math.round(alc.reduce(function (a, b) { return a + b; }, 0) / alc.length) : null;
     var melhor = serie.filter(function (p) { return p.alcance_dia !== null; })
                       .sort(function (a, b) { return b.alcance_dia - a.alcance_dia; })[0];
-    var ganhosValidos = serie30.filter(function (p) {
+    var ganhosValidos = serieP.filter(function (p) {
       return p.seguidores_ganhos !== null && p.seguidores_ganhos !== undefined;
     });
-    var ganhos30 = ganhosValidos.length
+    var ganhosPer = ganhosValidos.length
       ? ganhosValidos.reduce(function (a, p) { return a + p.seguidores_ganhos; }, 0)
       : null;
-    var curva = curvaSeguidores(serie30, l.seguidores || 0);
+    var curva = curvaSeguidores(serieP, l.seguidores || 0);
+    var pendentes = serieP.length - ganhosValidos.length;
 
     Club.modal.open({
       title: (l.mentorado || username),
@@ -1610,11 +1658,11 @@
             cardStat('SEGUIDORES', numeroCurto(l.seguidores), 'agora',
                      'Total de seguidores no último retrato. É o número que o próprio ' +
                      'Instagram mostra no perfil.') +
-            cardStat('GANHOS EM 30 DIAS', ganhos30 === null ? '—' :
-                     (ganhos30 > 0 ? '+' : '') + numeroCurto(ganhos30),
-                     ganhosValidos.length === 30 ? 'somando o que entrou por dia' :
-                     ganhosValidos.length + ' de 30 dias consolidados',
-                     'Soma de quem seguiu a conta nos últimos 30 dias. O Instagram conta ' +
+            cardStat('GANHOS EM ' + dias + ' DIAS', ganhosPer === null ? '—' :
+                     (ganhosPer > 0 ? '+' : '') + numeroCurto(ganhosPer),
+                     ganhosValidos.length === dias ? 'somando o que entrou por dia' :
+                     ganhosValidos.length + ' de ' + dias + ' dias consolidados',
+                     'Soma de quem seguiu a conta nos últimos ' + dias + ' dias. O Instagram conta ' +
                      'quem chegou, não quem saiu — então isto é entrada bruta, não saldo. ' +
                      'Dias ainda ausentes ficam pendentes e não entram como zero.') +
             cardStat('ALCANCE MÉDIO/DIA', numeroCurto(media), 'nos últimos ' + dias + ' dias',
@@ -1635,25 +1683,29 @@
           '<div class="ig-grid2">' +
             '<div class="ig-bloco">' +
               '<div class="ig-bloco-h"><h3>Seguidores que entraram</h3>' +
-              '<span class="tx-s">por dia, últimos 30 — o teto que a API entrega</span></div>' +
-              barras(serie30, 'seguidores_ganhos', 96) +
+              '<span class="tx-s">por dia, últimos ' + dias + ' dias' +
+              (pendentes ? ' · ' + pendentes + ' sem dado da Meta' : '') + '</span></div>' +
+              barras(serieP, 'seguidores_ganhos', 96) +
             '</div>' +
             '<div class="ig-bloco">' +
               '<div class="ig-bloco-h"><h3>Curva de seguidores</h3>' +
-              '<span class="tx-s">reconstruída dos ganhos — estimativa, não medição</span></div>' +
+              '<span class="tx-s">' + (curva.estimados ? 'medida onde há retrato; ' + curva.estimados +
+              ' dias estimados pelos ganhos' : 'total medido dia a dia') + '</span></div>' +
               grafico(curva, 'seguidores', 'var(--info, #6aa9ff)', 96, 'seguidores no dia') +
             '</div>' +
           '</div>' +
 
           '<div class="ig-bloco">' +
-            '<div class="ig-bloco-h"><h3>A semana que passou</h3>' +
-            '<span class="tx-s">janela de 7 dias, do último retrato</span></div>' +
+            '<div class="ig-bloco-h"><h3>' + (dias === 7 ? 'A semana que passou' : 'No período') + '</h3>' +
+            '<span class="tx-s">' + (dias === 7 ? 'janela de 7 dias, do último retrato' :
+              per.semanas + ' de ' + per.previstas + ' semanas medidas, somadas a partir do último retrato') + '</span></div>' +
             '<div class="ig-semana">' +
-              '<div><b>' + numeroCurto(l.visualizacoes) + '</b><span>visualizações</span></div>' +
-              '<div><b>' + numeroCurto(l.alcance) + '</b><span>alcance</span></div>' +
-              '<div><b>' + numeroCurto(l.interacoes) + '</b><span>interações</span></div>' +
-              '<div><b>' + numeroCurto(l.visitas_perfil) + '</b><span>visitas ao perfil</span></div>' +
-              '<div><b>' + numeroCurto(l.publicacoes) + '</b><span>publicações</span></div>' +
+              '<div><b>' + numeroCurto(per.visualizacoes) + '</b><span>visualizações</span></div>' +
+              '<div><b>' + numeroCurto(per.alcance) + '</b><span>' + (dias === 7 ? 'alcance' : 'alcance médio por semana') + '</span></div>' +
+              '<div><b>' + numeroCurto(per.interacoes) + '</b><span>interações</span></div>' +
+              '<div><b>' + numeroCurto(per.visitas_perfil) + '</b><span>visitas ao perfil</span></div>' +
+              '<div><b>' + numeroCurto(per.publicacoes) + '</b><span>publicações' +
+                (per.pubDesde ? ' desde ' + esc(Club.fmtDataCurta(per.pubDesde)) : ' no período') + '</span></div>' +
             '</div>' +
           '</div>' +
         '</div>'

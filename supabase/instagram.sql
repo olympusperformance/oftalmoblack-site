@@ -156,7 +156,9 @@ GRANT SELECT ON public.instagram_resumo TO anon, authenticated;
 CREATE OR REPLACE VIEW public.instagram_serie
   WITH (security_invoker = on) AS
   SELECT c.member_id, c.username, m.dia, m.seguidores, m.seguidores_ganhos,
-         m.alcance_dia, m.visualizacoes, m.alcance, m.interacoes, m.visitas_perfil
+         m.alcance_dia, m.visualizacoes, m.alcance, m.interacoes, m.visitas_perfil,
+         -- total do perfil no dia: a diferença entre dois dias dá o que foi publicado
+         m.publicacoes
     FROM cerebro.instagram_metricas m
     JOIN cerebro.instagram_contas c ON c.ig_user_id = m.ig_user_id
    WHERE c.ativo;
