@@ -28,6 +28,7 @@ fixtures.step_progress.push({member_id:member.id,step_id:'editorial-step-0',feit
 const methodCatalog=${JSON.stringify(methodCatalog)};
 fixtures.cb_method_stages=methodCatalog.stages;fixtures.cb_deliveries=methodCatalog.deliveries;fixtures.cb_checklist_catalog=methodCatalog.items;
 fixtures.cb_delivery_artifacts=methodCatalog.bindings.flatMap(b=>fixtures.artifacts.filter(a=>a.nome===b.artifact_name&&a.method_steps.includes(b.stage_id)).map(a=>({...b,artifact_id:a.id})));
+if(${isAdmin})fixtures.cb_checklist_requests=[{id:'pedido-1',member_id:member.id,item_id:'D07-02',edition:'',requested_at:'2026-10-01T12:00:00Z',resolved_at:null}];
 window.__writes=[];window.__fixtures=fixtures;window.__failTable=null;
 window.Club.sb={supabaseUrl:'http://local.test',auth:{getSession:async()=>({data:{session:{access_token:'test',user:{id:'user1',email:'test@example.test'}}}}),signOut:async()=>({})},
 rpc:async(name,args)=>name==='marcar_etapa'?(window.__writes.push({table:'marcar_etapa',row:args}),{data:{member_id:args.p_member_id,step_id:args.p_step_id,feito:args.p_feito,feito_em:args.p_feito?new Date().toISOString():null}}):({data:name==='me'?{is_admin:${isAdmin},email:member.email,member:${isAdmin?'null':'member'}}:name==='cb_ranking'?[{position:1,alias:member.nome,member_id:member.id,total:28.5,grade:1,movement:null}]:[]}),
@@ -70,7 +71,7 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
    for(const selector of ['#black-subida h1','#black-subida h2','#black-subida .cb-number']){
     assert.match(await page.locator(selector).first().evaluate(el=>getComputedStyle(el).fontFamily),/InterOB/,'Áreas novas devem manter a Inter do painel atual');
    }
-   assert.equal(await page.locator('#black-subida [data-cb-step]').count(),14); // 12 cartões + CTA da pendência + Treino
+   assert.equal(await page.locator('#black-subida [data-cb-step]').count(),isAdmin?15:14); // 12 cartões + CTA da pendência + Treino (+ pedido de conferência no admin)
    for(const selector of ['.cb-card','.cb-score-card','.cb-stats','.cb-pending']){
     assert.equal(await page.locator('#black-subida '+selector).first().evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(21, 18, 25)','Cards sutilmente mais claros que o fundo preto');
    }
@@ -186,6 +187,12 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
     await page.keyboard.press('Escape');
     await catalog.locator('[data-cb-delivery="D07/prospeccao"]').click();
     assert.equal(await page.locator('.cb-popup [data-cb-toggle-item]').count(),2,'Admin mantém conferência dos itens manuais');
+    assert.match(await page.locator('.cb-popup').innerText(),/O mentorado pediu conferência em/);
+    await page.keyboard.press('Escape');
+    assert.match(await catalog.locator('[data-cb-delivery="D07/prospeccao"]').innerText(),/1 item para conferir/,'Pedido aparece no card de fora');
+    await catalog.locator('[data-cb-delivery="D07/prospeccao"]').scrollIntoViewIfNeeded();
+    await page.screenshot({path:path.join(out,'admin-card-pedido.png'),fullPage:false});
+    await catalog.locator('[data-cb-delivery="D07/prospeccao"]').click();
     await page.keyboard.press('Escape');
     await catalog.locator('[data-cb-delivery="D03/rastreio"]').click();
     await page.locator('.cb-popup [data-cb-toggle-item="D03-04"]').check();
@@ -283,6 +290,7 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
      assert.equal(await card.evaluate(el=>el===document.activeElement),true);
     }
     await page.setViewportSize({width:1440,height:1080});
+    assert.match(await catalog.locator('[data-cb-delivery="D07/prospeccao"]').innerText(),/1 conferência pedida/,'Mentorado vê o pedido no card de fora');
     await catalog.locator('[data-cb-delivery="D07/prospeccao"]').scrollIntoViewIfNeeded();
     await page.screenshot({path:path.join(out,'member-deliveries-catalog.png'),fullPage:false});
 

@@ -101,6 +101,7 @@
 .cb-delivery>span:last-child,.cb-check-icon{color:var(--gold)}
 .cb-check-item{display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;padding:16px;margin:10px 0;border:1px solid var(--border);border-radius:12px;background:var(--panel);overflow-wrap:anywhere}
 .cb-request{margin:8px 0 0;padding:6px 10px;border-radius:8px;border:1px solid color-mix(in srgb,var(--gold) 40%,var(--border));color:var(--gold);font-size:13px;width:fit-content}
+.cb-request-card{display:block;margin:10px 0 0;font-size:12px}
 .cb-check-toggle{width:18px;height:18px;margin:2px 0 0;accent-color:var(--gold);cursor:pointer}
 .cb-check-toggle:disabled{cursor:wait;opacity:.6}
 .cb-check-item.is-done{border-color:color-mix(in srgb,var(--gold) 45%,var(--border))}
