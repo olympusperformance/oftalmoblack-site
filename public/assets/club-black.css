@@ -145,7 +145,7 @@
 /* Vitrine Black (01/10/2026): elegibilidade, catálogo fixo e lista de vouchers/resgates */
 .cb-vit-head{max-width:780px;margin:0 0 22px}.cb-vit-head h1{margin:6px 0 12px}.cb-vit-head p{line-height:1.6}.cb-vit-head b{color:var(--gold)}
 .cb-vit-elig{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:18px 22px;border:1px solid color-mix(in srgb,var(--gold) 55%,var(--border));border-radius:14px;background:linear-gradient(120deg,var(--halo),transparent),var(--panel);margin:0 0 18px}
-.cb-vit-elig .cb-kicker{margin:0}.cb-vit-elig>b{font-size:16px}.cb-vit-dot{color:var(--muted)}.cb-vit-rule{color:var(--muted);font-size:13px}.cb-vit-open{margin-left:auto;font-size:13px;color:var(--muted)}.cb-vit-open b{color:var(--gold)}
+.cb-vit-elig .cb-kicker{margin:0}.cb-tools:has(label){align-items:flex-end}.cb-tools:has(label) select,.cb-tools:has(label)>.btn{box-sizing:border-box;height:40px}.cb-tools+.cb-vit-elig{margin-top:18px}.cb-vit-elig>b{font-size:16px}.cb-vit-dot{color:var(--muted)}.cb-vit-rule{color:var(--muted);font-size:13px}.cb-vit-open{margin-left:auto;font-size:13px;color:var(--muted)}.cb-vit-open b{color:var(--gold)}
 .cb-vit-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .cb-vit-card{display:flex;flex-direction:column;gap:12px;padding:22px;border:1px solid var(--border);border-radius:14px;background:var(--panel)}
 .cb-vit-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.cb-vit-top h3{font-size:19px;font-weight:500;line-height:1.35}
@@ -157,4 +157,4 @@
 .cb-vit-when{color:var(--muted);font-size:13px}.cb-vit-what small{display:block;color:var(--muted);margin-top:4px}
 .cb-vit-st{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;text-align:right}.cb-vit-st.gold{color:var(--gold)}.cb-vit-st.ok{color:var(--success)}.cb-vit-st.muted{color:var(--muted)}
 .cb-vit-acts{display:flex;gap:6px}
-@media(max-width:900px){.cb-vit-grid{grid-template-columns:1fr}.cb-vit-open{margin-left:0}.cb-vit-row{grid-template-columns:1fr;gap:6px}.cb-vit-st{text-align:left}}
+@media(max-width:900px){.cb-vit-grid{grid-template-columns:1fr}.cb-vit-dot{display:none}.cb-vit-open{margin-left:0}.cb-vit-row{grid-template-columns:1fr;gap:6px}.cb-vit-st{text-align:left}}
