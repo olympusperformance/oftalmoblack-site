@@ -11,7 +11,7 @@
 
   var st = { members: [], events: [], artifacts: [], materials: [],
              demands: [], staff: [], steps: [], progress: [], demandSteps: [],
-             groups: [], artGrupo: '', progressNotes: [], notasEdit: {},
+             groups: [], artGrupo: '', catGrupo: '', progressNotes: [], notasEdit: {},
              qrLinks: [], qrScans: [],
              view: 'farol', igOrdem: 'seguidores',
              matCategoria: '', matMembro: '',
@@ -1977,9 +1977,6 @@
       var stage=g.kind==='step'||g.kind==='transversal';
       return '<section class="art-area" data-catalog-stage="'+esc(g.id)+'"><div class="sec"><div class="sec-g"><div class="sec-eb"><span class="sec-dash"></span><span>'+esc(g.kind==='step'?g.id+' · DEGRAU':g.kind==='transversal'?'TRANSVERSAL':g.kind==='modules'?'MÓDULOS À PARTE':'A CONFERIR')+'</span></div><h2 class="sec-t">'+esc(g.name)+'</h2></div>'+(stage?'<button class="btn" data-cb-step="'+esc(g.id)+'">Ver entregas</button>':'')+'</div><div class="artgrid">'+Club.black.deliveryCards(stage?g.id:null,stage?artifacts:g.items,{adminActions:true})+'</div></section>';
     }).join('');
-    var management=st.artGrupo==='AREAS'||st.artGrupo==='EQUIPE';
-    $('cardsArtefatos').hidden=management;
-    if(management)$('gestaoCatalogo').open=true;
   }
 
   function renderArtifacts() {
@@ -1987,13 +1984,16 @@
     var stages=Club.metodo.catalogGroups(st.artifacts,true);
     var internal=st.artifacts.filter(function(a){return a.tipo==='interna'&&!a.archived_at;});
     var choices=stages.map(function(s){return {id:s.id,name:(s.kind==='step'?s.id+' · ':'')+s.name};});
+    function opcoes(atual){return '<option value="">Todos os degraus e entregas</option>'+choices.map(function(s){return '<option value="'+esc(s.id)+'"'+(s.id===atual?' selected':'')+'>'+esc(s.name)+'</option>';}).join('');}
+    $('filtroArtGrupo').innerHTML=opcoes(st.artGrupo);
+    /* O catálogo mora na Progressão, com filtro próprio; só ele tem equipe e áreas. */
     if(internal.length)choices.push({id:'EQUIPE',name:'Operação interna da equipe'});
     choices.push({id:'AREAS',name:'Áreas operacionais · gestão'});
-    $('filtroArtGrupo').innerHTML='<option value="">Todos os degraus e entregas</option>'+choices.map(function(s){return '<option value="'+esc(s.id)+'"'+(s.id===st.artGrupo?' selected':'')+'>'+esc(s.name)+'</option>';}).join('');
+    $('filtroCatalogo').innerHTML=opcoes(st.catGrupo);
     var deliveries=st.artifacts.filter(function(a){return a.tipo!=='interna'&&!a.archived_at;});
     $('artResumo').textContent=deliveries.length+' processos cadastrados · 12 degraus · '+internal.length+' frentes internas';
     $('avisoGrupos').innerHTML='<p class="tx-s">Degrau → entregas → checklist. Entregas compartilhadas aparecem nos degraus relacionados, mas mantêm um único cadastro e progresso. Áreas operacionais continuam separadas.</p>';
-    var sections=stages.filter(function(s){return !st.artGrupo||st.artGrupo===s.id;}).map(function(s){
+    var sections=stages.filter(function(s){return !st.catGrupo||st.catGrupo===s.id;}).map(function(s){
       var stage=s.kind==='step'||s.kind==='transversal', deliveries=stage?Club.metodo.deliveries(s.id,st.artifacts):[];
       var heading='<div class="tr grp pai method-group" data-method-group="'+esc(s.id)+'"><span class="grp-n">'+esc((s.kind==='step'?s.id+' · ':'')+s.name)+' <span class="tx-s" style="font-weight:400">'+(stage?'Degrau · ':'')+(stage?deliveries.length:s.items.length)+' entrega(s)</span></span>'+(stage?'<a class="btn" href="#subida/'+esc(s.id)+'">Ver entregas</a>':'')+'</div>';
       return heading+(stage?deliveries.map(function(d){
@@ -2001,13 +2001,13 @@
         return '<div class="tr method-delivery"><span><b>'+esc(d.name)+'</b></span><span class="tx-s">'+d.items.length+' itens no checklist</span><span class="tx-s">Entrega do método</span><span class="tx-s">Conferência por mentorado</span><span>—</span><span><button class="btn" data-cb-delivery="'+esc(d.id)+'">Ver checklist</button></span></div>';
       }).join(''):s.items.map(linhaCatalogo).join(''));
     }).join('');
-    if(!st.artGrupo||st.artGrupo==='EQUIPE'){
+    if(!st.catGrupo||st.catGrupo==='EQUIPE'){
       st.groups.concat([null]).forEach(function(g){
         var arts=internal.filter(function(a){return g?a.group_id===g.id:!st.groups.some(function(x){return x.id===a.group_id;});}).sort(porGrupoOrdem);
         if(arts.length)sections+=cabecalhoGrupo(g,arts.length)+arts.map(linhaCatalogo).join('');
       });
     }
-    if(st.artGrupo==='AREAS')sections=st.groups.concat([null]).map(function(g){
+    if(st.catGrupo==='AREAS')sections=st.groups.concat([null]).map(function(g){
       var arts=st.artifacts.filter(function(a){return !a.archived_at&&(g?a.group_id===g.id:!st.groups.some(function(x){return x.id===a.group_id;}));}).sort(porGrupoOrdem);
       return !g&&!arts.length?'':cabecalhoGrupo(g,arts.length)+arts.map(linhaCatalogo).join('');
     }).join('');
@@ -4428,6 +4428,11 @@
 
   $('filtroArtGrupo').addEventListener('change', function () {
     st.artGrupo = this.value;
+    renderArtifacts();
+  });
+
+  $('filtroCatalogo').addEventListener('change', function () {
+    st.catGrupo = this.value;
     renderArtifacts();
   });
 

@@ -160,6 +160,8 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
     assert.deepEqual(await catalog.locator('.art-n').allTextContents(),memberCatalogNames,'Admin e mentorado têm exatamente os mesmos cards e nomes');
     assert.doesNotMatch(await catalog.innerText(),/Tracker privado|Entrega de outro membro|Onboarding/);
     assert.equal(await page.locator('#gestaoCatalogo').getAttribute('open'),null);
+    assert.equal(await page.locator('[data-view=artifacts] #gestaoCatalogo').count(),0,'Catálogo saiu de Processos');
+    assert.equal(await page.locator('[data-view=members] #gestaoCatalogo').count(),1,'Catálogo fica na Progressão');
     const management=page.locator('#listaArtefatos');
     assert.match(await management.textContent(),/Onboarding/,'Processo indisponível segue acessível à gestão');
     assert.equal(await catalog.locator('[data-catalog-stage^=D]').count(),12);
@@ -177,6 +179,14 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
     assert.equal(await catalog.locator('[data-catalog-stage]').count(),1);
     assert.equal(await catalog.locator('[data-edit=artifact][data-id=site-qa]').count(),1);
     await page.locator('#filtroArtGrupo').selectOption('');
+    await page.locator('#rail [data-nav=members]').click();
+    await page.locator('#gestaoCatalogo summary').click();
+    await page.locator('#filtroCatalogo').selectOption('AREAS');
+    await page.locator('#gestaoCatalogo').scrollIntoViewIfNeeded();
+    await page.screenshot({path:path.join(out,'admin-catalogo-progressao.png'),fullPage:false});
+    await page.locator('#filtroCatalogo').selectOption('');
+    await page.locator('#gestaoCatalogo summary').click();
+    await page.locator('#rail [data-nav=artifacts]').click();
     await page.locator('#processosMembro').selectOption('10000000-0000-4000-8000-000000000002');
     await catalog.locator('[data-cb-artifact=other-qa]').waitFor();
     assert.match(page.url(),/membro=10000000-0000-4000-8000-000000000002/);
