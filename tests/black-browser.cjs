@@ -267,6 +267,15 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
      assert.equal(await page.locator('.cb-popup .cb-check-item').count(),2);
      assert.equal(await page.locator('.cb-popup [data-cb-toggle-item]').count(),0,'Membro não ganha controles de conferência');
      assert.match(await page.locator('.cb-popup').innerText(),/30 DMs/);
+     if(width===1440){
+      assert.equal(await page.locator('.cb-popup [data-cb-request-check]').count(),2,'Mentorado pode pedir conferência dos itens não feitos');
+      await page.locator('.cb-popup [data-cb-request-check="D07-01"]').click();
+      await page.waitForFunction(()=>window.__writes.some(w=>w.table==='cb_checklist_requests'&&w.row.item_id==='D07-01'));
+      await page.locator('.cb-popup .cb-request').waitFor();
+      assert.match(await page.locator('.cb-popup .cb-request').innerText(),/Conferência pedida/);
+      assert.equal(await page.locator('.cb-popup [data-cb-request-check="D07-01"]').count(),0,'Pedido não se repete');
+      await page.screenshot({path:path.join(out,'member-pedido-conferencia.png'),fullPage:false});
+     }
      const box=await page.locator('.cb-popup').boundingBox();
      assert.ok(box.x>=0&&box.x+box.width<=width+1);
      if(width!==320)await page.screenshot({path:path.join(out,'delivery-social-seller-'+width+'.png'),fullPage:false});
@@ -296,7 +305,7 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
      assert.ok(Math.abs(box.x+box.width/2-width/2)<2,'Pop-up centralizado');
      assert.ok(await popup.locator('.cb-popup-content').evaluate(el=>el.scrollHeight>el.clientHeight),'Checklist longo rola dentro do pop-up');
      await page.keyboard.press('Shift+Tab');
-     assert.equal(await popup.locator('a').evaluate(el=>el===document.activeElement),true,'Foco não escapa do modal');
+     assert.equal(await popup.evaluate(el=>{const f=[...el.querySelectorAll('button,input,select,textarea,a[href]')].filter(n=>!n.disabled&&n.offsetParent!==null);return f[f.length-1]===document.activeElement;}),true,'Foco não escapa do modal: Shift+Tab no primeiro volta ao último');
      await page.keyboard.press('Tab');
      assert.equal(await popup.locator('.cb-close').evaluate(el=>el===document.activeElement),true);
      if(width!==320)await page.screenshot({path:path.join(out,'member-process-popup-'+width+'.png'),fullPage:true});
