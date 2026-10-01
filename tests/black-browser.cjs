@@ -60,6 +60,13 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){if(window.__failRa
     assert.match(await page.locator(selector).first().evaluate(el=>getComputedStyle(el).fontFamily),/InterOB/,'Áreas novas devem manter a Inter do painel atual');
    }
    assert.equal(await page.locator('#black-subida [data-cb-step]').count(),14); // 12 cartões + CTA da pendência + Treino
+   for(const selector of ['.cb-card','.cb-score-card','.cb-stats','.cb-pending']){
+    assert.equal(await page.locator('#black-subida '+selector).first().evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(21, 18, 25)','Cards sutilmente mais claros que o fundo preto');
+   }
+   assert.equal(await page.evaluate(()=>getComputedStyle(document.body).backgroundColor),'rgb(7, 6, 10)','O fundo geral continua preto');
+   await page.evaluate(()=>document.documentElement.dataset.theme='light');
+   assert.notEqual(await page.locator('#black-subida .cb-card').first().evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(21, 18, 25)','O ajuste escuro não invade o tema claro');
+   await page.evaluate(()=>document.documentElement.removeAttribute('data-theme'));
    await page.screenshot({path:path.join(out,isAdmin?'admin-desktop.png':'member-desktop.png'),fullPage:true});
    await page.locator('#rail').evaluate(el=>{el.style.height='auto';el.style.position='static';});
    await page.locator('header').evaluate(el=>el.style.visibility='hidden');

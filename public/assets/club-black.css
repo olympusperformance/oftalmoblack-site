@@ -103,3 +103,7 @@
 .cb-check-item.is-done{border-color:color-mix(in srgb,var(--gold) 45%,var(--border))}
 .cb-item-meta{display:flex;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin:8px 0}
 .cb-check-item .cb-tools{margin-top:12px;flex-wrap:wrap}
+/* Contraste sutil só nas superfícies da Subida e das entregas, sem clarear o fundo. */
+:root:not([data-theme="light"]) :is(#black-subida,.cb-drawer) :is(.cb-card,.cb-score-card,.cb-stats,.cb-pending,.cb-delivery,.cb-check-item){background-color:#151219}
+:root:not([data-theme="light"]) #black-subida :is(.cb-card,.cb-score-card,.cb-stats){border-color:rgba(232,192,122,.18)}
+:root:not([data-theme="light"]) #black-subida .cb-card:hover{background-color:#1B171F;border-color:var(--gold)}
