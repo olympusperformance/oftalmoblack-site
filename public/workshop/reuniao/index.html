@@ -113,7 +113,7 @@ FINISH: Code checks by builder; desktop/mobile and real submission by planner.
       <div id="success" class="success" aria-labelledby="success-title" hidden>
         <h2 id="success-title" class="success-title" tabindex="-1">Solicitação recebida.</h2>
         <p>Nosso time comercial vai conversar com você sobre sua clínica e alinhar um horário entre a sua agenda e a do Dr. Alex.</p>
-        <a id="jean-whatsapp" class="cta" target="_blank" rel="noopener noreferrer">Falar com nosso time comercial no WhatsApp</a>
+        <a id="commercial-whatsapp" class="cta" target="_blank" rel="noopener noreferrer">Falar com nosso time comercial no WhatsApp</a>
         <p class="success-small">Se preferir, aguarde o contato. Sua solicitação já foi recebida.</p>
       </div>
     </div>
@@ -167,11 +167,11 @@ FINISH: Code checks by builder; desktop/mobile and real submission by planner.
       if(!request||signature!==nextSignature){var trk=window.obTrk?window.obTrk():{};request=Object.assign({kind:'club_meeting',schema:1,lid:uuid()},d,{site:'',origem:'workshop-reuniao-club',ts:new Date().toISOString(),page:location.href,referrer:document.referrer||''});ATTR.forEach(function(k){request[k]=trk[k]||'';});signature=nextSignature;}
       await save(request);
       if(!isQA()){ga('generate_lead');ga('club_meeting_request');try{fbq('trackCustom','SolicitacaoReuniaoClub',META);}catch(err){}}
-      var whatsapp=document.getElementById('jean-whatsapp');whatsapp.href='https://wa.me/559284654390?text='+encodeURIComponent('Olá! Acabei de solicitar uma reunião com o Dr. Alex para conhecer melhor o Club OftalmoBlack.');
+      var whatsapp=document.getElementById('commercial-whatsapp');whatsapp.href='https://wa.me/559284654390?text='+encodeURIComponent('Olá! Acabei de solicitar uma reunião com o Dr. Alex para conhecer melhor o Club OftalmoBlack.');
       form.hidden=true;document.getElementById('success').hidden=false;document.getElementById('success-title').focus();
     }catch(err){setBusy(false);alert('Não conseguimos salvar sua solicitação agora. Seus dados continuam aqui. Confira sua conexão e tente novamente.');}
   });
-  document.getElementById('jean-whatsapp').addEventListener('click',function(){if(!this.href||document.getElementById('success').hidden)return;if(!isQA()){ga('whatsapp_click');try{fbq('track','Contact',META);}catch(e){}}});
+  document.getElementById('commercial-whatsapp').addEventListener('click',function(){if(!this.href||document.getElementById('success').hidden)return;if(!isQA()){ga('whatsapp_click');try{fbq('track','Contact',META);}catch(e){}}});
   button.disabled=false;
 }());
 </script>
