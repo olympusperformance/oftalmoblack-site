@@ -24,6 +24,14 @@
   --serif:'Cinzel',Georgia,serif;
   --ease:cubic-bezier(.22,.61,.36,1);
   --barra:84px;
+  /* vidro fosco: fundo escuro quase opaco (o texto não briga com as barras do fundo) + desfoque */
+  --vidro:linear-gradient(160deg,rgba(50,39,24,.88),rgba(19,16,11,.92) 52%,rgba(10,9,8,.94));
+  --vidro-hover:linear-gradient(160deg,rgba(66,51,30,.9),rgba(25,20,14,.93) 52%,rgba(12,10,9,.95));
+  --vidro-on:linear-gradient(160deg,rgba(108,75,31,.93),rgba(50,37,19,.94) 55%,rgba(25,20,12,.96));
+  --vidro-borda:rgba(216,157,77,.3);
+  --vidro-sombra:inset 0 1px 0 rgba(253,243,181,.14),0 12px 28px -16px rgba(0,0,0,.85);
+  --vidro-on-sombra:inset 0 0 0 1px rgba(216,157,77,.55),inset 0 1px 0 rgba(253,243,181,.22),0 14px 30px -18px rgba(216,157,77,.6);
+  --desfoque:blur(14px) saturate(140%);
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;color-scheme:dark}
@@ -56,8 +64,8 @@ a{color:var(--gold-bright);text-decoration:none}
 
 h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02em;color:var(--cream)}
 
-/* cartão: no celular o fundo é sólido (desfoque custa caro na rolagem); o vidro entra no desktop */
-.vidro{border-radius:18px;background:linear-gradient(160deg,rgba(216,157,77,.1),rgba(18,15,10,.94) 46%,rgba(8,8,8,.95));border:1px solid rgba(216,157,77,.18);box-shadow:inset 0 1px 0 rgba(253,243,181,.14),0 16px 36px rgba(0,0,0,.4)}
+/* cartão de vidro fosco, igual ao das opções */
+.vidro{border-radius:18px;background:var(--vidro);border:1px solid var(--vidro-borda);box-shadow:inset 0 1px 0 rgba(253,243,181,.14),0 16px 36px rgba(0,0,0,.45);-webkit-backdrop-filter:var(--desfoque);backdrop-filter:var(--desfoque)}
 
 /* ── capa ── */
 .capa{text-align:center}
@@ -97,7 +105,7 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02
 
 /* benefícios: toque na ordem de preferência */
 .lista{display:flex;flex-direction:column;gap:12px}
-.ben{display:grid;grid-template-columns:38px 1fr;column-gap:14px;row-gap:6px;width:100%;padding:16px 16px 16px 14px;text-align:left;cursor:pointer;border-radius:16px;border:1px solid rgba(216,157,77,.2);background:rgba(255,255,255,.03);color:var(--muted);transition:border-color .2s ease,background .2s ease,box-shadow .2s ease,transform .15s ease}
+.ben{display:grid;grid-template-columns:38px 1fr;column-gap:14px;row-gap:6px;width:100%;padding:16px 16px 16px 14px;text-align:left;cursor:pointer;border-radius:16px;border:1px solid var(--vidro-borda);background:var(--vidro);box-shadow:var(--vidro-sombra);-webkit-backdrop-filter:var(--desfoque);backdrop-filter:var(--desfoque);color:var(--muted);transition:border-color .2s ease,background .2s ease,box-shadow .2s ease,transform .15s ease}
 .ben:active{transform:scale(.985)}
 .ben .ord{grid-row:1 / span 3;align-self:start;width:38px;height:38px;border-radius:50%;border:1px dashed rgba(216,157,77,.55);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:700;font-size:14px;color:var(--gold-bright);transition:background .2s ease}
 .ben .ord .mais{font-family:var(--sans);font-weight:300;font-size:23px;line-height:1;color:var(--gold)}
@@ -106,16 +114,20 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02
 .ben .tag{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--gold-bright);border:1px solid rgba(216,157,77,.36);border-radius:100px;padding:4px 9px;white-space:nowrap}
 .ben .meta{font-size:11px;letter-spacing:.09em;text-transform:uppercase;font-weight:600;color:var(--gold)}
 .ben .txt{display:block;font-size:14px;line-height:1.55;color:var(--muted)}
-.ben[aria-pressed="true"]{border-color:var(--gold);background:linear-gradient(160deg,rgba(216,157,77,.18),rgba(216,157,77,.05));box-shadow:inset 0 0 0 1px rgba(216,157,77,.5),0 14px 30px -20px rgba(216,157,77,.7)}
+.ben[aria-pressed="true"]{border-color:var(--gold);background:var(--vidro-on);box-shadow:var(--vidro-on-sombra)}
 .ben[aria-pressed="true"] .ord{border:0;background:linear-gradient(120deg,var(--gold),var(--gold-lt));color:#000}
 .ben[aria-pressed="true"] .txt{color:var(--text)}
 .ben[disabled]{cursor:not-allowed;opacity:.42}
 
 .limpar{display:inline-flex;align-items:center;min-height:44px;margin:4px 0 0;padding:0 2px;border:0;background:none;color:var(--faint);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;cursor:pointer}
 
-/* datas da catarata: lista no celular, três colunas a partir de 600px */
+/* datas da catarata: painel preso ao cartão (fio dourado saindo do selo); lista no celular, três colunas a partir de 600px */
+.datas-cat{margin:-4px 0 6px 31px;padding:16px 0 6px 18px;border-left:2px solid var(--gold);scroll-margin-top:110px;animation:abre .28s var(--ease)}
+@keyframes abre{from{opacity:.35;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.datas-tit{margin:0 0 4px;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--gold-bright)}
+.datas-ajuda{margin:0 0 18px;font-size:13.5px;line-height:1.5;color:var(--muted)}
 .datas{display:flex;flex-direction:column;gap:14px}
-.data{position:relative;display:flex;align-items:center;gap:14px;width:100%;padding:16px;text-align:left;cursor:pointer;border-radius:16px;border:1px solid rgba(216,157,77,.2);background:rgba(255,255,255,.03);color:var(--muted);transition:border-color .2s ease,background .2s ease,box-shadow .2s ease,transform .15s ease}
+.data{position:relative;display:flex;align-items:center;gap:14px;width:100%;padding:16px;text-align:left;cursor:pointer;border-radius:16px;border:1px solid var(--vidro-borda);background:var(--vidro);box-shadow:var(--vidro-sombra);-webkit-backdrop-filter:var(--desfoque);backdrop-filter:var(--desfoque);color:var(--muted);transition:border-color .2s ease,background .2s ease,box-shadow .2s ease,transform .15s ease}
 .data:active{transform:scale(.985)}
 .data .ord{flex:0 0 32px;height:32px;border-radius:50%;border:1px dashed rgba(216,157,77,.55);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:700;font-size:12.5px;color:var(--gold-bright)}
 .data .ord .mais{font-family:var(--sans);font-weight:300;font-size:20px;line-height:1;color:var(--gold)}
@@ -126,21 +138,21 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02
 .data .mes{font-size:12px;letter-spacing:.13em;text-transform:uppercase;font-weight:600;color:var(--gold)}
 .data .sem{font-size:12.5px;color:var(--faint)}
 .data .flag{position:absolute;top:-9px;right:14px;font-size:9px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:#000;background:linear-gradient(120deg,var(--gold),var(--gold-lt));border-radius:100px;padding:4px 9px;white-space:nowrap}
-.data[aria-pressed="true"]{border-color:var(--gold);background:linear-gradient(160deg,rgba(216,157,77,.18),rgba(216,157,77,.05));box-shadow:inset 0 0 0 1px rgba(216,157,77,.5)}
+.data[aria-pressed="true"]{border-color:var(--gold);background:var(--vidro-on);box-shadow:var(--vidro-on-sombra)}
 .data[aria-pressed="true"] .ord{border:0;background:linear-gradient(120deg,var(--gold),var(--gold-lt));color:#000}
 .data[disabled]{cursor:not-allowed;opacity:.42}
 .data[disabled] .flag{background:rgba(255,255,255,.18);color:var(--text)}
 
 /* Family Circle por conta própria */
 .chips{display:flex;flex-wrap:wrap;gap:10px}
-.chip{min-height:46px;padding:11px 18px;border-radius:100px;border:1px solid rgba(216,157,77,.26);background:rgba(255,255,255,.03);color:var(--muted);font-size:14.5px;font-weight:500;cursor:pointer;transition:border-color .2s ease,background .2s ease,color .2s ease}
-.chip[aria-pressed="true"]{border-color:var(--gold);background:rgba(216,157,77,.15);color:var(--cream);box-shadow:inset 0 0 0 1px rgba(216,157,77,.45)}
+.chip{min-height:46px;padding:11px 18px;border-radius:100px;border:1px solid var(--vidro-borda);background:var(--vidro);box-shadow:var(--vidro-sombra);-webkit-backdrop-filter:var(--desfoque);backdrop-filter:var(--desfoque);color:var(--text);font-size:14.5px;font-weight:500;cursor:pointer;transition:border-color .2s ease,background .2s ease,color .2s ease}
+.chip[aria-pressed="true"]{border-color:var(--gold);background:var(--vidro-on);color:var(--cream);box-shadow:var(--vidro-on-sombra)}
 
 /* nome */
 .campo label{display:block;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:0 0 8px;font-weight:600}
-.campo input{width:100%;min-height:54px;background:rgba(255,255,255,.04);border:1px solid rgba(216,157,77,.24);border-radius:14px;padding:14px 16px;color:var(--text);font-size:17px;outline:none;transition:border-color .25s ease,background .25s ease}
+.campo input{width:100%;min-height:54px;background:var(--vidro);box-shadow:var(--vidro-sombra);-webkit-backdrop-filter:var(--desfoque);backdrop-filter:var(--desfoque);border:1px solid var(--vidro-borda);border-radius:14px;padding:14px 16px;color:var(--text);font-size:17px;outline:none;transition:border-color .25s ease,background .25s ease}
 .campo input::placeholder{color:rgba(245,240,230,.34)}
-.campo input:focus{border-color:var(--gold);background:rgba(216,157,77,.06)}
+.campo input:focus{border-color:var(--gold);background:var(--vidro-hover)}
 
 /* resumo para conferir antes de enviar */
 .resumo{margin:34px 0 0;padding:20px 18px}
@@ -210,6 +222,7 @@ body.digitando .barra{transform:translateY(130%)}
   .ben .nome-ben{font-size:19px}
   .ben .meta{font-size:12px;letter-spacing:.12em}
   .ben .txt{font-size:14.5px}
+  .datas-cat{margin-left:39px;padding-left:20px}
   .datas{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
   .data{flex-direction:column;align-items:center;gap:4px;padding:24px 12px 18px;text-align:center}
   .data .ord{flex:0 0 auto;width:30px;height:30px;margin:0 0 8px}
@@ -232,7 +245,6 @@ body.digitando .barra{transform:translateY(130%)}
   .topo img{height:42px}
   .app{padding:68px 20px 40px}
   .capa h1{font-size:68px}
-  .vidro{background:linear-gradient(160deg,rgba(216,157,77,.08),rgba(255,255,255,.015) 46%,rgba(0,0,0,.12));-webkit-backdrop-filter:blur(18px) saturate(150%);backdrop-filter:blur(18px) saturate(150%)}
   .barra-in{background:rgba(16,13,9,.9);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
   body.digitando .barra{transform:none}
   .rodape{font-size:10.5px;letter-spacing:.26em}
@@ -241,9 +253,8 @@ body.digitando .barra{transform:translateY(130%)}
 /* efeitos de passar o mouse só onde existe mouse (no toque eles "grudam") */
 @media (hover:hover) and (pointer:fine){
   a:hover{text-decoration:underline}
-  .ben:not([disabled]):hover,.data:not([disabled]):hover{border-color:var(--line-strong);background:rgba(216,157,77,.06)}
-  .ben[aria-pressed="true"]:hover,.data[aria-pressed="true"]:hover{background:linear-gradient(160deg,rgba(216,157,77,.2),rgba(216,157,77,.07))}
-  .chip:hover{border-color:var(--line-strong);color:var(--text)}
+  .ben:not([disabled]):hover,.data:not([disabled]):hover,.chip:hover{border-color:var(--line-strong);background:var(--vidro-hover)}
+  .ben[aria-pressed="true"]:hover,.data[aria-pressed="true"]:hover,.chip[aria-pressed="true"]:hover{background:var(--vidro-on)}
   .limpar:hover{color:var(--gold-bright)}
   .btn-ouro:not([disabled]):hover{background-position:100% 0;transform:translateY(-2px)}
   .btn-linha:hover{border-color:var(--gold);color:var(--gold-bright)}
@@ -251,6 +262,7 @@ body.digitando .barra{transform:translateY(130%)}
 @media (prefers-reduced-motion:reduce){
   .grifo{animation:none}
   .ben,.data,.chip,.btn,.barra,.regras summary::after{transition:none}
+  .datas-cat{animation:none}
 }
 </style>
 </head>
@@ -299,20 +311,14 @@ body.digitando .barra{transform:translateY(130%)}
         <button type="button" class="limpar" id="limpar" hidden>Limpar escolhas</button>
       </div>
 
-      <div class="etapa" id="etapa-datas" hidden>
-        <div class="etapa-cab"><span class="etapa-num" data-num>02</span><h2>Datas da Mentoria de Catarata</h2></div>
-        <p class="etapa-ajuda">Marque <strong>na ordem de preferência</strong> e deixe de fora a data em que não pode ir. Turmas em Juruti (PA), de quarta a domingo, com 2 vagas cada.</p>
-        <div class="datas" id="lista-datas"></div>
-      </div>
-
       <div class="etapa" id="etapa-family">
-        <div class="etapa-cab"><span class="etapa-num" data-num>03</span><h2>Family Circle</h2><span class="opc">Opcional</span></div>
+        <div class="etapa-cab"><span class="etapa-num" data-num>02</span><h2>Family Circle</h2><span class="opc">Opcional</span></div>
         <p class="etapa-ajuda">Mesmo sem ganhar a passagem, você vai ao Family Circle (11 a 13 de dezembro)?</p>
         <div class="chips" id="lista-family"></div>
       </div>
 
       <div class="etapa" id="etapa-nome">
-        <div class="etapa-cab"><span class="etapa-num" data-num>04</span><h2>Seu nome</h2></div>
+        <div class="etapa-cab"><span class="etapa-num" data-num>03</span><h2>Seu nome</h2></div>
         <div class="campo">
           <label for="nome">Nome completo</label>
           <input type="text" id="nome" name="nome" autocomplete="name" autocapitalize="words" spellcheck="false" enterkeyhint="send" placeholder="Nome e sobrenome" maxlength="120" required>
@@ -424,13 +430,21 @@ body.digitando .barra{transform:translateY(130%)}
 
   /* ── montagem ── */
   function montar() {
+    // as datas abrem logo abaixo do cartão da catarata, presas a ele
+    var painelDatas =
+      '<div class="datas-cat" id="etapa-datas" role="group" aria-labelledby="datas-tit" hidden>' +
+        '<p class="datas-tit" id="datas-tit">Datas da catarata, em ordem de prioridade</p>' +
+        '<p class="datas-ajuda">Toque na ordem de preferência e deixe de fora a data em que não pode ir. Turmas em Juruti (PA), de quarta a domingo, com 2 vagas cada.</p>' +
+        '<div class="datas" id="lista-datas"></div>' +
+      '</div>';
     $('lista-beneficios').innerHTML = BENEFICIOS.map(function (b) {
       var fechado = jaComecou(b.fim);
-      return '<button type="button" class="ben" data-ben="' + b.id + '" aria-pressed="false"' + (fechado ? ' disabled' : '') + '>' +
+      var cat = b.id === 'catarata';
+      return '<button type="button" class="ben" data-ben="' + b.id + '" aria-pressed="false"' + (cat ? ' aria-controls="etapa-datas"' : '') + (fechado ? ' disabled' : '') + '>' +
         '<span class="ord" aria-hidden="true"><span class="mais">+</span></span>' +
         '<span class="nome-ben">' + esc(b.titulo) + '</span>' +
         '<span class="linha-meta"><span class="tag">' + esc(fechado ? 'Encerrado' : b.tag) + '</span><span class="meta">' + esc(b.meta) + '</span></span>' +
-        '<span class="txt">' + esc(b.texto) + '</span></button>';
+        '<span class="txt">' + esc(b.texto) + '</span></button>' + (cat ? painelDatas : '');
     }).join('');
 
     var proxima = null;
