@@ -168,7 +168,7 @@ FINISH: Code checks by builder; desktop/mobile and real submission by planner.
       if(!request||signature!==nextSignature){var trk=window.obTrk?window.obTrk():{};request=Object.assign({kind:'club_meeting',schema:1,lid:uuid()},d,{site:'',origem:'workshop-reuniao-club',ts:new Date().toISOString(),page:location.href,referrer:document.referrer||'',qa:isQA()});ATTR.forEach(function(k){request[k]=trk[k]||'';});signature=nextSignature;}
       var saved=await save(request);receipt=saved.receipt;
       if(!isQA()){ga('generate_lead');ga('club_meeting_request');try{fbq('trackCustom','SolicitacaoReuniaoClub',META,{eventID:saved.event_id});}catch(err){}}
-      var whatsapp=document.getElementById('commercial-whatsapp');whatsapp.href='https://wa.me/559284654390?text='+encodeURIComponent('Olá! Acabei de solicitar uma reunião com o Dr. Alex para conhecer melhor o Club OftalmoBlack.');
+      var whatsapp=document.getElementById('commercial-whatsapp');whatsapp.href='https://wa.me/5511993436267?text='+encodeURIComponent('Olá! Acabei de solicitar uma reunião com o Dr. Alex para conhecer melhor o Club OftalmoBlack.');
       form.hidden=true;document.getElementById('success').hidden=false;document.getElementById('success-title').focus();
     }catch(err){setBusy(false);alert('Não conseguimos salvar sua solicitação agora. Seus dados continuam aqui. Confira sua conexão e tente novamente.');}
   });
