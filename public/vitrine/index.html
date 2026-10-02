@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>Vitrine Black · Club OftalmoBlack</title>
+<meta name="description" content="Escolha dos benefícios da Vitrine Black: Mentoria de Catarata, Mentoria Grau Zero e passagem para o Family Circle. Uso dos membros do Club OftalmoBlack.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="/assets/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="/assets/favicon.png">
+<link rel="preload" href="/assets/fonts/cinzel-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:'Cinzel';font-style:normal;font-weight:400 900;font-display:swap;src:url('/assets/fonts/cinzel-latin.woff2') format('woff2')}
+
+:root{
+  --gold:#d89d4d;--gold-lt:#fdf3b5;--gold-bright:#e6bd74;--gold-deep:#8a5210;
+  --cream:#ffffff;--text:#f5f0e6;--muted:rgba(245,240,230,.68);--faint:rgba(245,240,230,.44);
+  --line:rgba(216,157,77,.18);--line-strong:rgba(216,157,77,.42);
+  --erro:#f0a58f;
+  --sans:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue','Segoe UI',sans-serif;
+  --display:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue','Segoe UI',sans-serif;
+  --serif:'Cinzel',Georgia,serif;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;color-scheme:dark}
+body{margin:0;background:#000;color:var(--cream);font-family:var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100vh}
+button,input{font-family:inherit}
+a{color:var(--gold-bright);text-decoration:none}
+a:hover{text-decoration:underline}
+::selection{background:rgba(216,157,77,.32);color:#fff}
+[hidden]{display:none!important}
+
+/* fundo da home: barras verticais douradas + vinheta */
+#ob-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;background:#000}
+.vinheta{position:fixed;inset:0;z-index:0;pointer-events:none;box-shadow:inset 0 0 240px 60px rgba(0,0,0,.85);background:radial-gradient(120% 80% at 50% 0%,transparent 40%,rgba(0,0,0,.6))}
+
+.grifo{color:#e6bd74;background:linear-gradient(120deg,#8a5210 0%,#c78039 18%,#e6bd74 32%,#fdf3b5 42%,#d89d4d 55%,#c78039 72%,#8a5210 100%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:foil 8s ease-in-out infinite}
+@keyframes foil{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@supports not ((-webkit-background-clip:text) or (background-clip:text)){.grifo{background:none;-webkit-text-fill-color:#e6bd74}}
+
+.topo{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px clamp(18px,4vw,44px);background:rgba(10,10,10,.72);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.topo img{height:42px;width:auto;display:block;filter:drop-shadow(0 2px 8px rgba(0,0,0,.6))}
+.topo .selo{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;font-weight:600;color:rgba(245,240,230,.78);border:1px solid rgba(216,157,77,.3);border-radius:100px;padding:9px 16px;background:rgba(216,157,77,.05);white-space:nowrap}
+
+.app{position:relative;z-index:1;max-width:720px;margin:0 auto;padding:clamp(40px,7vw,76px) 20px 90px}
+
+.eyebrow{display:flex;align-items:center;justify-content:center;gap:14px;font-family:var(--display);font-weight:600;font-size:11px;letter-spacing:.36em;text-transform:uppercase;color:var(--gold);margin:0 0 22px;text-align:center}
+.eyebrow::before,.eyebrow::after{content:'';flex:0 0 34px;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
+.eyebrow::after{background:linear-gradient(90deg,var(--gold),transparent)}
+
+h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02em;color:var(--cream)}
+
+.vidro{border-radius:20px;background:linear-gradient(160deg,rgba(216,157,77,.08),rgba(255,255,255,.015) 46%,rgba(0,0,0,.12));-webkit-backdrop-filter:blur(18px) saturate(150%);backdrop-filter:blur(18px) saturate(150%);border:1px solid rgba(216,157,77,.16);box-shadow:inset 0 1px 0 rgba(253,243,181,.18),0 20px 44px rgba(0,0,0,.4)}
+
+/* ── capa ── */
+.capa{text-align:center}
+.capa h1{font-size:clamp(42px,8vw,70px);line-height:1.02}
+.capa .sub{margin:16px 0 0;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--faint);font-weight:600}
+.capa .lead{max-width:560px;margin:26px auto 0;font-size:clamp(16px,2.1vw,17.5px);line-height:1.7;color:var(--muted)}
+.capa .lead strong{color:var(--cream);font-weight:600}
+.prazo{display:inline-flex;align-items:center;gap:10px;margin:26px 0 0;font-weight:600;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-bright);border:1px solid rgba(216,157,77,.38);border-radius:100px;padding:10px 18px;background:rgba(216,157,77,.07)}
+.prazo svg{width:16px;height:16px;flex-shrink:0}
+.prazo.encerrado{color:var(--text);border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.04)}
+
+.aviso{margin:28px 0 0;padding:18px 22px;text-align:left;font-size:14.5px;line-height:1.6;color:var(--muted)}
+.aviso strong{color:var(--cream);font-weight:600}
+
+.regras{margin:34px 0 0;padding:26px clamp(20px,4vw,32px);text-align:left}
+.regras h2{font-family:var(--serif);font-weight:600;font-size:14px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-bright);margin:0 0 16px}
+.passos{list-style:none;margin:0;padding:0;counter-reset:n}
+.passos li{counter-increment:n;position:relative;padding:0 0 0 40px;margin:0 0 12px;font-size:15px;line-height:1.6;color:var(--muted)}
+.passos li:last-child{margin-bottom:0}
+.passos li strong{color:var(--cream);font-weight:600}
+.passos li::before{content:counter(n);position:absolute;left:0;top:-1px;width:26px;height:26px;border-radius:50%;border:1px solid var(--line-strong);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:600;font-size:12px;color:var(--gold-bright)}
+.regras .ranking{margin:16px 0 0;padding:14px 0 0;border-top:1px solid var(--line);font-size:13.5px;color:var(--faint)}
+
+/* ── etapas ── */
+.etapa{margin:56px 0 0}
+.etapa-cab{display:flex;align-items:baseline;gap:14px;margin:0 0 8px}
+.etapa-num{font-family:var(--serif);font-weight:600;font-size:15px;color:var(--gold);letter-spacing:.06em;flex-shrink:0}
+.etapa-cab h2{font-size:clamp(22px,3.6vw,28px);line-height:1.2}
+.etapa-cab .opc{margin-left:auto;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--faint);font-weight:600;white-space:nowrap}
+.etapa-ajuda{margin:0 0 20px;font-size:15px;line-height:1.6;color:var(--muted)}
+.etapa-ajuda strong{color:var(--text);font-weight:600}
+
+/* cartões de benefício: toque na ordem de preferência */
+.lista{display:flex;flex-direction:column;gap:14px}
+.ben{position:relative;display:grid;grid-template-columns:46px 1fr;gap:4px 16px;width:100%;padding:22px 22px 22px 18px;text-align:left;cursor:pointer;border-radius:18px;border:1px solid rgba(216,157,77,.18);background:rgba(255,255,255,.025);color:var(--muted);transition:border-color .25s ease,background .25s ease,box-shadow .25s ease,transform .25s var(--ease)}
+.ben:hover{border-color:var(--line-strong);background:rgba(216,157,77,.06)}
+.ben:active{transform:scale(.995)}
+.ben .ord{grid-row:span 3;align-self:start;width:42px;height:42px;border-radius:50%;border:1px dashed rgba(216,157,77,.5);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:700;font-size:15px;color:var(--gold-bright);transition:all .25s ease}
+.ben .ord .mais{font-family:var(--sans);font-weight:300;font-size:24px;line-height:1;color:var(--gold)}
+.ben .tit{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.ben .nome-ben{display:block;font-family:var(--display);font-weight:600;font-size:clamp(17px,2.6vw,19.5px);line-height:1.3;letter-spacing:-.01em;color:var(--cream)}
+.ben .tag{flex-shrink:0;margin-top:1px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--gold-bright);border:1px solid rgba(216,157,77,.34);border-radius:100px;padding:5px 10px;white-space:nowrap}
+.ben .meta{display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--gold);margin:2px 0 0}
+.ben .txt{display:block;font-size:14.5px;line-height:1.6;margin:6px 0 0;color:var(--muted)}
+.ben[aria-pressed="true"]{border-color:var(--gold);background:linear-gradient(160deg,rgba(216,157,77,.17),rgba(216,157,77,.05));box-shadow:inset 0 0 0 1px rgba(216,157,77,.5),0 16px 36px -22px rgba(216,157,77,.7)}
+.ben[aria-pressed="true"] .ord{border:0;background:linear-gradient(120deg,var(--gold),var(--gold-lt));color:#000;box-shadow:0 6px 18px -6px rgba(216,157,77,.7)}
+.ben[aria-pressed="true"] .txt{color:var(--text)}
+.ben[disabled]{cursor:not-allowed;opacity:.42}
+.ben[disabled]:hover{border-color:rgba(216,157,77,.18);background:rgba(255,255,255,.025)}
+
+.limpar{display:inline-block;margin:14px 0 0;padding:6px 0;border:0;background:none;color:var(--faint);font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:600;cursor:pointer}
+.limpar:hover{color:var(--gold-bright)}
+
+/* datas da catarata */
+.datas{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.data{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;padding:22px 12px 18px;text-align:center;cursor:pointer;border-radius:18px;border:1px solid rgba(216,157,77,.18);background:rgba(255,255,255,.025);color:var(--muted);transition:border-color .25s ease,background .25s ease,box-shadow .25s ease}
+.data:hover{border-color:var(--line-strong);background:rgba(216,157,77,.06)}
+.data .ord{width:30px;height:30px;margin:0 0 8px;border-radius:50%;border:1px dashed rgba(216,157,77,.5);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:700;font-size:12.5px;color:var(--gold-bright)}
+.data .ord .mais{font-family:var(--sans);font-weight:300;font-size:19px;line-height:1;color:var(--gold)}
+.data .dias{font-family:var(--serif);font-weight:600;font-size:clamp(24px,4.4vw,30px);line-height:1;color:var(--cream);letter-spacing:.02em}
+.data .dias .a{font-family:var(--sans);font-weight:500;font-size:.5em;letter-spacing:0;color:var(--gold);margin:0 .38em;vertical-align:.18em}
+.data .mes{font-size:13px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--gold)}
+.data .sem{margin:6px 0 0;font-size:12.5px;color:var(--faint)}
+.data .flag{position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:#000;background:linear-gradient(120deg,var(--gold),var(--gold-lt));border-radius:100px;padding:4px 10px;white-space:nowrap}
+.data[aria-pressed="true"]{border-color:var(--gold);background:linear-gradient(160deg,rgba(216,157,77,.17),rgba(216,157,77,.05));box-shadow:inset 0 0 0 1px rgba(216,157,77,.5)}
+.data[aria-pressed="true"] .ord{border:0;background:linear-gradient(120deg,var(--gold),var(--gold-lt));color:#000}
+.data[disabled]{cursor:not-allowed;opacity:.42}
+.data[disabled] .flag{background:rgba(255,255,255,.18);color:var(--text)}
+
+/* Family Circle por conta própria */
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{padding:13px 18px;border-radius:100px;border:1px solid rgba(216,157,77,.24);background:rgba(255,255,255,.03);color:var(--muted);font-size:14.5px;font-weight:500;cursor:pointer;transition:all .25s ease}
+.chip:hover{border-color:var(--line-strong);color:var(--text)}
+.chip[aria-pressed="true"]{border-color:var(--gold);background:rgba(216,157,77,.14);color:var(--cream);box-shadow:inset 0 0 0 1px rgba(216,157,77,.45)}
+
+/* nome */
+.campo label{display:block;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin:0 0 8px;font-weight:600}
+.campo input{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(216,157,77,.22);border-radius:14px;padding:16px 18px;color:var(--text);font-size:17px;outline:none;transition:border-color .3s ease,background .3s ease}
+.campo input::placeholder{color:rgba(245,240,230,.34)}
+.campo input:focus{border-color:var(--gold);background:rgba(216,157,77,.06)}
+
+/* resumo e envio */
+.resumo{margin:56px 0 0;padding:26px clamp(20px,4vw,30px)}
+.resumo h2{font-family:var(--serif);font-weight:600;font-size:14px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-bright);margin:0 0 16px}
+.resumo ol{list-style:none;margin:0;padding:0}
+.resumo li{display:grid;grid-template-columns:40px 1fr;gap:2px 12px;padding:12px 0;border-top:1px solid var(--line)}
+.resumo li:first-child{border-top:0;padding-top:0}
+.resumo li .n{grid-row:span 2;font-family:var(--serif);font-weight:700;font-size:15px;color:var(--gold)}
+.resumo li b{font-weight:600;color:var(--cream);font-size:15.5px}
+.resumo li small{font-size:13.5px;color:var(--muted);line-height:1.5}
+.resumo .extra{margin:14px 0 0;padding:12px 0 0;border-top:1px solid var(--line);font-size:13.5px;color:var(--muted)}
+.resumo .vazio{margin:0;font-size:14.5px;color:var(--faint)}
+
+.enviar{margin:26px 0 0;text-align:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font-size:12px;letter-spacing:.28em;text-transform:uppercase;font-weight:700;padding:19px 36px;border-radius:100px;cursor:pointer;border:0;transition:all .35s var(--ease);text-decoration:none;white-space:nowrap}
+.btn-ouro{color:#000;background:linear-gradient(120deg,var(--gold) 0%,var(--gold-lt) 50%,var(--gold) 100%);background-size:200% 100%;box-shadow:0 18px 40px -18px rgba(212,166,83,.55),inset 0 1px 0 rgba(255,255,255,.3)}
+.btn-ouro:hover{background-position:100% 0;transform:translateY(-2px)}
+.btn-linha{color:var(--cream);background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.5)}
+.btn-linha:hover{border-color:var(--gold);color:var(--gold-bright)}
+.btn[disabled]{opacity:.34;cursor:not-allowed;transform:none;box-shadow:none}
+.btn:focus-visible,.ben:focus-visible,.data:focus-visible,.chip:focus-visible,.limpar:focus-visible{outline:2px solid var(--gold-bright);outline-offset:3px}
+.btn .seta{font-size:15px;letter-spacing:0}
+.falta{min-height:22px;margin:14px 0 0;font-size:14px;color:var(--faint)}
+.falta.erro{color:var(--erro)}
+.nota{margin:10px 0 0;font-size:13px;color:var(--faint);line-height:1.6}
+
+/* tela de enviado */
+.ok{text-align:center}
+.ok .selo-ok{width:64px;height:64px;margin:0 auto 22px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(120deg,var(--gold),var(--gold-lt));box-shadow:0 14px 34px -12px rgba(216,157,77,.75)}
+.ok .selo-ok svg{width:30px;height:30px}
+.ok h1{font-size:clamp(34px,6.4vw,52px);line-height:1.08}
+.ok .lead{max-width:520px;margin:18px auto 0;font-size:clamp(16px,2.1vw,17.5px);line-height:1.7;color:var(--muted)}
+.ok .resumo{text-align:left;margin-top:36px}
+.ok .acoes{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin:30px 0 0}
+
+.rodape{margin:70px 0 0;padding:28px 0 0;border-top:1px solid var(--line);text-align:center;font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--faint);font-weight:600}
+
+@media (max-width:640px){
+  .topo{padding:12px 16px}
+  .topo img{height:34px}
+  .topo .selo{padding:8px 12px;font-size:9.5px;letter-spacing:.18em}
+  .app{padding:36px 16px 90px}
+  .eyebrow{letter-spacing:.26em;font-size:10px;gap:10px}
+  .eyebrow::before,.eyebrow::after{flex-basis:22px}
+  .capa .sub{letter-spacing:.13em;font-size:10.5px;line-height:1.8}
+  .prazo{letter-spacing:.07em;font-size:10px;padding:10px 14px;gap:8px}
+  .etapa{margin-top:46px}
+  .ben{grid-template-columns:40px 1fr;gap:4px 14px;padding:18px 16px 18px 14px}
+  .ben .ord{width:38px;height:38px}
+  .ben .tit{flex-direction:column;gap:8px}
+  .datas{grid-template-columns:1fr;gap:16px}
+  .data{flex-direction:row;justify-content:flex-start;gap:14px;padding:18px 16px;text-align:left}
+  .data .ord{margin:0}
+  .data .txt-data{display:flex;flex-direction:column;gap:3px}
+  .data .linha1{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .data .sem{margin:0}
+  .data .flag{left:auto;right:14px;transform:none}
+  .btn{width:100%;padding:18px 20px;letter-spacing:.2em}
+  .ok .acoes .btn{width:100%}
+}
+@media (min-width:641px){
+  .data .txt-data{display:flex;flex-direction:column;align-items:center;gap:4px}
+  .data .linha1{display:flex;flex-direction:column;align-items:center;gap:6px}
+}
+@media (prefers-reduced-motion:reduce){
+  .grifo{animation:none}
+  .ben,.data,.chip,.btn{transition:none}
+}
+</style>
+</head>
+<body>
+<canvas id="ob-canvas" aria-hidden="true"></canvas>
+<div class="vinheta" aria-hidden="true"></div>
+
+<header class="topo">
+  <a href="/" aria-label="Club OftalmoBlack"><img src="/assets/logo-horizontal-w.png" alt="OftalmoBlack" width="127" height="44"></a>
+  <span class="selo">Membros do Black</span>
+</header>
+
+<main class="app">
+
+  <!-- ESCOLHA -->
+  <section id="tela-escolha" aria-labelledby="titulo">
+    <div class="capa">
+      <p class="eyebrow">Sistema de Graduação Black</p>
+      <h1 id="titulo">Vitrine <span class="grifo">Black</span></h1>
+      <p class="sub">Benefícios de outubro a dezembro de 2026</p>
+      <p class="lead">Escolha o que você quer resgatar, <strong>em ordem de prioridade</strong>. Todo membro pode escolher: quem tem Voucher Black escolhe primeiro e, depois, vale a ordem do ranking da graduação.</p>
+      <p class="prazo" id="prazo"><svg viewBox="0 0 24 24" fill="none" stroke="#e6bd74" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.6 2.2M9.5 2.5h5"/></svg><span id="prazo-txt">Responda até segunda, 05/10, pela manhã</span></p>
+    </div>
+
+    <div class="aviso vidro" id="ja-enviou" role="status" hidden></div>
+
+    <div class="regras vidro">
+      <h2>Como funciona</h2>
+      <ol class="passos">
+        <li>Toque nos benefícios <strong>na ordem em que você quer</strong>. O que não te interessa, deixe sem marcar.</li>
+        <li>Se escolher a Mentoria de Catarata, marque também <strong>a ordem das datas</strong>.</li>
+        <li>A equipe distribui as vagas pelo ranking. Se a sua 1ª opção esgotar antes da sua vez, passamos para a 2ª, e assim por diante.</li>
+      </ol>
+      <p class="ranking"><a href="/membros/#ranking">Ver meu lugar no ranking</a> na área de membros.</p>
+    </div>
+
+    <form id="form" novalidate>
+
+      <div class="etapa" id="etapa-beneficios">
+        <div class="etapa-cab"><span class="etapa-num" data-num>01</span><h2>Seus benefícios</h2></div>
+        <p class="etapa-ajuda">O primeiro toque é a sua <strong>1ª opção</strong>. Toque de novo para tirar.</p>
+        <div class="lista" id="lista-beneficios"></div>
+        <button type="button" class="limpar" id="limpar" hidden>Limpar escolhas</button>
+      </div>
+
+      <div class="etapa" id="etapa-datas" hidden>
+        <div class="etapa-cab"><span class="etapa-num" data-num>02</span><h2>Datas da Mentoria de Catarata</h2></div>
+        <p class="etapa-ajuda">Marque <strong>na ordem de preferência</strong> e deixe de fora a data em que não pode ir. Todas as turmas são em Juruti (PA), de quarta a domingo, com 2 vagas cada.</p>
+        <div class="datas" id="lista-datas"></div>
+      </div>
+
+      <div class="etapa" id="etapa-family">
+        <div class="etapa-cab"><span class="etapa-num" data-num>03</span><h2>Family Circle</h2><span class="opc">Opcional</span></div>
+        <p class="etapa-ajuda">Mesmo sem ganhar a passagem, você vai ao Family Circle (11 a 13 de dezembro)?</p>
+        <div class="chips" id="lista-family"></div>
+      </div>
+
+      <div class="etapa" id="etapa-nome">
+        <div class="etapa-cab"><span class="etapa-num" data-num>04</span><h2>Seu nome</h2></div>
+        <div class="campo">
+          <label for="nome">Nome completo</label>
+          <input type="text" id="nome" name="nome" autocomplete="name" placeholder="Nome e sobrenome" maxlength="120" required>
+        </div>
+      </div>
+
+      <div class="resumo vidro" aria-live="polite">
+        <h2>Sua escolha</h2>
+        <div id="resumo"></div>
+      </div>
+
+      <div class="enviar">
+        <button type="submit" class="btn btn-ouro" id="btn-enviar" disabled>Enviar minhas escolhas <span class="seta" aria-hidden="true">→</span></button>
+        <p class="falta" id="falta" role="status"></p>
+        <p class="nota">Mudou de ideia? Pode enviar de novo até o prazo: vale a sua última resposta.</p>
+      </div>
+    </form>
+  </section>
+
+  <!-- ENVIADO -->
+  <section id="tela-ok" class="ok" aria-labelledby="titulo-ok" hidden>
+    <div class="selo-ok" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+    <p class="eyebrow">Vitrine Black</p>
+    <h1 id="titulo-ok">Escolhas <span class="grifo">enviadas</span></h1>
+    <p class="lead">Recebido, mestre. Depois do prazo, a equipe distribui as vagas pelo ranking e avisa cada um.</p>
+    <div class="resumo vidro">
+      <h2>O que você enviou</h2>
+      <div id="resumo-ok"></div>
+    </div>
+    <div class="acoes">
+      <button type="button" class="btn btn-linha" id="btn-refazer">Mudar minhas escolhas</button>
+    </div>
+  </section>
+
+  <footer class="rodape">Club OftalmoBlack · Sistema de Graduação Black</footer>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  /* As respostas vão para o Google Forms "Vitrine de Benefícios · Club OftalmoBlack"
+     (conta olympusperformanceltda), que grava na planilha
+     "Vitrine de Benefícios · Club OftalmoBlack (respostas)" no Drive da Olympus.
+     Os textos em `form` precisam ser IDÊNTICOS às opções do formulário: se alguém
+     mudar uma opção lá, mude aqui também. */
+  var FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSccAA3m_dDTZNpdS3MhFovNEM05gq8Wm2tVdH_9eYMC5_6sSw/formResponse';
+  var CAMPO = {
+    nome: 'entry.2091869786',
+    beneficio: ['entry.1296326235', 'entry.1245478315', 'entry.947664480'],
+    data: ['entry.1443612561', 'entry.393653817', 'entry.1429664167'],
+    family: 'entry.134673747'
+  };
+  var NAO_SE_APLICA = 'Não se aplica';
+  var PRAZO = Date.parse('2026-10-05T12:00:00-03:00');
+  var GUARDA = 'vitrine-black-out-dez-2026';
+
+  var BENEFICIOS = [
+    { id: 'catarata', form: 'Mentoria Olympus de cirurgia de catarata', curto: 'Mentoria de Catarata',
+      titulo: 'Mentoria Olympus de Cirurgia de Catarata', tag: '6 vagas', meta: 'Juruti (PA) · 2 vagas por turma',
+      texto: 'A mentoria cirúrgica do Dr. Alex na missão de Juruti. Turmas em outubro, novembro e dezembro: você escolhe a data logo abaixo.',
+      fim: '2026-12-09' },
+    { id: 'grauzero', form: 'Mentoria Grau Zero', curto: 'Mentoria Grau Zero',
+      titulo: 'Mentoria Grau Zero', tag: '5 vagas', meta: 'Manaus · 19 a 21 de novembro',
+      texto: 'A mentoria presencial do Protocolo Grau Zero, de quinta a sábado. Você acompanha como espectador: teoria e prática, caso a caso.',
+      fim: '2026-11-19' },
+    { id: 'family', form: 'Passagem para o Family Circle', curto: 'Passagem para o Family Circle',
+      titulo: 'Passagem para o Family Circle', tag: '1 passagem', meta: 'Mogi das Cruzes (SP) · 11 a 13 de dezembro',
+      texto: 'Passagem aérea de ida e volta para o encontro da Liga no Lake Paradise. Hospedagem e reserva no evento ficam por sua conta; as reservas abrem segunda, 05/10, às 14h.',
+      fim: '2026-12-11' }
+  ];
+  var DATAS = [
+    { id: 'out', form: '7 a 11 de outubro', dias: '7 a 11', mes: 'de outubro', curto: '7 a 11/10', inicio: '2026-10-07' },
+    { id: 'nov', form: '4 a 8 de novembro', dias: '4 a 8', mes: 'de novembro', curto: '4 a 8/11', inicio: '2026-11-04' },
+    { id: 'dez', form: '9 a 13 de dezembro', dias: '9 a 13', mes: 'de dezembro', curto: '9 a 13/12', inicio: '2026-12-09' }
+  ];
+  var FAMILY = ['Sim, vou por conta própria', 'Ainda não sei', 'Não vou'];
+
+  var estado = { ordem: [], datas: [], family: '' };
+  var enviando = false;
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function porId(lista, id) { for (var i = 0; i < lista.length; i++) if (lista[i].id === id) return lista[i]; return null; }
+  // datas em horário de Brasília, como o resto do site
+  function jaComecou(dia) { return Date.now() >= Date.parse(dia + 'T00:00:00-03:00'); }
+  function ordinal(i) { return (i + 1) + 'ª'; }
+  function temCatarata() { return estado.ordem.indexOf('catarata') !== -1; }
+
+  /* ── montagem ── */
+  function montar() {
+    $('lista-beneficios').innerHTML = BENEFICIOS.map(function (b) {
+      var fechado = jaComecou(b.fim);
+      return '<button type="button" class="ben" data-ben="' + b.id + '" aria-pressed="false"' + (fechado ? ' disabled' : '') + '>' +
+        '<span class="ord" aria-hidden="true"><span class="mais">+</span></span>' +
+        '<span class="tit"><span class="nome-ben">' + esc(b.titulo) + '</span><span class="tag">' + esc(fechado ? 'Encerrado' : b.tag) + '</span></span>' +
+        '<span class="meta">' + esc(b.meta) + '</span>' +
+        '<span class="txt">' + esc(b.texto) + '</span></button>';
+    }).join('');
+
+    var proxima = null;
+    DATAS.forEach(function (d) { if (!proxima && !jaComecou(d.inicio)) proxima = d.id; });
+    $('lista-datas').innerHTML = DATAS.map(function (d) {
+      var fechada = jaComecou(d.inicio);
+      var flag = fechada ? 'Encerrada' : (d.id === proxima ? 'Próxima turma' : '');
+      return '<button type="button" class="data" data-data="' + d.id + '" aria-pressed="false"' + (fechada ? ' disabled' : '') + '>' +
+        (flag ? '<span class="flag">' + flag + '</span>' : '') +
+        '<span class="ord" aria-hidden="true"><span class="mais">+</span></span>' +
+        '<span class="txt-data"><span class="linha1"><span class="dias">' + esc(d.dias).replace(' a ', '<span class="a">a</span>') + '</span><span class="mes">' + esc(d.mes) + '</span></span>' +
+        '<span class="sem">quarta a domingo</span></span></button>';
+    }).join('');
+
+    $('lista-family').innerHTML = FAMILY.map(function (f) {
+      return '<button type="button" class="chip" data-family="' + esc(f) + '" aria-pressed="false">' + esc(f) + '</button>';
+    }).join('');
+
+    if (Date.now() >= PRAZO) {
+      $('prazo').classList.add('encerrado');
+      $('prazo-txt').textContent = 'Prazo encerrado na segunda, 05/10 · ainda dá para enviar';
+    }
+  }
+
+  /* ── estado → tela ── */
+  function pintar() {
+    // tira datas que não valem mais (ex.: tirou a catarata)
+    if (!temCatarata()) estado.datas = [];
+
+    [].forEach.call(document.querySelectorAll('.ben'), function (el) {
+      var id = el.getAttribute('data-ben'), b = porId(BENEFICIOS, id), i = estado.ordem.indexOf(id);
+      el.setAttribute('aria-pressed', i !== -1 ? 'true' : 'false');
+      el.querySelector('.ord').innerHTML = i !== -1 ? ordinal(i) : '<span class="mais">+</span>';
+      el.setAttribute('aria-label', b.titulo + ', ' + b.meta + (i !== -1 ? ', ' + ordinal(i) + ' opção. Toque para tirar.' : '. Toque para escolher.'));
+    });
+    [].forEach.call(document.querySelectorAll('.data'), function (el) {
+      var id = el.getAttribute('data-data'), d = porId(DATAS, id), i = estado.datas.indexOf(id);
+      el.setAttribute('aria-pressed', i !== -1 ? 'true' : 'false');
+      el.querySelector('.ord').innerHTML = i !== -1 ? ordinal(i) : '<span class="mais">+</span>';
+      el.setAttribute('aria-label', d.form + (i !== -1 ? ', ' + ordinal(i) + ' data. Toque para tirar.' : '. Toque para escolher.'));
+    });
+    [].forEach.call(document.querySelectorAll('.chip'), function (el) {
+      el.setAttribute('aria-pressed', el.getAttribute('data-family') === estado.family ? 'true' : 'false');
+    });
+
+    $('etapa-datas').hidden = !temCatarata();
+    $('limpar').hidden = estado.ordem.length === 0;
+
+    // numeração das etapas visíveis
+    var n = 0;
+    [].forEach.call(document.querySelectorAll('.etapa'), function (et) {
+      if (et.hidden) return;
+      n++;
+      et.querySelector('[data-num]').textContent = (n < 10 ? '0' : '') + n;
+    });
+
+    $('resumo').innerHTML = resumoHtml(estado);
+    validar(false);
+  }
+
+  function resumoHtml(s) {
+    if (!s.ordem.length) return '<p class="vazio">Nenhum benefício marcado ainda.</p>';
+    var itens = s.ordem.map(function (id, i) {
+      var b = porId(BENEFICIOS, id), det = b.meta;
+      if (id === 'catarata') {
+        det = s.datas.length
+          ? 'Datas, pela ordem: ' + s.datas.map(function (d) { return porId(DATAS, d).curto; }).join(', ')
+          : 'Falta marcar as datas';
+      }
+      return '<li><span class="n">' + ordinal(i) + '</span><b>' + esc(b.curto) + '</b><small>' + esc(det) + '</small></li>';
+    }).join('');
+    var extra = s.family ? '<p class="extra">Family Circle por conta própria: ' + esc(s.family) + '</p>' : '';
+    return '<ol>' + itens + '</ol>' + extra;
+  }
+
+  function pendencia() {
+    if (!estado.ordem.length) return 'Marque pelo menos um benefício.';
+    if (temCatarata() && !estado.datas.length) return 'Marque pelo menos uma data da Mentoria de Catarata.';
+    if ($('nome').value.trim().length < 3) return 'Escreva seu nome completo.';
+    return '';
+  }
+  function validar(mostrarErro) {
+    var p = pendencia(), f = $('falta');
+    $('btn-enviar').disabled = !!p || enviando;
+    f.textContent = p;
+    f.classList.toggle('erro', !!(p && mostrarErro));
+    return !p;
+  }
+
+  /* ── interação ── */
+  function alternar(lista, id) {
+    var i = lista.indexOf(id);
+    if (i === -1) lista.push(id); else lista.splice(i, 1);
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.ben');
+    if (b && !b.disabled) { alternar(estado.ordem, b.getAttribute('data-ben')); pintar(); return; }
+    var d = e.target.closest('.data');
+    if (d && !d.disabled) { alternar(estado.datas, d.getAttribute('data-data')); pintar(); return; }
+    var c = e.target.closest('.chip');
+    if (c) { var v = c.getAttribute('data-family'); estado.family = estado.family === v ? '' : v; pintar(); return; }
+  });
+  $('limpar').addEventListener('click', function () { estado.ordem = []; estado.datas = []; pintar(); });
+  $('nome').addEventListener('input', function () { validar(false); });
+
+  /* ── envio ── */
+  function corpo(nome) {
+    var p = new URLSearchParams();
+    p.append(CAMPO.nome, nome);
+    estado.ordem.forEach(function (id, i) { p.append(CAMPO.beneficio[i], porId(BENEFICIOS, id).form); });
+    if (temCatarata()) estado.datas.forEach(function (id, i) { p.append(CAMPO.data[i], porId(DATAS, id).form); });
+    else p.append(CAMPO.data[0], NAO_SE_APLICA);
+    if (estado.family) p.append(CAMPO.family, estado.family);
+    p.append('fvv', '1');
+    p.append('pageHistory', '0');
+    return p;
+  }
+
+  $('form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (enviando || !validar(true)) return;
+    var nome = $('nome').value.trim().replace(/\s+/g, ' ');
+    var btn = $('btn-enviar');
+    enviando = true;
+    btn.disabled = true;
+    btn.firstChild.nodeValue = 'Enviando ';
+    $('falta').classList.remove('erro');
+    $('falta').textContent = '';
+
+    var ctrl = window.AbortController ? new AbortController() : null;
+    var relogio = setTimeout(function () { if (ctrl) ctrl.abort(); }, 20000);
+    // no-cors: o Google não devolve CORS, então a resposta é opaca. Erro de rede cai no catch.
+    fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: corpo(nome), signal: ctrl ? ctrl.signal : undefined })
+      .then(function () {
+        clearTimeout(relogio);
+        var envio = { quando: Date.now(), nome: nome, ordem: estado.ordem.slice(), datas: estado.datas.slice(), family: estado.family };
+        try { localStorage.setItem(GUARDA, JSON.stringify(envio)); } catch (err) {}
+        mostrarOk(envio);
+      })
+      .catch(function () {
+        clearTimeout(relogio);
+        $('falta').classList.add('erro');
+        $('falta').textContent = 'Não conseguimos enviar agora. Confira a internet e tente de novo. Se continuar, mande um print desta tela no seu grupo do Black.';
+      })
+      .then(function () {
+        enviando = false;
+        btn.firstChild.nodeValue = 'Enviar minhas escolhas ';
+        validar(false);
+      });
+  });
+
+  function mostrarOk(envio) {
+    $('resumo-ok').innerHTML = resumoHtml(envio);
+    $('tela-escolha').hidden = true;
+    $('tela-ok').hidden = false;
+    window.scrollTo(0, 0);
+  }
+  $('btn-refazer').addEventListener('click', function () {
+    $('tela-ok').hidden = true;
+    $('tela-escolha').hidden = false;
+    avisoJaEnviou();
+    window.scrollTo(0, 0);
+  });
+
+  function quandoTexto(ms) {
+    try {
+      return new Date(ms).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(',', ' às');
+    } catch (err) { return ''; }
+  }
+  function avisoJaEnviou() {
+    var salvo = null;
+    try { salvo = JSON.parse(localStorage.getItem(GUARDA) || 'null'); } catch (err) {}
+    if (!salvo || !salvo.ordem) return null;
+    var av = $('ja-enviou');
+    av.innerHTML = '<strong>Você já enviou suas escolhas' + (salvo.quando ? ' em ' + esc(quandoTexto(salvo.quando)) : '') + '.</strong> Se quiser mudar, ajuste abaixo e envie de novo: vale a última resposta.';
+    av.hidden = false;
+    return salvo;
+  }
+
+  function retomar() {
+    var salvo = avisoJaEnviou();
+    if (!salvo) return;
+    estado.ordem = (salvo.ordem || []).filter(function (id) { return porId(BENEFICIOS, id); });
+    estado.datas = (salvo.datas || []).filter(function (id) { return porId(DATAS, id); });
+    estado.family = FAMILY.indexOf(salvo.family) !== -1 ? salvo.family : '';
+    if (salvo.nome) $('nome').value = salvo.nome;
+  }
+
+  /* ── fundo animado da home, com quadro inicial síncrono para não depender
+     de requestAnimationFrame em aba oculta ── */
+  function fundo() {
+    var cv = $('ob-canvas');
+    if (!cv || !cv.getContext) return;
+    var ctx = cv.getContext('2d');
+    var bars = [], cw = 0, ch = 0, t = 0;
+    var mouse = { x: 0, tx: 0, active: false };
+    var calmo = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function montarFundo() {
+      var DPR = Math.min(window.devicePixelRatio || 1, 2);
+      cw = window.innerWidth; ch = window.innerHeight;
+      cv.width = cw * DPR; cv.height = ch * DPR;
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      bars = [];
+      var x = 0;
+      while (x < cw) {
+        var bw = 6 + Math.random() * 30;
+        bars.push({ x: x, w: bw, base: 0.02 + Math.random() * 0.09, ph: Math.random() * Math.PI * 2, mid: 0.34 + Math.random() * 0.16 });
+        x += bw + Math.random() * 3;
+      }
+      quadro();
+    }
+    function quadro() {
+      t += 0.006;
+      mouse.x += (mouse.tx - mouse.x) * 0.12;
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, cw, ch);
+      for (var i = 0; i < bars.length; i++) {
+        var b = bars[i], cx = b.x + b.w / 2;
+        var lum = b.base + 0.05 * (0.5 + 0.5 * Math.sin(cx * 0.012 - t * 1.6 + b.ph));
+        if (mouse.active) { var g = Math.max(0, 1 - Math.abs(cx - mouse.x) / 240); lum += g * g * 0.26; }
+        lum = Math.min(0.9, lum);
+        var gr = ctx.createLinearGradient(0, 0, 0, ch);
+        gr.addColorStop(0, 'rgba(0,0,0,0)');
+        gr.addColorStop(b.mid, 'rgba(232,166,84,' + lum.toFixed(3) + ')');
+        gr.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = gr;
+        ctx.fillRect(b.x, 0, b.w - 0.6, ch);
+      }
+    }
+    function laco() { quadro(); requestAnimationFrame(laco); }
+    window.addEventListener('resize', montarFundo);
+    montarFundo();
+    if (calmo) return;
+    document.addEventListener('pointermove', function (e) {
+      if (e.pointerType === 'touch') return;
+      mouse.tx = e.clientX; mouse.active = true;
+    });
+    requestAnimationFrame(laco);
+  }
+
+  montar();
+  retomar();
+  pintar();
+  fundo();
+})();
+</script>
+</body>
+</html>

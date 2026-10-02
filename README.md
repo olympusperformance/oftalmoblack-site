@@ -558,15 +558,42 @@ por `CLAUDE/imersao-grau-zero-credencial/gerar-qr.py`, fora deste repositório.
 Nunca imprimir o código invertido (claro sobre fundo escuro): leitores esperam
 módulo escuro em fundo claro e a versão dourada-sobre-preto não decodifica.
 
+## Vitrine Black: escolha dos benefícios
+
+`oftalmoblack.com.br/vitrine/` é onde os membros escolhem, em ordem de
+prioridade, os benefícios que a Vitrine abre no fechamento de cada trimestre
+(out a dez/2026: Mentoria Olympus de Cirurgia de Catarata em Juruti, Mentoria
+Grau Zero e passagem para o Family Circle). Se a Mentoria de Catarata entra na
+lista, a página pede também a ordem das datas. HTML único, sem login.
+
+As respostas não passam por banco nosso: a página faz `POST` (`no-cors`) no
+`formResponse` do Google Forms **Vitrine de Benefícios · Club OftalmoBlack**
+(conta olympusperformanceltda), que grava na planilha **Vitrine de Benefícios ·
+Club OftalmoBlack (respostas)** no Drive da Olympus. Vale a última resposta de
+cada nome.
+
+- Os textos em `BENEFICIOS`, `DATAS`, `FAMILY` e `NAO_SE_APLICA` têm que ser
+  **idênticos** às opções do formulário, e `CAMPO` guarda os `entry.*` de cada
+  pergunta. Mudou uma opção no Forms, mude aqui também: com `no-cors` a página
+  não enxerga a resposta do Google e um valor fora das opções pode se perder sem
+  aviso.
+- Para conferir sem gravar resposta, mande o corpo sem o `entry` do nome: o
+  Google devolve 400 e ecoa no `partialResponse` cada valor no campo em que caiu.
+- Se o formulário deixar de aceitar respostas no Forms, tire a página do ar ou
+  troque o aviso: ela continuaria mostrando "enviadas".
+- Turmas e eventos com data passada viram "Encerrada" sozinhos (horário de
+  Brasília). O prazo do trimestre (`PRAZO`) só troca o aviso; não bloqueia o envio.
+
 ## Integrações externas
 
-O site não tem backend, mas depende de três serviços de fora:
+O site não tem backend, mas depende de quatro serviços de fora:
 
 | O quê | Onde | Observação |
 |---|---|---|
 | Formulário de aplicação | Webhook Make.com | endpoint em `assets/app.js` |
 | Fallback do formulário | WhatsApp | usado quando o webhook falha |
 | Tracking | Facebook Pixel | evento `PageView` |
+| Escolhas da Vitrine | Google Forms (conta Olympus) | `public/vitrine/index.html`, ver seção acima |
 
 O endpoint do Make fica visível no JS — é inerente a site estático. Se começar a
 receber spam, colocar rate limit ou captcha do lado do Make.
