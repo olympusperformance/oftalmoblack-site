@@ -11,195 +11,246 @@
 <link rel="apple-touch-icon" href="/assets/favicon.png">
 <link rel="preload" href="/assets/fonts/cinzel-latin.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+/* Mobile first: a base é o celular (a maioria abre pelo WhatsApp); 600px e 900px só ampliam. */
 @font-face{font-family:'Cinzel';font-style:normal;font-weight:400 900;font-display:swap;src:url('/assets/fonts/cinzel-latin.woff2') format('woff2')}
 
 :root{
   --gold:#d89d4d;--gold-lt:#fdf3b5;--gold-bright:#e6bd74;--gold-deep:#8a5210;
-  --cream:#ffffff;--text:#f5f0e6;--muted:rgba(245,240,230,.68);--faint:rgba(245,240,230,.44);
+  --cream:#ffffff;--text:#f5f0e6;--muted:rgba(245,240,230,.7);--faint:rgba(245,240,230,.46);
   --line:rgba(216,157,77,.18);--line-strong:rgba(216,157,77,.42);
   --erro:#f0a58f;
   --sans:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue','Segoe UI',sans-serif;
   --display:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue','Segoe UI',sans-serif;
   --serif:'Cinzel',Georgia,serif;
   --ease:cubic-bezier(.22,.61,.36,1);
+  --barra:84px;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;color-scheme:dark}
-body{margin:0;background:#000;color:var(--cream);font-family:var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100vh}
+body{margin:0;background:#000;color:var(--cream);font-family:var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100vh;padding-bottom:calc(var(--barra) + 16px + env(safe-area-inset-bottom))}
+body.enviado{padding-bottom:0}
 button,input{font-family:inherit}
+button{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 a{color:var(--gold-bright);text-decoration:none}
-a:hover{text-decoration:underline}
 ::selection{background:rgba(216,157,77,.32);color:#fff}
 [hidden]{display:none!important}
 
 /* fundo da home: barras verticais douradas + vinheta */
 #ob-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;background:#000}
-.vinheta{position:fixed;inset:0;z-index:0;pointer-events:none;box-shadow:inset 0 0 240px 60px rgba(0,0,0,.85);background:radial-gradient(120% 80% at 50% 0%,transparent 40%,rgba(0,0,0,.6))}
+.vinheta{position:fixed;inset:0;z-index:0;pointer-events:none;box-shadow:inset 0 0 200px 50px rgba(0,0,0,.85);background:radial-gradient(120% 80% at 50% 0%,transparent 40%,rgba(0,0,0,.6))}
 
 .grifo{color:#e6bd74;background:linear-gradient(120deg,#8a5210 0%,#c78039 18%,#e6bd74 32%,#fdf3b5 42%,#d89d4d 55%,#c78039 72%,#8a5210 100%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:foil 8s ease-in-out infinite}
 @keyframes foil{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
 @supports not ((-webkit-background-clip:text) or (background-clip:text)){.grifo{background:none;-webkit-text-fill-color:#e6bd74}}
 
-.topo{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px clamp(18px,4vw,44px);background:rgba(10,10,10,.72);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
-.topo img{height:42px;width:auto;display:block;filter:drop-shadow(0 2px 8px rgba(0,0,0,.6))}
-.topo .selo{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;font-weight:600;color:rgba(245,240,230,.78);border:1px solid rgba(216,157,77,.3);border-radius:100px;padding:9px 16px;background:rgba(216,157,77,.05);white-space:nowrap}
+/* topo */
+.topo{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;background:rgba(10,10,10,.86);border-bottom:1px solid var(--line)}
+.topo img{height:30px;width:auto;display:block}
+.topo .selo{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:rgba(245,240,230,.78);border:1px solid rgba(216,157,77,.3);border-radius:100px;padding:7px 12px;background:rgba(216,157,77,.05);white-space:nowrap}
 
-.app{position:relative;z-index:1;max-width:720px;margin:0 auto;padding:clamp(40px,7vw,76px) 20px 90px}
+.app{position:relative;z-index:1;max-width:720px;margin:0 auto;padding:22px 16px 28px}
 
-.eyebrow{display:flex;align-items:center;justify-content:center;gap:14px;font-family:var(--display);font-weight:600;font-size:11px;letter-spacing:.36em;text-transform:uppercase;color:var(--gold);margin:0 0 22px;text-align:center}
-.eyebrow::before,.eyebrow::after{content:'';flex:0 0 34px;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
+.eyebrow{display:flex;align-items:center;justify-content:center;gap:10px;font-family:var(--display);font-weight:600;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin:0 0 10px;text-align:center}
+.eyebrow::before,.eyebrow::after{content:'';flex:0 0 20px;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
 .eyebrow::after{background:linear-gradient(90deg,var(--gold),transparent)}
 
 h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02em;color:var(--cream)}
 
-.vidro{border-radius:20px;background:linear-gradient(160deg,rgba(216,157,77,.08),rgba(255,255,255,.015) 46%,rgba(0,0,0,.12));-webkit-backdrop-filter:blur(18px) saturate(150%);backdrop-filter:blur(18px) saturate(150%);border:1px solid rgba(216,157,77,.16);box-shadow:inset 0 1px 0 rgba(253,243,181,.18),0 20px 44px rgba(0,0,0,.4)}
+/* cartão: no celular o fundo é sólido (desfoque custa caro na rolagem); o vidro entra no desktop */
+.vidro{border-radius:18px;background:linear-gradient(160deg,rgba(216,157,77,.1),rgba(18,15,10,.94) 46%,rgba(8,8,8,.95));border:1px solid rgba(216,157,77,.18);box-shadow:inset 0 1px 0 rgba(253,243,181,.14),0 16px 36px rgba(0,0,0,.4)}
 
 /* ── capa ── */
 .capa{text-align:center}
-.capa h1{font-size:clamp(42px,8vw,70px);line-height:1.02}
-.capa .sub{margin:16px 0 0;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--faint);font-weight:600}
-.capa .lead{max-width:560px;margin:26px auto 0;font-size:clamp(16px,2.1vw,17.5px);line-height:1.7;color:var(--muted)}
+.capa h1{font-size:38px;line-height:1.04}
+.capa .sub{margin:8px 0 0;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);font-weight:600}
+.capa .lead{max-width:560px;margin:14px auto 0;font-size:15.5px;line-height:1.55;color:var(--muted)}
 .capa .lead strong{color:var(--cream);font-weight:600}
-.prazo{display:inline-flex;align-items:center;gap:10px;margin:26px 0 0;font-weight:600;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-bright);border:1px solid rgba(216,157,77,.38);border-radius:100px;padding:10px 18px;background:rgba(216,157,77,.07)}
-.prazo svg{width:16px;height:16px;flex-shrink:0}
+.prazo{display:inline-flex;align-items:center;gap:8px;margin:14px 0 0;font-weight:600;font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--gold-bright);border:1px solid rgba(216,157,77,.38);border-radius:100px;padding:9px 14px;background:rgba(216,157,77,.07)}
+.prazo svg{width:15px;height:15px;flex-shrink:0}
 .prazo.encerrado{color:var(--text);border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.04)}
 
-.aviso{margin:28px 0 0;padding:18px 22px;text-align:left;font-size:14.5px;line-height:1.6;color:var(--muted)}
+.aviso{margin:18px 0 0;padding:14px 16px;font-size:14px;line-height:1.55;color:var(--muted)}
 .aviso strong{color:var(--cream);font-weight:600}
 
-.regras{margin:34px 0 0;padding:26px clamp(20px,4vw,32px);text-align:left}
-.regras h2{font-family:var(--serif);font-weight:600;font-size:14px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-bright);margin:0 0 16px}
+/* como funciona: recolhido no celular, aberto no desktop */
+.regras{margin:18px 0 0}
+.regras summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:50px;padding:12px 18px;cursor:pointer;font-family:var(--serif);font-weight:600;font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-bright);-webkit-tap-highlight-color:transparent}
+.regras summary::-webkit-details-marker{display:none}
+.regras summary::after{content:'+';font-family:var(--sans);font-weight:300;font-size:24px;line-height:1;color:var(--gold);transition:transform .25s ease}
+.regras[open] summary::after{transform:rotate(45deg)}
+.regras .corpo{padding:2px 18px 18px}
 .passos{list-style:none;margin:0;padding:0;counter-reset:n}
-.passos li{counter-increment:n;position:relative;padding:0 0 0 40px;margin:0 0 12px;font-size:15px;line-height:1.6;color:var(--muted)}
+.passos li{counter-increment:n;position:relative;padding:0 0 0 36px;margin:0 0 12px;font-size:14.5px;line-height:1.55;color:var(--muted)}
 .passos li:last-child{margin-bottom:0}
 .passos li strong{color:var(--cream);font-weight:600}
-.passos li::before{content:counter(n);position:absolute;left:0;top:-1px;width:26px;height:26px;border-radius:50%;border:1px solid var(--line-strong);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:600;font-size:12px;color:var(--gold-bright)}
-.regras .ranking{margin:16px 0 0;padding:14px 0 0;border-top:1px solid var(--line);font-size:13.5px;color:var(--faint)}
+.passos li::before{content:counter(n);position:absolute;left:0;top:-1px;width:24px;height:24px;border-radius:50%;border:1px solid var(--line-strong);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:600;font-size:11.5px;color:var(--gold-bright)}
+.regras .ranking{margin:14px 0 0;padding:12px 0 0;border-top:1px solid var(--line);font-size:13.5px;color:var(--faint)}
 
 /* ── etapas ── */
-.etapa{margin:56px 0 0}
-.etapa-cab{display:flex;align-items:baseline;gap:14px;margin:0 0 8px}
-.etapa-num{font-family:var(--serif);font-weight:600;font-size:15px;color:var(--gold);letter-spacing:.06em;flex-shrink:0}
-.etapa-cab h2{font-size:clamp(22px,3.6vw,28px);line-height:1.2}
-.etapa-cab .opc{margin-left:auto;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--faint);font-weight:600;white-space:nowrap}
-.etapa-ajuda{margin:0 0 20px;font-size:15px;line-height:1.6;color:var(--muted)}
+.etapa{margin:34px 0 0;scroll-margin-top:14px}
+.etapa-cab{display:flex;align-items:baseline;gap:12px;margin:0 0 6px}
+.etapa-num{font-family:var(--serif);font-weight:600;font-size:14px;color:var(--gold);letter-spacing:.06em;flex-shrink:0}
+.etapa-cab h2{font-size:21px;line-height:1.2}
+.etapa-cab .opc{margin-left:auto;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);font-weight:600;white-space:nowrap}
+.etapa-ajuda{margin:0 0 14px;font-size:14.5px;line-height:1.55;color:var(--muted)}
 .etapa-ajuda strong{color:var(--text);font-weight:600}
 
-/* cartões de benefício: toque na ordem de preferência */
-.lista{display:flex;flex-direction:column;gap:14px}
-.ben{position:relative;display:grid;grid-template-columns:46px 1fr;gap:4px 16px;width:100%;padding:22px 22px 22px 18px;text-align:left;cursor:pointer;border-radius:18px;border:1px solid rgba(216,157,77,.18);background:rgba(255,255,255,.025);color:var(--muted);transition:border-color .25s ease,background .25s ease,box-shadow .25s ease,transform .25s var(--ease)}
-.ben:hover{border-color:var(--line-strong);background:rgba(216,157,77,.06)}
-.ben:active{transform:scale(.995)}
-.ben .ord{grid-row:span 3;align-self:start;width:42px;height:42px;border-radius:50%;border:1px dashed rgba(216,157,77,.5);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:700;font-size:15px;color:var(--gold-bright);transition:all .25s ease}
-.ben .ord .mais{font-family:var(--sans);font-weight:300;font-size:24px;line-height:1;color:var(--gold)}
-.ben .tit{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-.ben .nome-ben{display:block;font-family:var(--display);font-weight:600;font-size:clamp(17px,2.6vw,19.5px);line-height:1.3;letter-spacing:-.01em;color:var(--cream)}
-.ben .tag{flex-shrink:0;margin-top:1px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--gold-bright);border:1px solid rgba(216,157,77,.34);border-radius:100px;padding:5px 10px;white-space:nowrap}
-.ben .meta{display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--gold);margin:2px 0 0}
-.ben .txt{display:block;font-size:14.5px;line-height:1.6;margin:6px 0 0;color:var(--muted)}
-.ben[aria-pressed="true"]{border-color:var(--gold);background:linear-gradient(160deg,rgba(216,157,77,.17),rgba(216,157,77,.05));box-shadow:inset 0 0 0 1px rgba(216,157,77,.5),0 16px 36px -22px rgba(216,157,77,.7)}
-.ben[aria-pressed="true"] .ord{border:0;background:linear-gradient(120deg,var(--gold),var(--gold-lt));color:#000;box-shadow:0 6px 18px -6px rgba(216,157,77,.7)}
+/* benefícios: toque na ordem de preferência */
+.lista{display:flex;flex-direction:column;gap:12px}
+.ben{display:grid;grid-template-columns:38px 1fr;column-gap:14px;row-gap:6px;width:100%;padding:16px 16px 16px 14px;text-align:left;cursor:pointer;border-radius:16px;border:1px solid rgba(216,157,77,.2);background:rgba(255,255,255,.03);color:var(--muted);transition:border-color .2s ease,background .2s ease,box-shadow .2s ease,transform .15s ease}
+.ben:active{transform:scale(.985)}
+.ben .ord{grid-row:1 / span 3;align-self:start;width:38px;height:38px;border-radius:50%;border:1px dashed rgba(216,157,77,.55);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:700;font-size:14px;color:var(--gold-bright);transition:background .2s ease}
+.ben .ord .mais{font-family:var(--sans);font-weight:300;font-size:23px;line-height:1;color:var(--gold)}
+.ben .nome-ben{display:block;font-family:var(--display);font-weight:600;font-size:17px;line-height:1.28;letter-spacing:-.01em;color:var(--cream)}
+.ben .linha-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.ben .tag{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--gold-bright);border:1px solid rgba(216,157,77,.36);border-radius:100px;padding:4px 9px;white-space:nowrap}
+.ben .meta{font-size:11px;letter-spacing:.09em;text-transform:uppercase;font-weight:600;color:var(--gold)}
+.ben .txt{display:block;font-size:14px;line-height:1.55;color:var(--muted)}
+.ben[aria-pressed="true"]{border-color:var(--gold);background:linear-gradient(160deg,rgba(216,157,77,.18),rgba(216,157,77,.05));box-shadow:inset 0 0 0 1px rgba(216,157,77,.5),0 14px 30px -20px rgba(216,157,77,.7)}
+.ben[aria-pressed="true"] .ord{border:0;background:linear-gradient(120deg,var(--gold),var(--gold-lt));color:#000}
 .ben[aria-pressed="true"] .txt{color:var(--text)}
 .ben[disabled]{cursor:not-allowed;opacity:.42}
-.ben[disabled]:hover{border-color:rgba(216,157,77,.18);background:rgba(255,255,255,.025)}
 
-.limpar{display:inline-block;margin:14px 0 0;padding:6px 0;border:0;background:none;color:var(--faint);font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:600;cursor:pointer}
-.limpar:hover{color:var(--gold-bright)}
+.limpar{display:inline-flex;align-items:center;min-height:44px;margin:4px 0 0;padding:0 2px;border:0;background:none;color:var(--faint);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;cursor:pointer}
 
-/* datas da catarata */
-.datas{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.data{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;padding:22px 12px 18px;text-align:center;cursor:pointer;border-radius:18px;border:1px solid rgba(216,157,77,.18);background:rgba(255,255,255,.025);color:var(--muted);transition:border-color .25s ease,background .25s ease,box-shadow .25s ease}
-.data:hover{border-color:var(--line-strong);background:rgba(216,157,77,.06)}
-.data .ord{width:30px;height:30px;margin:0 0 8px;border-radius:50%;border:1px dashed rgba(216,157,77,.5);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:700;font-size:12.5px;color:var(--gold-bright)}
-.data .ord .mais{font-family:var(--sans);font-weight:300;font-size:19px;line-height:1;color:var(--gold)}
-.data .dias{font-family:var(--serif);font-weight:600;font-size:clamp(24px,4.4vw,30px);line-height:1;color:var(--cream);letter-spacing:.02em}
+/* datas da catarata: lista no celular, três colunas a partir de 600px */
+.datas{display:flex;flex-direction:column;gap:14px}
+.data{position:relative;display:flex;align-items:center;gap:14px;width:100%;padding:16px;text-align:left;cursor:pointer;border-radius:16px;border:1px solid rgba(216,157,77,.2);background:rgba(255,255,255,.03);color:var(--muted);transition:border-color .2s ease,background .2s ease,box-shadow .2s ease,transform .15s ease}
+.data:active{transform:scale(.985)}
+.data .ord{flex:0 0 32px;height:32px;border-radius:50%;border:1px dashed rgba(216,157,77,.55);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:700;font-size:12.5px;color:var(--gold-bright)}
+.data .ord .mais{font-family:var(--sans);font-weight:300;font-size:20px;line-height:1;color:var(--gold)}
+.data .txt-data{display:flex;flex-direction:column;gap:4px}
+.data .linha1{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 10px}
+.data .dias{font-family:var(--serif);font-weight:600;font-size:26px;line-height:1;color:var(--cream);letter-spacing:.02em}
 .data .dias .a{font-family:var(--sans);font-weight:500;font-size:.5em;letter-spacing:0;color:var(--gold);margin:0 .38em;vertical-align:.18em}
-.data .mes{font-size:13px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--gold)}
-.data .sem{margin:6px 0 0;font-size:12.5px;color:var(--faint)}
-.data .flag{position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:#000;background:linear-gradient(120deg,var(--gold),var(--gold-lt));border-radius:100px;padding:4px 10px;white-space:nowrap}
-.data[aria-pressed="true"]{border-color:var(--gold);background:linear-gradient(160deg,rgba(216,157,77,.17),rgba(216,157,77,.05));box-shadow:inset 0 0 0 1px rgba(216,157,77,.5)}
+.data .mes{font-size:12px;letter-spacing:.13em;text-transform:uppercase;font-weight:600;color:var(--gold)}
+.data .sem{font-size:12.5px;color:var(--faint)}
+.data .flag{position:absolute;top:-9px;right:14px;font-size:9px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:#000;background:linear-gradient(120deg,var(--gold),var(--gold-lt));border-radius:100px;padding:4px 9px;white-space:nowrap}
+.data[aria-pressed="true"]{border-color:var(--gold);background:linear-gradient(160deg,rgba(216,157,77,.18),rgba(216,157,77,.05));box-shadow:inset 0 0 0 1px rgba(216,157,77,.5)}
 .data[aria-pressed="true"] .ord{border:0;background:linear-gradient(120deg,var(--gold),var(--gold-lt));color:#000}
 .data[disabled]{cursor:not-allowed;opacity:.42}
 .data[disabled] .flag{background:rgba(255,255,255,.18);color:var(--text)}
 
 /* Family Circle por conta própria */
 .chips{display:flex;flex-wrap:wrap;gap:10px}
-.chip{padding:13px 18px;border-radius:100px;border:1px solid rgba(216,157,77,.24);background:rgba(255,255,255,.03);color:var(--muted);font-size:14.5px;font-weight:500;cursor:pointer;transition:all .25s ease}
-.chip:hover{border-color:var(--line-strong);color:var(--text)}
-.chip[aria-pressed="true"]{border-color:var(--gold);background:rgba(216,157,77,.14);color:var(--cream);box-shadow:inset 0 0 0 1px rgba(216,157,77,.45)}
+.chip{min-height:46px;padding:11px 18px;border-radius:100px;border:1px solid rgba(216,157,77,.26);background:rgba(255,255,255,.03);color:var(--muted);font-size:14.5px;font-weight:500;cursor:pointer;transition:border-color .2s ease,background .2s ease,color .2s ease}
+.chip[aria-pressed="true"]{border-color:var(--gold);background:rgba(216,157,77,.15);color:var(--cream);box-shadow:inset 0 0 0 1px rgba(216,157,77,.45)}
 
 /* nome */
-.campo label{display:block;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin:0 0 8px;font-weight:600}
-.campo input{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(216,157,77,.22);border-radius:14px;padding:16px 18px;color:var(--text);font-size:17px;outline:none;transition:border-color .3s ease,background .3s ease}
+.campo label{display:block;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:0 0 8px;font-weight:600}
+.campo input{width:100%;min-height:54px;background:rgba(255,255,255,.04);border:1px solid rgba(216,157,77,.24);border-radius:14px;padding:14px 16px;color:var(--text);font-size:17px;outline:none;transition:border-color .25s ease,background .25s ease}
 .campo input::placeholder{color:rgba(245,240,230,.34)}
 .campo input:focus{border-color:var(--gold);background:rgba(216,157,77,.06)}
 
-/* resumo e envio */
-.resumo{margin:56px 0 0;padding:26px clamp(20px,4vw,30px)}
-.resumo h2{font-family:var(--serif);font-weight:600;font-size:14px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-bright);margin:0 0 16px}
+/* resumo para conferir antes de enviar */
+.resumo{margin:34px 0 0;padding:20px 18px}
+.resumo h2{font-family:var(--serif);font-weight:600;font-size:12.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-bright);margin:0 0 12px}
 .resumo ol{list-style:none;margin:0;padding:0}
-.resumo li{display:grid;grid-template-columns:40px 1fr;gap:2px 12px;padding:12px 0;border-top:1px solid var(--line)}
+.resumo li{display:grid;grid-template-columns:34px 1fr;gap:2px 10px;padding:11px 0;border-top:1px solid var(--line)}
 .resumo li:first-child{border-top:0;padding-top:0}
 .resumo li .n{grid-row:span 2;font-family:var(--serif);font-weight:700;font-size:15px;color:var(--gold)}
-.resumo li b{font-weight:600;color:var(--cream);font-size:15.5px}
-.resumo li small{font-size:13.5px;color:var(--muted);line-height:1.5}
-.resumo .extra{margin:14px 0 0;padding:12px 0 0;border-top:1px solid var(--line);font-size:13.5px;color:var(--muted)}
-.resumo .vazio{margin:0;font-size:14.5px;color:var(--faint)}
+.resumo li b{font-weight:600;color:var(--cream);font-size:15px}
+.resumo li small{font-size:13px;color:var(--muted);line-height:1.5}
+.resumo .extra{margin:12px 0 0;padding:11px 0 0;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+.resumo .vazio{margin:0;font-size:14px;color:var(--faint)}
+.nota{margin:14px 0 0;font-size:13px;color:var(--faint);line-height:1.55;text-align:center}
 
-.enviar{margin:26px 0 0;text-align:center}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font-size:12px;letter-spacing:.28em;text-transform:uppercase;font-weight:700;padding:19px 36px;border-radius:100px;cursor:pointer;border:0;transition:all .35s var(--ease);text-decoration:none;white-space:nowrap}
-.btn-ouro{color:#000;background:linear-gradient(120deg,var(--gold) 0%,var(--gold-lt) 50%,var(--gold) 100%);background-size:200% 100%;box-shadow:0 18px 40px -18px rgba(212,166,83,.55),inset 0 1px 0 rgba(255,255,255,.3)}
-.btn-ouro:hover{background-position:100% 0;transform:translateY(-2px)}
+/* botões */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;padding:14px 20px;border-radius:100px;cursor:pointer;border:0;transition:background-position .35s var(--ease),transform .2s ease,box-shadow .35s var(--ease),border-color .2s ease,color .2s ease;text-decoration:none;white-space:nowrap}
+.btn-ouro{color:#000;background:linear-gradient(120deg,var(--gold) 0%,var(--gold-lt) 50%,var(--gold) 100%);background-size:200% 100%;box-shadow:0 14px 30px -16px rgba(212,166,83,.6),inset 0 1px 0 rgba(255,255,255,.3)}
+.btn-ouro:active{transform:scale(.97)}
 .btn-linha{color:var(--cream);background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.5)}
-.btn-linha:hover{border-color:var(--gold);color:var(--gold-bright)}
-.btn[disabled]{opacity:.34;cursor:not-allowed;transform:none;box-shadow:none}
-.btn:focus-visible,.ben:focus-visible,.data:focus-visible,.chip:focus-visible,.limpar:focus-visible{outline:2px solid var(--gold-bright);outline-offset:3px}
+.btn[disabled]{opacity:.5;cursor:default;transform:none;box-shadow:none}
 .btn .seta{font-size:15px;letter-spacing:0}
-.falta{min-height:22px;margin:14px 0 0;font-size:14px;color:var(--faint)}
-.falta.erro{color:var(--erro)}
-.nota{margin:10px 0 0;font-size:13px;color:var(--faint);line-height:1.6}
+.btn:focus-visible,.ben:focus-visible,.data:focus-visible,.chip:focus-visible,.limpar:focus-visible,.regras summary:focus-visible{outline:2px solid var(--gold-bright);outline-offset:3px}
+
+/* barra fixa: o próximo passo sempre ao alcance do polegar */
+.barra{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:8px 10px calc(10px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.88) 30%);transition:transform .25s var(--ease)}
+.barra-in{display:flex;align-items:center;gap:12px;max-width:720px;margin:0 auto;padding:8px 8px 8px 16px;border-radius:20px;background:rgba(16,13,9,.97);border:1px solid rgba(216,157,77,.34);box-shadow:0 -6px 26px rgba(0,0,0,.55)}
+.barra-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.barra-rot{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--gold)}
+.barra-txt{font-size:13.5px;line-height:1.35;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.barra .btn{flex-shrink:0}
+.barra-erro{max-width:720px;margin:0 auto 8px;padding:10px 14px;border-radius:14px;background:rgba(58,20,14,.97);border:1px solid rgba(240,165,143,.4);color:var(--erro);font-size:13.5px;line-height:1.45}
+/* teclado aberto no nome: a barra sai da frente; "Enviar" do teclado envia */
+body.digitando .barra{transform:translateY(130%)}
 
 /* tela de enviado */
 .ok{text-align:center}
-.ok .selo-ok{width:64px;height:64px;margin:0 auto 22px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(120deg,var(--gold),var(--gold-lt));box-shadow:0 14px 34px -12px rgba(216,157,77,.75)}
-.ok .selo-ok svg{width:30px;height:30px}
-.ok h1{font-size:clamp(34px,6.4vw,52px);line-height:1.08}
-.ok .lead{max-width:520px;margin:18px auto 0;font-size:clamp(16px,2.1vw,17.5px);line-height:1.7;color:var(--muted)}
-.ok .resumo{text-align:left;margin-top:36px}
-.ok .acoes{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin:30px 0 0}
+.ok .selo-ok{width:58px;height:58px;margin:8px auto 18px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(120deg,var(--gold),var(--gold-lt));box-shadow:0 14px 34px -12px rgba(216,157,77,.75)}
+.ok .selo-ok svg{width:28px;height:28px}
+.ok h1{font-size:32px;line-height:1.08}
+.ok .lead{max-width:520px;margin:14px auto 0;font-size:15.5px;line-height:1.6;color:var(--muted)}
+.ok .resumo{text-align:left;margin-top:26px}
+.ok .acoes{display:flex;flex-direction:column;gap:12px;margin:24px 0 0}
+.ok .acoes .btn{width:100%}
 
-.rodape{margin:70px 0 0;padding:28px 0 0;border-top:1px solid var(--line);text-align:center;font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--faint);font-weight:600}
+.rodape{margin:48px 0 0;padding:22px 0 0;border-top:1px solid var(--line);text-align:center;font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--faint);font-weight:600}
 
-@media (max-width:640px){
-  .topo{padding:12px 16px}
-  .topo img{height:34px}
-  .topo .selo{padding:8px 12px;font-size:9.5px;letter-spacing:.18em}
-  .app{padding:36px 16px 90px}
-  .eyebrow{letter-spacing:.26em;font-size:10px;gap:10px}
-  .eyebrow::before,.eyebrow::after{flex-basis:22px}
-  .capa .sub{letter-spacing:.13em;font-size:10.5px;line-height:1.8}
-  .prazo{letter-spacing:.07em;font-size:10px;padding:10px 14px;gap:8px}
+/* ── telas a partir de 600px (celular deitado, tablet) ── */
+@media (min-width:600px){
+  .topo{padding:13px 28px}
+  .topo img{height:36px}
+  .topo .selo{font-size:10.5px;letter-spacing:.22em;padding:8px 15px}
+  .app{padding:44px 24px 36px}
+  .eyebrow{font-size:11px;letter-spacing:.32em;gap:14px;margin-bottom:16px}
+  .eyebrow::before,.eyebrow::after{flex-basis:30px}
+  .capa h1{font-size:54px}
+  .capa .sub{font-size:11px;letter-spacing:.26em;margin-top:12px}
+  .capa .lead{font-size:17px;line-height:1.65;margin-top:20px}
+  .prazo{font-size:11px;letter-spacing:.16em;padding:10px 18px;margin-top:22px}
+  .regras{margin-top:28px}
+  .regras summary{padding:14px 24px}
+  .regras .corpo{padding:2px 24px 22px}
   .etapa{margin-top:46px}
-  .ben{grid-template-columns:40px 1fr;gap:4px 14px;padding:18px 16px 18px 14px}
-  .ben .ord{width:38px;height:38px}
-  .ben .tit{flex-direction:column;gap:8px}
-  .datas{grid-template-columns:1fr;gap:16px}
-  .data{flex-direction:row;justify-content:flex-start;gap:14px;padding:18px 16px;text-align:left}
-  .data .ord{margin:0}
-  .data .txt-data{display:flex;flex-direction:column;gap:3px}
-  .data .linha1{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
-  .data .sem{margin:0}
-  .data .flag{left:auto;right:14px;transform:none}
-  .btn{width:100%;padding:18px 20px;letter-spacing:.2em}
-  .ok .acoes .btn{width:100%}
+  .etapa-cab h2{font-size:25px}
+  .etapa-ajuda{font-size:15px}
+  .ben{grid-template-columns:44px 1fr;column-gap:16px;padding:20px 22px 20px 18px}
+  .ben .ord{width:42px;height:42px;font-size:15px}
+  .ben .nome-ben{font-size:19px}
+  .ben .meta{font-size:12px;letter-spacing:.12em}
+  .ben .txt{font-size:14.5px}
+  .datas{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .data{flex-direction:column;align-items:center;gap:4px;padding:24px 12px 18px;text-align:center}
+  .data .ord{flex:0 0 auto;width:30px;height:30px;margin:0 0 8px}
+  .data .txt-data{align-items:center}
+  .data .linha1{flex-direction:column;align-items:center;gap:6px}
+  .data .dias{font-size:28px}
+  .data .flag{right:auto;left:50%;transform:translateX(-50%);top:-10px}
+  .resumo{margin-top:46px;padding:24px 28px}
+  .barra{padding:0 16px calc(16px + env(safe-area-inset-bottom));background:none}
+  .barra-in{padding:10px 10px 10px 22px}
+  .barra .btn{padding:15px 26px;letter-spacing:.2em}
+  .ok h1{font-size:46px}
+  .ok .acoes{flex-direction:row;justify-content:center}
+  .ok .acoes .btn{width:auto}
 }
-@media (min-width:641px){
-  .data .txt-data{display:flex;flex-direction:column;align-items:center;gap:4px}
-  .data .linha1{display:flex;flex-direction:column;align-items:center;gap:6px}
+
+/* ── desktop ── */
+@media (min-width:900px){
+  .topo{padding:15px 44px}
+  .topo img{height:42px}
+  .app{padding:68px 20px 40px}
+  .capa h1{font-size:68px}
+  .vidro{background:linear-gradient(160deg,rgba(216,157,77,.08),rgba(255,255,255,.015) 46%,rgba(0,0,0,.12));-webkit-backdrop-filter:blur(18px) saturate(150%);backdrop-filter:blur(18px) saturate(150%)}
+  .barra-in{background:rgba(16,13,9,.9);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+  body.digitando .barra{transform:none}
+  .rodape{font-size:10.5px;letter-spacing:.26em}
+}
+
+/* efeitos de passar o mouse só onde existe mouse (no toque eles "grudam") */
+@media (hover:hover) and (pointer:fine){
+  a:hover{text-decoration:underline}
+  .ben:not([disabled]):hover,.data:not([disabled]):hover{border-color:var(--line-strong);background:rgba(216,157,77,.06)}
+  .ben[aria-pressed="true"]:hover,.data[aria-pressed="true"]:hover{background:linear-gradient(160deg,rgba(216,157,77,.2),rgba(216,157,77,.07))}
+  .chip:hover{border-color:var(--line-strong);color:var(--text)}
+  .limpar:hover{color:var(--gold-bright)}
+  .btn-ouro:not([disabled]):hover{background-position:100% 0;transform:translateY(-2px)}
+  .btn-linha:hover{border-color:var(--gold);color:var(--gold-bright)}
 }
 @media (prefers-reduced-motion:reduce){
   .grifo{animation:none}
-  .ben,.data,.chip,.btn{transition:none}
+  .ben,.data,.chip,.btn,.barra,.regras summary::after{transition:none}
 }
 </style>
 </head>
@@ -220,34 +271,36 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02
       <p class="eyebrow">Sistema de Graduação Black</p>
       <h1 id="titulo">Vitrine <span class="grifo">Black</span></h1>
       <p class="sub">Benefícios de outubro a dezembro de 2026</p>
-      <p class="lead">Escolha o que você quer resgatar, <strong>em ordem de prioridade</strong>. Todo membro pode escolher: quem tem Voucher Black escolhe primeiro e, depois, vale a ordem do ranking da graduação.</p>
+      <p class="lead">Marque, <strong>em ordem de prioridade</strong>, o que você quer resgatar. Quem tem Voucher Black escolhe primeiro; depois, vale o ranking da graduação.</p>
       <p class="prazo" id="prazo"><svg viewBox="0 0 24 24" fill="none" stroke="#e6bd74" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.6 2.2M9.5 2.5h5"/></svg><span id="prazo-txt">Responda até segunda, 05/10, pela manhã</span></p>
     </div>
 
     <div class="aviso vidro" id="ja-enviou" role="status" hidden></div>
 
-    <div class="regras vidro">
-      <h2>Como funciona</h2>
-      <ol class="passos">
-        <li>Toque nos benefícios <strong>na ordem em que você quer</strong>. O que não te interessa, deixe sem marcar.</li>
-        <li>Se escolher a Mentoria de Catarata, marque também <strong>a ordem das datas</strong>.</li>
-        <li>A equipe distribui as vagas pelo ranking. Se a sua 1ª opção esgotar antes da sua vez, passamos para a 2ª, e assim por diante.</li>
-      </ol>
-      <p class="ranking"><a href="/membros/#ranking">Ver meu lugar no ranking</a> na área de membros.</p>
-    </div>
+    <details class="regras vidro" id="regras">
+      <summary>Como funciona</summary>
+      <div class="corpo">
+        <ol class="passos">
+          <li><strong>Todo membro pode escolher</strong>, mesmo sem pontos: o que sobrar passa para os próximos da fila.</li>
+          <li>Quem tem <strong>Voucher Black</strong> (indicação convertida) escolhe primeiro. Depois, vale a ordem do ranking da graduação.</li>
+          <li>Se a sua 1ª opção esgotar antes da sua vez, passamos para a 2ª, e assim por diante. Nas datas da catarata vale a mesma regra.</li>
+        </ol>
+        <p class="ranking"><a href="/membros/#ranking">Ver meu lugar no ranking</a> na área de membros.</p>
+      </div>
+    </details>
 
     <form id="form" novalidate>
 
       <div class="etapa" id="etapa-beneficios">
         <div class="etapa-cab"><span class="etapa-num" data-num>01</span><h2>Seus benefícios</h2></div>
-        <p class="etapa-ajuda">O primeiro toque é a sua <strong>1ª opção</strong>. Toque de novo para tirar.</p>
+        <p class="etapa-ajuda">O primeiro toque é a sua <strong>1ª opção</strong>; toque de novo para tirar. O que não te interessa, deixe sem marcar.</p>
         <div class="lista" id="lista-beneficios"></div>
         <button type="button" class="limpar" id="limpar" hidden>Limpar escolhas</button>
       </div>
 
       <div class="etapa" id="etapa-datas" hidden>
         <div class="etapa-cab"><span class="etapa-num" data-num>02</span><h2>Datas da Mentoria de Catarata</h2></div>
-        <p class="etapa-ajuda">Marque <strong>na ordem de preferência</strong> e deixe de fora a data em que não pode ir. Todas as turmas são em Juruti (PA), de quarta a domingo, com 2 vagas cada.</p>
+        <p class="etapa-ajuda">Marque <strong>na ordem de preferência</strong> e deixe de fora a data em que não pode ir. Turmas em Juruti (PA), de quarta a domingo, com 2 vagas cada.</p>
         <div class="datas" id="lista-datas"></div>
       </div>
 
@@ -261,7 +314,7 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02
         <div class="etapa-cab"><span class="etapa-num" data-num>04</span><h2>Seu nome</h2></div>
         <div class="campo">
           <label for="nome">Nome completo</label>
-          <input type="text" id="nome" name="nome" autocomplete="name" placeholder="Nome e sobrenome" maxlength="120" required>
+          <input type="text" id="nome" name="nome" autocomplete="name" autocapitalize="words" spellcheck="false" enterkeyhint="send" placeholder="Nome e sobrenome" maxlength="120" required>
         </div>
       </div>
 
@@ -269,12 +322,7 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02
         <h2>Sua escolha</h2>
         <div id="resumo"></div>
       </div>
-
-      <div class="enviar">
-        <button type="submit" class="btn btn-ouro" id="btn-enviar" disabled>Enviar minhas escolhas <span class="seta" aria-hidden="true">→</span></button>
-        <p class="falta" id="falta" role="status"></p>
-        <p class="nota">Mudou de ideia? Pode enviar de novo até o prazo: vale a sua última resposta.</p>
-      </div>
+      <p class="nota">Mudou de ideia? Pode enviar de novo até o prazo: vale a sua última resposta.</p>
     </form>
   </section>
 
@@ -295,6 +343,17 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02
 
   <footer class="rodape">Club OftalmoBlack · Sistema de Graduação Black</footer>
 </main>
+
+<div class="barra" id="barra">
+  <p class="barra-erro" id="barra-erro" role="alert" hidden></p>
+  <div class="barra-in">
+    <div class="barra-info">
+      <span class="barra-rot" id="barra-rot">Vitrine Black</span>
+      <span class="barra-txt" id="barra-txt">Toque nos benefícios na ordem que você quer</span>
+    </div>
+    <button type="button" class="btn btn-ouro" id="btn-acao">Escolher <span class="seta" aria-hidden="true">↓</span></button>
+  </div>
+</div>
 
 <script>
 (function () {
@@ -317,25 +376,34 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02
   var GUARDA = 'vitrine-black-out-dez-2026';
 
   var BENEFICIOS = [
-    { id: 'catarata', form: 'Mentoria Olympus de cirurgia de catarata', curto: 'Mentoria de Catarata',
-      titulo: 'Mentoria Olympus de Cirurgia de Catarata', tag: '6 vagas', meta: 'Juruti (PA) · 2 vagas por turma',
+    { id: 'catarata', form: 'Mentoria Olympus de cirurgia de catarata', curto: 'Mentoria de Catarata', barra: 'Catarata',
+      titulo: 'Mentoria Olympus de Cirurgia de Catarata', tag: '6 vagas', meta: 'Juruti (PA) · 2 por turma',
       texto: 'A mentoria cirúrgica do Dr. Alex na missão de Juruti. Turmas em outubro, novembro e dezembro: você escolhe a data logo abaixo.',
       fim: '2026-12-09' },
-    { id: 'grauzero', form: 'Mentoria Grau Zero', curto: 'Mentoria Grau Zero',
+    { id: 'grauzero', form: 'Mentoria Grau Zero', curto: 'Mentoria Grau Zero', barra: 'Grau Zero',
       titulo: 'Mentoria Grau Zero', tag: '5 vagas', meta: 'Manaus · 19 a 21 de novembro',
       texto: 'A mentoria presencial do Protocolo Grau Zero, de quinta a sábado. Você acompanha como espectador: teoria e prática, caso a caso.',
       fim: '2026-11-19' },
-    { id: 'family', form: 'Passagem para o Family Circle', curto: 'Passagem para o Family Circle',
+    { id: 'family', form: 'Passagem para o Family Circle', curto: 'Passagem para o Family Circle', barra: 'Family Circle',
       titulo: 'Passagem para o Family Circle', tag: '1 passagem', meta: 'Mogi das Cruzes (SP) · 11 a 13 de dezembro',
       texto: 'Passagem aérea de ida e volta para o encontro da Liga no Lake Paradise. Hospedagem e reserva no evento ficam por sua conta; as reservas abrem segunda, 05/10, às 14h.',
       fim: '2026-12-11' }
   ];
+  // o id da data também é a abreviação do mês que aparece na barra
   var DATAS = [
     { id: 'out', form: '7 a 11 de outubro', dias: '7 a 11', mes: 'de outubro', curto: '7 a 11/10', inicio: '2026-10-07' },
     { id: 'nov', form: '4 a 8 de novembro', dias: '4 a 8', mes: 'de novembro', curto: '4 a 8/11', inicio: '2026-11-04' },
     { id: 'dez', form: '9 a 13 de dezembro', dias: '9 a 13', mes: 'de dezembro', curto: '9 a 13/12', inicio: '2026-12-09' }
   ];
   var FAMILY = ['Sim, vou por conta própria', 'Ainda não sei', 'Não vou'];
+
+  // passo seguinte que a barra oferece, na ordem da página
+  var PASSO = {
+    beneficios: { rot: 'Vitrine Black', btn: 'Escolher', seta: '↓', alvo: 'etapa-beneficios' },
+    datas: { rot: 'Falta: datas da catarata', btn: 'Datas', seta: '↓', alvo: 'etapa-datas' },
+    nome: { rot: 'Falta: seu nome', btn: 'Seu nome', seta: '↓', alvo: 'etapa-nome' },
+    enviar: { rot: 'Tudo pronto', btn: 'Enviar', seta: '→' }
+  };
 
   var estado = { ordem: [], datas: [], family: '' };
   var enviando = false;
@@ -351,6 +419,7 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02
   function jaComecou(dia) { return Date.now() >= Date.parse(dia + 'T00:00:00-03:00'); }
   function ordinal(i) { return (i + 1) + 'ª'; }
   function temCatarata() { return estado.ordem.indexOf('catarata') !== -1; }
+  function semMovimento() { return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }
 
   /* ── montagem ── */
   function montar() {
@@ -358,8 +427,8 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02
       var fechado = jaComecou(b.fim);
       return '<button type="button" class="ben" data-ben="' + b.id + '" aria-pressed="false"' + (fechado ? ' disabled' : '') + '>' +
         '<span class="ord" aria-hidden="true"><span class="mais">+</span></span>' +
-        '<span class="tit"><span class="nome-ben">' + esc(b.titulo) + '</span><span class="tag">' + esc(fechado ? 'Encerrado' : b.tag) + '</span></span>' +
-        '<span class="meta">' + esc(b.meta) + '</span>' +
+        '<span class="nome-ben">' + esc(b.titulo) + '</span>' +
+        '<span class="linha-meta"><span class="tag">' + esc(fechado ? 'Encerrado' : b.tag) + '</span><span class="meta">' + esc(b.meta) + '</span></span>' +
         '<span class="txt">' + esc(b.texto) + '</span></button>';
     }).join('');
 
@@ -383,6 +452,8 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02
       $('prazo').classList.add('encerrado');
       $('prazo-txt').textContent = 'Prazo encerrado na segunda, 05/10 · ainda dá para enviar';
     }
+    // no desktop o "Como funciona" já vem aberto; no celular fica recolhido
+    if (window.matchMedia && window.matchMedia('(min-width: 900px)').matches) $('regras').open = true;
   }
 
   /* ── estado → tela ── */
@@ -418,7 +489,7 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02
     });
 
     $('resumo').innerHTML = resumoHtml(estado);
-    validar(false);
+    pintarBarra();
   }
 
   function resumoHtml(s) {
@@ -436,18 +507,43 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02
     return '<ol>' + itens + '</ol>' + extra;
   }
 
-  function pendencia() {
-    if (!estado.ordem.length) return 'Marque pelo menos um benefício.';
-    if (temCatarata() && !estado.datas.length) return 'Marque pelo menos uma data da Mentoria de Catarata.';
-    if ($('nome').value.trim().length < 3) return 'Escreva seu nome completo.';
-    return '';
+  function resumoCurto(s) {
+    return s.ordem.map(function (id, i) {
+      var t = ordinal(i) + ' ' + porId(BENEFICIOS, id).barra;
+      if (id === 'catarata' && s.datas.length) t += ' (' + s.datas.join(', ') + ')';
+      return t;
+    }).join(' · ');
   }
-  function validar(mostrarErro) {
-    var p = pendencia(), f = $('falta');
-    $('btn-enviar').disabled = !!p || enviando;
-    f.textContent = p;
-    f.classList.toggle('erro', !!(p && mostrarErro));
-    return !p;
+
+  function passo() {
+    if (!estado.ordem.length) return 'beneficios';
+    if (temCatarata() && !estado.datas.length) return 'datas';
+    if ($('nome').value.trim().length < 3) return 'nome';
+    return 'enviar';
+  }
+
+  function pintarBarra() {
+    var p = passo(), c = PASSO[p];
+    $('barra-rot').textContent = enviando ? 'Enviando' : c.rot;
+    $('barra-txt').textContent = estado.ordem.length ? resumoCurto(estado) : 'Toque nos benefícios na ordem que você quer';
+    var b = $('btn-acao');
+    b.innerHTML = enviando ? 'Enviando' : esc(c.btn) + ' <span class="seta" aria-hidden="true">' + c.seta + '</span>';
+    b.disabled = enviando;
+    b.setAttribute('data-passo', p);
+  }
+
+  function erro(msg) { var e = $('barra-erro'); e.textContent = msg || ''; e.hidden = !msg; }
+
+  function irPara(id, focarNome) {
+    var el = $(id);
+    if (!el) return;
+    if (focarNome) {
+      // foco dentro do próprio toque: só assim o iPhone abre o teclado
+      try { $('nome').focus({ preventScroll: true }); } catch (err) { $('nome').focus(); }
+      el.scrollIntoView({ block: 'start' });
+      return;
+    }
+    el.scrollIntoView({ behavior: semMovimento() ? 'auto' : 'smooth', block: 'start' });
   }
 
   /* ── interação ── */
@@ -457,14 +553,29 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02
   }
   document.addEventListener('click', function (e) {
     var b = e.target.closest('.ben');
-    if (b && !b.disabled) { alternar(estado.ordem, b.getAttribute('data-ben')); pintar(); return; }
+    if (b && !b.disabled) { alternar(estado.ordem, b.getAttribute('data-ben')); erro(''); pintar(); return; }
     var d = e.target.closest('.data');
-    if (d && !d.disabled) { alternar(estado.datas, d.getAttribute('data-data')); pintar(); return; }
+    if (d && !d.disabled) { alternar(estado.datas, d.getAttribute('data-data')); erro(''); pintar(); return; }
     var c = e.target.closest('.chip');
     if (c) { var v = c.getAttribute('data-family'); estado.family = estado.family === v ? '' : v; pintar(); return; }
   });
   $('limpar').addEventListener('click', function () { estado.ordem = []; estado.datas = []; pintar(); });
-  $('nome').addEventListener('input', function () { validar(false); });
+  $('nome').addEventListener('input', function () { erro(''); pintarBarra(); });
+  $('nome').addEventListener('focus', function () { document.body.classList.add('digitando'); });
+  $('nome').addEventListener('blur', function () { document.body.classList.remove('digitando'); });
+
+  $('btn-acao').addEventListener('click', function () {
+    var p = passo();
+    if (p === 'enviar') enviar();
+    else irPara(PASSO[p].alvo, p === 'nome');
+  });
+  // "Enviar" do teclado do celular (Enter no nome)
+  $('form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var p = passo();
+    if (p === 'enviar') { $('nome').blur(); enviar(); }
+    else irPara(PASSO[p].alvo, p === 'nome');
+  });
 
   /* ── envio ── */
   function corpo(nome) {
@@ -479,16 +590,12 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02
     return p;
   }
 
-  $('form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    if (enviando || !validar(true)) return;
+  function enviar() {
+    if (enviando || passo() !== 'enviar') return;
     var nome = $('nome').value.trim().replace(/\s+/g, ' ');
-    var btn = $('btn-enviar');
     enviando = true;
-    btn.disabled = true;
-    btn.firstChild.nodeValue = 'Enviando ';
-    $('falta').classList.remove('erro');
-    $('falta').textContent = '';
+    erro('');
+    pintarBarra();
 
     var ctrl = window.AbortController ? new AbortController() : null;
     var relogio = setTimeout(function () { if (ctrl) ctrl.abort(); }, 20000);
@@ -502,25 +609,27 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02
       })
       .catch(function () {
         clearTimeout(relogio);
-        $('falta').classList.add('erro');
-        $('falta').textContent = 'Não conseguimos enviar agora. Confira a internet e tente de novo. Se continuar, mande um print desta tela no seu grupo do Black.';
+        erro('Não conseguimos enviar agora. Confira a internet e tente de novo. Se continuar, mande um print desta tela no seu grupo do Black.');
       })
       .then(function () {
         enviando = false;
-        btn.firstChild.nodeValue = 'Enviar minhas escolhas ';
-        validar(false);
+        pintarBarra();
       });
-  });
+  }
 
   function mostrarOk(envio) {
     $('resumo-ok').innerHTML = resumoHtml(envio);
     $('tela-escolha').hidden = true;
     $('tela-ok').hidden = false;
+    $('barra').hidden = true;
+    document.body.classList.add('enviado');
     window.scrollTo(0, 0);
   }
   $('btn-refazer').addEventListener('click', function () {
     $('tela-ok').hidden = true;
     $('tela-escolha').hidden = false;
+    $('barra').hidden = false;
+    document.body.classList.remove('enviado');
     avisoJaEnviou();
     window.scrollTo(0, 0);
   });
@@ -549,26 +658,31 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02
     if (salvo.nome) $('nome').value = salvo.nome;
   }
 
-  /* ── fundo animado da home, com quadro inicial síncrono para não depender
-     de requestAnimationFrame em aba oculta ── */
+  /* ── fundo da home. No toque: um quadro só, sem laço de animação (poupa bateria).
+     A barra de endereço do celular muda a altura a cada rolagem: aí só redesenha,
+     sem sortear barras novas, para o fundo não "piscar". ── */
   function fundo() {
     var cv = $('ob-canvas');
     if (!cv || !cv.getContext) return;
     var ctx = cv.getContext('2d');
     var bars = [], cw = 0, ch = 0, t = 0;
     var mouse = { x: 0, tx: 0, active: false };
-    var calmo = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    function montarFundo() {
+    var animar = !semMovimento() && !!(window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches);
+    function medir() {
       var DPR = Math.min(window.devicePixelRatio || 1, 2);
-      cw = window.innerWidth; ch = window.innerHeight;
+      var nw = window.innerWidth, nh = window.innerHeight;
+      var novaLargura = nw !== cw;
+      cw = nw; ch = nh;
       cv.width = cw * DPR; cv.height = ch * DPR;
       ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-      bars = [];
-      var x = 0;
-      while (x < cw) {
-        var bw = 6 + Math.random() * 30;
-        bars.push({ x: x, w: bw, base: 0.02 + Math.random() * 0.09, ph: Math.random() * Math.PI * 2, mid: 0.34 + Math.random() * 0.16 });
-        x += bw + Math.random() * 3;
+      if (novaLargura) {
+        bars = [];
+        var x = 0;
+        while (x < cw) {
+          var bw = 6 + Math.random() * 30;
+          bars.push({ x: x, w: bw, base: 0.02 + Math.random() * 0.09, ph: Math.random() * Math.PI * 2, mid: 0.34 + Math.random() * 0.16 });
+          x += bw + Math.random() * 3;
+        }
       }
       quadro();
     }
@@ -591,9 +705,9 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02
       }
     }
     function laco() { quadro(); requestAnimationFrame(laco); }
-    window.addEventListener('resize', montarFundo);
-    montarFundo();
-    if (calmo) return;
+    window.addEventListener('resize', medir);
+    medir();
+    if (!animar) return;
     document.addEventListener('pointermove', function (e) {
       if (e.pointerType === 'touch') return;
       mouse.tx = e.clientX; mouse.active = true;
