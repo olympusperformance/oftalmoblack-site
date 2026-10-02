@@ -562,8 +562,10 @@ módulo escuro em fundo claro e a versão dourada-sobre-preto não decodifica.
 
 `oftalmoblack.com.br/vitrine/` é onde os membros escolhem, em ordem de
 prioridade, os benefícios que a Vitrine abre no fechamento de cada trimestre
-(out a dez/2026: Mentoria Olympus de Cirurgia de Catarata em Juruti, Mentoria
-Grau Zero e passagem para o Family Circle). Se a Mentoria de Catarata entra na
+(nov/2026 a jan/2027: Mentoria Olympus de Cirurgia de Catarata em Juruti,
+Mentoria Grau Zero e passagem para o Family Circle). Regra do Dr. Alex: a cada
+trimestre abrem as datas dos três meses seguintes, com um mês de folga (a turma
+muito próxima não dá tempo de o mestre se organizar e a vaga se perde). Se a Mentoria de Catarata entra na
 lista, a página pede também a ordem das datas. HTML único, sem login.
 
 As respostas não passam por banco nosso: a página faz `POST` (`no-cors`) no

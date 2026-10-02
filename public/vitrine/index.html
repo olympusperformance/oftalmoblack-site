@@ -270,7 +270,7 @@ body.digitando .barra{transform:translateY(130%)}
     <div class="capa">
       <p class="eyebrow">Sistema de Graduação Black</p>
       <h1 id="titulo">Vitrine <span class="grifo">Black</span></h1>
-      <p class="sub">Benefícios de outubro a dezembro de 2026</p>
+      <p class="sub">Benefícios de novembro a janeiro</p>
       <p class="lead">Marque, <strong>em ordem de prioridade</strong>, o que você quer resgatar. Quem tem Voucher Black escolhe primeiro; depois, vale o ranking da graduação.</p>
       <p class="prazo" id="prazo"><svg viewBox="0 0 24 24" fill="none" stroke="#e6bd74" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.6 2.2M9.5 2.5h5"/></svg><span id="prazo-txt">Responda até segunda, 05/10, pela manhã</span></p>
     </div>
@@ -284,6 +284,7 @@ body.digitando .barra{transform:translateY(130%)}
           <li><strong>Todo membro pode escolher</strong>, mesmo sem pontos: o que sobrar passa para os próximos da fila.</li>
           <li>Quem tem <strong>Voucher Black</strong> (indicação convertida) escolhe primeiro. Depois, vale a ordem do ranking da graduação.</li>
           <li>Se a sua 1ª opção esgotar antes da sua vez, passamos para a 2ª, e assim por diante. Nas datas da catarata vale a mesma regra.</li>
+          <li>A cada trimestre a Vitrine abre de novo, com as datas dos três meses seguintes. A próxima abre no fechamento de dezembro, com as turmas de fevereiro, março e abril.</li>
         </ol>
         <p class="ranking"><a href="/membros/#ranking">Ver meu lugar no ranking</a> na área de membros.</p>
       </div>
@@ -373,13 +374,13 @@ body.digitando .barra{transform:translateY(130%)}
   };
   var NAO_SE_APLICA = 'Não se aplica';
   var PRAZO = Date.parse('2026-10-05T12:00:00-03:00');
-  var GUARDA = 'vitrine-black-out-dez-2026';
+  var GUARDA = 'vitrine-black-nov-jan-2027';
 
   var BENEFICIOS = [
     { id: 'catarata', form: 'Mentoria Olympus de cirurgia de catarata', curto: 'Mentoria de Catarata', barra: 'Catarata',
       titulo: 'Mentoria Olympus de Cirurgia de Catarata', tag: '6 vagas', meta: 'Juruti (PA) · 2 por turma',
-      texto: 'A mentoria cirúrgica do Dr. Alex na missão de Juruti. Turmas em outubro, novembro e dezembro: você escolhe a data logo abaixo.',
-      fim: '2026-12-09' },
+      texto: 'A mentoria cirúrgica do Dr. Alex na missão de Juruti. Turmas em novembro, dezembro e janeiro: você escolhe a data logo abaixo.',
+      fim: '2027-01-13' },
     { id: 'grauzero', form: 'Mentoria Grau Zero', curto: 'Mentoria Grau Zero', barra: 'Grau Zero',
       titulo: 'Mentoria Grau Zero', tag: '5 vagas', meta: 'Manaus · 19 a 21 de novembro',
       texto: 'A mentoria presencial do Protocolo Grau Zero, de quinta a sábado. Você acompanha como espectador: teoria e prática, caso a caso.',
@@ -391,9 +392,9 @@ body.digitando .barra{transform:translateY(130%)}
   ];
   // o id da data também é a abreviação do mês que aparece na barra
   var DATAS = [
-    { id: 'out', form: '7 a 11 de outubro', dias: '7 a 11', mes: 'de outubro', curto: '7 a 11/10', inicio: '2026-10-07' },
     { id: 'nov', form: '4 a 8 de novembro', dias: '4 a 8', mes: 'de novembro', curto: '4 a 8/11', inicio: '2026-11-04' },
-    { id: 'dez', form: '9 a 13 de dezembro', dias: '9 a 13', mes: 'de dezembro', curto: '9 a 13/12', inicio: '2026-12-09' }
+    { id: 'dez', form: '9 a 13 de dezembro', dias: '9 a 13', mes: 'de dezembro', curto: '9 a 13/12', inicio: '2026-12-09' },
+    { id: 'jan', form: '13 a 17 de janeiro', dias: '13 a 17', mes: 'de janeiro', curto: '13 a 17/01', inicio: '2027-01-13' }
   ];
   var FAMILY = ['Sim, vou por conta própria', 'Ainda não sei', 'Não vou'];
 
