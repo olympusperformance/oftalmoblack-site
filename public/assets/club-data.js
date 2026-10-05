@@ -420,7 +420,9 @@
 
   C.data.botExemplos = {
     list: function () {
-      return tolerante(sb().from('bot_exemplos').select('*'), AVISO_BOT, 'faltaBot')
+      /* A tela é a voz do @dralexsa. Desde 05/10 a tabela guarda a voz de cada
+         conta (coluna conta), e a do @drjoaocoelho não pode se misturar aqui. */
+      return tolerante(sb().from('bot_exemplos').select('*').eq('conta', 'dralexsa'), AVISO_BOT, 'faltaBot')
         .then(function (rows) {
           return rows.sort(function (a, b) {
             if (a.grupo !== b.grupo) return a.grupo < b.grupo ? -1 : 1;
@@ -442,7 +444,7 @@
      deixa aprovar a mesma resposta duas vezes. */
   C.data.botRespostas = {
     list: function (o) {
-      var q = sb().from('bot_respostas').select('*');
+      var q = sb().from('bot_respostas').select('*').eq('conta', 'dralexsa');
       if (opt(o, 'pendentes')) q = q.is('decisao', null);
       return tolerante(q, AVISO_BOT, 'faltaBot').then(function (rows) {
         return rows.sort(function (a, b) {
