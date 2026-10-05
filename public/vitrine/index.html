@@ -176,6 +176,16 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02
 .btn .seta{font-size:15px;letter-spacing:0}
 .btn:focus-visible,.ben:focus-visible,.data:focus-visible,.chip:focus-visible,.limpar:focus-visible,.regras summary:focus-visible{outline:2px solid var(--gold-bright);outline-offset:3px}
 
+/* o que falta para enviar: aviso sobre a barra e marca em cada etapa incompleta (só depois de tentar enviar) */
+.falta-msg{margin:0 0 10px;font-size:13.5px;line-height:1.45;font-weight:600;color:var(--erro)}
+.etapa.incompleto .etapa-num,.etapa.incompleto .etapa-cab h2{color:var(--erro)}
+.datas-cat.incompleto{border-left-color:var(--erro)}
+.datas-cat.incompleto .datas-tit{color:var(--erro)}
+.aviso-falta{max-width:720px;margin:0 auto 8px;padding:12px 16px;border-radius:14px;background:rgba(58,20,14,.97);border:1px solid rgba(240,165,143,.45);color:var(--text);font-size:13.5px;line-height:1.45;box-shadow:0 -6px 22px rgba(0,0,0,.5)}
+.aviso-falta b{display:block;margin:0 0 4px;color:var(--erro);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase}
+.aviso-falta ul{margin:0;padding:0 0 0 18px}
+.aviso-falta li{margin:2px 0}
+
 /* barra fixa: o próximo passo sempre ao alcance do polegar */
 .barra{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:8px 10px calc(10px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.88) 30%);transition:transform .25s var(--ease)}
 .barra-in{display:flex;align-items:center;gap:12px;max-width:720px;margin:0 auto;padding:8px 8px 8px 16px;border-radius:20px;background:rgba(16,13,9,.97);border:1px solid rgba(216,157,77,.34);box-shadow:0 -6px 26px rgba(0,0,0,.55)}
@@ -283,7 +293,7 @@ body.digitando .barra{transform:translateY(130%)}
       <p class="eyebrow">Sistema de Graduação Black</p>
       <h1 id="titulo">Vitrine <span class="grifo">Black</span></h1>
       <p class="sub">Benefícios de novembro a janeiro</p>
-      <p class="lead">Marque, <strong>em ordem de prioridade</strong>, o que você quer resgatar. Quem tem Voucher Black escolhe primeiro; depois, vale o ranking da graduação.</p>
+      <p class="lead">Coloque os 3 benefícios <strong>em ordem de prioridade</strong>. Quem tem Voucher Black escolhe primeiro; depois, vale o ranking da graduação.</p>
       <p class="prazo" id="prazo"><svg viewBox="0 0 24 24" fill="none" stroke="#e6bd74" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.6 2.2M9.5 2.5h5"/></svg><span id="prazo-txt">Responda até segunda, 05/10, pela manhã</span></p>
     </div>
 
@@ -306,19 +316,22 @@ body.digitando .barra{transform:translateY(130%)}
 
       <div class="etapa" id="etapa-beneficios">
         <div class="etapa-cab"><span class="etapa-num" data-num>01</span><h2>Seus benefícios</h2></div>
-        <p class="etapa-ajuda">O primeiro toque é a sua <strong>1ª opção</strong>; toque de novo para tirar. O que não te interessa, deixe sem marcar.</p>
+        <p class="falta-msg" hidden></p>
+        <p class="etapa-ajuda">Toque nos 3, <strong>na ordem de prioridade</strong>: o primeiro toque é a sua 1ª opção. Toque de novo para tirar.</p>
         <div class="lista" id="lista-beneficios"></div>
         <button type="button" class="limpar" id="limpar" hidden>Limpar escolhas</button>
       </div>
 
       <div class="etapa" id="etapa-family">
-        <div class="etapa-cab"><span class="etapa-num" data-num>02</span><h2>Family Circle</h2><span class="opc">Opcional</span></div>
+        <div class="etapa-cab"><span class="etapa-num" data-num>02</span><h2>Family Circle</h2></div>
+        <p class="falta-msg" hidden></p>
         <p class="etapa-ajuda">Mesmo sem ganhar a passagem, você vai ao Family Circle (11 a 13 de dezembro)?</p>
         <div class="chips" id="lista-family"></div>
       </div>
 
       <div class="etapa" id="etapa-nome">
         <div class="etapa-cab"><span class="etapa-num" data-num>03</span><h2>Seu nome</h2></div>
+        <p class="falta-msg" hidden></p>
         <div class="campo">
           <label for="nome">Nome completo</label>
           <input type="text" id="nome" name="nome" autocomplete="name" autocapitalize="words" spellcheck="false" enterkeyhint="send" placeholder="Nome e sobrenome" maxlength="120" required>
@@ -352,13 +365,14 @@ body.digitando .barra{transform:translateY(130%)}
 </main>
 
 <div class="barra" id="barra">
+  <div class="aviso-falta" id="aviso-falta" role="alert" hidden><b>Para enviar, falta:</b><ul id="aviso-lista"></ul></div>
   <p class="barra-erro" id="barra-erro" role="alert" hidden></p>
   <div class="barra-in">
     <div class="barra-info">
       <span class="barra-rot" id="barra-rot">Vitrine Black</span>
-      <span class="barra-txt" id="barra-txt">Toque nos benefícios na ordem que você quer</span>
+      <span class="barra-txt" id="barra-txt">Coloque os 3 benefícios em ordem de prioridade</span>
     </div>
-    <button type="button" class="btn btn-ouro" id="btn-acao">Escolher <span class="seta" aria-hidden="true">↓</span></button>
+    <button type="button" class="btn btn-ouro" id="btn-acao">Enviar <span class="seta" aria-hidden="true">→</span></button>
   </div>
 </div>
 
@@ -404,16 +418,9 @@ body.digitando .barra{transform:translateY(130%)}
   ];
   var FAMILY = ['Sim, vou por conta própria', 'Ainda não sei', 'Não vou'];
 
-  // passo seguinte que a barra oferece, na ordem da página
-  var PASSO = {
-    beneficios: { rot: 'Vitrine Black', btn: 'Escolher', seta: '↓', alvo: 'etapa-beneficios' },
-    datas: { rot: 'Falta: datas da catarata', btn: 'Datas', seta: '↓', alvo: 'etapa-datas' },
-    nome: { rot: 'Falta: seu nome', btn: 'Seu nome', seta: '↓', alvo: 'etapa-nome' },
-    enviar: { rot: 'Tudo pronto', btn: 'Enviar', seta: '→' }
-  };
-
   var estado = { ordem: [], datas: [], family: '' };
   var enviando = false;
+  var tentou = false; // as faltas só ficam em vermelho depois da 1ª tentativa de envio
 
   function $(id) { return document.getElementById(id); }
   function esc(s) {
@@ -427,6 +434,22 @@ body.digitando .barra{transform:translateY(130%)}
   function ordinal(i) { return (i + 1) + 'ª'; }
   function temCatarata() { return estado.ordem.indexOf('catarata') !== -1; }
   function semMovimento() { return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }
+  // tudo é obrigatório: os benefícios e as datas ainda abertos, a resposta do Family Circle e o nome
+  function totalBen() { return BENEFICIOS.filter(function (b) { return !jaComecou(b.fim); }).length; }
+  function totalDatas() { return DATAS.filter(function (d) { return !jaComecou(d.inicio); }).length; }
+  function quais(feitos, total, coisa) {
+    var f = [];
+    for (var i = feitos; i < total; i++) f.push('a ' + ordinal(i));
+    return f.join(' e ') + ' ' + coisa;
+  }
+  function faltas() {
+    var f = [], nb = estado.ordem.length, tb = totalBen(), nd = estado.datas.length, td = totalDatas();
+    if (nb < tb) f.push({ etapa: 'etapa-beneficios', curto: 'benefícios', txt: nb ? 'marcar ' + quais(nb, tb, 'opção de benefício') : 'marcar os ' + tb + ' benefícios, em ordem de prioridade' });
+    if (temCatarata() && nd < td) f.push({ etapa: 'etapa-datas', curto: 'datas da catarata', txt: nd ? 'marcar ' + quais(nd, td, 'data da catarata') : 'marcar as ' + td + ' datas da catarata, em ordem de preferência' });
+    if (!estado.family) f.push({ etapa: 'etapa-family', curto: 'Family Circle', txt: 'responder se vai ao Family Circle por conta própria' });
+    if ($('nome').value.trim().length < 3) f.push({ etapa: 'etapa-nome', curto: 'seu nome', txt: 'escrever seu nome completo' });
+    return f;
+  }
 
   /* ── montagem ── */
   function montar() {
@@ -434,7 +457,8 @@ body.digitando .barra{transform:translateY(130%)}
     var painelDatas =
       '<div class="datas-cat" id="etapa-datas" role="group" aria-labelledby="datas-tit" hidden>' +
         '<p class="datas-tit" id="datas-tit">Datas da catarata, em ordem de prioridade</p>' +
-        '<p class="datas-ajuda">Toque na ordem de preferência e deixe de fora a data em que não pode ir. Turmas em Juruti (PA), de quarta a domingo, com 2 vagas cada.</p>' +
+        '<p class="falta-msg" hidden></p>' +
+        '<p class="datas-ajuda">Toque nas datas, na ordem de preferência. Turmas em Juruti (PA), de quarta a domingo, com 2 vagas cada.</p>' +
         '<div class="datas" id="lista-datas"></div>' +
       '</div>';
     $('lista-beneficios').innerHTML = BENEFICIOS.map(function (b) {
@@ -512,8 +536,9 @@ body.digitando .barra{transform:translateY(130%)}
     var itens = s.ordem.map(function (id, i) {
       var b = porId(BENEFICIOS, id), det = b.meta;
       if (id === 'catarata') {
+        var resta = totalDatas() - s.datas.length;
         det = s.datas.length
-          ? 'Datas, pela ordem: ' + s.datas.map(function (d) { return porId(DATAS, d).curto; }).join(', ')
+          ? 'Datas, pela ordem: ' + s.datas.map(function (d) { return porId(DATAS, d).curto; }).join(', ') + (resta > 0 ? ' · falta marcar mais ' + resta : '')
           : 'Falta marcar as datas';
       }
       return '<li><span class="n">' + ordinal(i) + '</span><b>' + esc(b.curto) + '</b><small>' + esc(det) + '</small></li>';
@@ -530,21 +555,43 @@ body.digitando .barra{transform:translateY(130%)}
     }).join(' · ');
   }
 
-  function passo() {
-    if (!estado.ordem.length) return 'beneficios';
-    if (temCatarata() && !estado.datas.length) return 'datas';
-    if ($('nome').value.trim().length < 3) return 'nome';
-    return 'enviar';
+  function pintarBarra() {
+    var f = faltas(), b = $('btn-acao'), rot;
+    if (!f.length) rot = 'Tudo pronto';
+    else if (!estado.ordem.length && !tentou) rot = 'Vitrine Black';
+    else rot = 'Falta: ' + f[0].curto + (f.length > 1 ? ' e mais ' + (f.length - 1) : '');
+    $('barra-rot').textContent = enviando ? 'Enviando' : rot;
+    $('barra-txt').textContent = estado.ordem.length ? resumoCurto(estado) : 'Coloque os 3 benefícios em ordem de prioridade';
+    b.innerHTML = enviando ? 'Enviando' : 'Enviar <span class="seta" aria-hidden="true">→</span>';
+    b.disabled = enviando;
+    pintarFaltas(f);
   }
 
-  function pintarBarra() {
-    var p = passo(), c = PASSO[p];
-    $('barra-rot').textContent = enviando ? 'Enviando' : c.rot;
-    $('barra-txt').textContent = estado.ordem.length ? resumoCurto(estado) : 'Toque nos benefícios na ordem que você quer';
-    var b = $('btn-acao');
-    b.innerHTML = enviando ? 'Enviando' : esc(c.btn) + ' <span class="seta" aria-hidden="true">' + c.seta + '</span>';
-    b.disabled = enviando;
-    b.setAttribute('data-passo', p);
+  // marca cada etapa incompleta e lista no aviso sobre a barra o que falta (depois da 1ª tentativa)
+  function pintarFaltas(f) {
+    ['etapa-beneficios', 'etapa-datas', 'etapa-family', 'etapa-nome'].forEach(function (id) {
+      var el = $(id), item = null;
+      if (!el) return;
+      if (tentou) for (var i = 0; i < f.length; i++) if (f[i].etapa === id) { item = f[i]; break; }
+      el.classList.toggle('incompleto', !!item);
+      var m = el.querySelector('.falta-msg');
+      if (m) { m.textContent = item ? 'Falta ' + item.txt + '.' : ''; m.hidden = !item; }
+    });
+    var av = $('aviso-falta');
+    av.hidden = !(tentou && f.length);
+    $('aviso-lista').innerHTML = av.hidden ? '' : f.map(function (x) {
+      return '<li>' + esc(x.txt.charAt(0).toUpperCase() + x.txt.slice(1)) + '</li>';
+    }).join('');
+    // folga embaixo do tamanho da barra (com o aviso), para nada da página ficar escondido atrás dela
+    if (!$('barra').hidden) document.body.style.paddingBottom = ($('barra').offsetHeight + 16) + 'px';
+  }
+
+  function tentarEnviar() {
+    var f = faltas();
+    if (!f.length) { enviar(); return; }
+    tentou = true;
+    pintarBarra();
+    irPara(f[0].etapa, f[0].etapa === 'etapa-nome');
   }
 
   function erro(msg) { var e = $('barra-erro'); e.textContent = msg || ''; e.hidden = !msg; }
@@ -579,17 +626,12 @@ body.digitando .barra{transform:translateY(130%)}
   $('nome').addEventListener('focus', function () { document.body.classList.add('digitando'); });
   $('nome').addEventListener('blur', function () { document.body.classList.remove('digitando'); });
 
-  $('btn-acao').addEventListener('click', function () {
-    var p = passo();
-    if (p === 'enviar') enviar();
-    else irPara(PASSO[p].alvo, p === 'nome');
-  });
+  $('btn-acao').addEventListener('click', tentarEnviar);
   // "Enviar" do teclado do celular (Enter no nome)
   $('form').addEventListener('submit', function (e) {
     e.preventDefault();
-    var p = passo();
-    if (p === 'enviar') { $('nome').blur(); enviar(); }
-    else irPara(PASSO[p].alvo, p === 'nome');
+    if (!faltas().length) $('nome').blur();
+    tentarEnviar();
   });
 
   /* ── envio ── */
@@ -606,7 +648,7 @@ body.digitando .barra{transform:translateY(130%)}
   }
 
   function enviar() {
-    if (enviando || passo() !== 'enviar') return;
+    if (enviando || faltas().length) return;
     var nome = $('nome').value.trim().replace(/\s+/g, ' ');
     enviando = true;
     erro('');
@@ -638,6 +680,7 @@ body.digitando .barra{transform:translateY(130%)}
     $('tela-ok').hidden = false;
     $('barra').hidden = true;
     document.body.classList.add('enviado');
+    document.body.style.paddingBottom = '';
     window.scrollTo(0, 0);
   }
   $('btn-refazer').addEventListener('click', function () {
@@ -646,6 +689,7 @@ body.digitando .barra{transform:translateY(130%)}
     $('barra').hidden = false;
     document.body.classList.remove('enviado');
     avisoJaEnviou();
+    pintarBarra();
     window.scrollTo(0, 0);
   });
 
@@ -671,6 +715,11 @@ body.digitando .barra{transform:translateY(130%)}
     estado.datas = (salvo.datas || []).filter(function (id) { return porId(DATAS, id); });
     estado.family = FAMILY.indexOf(salvo.family) !== -1 ? salvo.family : '';
     if (salvo.nome) $('nome').value = salvo.nome;
+    // resposta antiga incompleta: avisa e já marca o que falta
+    if (faltas().length) {
+      tentou = true;
+      $('ja-enviou').innerHTML = '<strong>Sua resposta' + (salvo.quando ? ' de ' + esc(quandoTexto(salvo.quando)) : '') + ' ficou incompleta.</strong> Complete o que falta abaixo e envie de novo: vale a última resposta.';
+    }
   }
 
   /* ── fundo da home. No toque: um quadro só, sem laço de animação (poupa bateria).
