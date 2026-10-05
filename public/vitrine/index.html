@@ -293,8 +293,8 @@ body.digitando .barra{transform:translateY(130%)}
       <p class="eyebrow">Sistema de Graduação Black</p>
       <h1 id="titulo">Vitrine <span class="grifo">Black</span></h1>
       <p class="sub">Benefícios de novembro a janeiro</p>
-      <p class="lead">Coloque os 3 benefícios <strong>em ordem de prioridade</strong>. Quem tem Voucher Black escolhe primeiro; depois, vale o ranking da graduação.</p>
-      <p class="prazo" id="prazo"><svg viewBox="0 0 24 24" fill="none" stroke="#e6bd74" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.6 2.2M9.5 2.5h5"/></svg><span id="prazo-txt">Responda até segunda, 05/10, pela manhã</span></p>
+      <p class="lead"><strong>Aberta a todos os membros do Black.</strong> Coloque os 3 benefícios em ordem de prioridade: quem tem Voucher Black escolhe primeiro e, depois, vale o ranking da graduação. Se alguém da frente dispensar uma vaga, ela passa para o próximo.</p>
+      <p class="prazo" id="prazo"><svg viewBox="0 0 24 24" fill="none" stroke="#e6bd74" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.6 2.2M9.5 2.5h5"/></svg><span id="prazo-txt">Responda até sexta, 09/10</span></p>
     </div>
 
     <div class="aviso vidro" id="ja-enviou" role="status" hidden></div>
@@ -393,7 +393,7 @@ body.digitando .barra{transform:translateY(130%)}
     family: 'entry.134673747'
   };
   var NAO_SE_APLICA = 'Não se aplica';
-  var PRAZO = Date.parse('2026-10-05T12:00:00-03:00');
+  var PRAZO = Date.parse('2026-10-10T00:00:00-03:00'); // fim de sexta, 09/10 (prazo estendido quando a Vitrine abriu para todos)
   var GUARDA = 'vitrine-black-nov-jan-2027';
 
   var BENEFICIOS = [
@@ -407,7 +407,7 @@ body.digitando .barra{transform:translateY(130%)}
       fim: '2026-11-19' },
     { id: 'family', form: 'Passagem para o Family Circle', curto: 'Passagem para o Family Circle', barra: 'Family Circle',
       titulo: 'Passagem para o Family Circle', tag: '1 passagem', meta: 'Mogi das Cruzes (SP) · 11 a 13 de dezembro',
-      texto: 'Passagem aérea de ida e volta para o encontro da Liga no Lake Paradise. Hospedagem e reserva no evento ficam por sua conta; as reservas abrem segunda, 05/10, às 14h.',
+      texto: 'Passagem aérea de ida e volta para o encontro da Liga no Lake Paradise. Hospedagem e reserva no evento ficam por sua conta, direto com a Liga.',
       fim: '2026-12-11' }
   ];
   // o id da data também é a abreviação do mês que aparece na barra
@@ -489,7 +489,7 @@ body.digitando .barra{transform:translateY(130%)}
 
     if (Date.now() >= PRAZO) {
       $('prazo').classList.add('encerrado');
-      $('prazo-txt').textContent = 'Prazo encerrado na segunda, 05/10 · ainda dá para enviar';
+      $('prazo-txt').textContent = 'Prazo encerrado na sexta, 09/10 · ainda dá para enviar';
     }
     // no desktop o "Como funciona" já vem aberto; no celular fica recolhido
     if (window.matchMedia && window.matchMedia('(min-width: 900px)').matches) $('regras').open = true;
