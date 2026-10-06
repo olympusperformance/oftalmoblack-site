@@ -223,7 +223,7 @@ h1,h2{margin:0}
           <span class="tt identidade__nome">Dr. Fernando Bauken</span>
           <div class="identidade__selo"><i></i><span>Vision Prime</span><i></i></div>
 
-          <span class="identidade__registro">CRM-PR 36120 · RQE 28945</span>
+          <span class="identidade__registro">CRM-PR 36120 · RQE 28949</span>
                   </div>
       </div>
       <div class="progresso" hidden><div class="progresso__barra" id="barra"></div></div>
@@ -237,9 +237,9 @@ h1,h2{margin:0}
       <section class="tela tela--abertura pilha" data-tela="abertura" data-titulo="Início">
         <div class="avatar avatar--grande"><img src="assets/dr-fernando-retrato.jpg" alt="Dr. Fernando Bauken"></div>
         <span class="kicker">Vision Prime</span>
-        <h1 class="tt h1">Cuidando da sua visão<br>com excelência.</h1>
+        <h1 class="tt h1">Em busca da sua<br>liberdade visual?</h1>
         <div class="regua"></div>
-        <p class="texto texto--fim">Catarata, ceratocone, cirurgia refrativa e blefaroplastia. Saiba em poucos passos qual é o melhor caminho para o seu caso, com o Dr. Fernando.</p>
+        <p class="texto texto--fim">Catarata, ceratocone e cirurgia refrativa. Saiba em poucos passos se você é um possível candidato e qual é o melhor caminho para o seu caso, com o Dr. Fernando.</p>
         <button class="btn" type="button" data-ir="local">Começar</button>
       </section>
 
@@ -291,17 +291,15 @@ h1,h2{margin:0}
 
           <div class="item"><i>&#9670;</i><div><div class="item__nome">Acuidade visual</div><div class="item__desc">Nitidez da sua visão</div></div></div>
           
-          <div class="item"><i>&#9670;</i><div><div class="item__nome">Autorrefração</div><div class="item__desc">Medida computadorizada do grau</div></div></div>
+          <div class="item"><i>&#9670;</i><div><div class="item__nome">Refração</div><div class="item__desc">Medida do grau</div></div></div>
+          
+          <div class="item"><i>&#9670;</i><div><div class="item__nome">Ceratometria</div><div class="item__desc">Medida da curvatura da córnea</div></div></div>
           
           <div class="item"><i>&#9670;</i><div><div class="item__nome">Aberrometria</div><div class="item__desc">Imperfeições ópticas do olho</div></div></div>
           
           <div class="item"><i>&#9670;</i><div><div class="item__nome">Tonometria</div><div class="item__desc">Pressão intraocular</div></div></div>
           
           <div class="item"><i>&#9670;</i><div><div class="item__nome">Fundoscopia</div><div class="item__desc">Fundo de olho</div></div></div>
-          
-          <div class="item"><i>&#9670;</i><div><div class="item__nome">Teste de Schirmer</div><div class="item__desc">Produção de lágrima</div></div></div>
-          
-          <div class="item"><i>&#9670;</i><div><div class="item__nome">Teste de Ishihara</div><div class="item__desc">Visão de cores</div></div></div>
                   </div>
         <p class="rodape-nota">Tudo incluso no valor da consulta, com retorno em até 30 dias.</p>
         <button class="btn" type="button" style="margin-top:26px" data-ir="preco">Continuar</button>
@@ -311,11 +309,12 @@ h1,h2{margin:0}
         <div class="miolo">
           <span class="kicker">Investimento</span>
           <div class="cartao cartao--centro">
+
             <p class="texto texto--menor" style="margin-bottom:18px">Nossa consulta oftalmológica completa está no valor de:</p>
-            <div class="tt preco" id="preco-valor">R$ 450</div>
+                        <div class="tt preco" id="preco-valor">R$ 480</div>
             <div class="regua regua--fina regua--centro"></div>
 
-            <div class="preco-parcelas" id="preco-parcelas">À vista · ou R$ 480 em até 3x no cartão</div>
+            <div class="preco-parcelas" id="preco-parcelas">Em até 2x no cartão</div>
                         <div class="preco-obs">Particular · também atendemos Unimed e Sanepar</div>
           </div>
         </div>
@@ -351,7 +350,7 @@ h1,h2{margin:0}
           <span class="kicker">Primeiro passo</span>
           <div class="cartao cartao--centro">
             <p class="texto texto--menor" style="margin-bottom:18px">O primeiro passo é uma <strong>teleconsulta</strong> com o Dr. Fernando, no valor de:</p>
-            <div class="tt preco preco--menor">R$ 450</div>
+            <div class="tt preco preco--menor">R$ 480</div>
             <div class="regua regua--fina regua--centro"></div>
             <div class="preco-obs">Atendimento on-line com o Dr. Fernando, pelo mesmo valor da consulta presencial</div>
           </div>
@@ -365,13 +364,9 @@ h1,h2{margin:0}
         <p class="texto texto--menor" style="margin-bottom:20px">Ele analisará seus exames, esclarecerá todas as suas dúvidas e avaliará se o seu caso é indicado para cirurgia:</p>
         <div class="marcadores">
 
-          <span class="marcador">Catarata</span>
+          <span class="marcador">Liberdade visual</span>
           
           <span class="marcador">Ceratocone</span>
-          
-          <span class="marcador">Cirurgia refrativa</span>
-          
-          <span class="marcador">Blefaroplastia</span>
                   </div>
         <button class="btn" type="button" style="margin-top:30px" data-ir="tele">Continuar</button>
       </section>
@@ -576,8 +571,9 @@ h1,h2{margin:0}
     /* window.open tem de acontecer DENTRO do clique: fora dele o navegador
        trata como popup e bloqueia (Safari sempre, Chrome com frequência). */
     if(chave === "local" && vemDeFora && MSG.vem) chave = "vem";
+
     var texto = (MSG[chave] || "").replace("{unidade}", unidade)
-                                  .replace("{motivo}", motivo)
+                                      .replace("{motivo}", motivo)
                                   .replace("{cidade}", cidadePaciente)
                                   /* praca com WhatsApp direto nao passa pela tela de motivo */
                                   .replace(" Meu caso: .", "");
