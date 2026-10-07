@@ -1,0 +1,10 @@
+# This allowlist is evaluated from the Git repository root.
+# CLI deployments require a separate staging folder containing only approved files.
+/*
+!sites/
+/sites/*
+!sites/oswaldo-frazao/
+/sites/oswaldo-frazao/*
+!sites/oswaldo-frazao/public/
+!sites/oswaldo-frazao/public/**
+!sites/oswaldo-frazao/vercel.json
