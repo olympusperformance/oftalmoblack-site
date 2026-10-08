@@ -284,7 +284,7 @@ Pedro", "site da Cíntia" — e fica solta quando é interna.
 
 ### Resumo diário de demandas no WhatsApp (08/10/2026)
 
-Todo dia às 7h45 (Brasília) o `pg_cron` (`resumo-demandas-diario`) chama a
+Todo dia às 7h45 de Manaus (11h45 UTC) o `pg_cron` (`resumo-demandas-diario`) chama a
 função `resumo-demandas`, que manda para cada pessoa ativa de `staff` com
 `whatsapp` preenchido as demandas abertas em que ela é responsável, agrupadas
 por prazo (atrasadas, hoje, amanhã, 7 dias, mais adiante, sem prazo). O envio

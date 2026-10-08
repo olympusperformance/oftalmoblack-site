@@ -1,7 +1,7 @@
 /* ============================================================================
    resumo-demandas — as demandas de cada pessoa da equipe no WhatsApp, de manhã
 
-   O pg_cron chama esta função todo dia às 7h45 (Brasília). Para cada pessoa
+   O pg_cron chama esta função todo dia às 7h45 (Manaus). Para cada pessoa
    ativa de `staff` com `whatsapp` preenchido e `resumo_ativo`, junta as
    demandas abertas em que ela é responsável e manda uma mensagem só pela
    Evolution API (mesma instância dos avisos dos robôs).

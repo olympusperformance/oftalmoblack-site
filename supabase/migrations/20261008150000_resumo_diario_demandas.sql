@@ -1,5 +1,5 @@
 -- Resumo diário das demandas no WhatsApp de cada pessoa da equipe.
--- A função `resumo-demandas` lê `staff.whatsapp` e manda, às 7h45 de Brasília,
+-- A função `resumo-demandas` lê `staff.whatsapp` e manda, às 7h45 de Manaus,
 -- as demandas abertas em que a pessoa é responsável.
 
 alter table public.staff add column if not exists whatsapp text;
@@ -38,7 +38,7 @@ $$;
 
 revoke all on function cerebro.resumo_demandas_disparar() from public, anon, authenticated;
 
--- 7h45 em Brasília = 10h45 UTC, todos os dias.
+-- 7h45 em Manaus = 11h45 UTC, todos os dias.
 select cron.unschedule('resumo-demandas-diario')
  where exists (select 1 from cron.job where jobname = 'resumo-demandas-diario');
-select cron.schedule('resumo-demandas-diario', '45 10 * * *', 'select cerebro.resumo_demandas_disparar();');
+select cron.schedule('resumo-demandas-diario', '45 11 * * *', 'select cerebro.resumo_demandas_disparar();');
