@@ -282,6 +282,24 @@ Em pausa → Concluída / Cancelada). Só o administrador alcança: as política
 apontar para um mentorado (`member_id`) quando é sobre alguém — "campanha do
 Pedro", "site da Cíntia" — e fica solta quando é interna.
 
+### Resumo diário de demandas no WhatsApp (08/10/2026)
+
+Todo dia às 7h45 (Brasília) o `pg_cron` (`resumo-demandas-diario`) chama a
+função `resumo-demandas`, que manda para cada pessoa ativa de `staff` com
+`whatsapp` preenchido as demandas abertas em que ela é responsável, agrupadas
+por prazo (atrasadas, hoje, amanhã, 7 dias, mais adiante, sem prazo). O envio
+sai pela Evolution API, instância "Atendimento Oftalmoblack".
+
+- Cadastrar o número: `update staff set whatsapp = '5592999999999' where nome = '...';`
+- Pausar uma pessoa sem apagar o número: `resumo_ativo = false`.
+- Ver as mensagens sem enviar: `POST {"simular": true}` (ou com `"staff_id"`),
+  header `x-resumo-token` = segredo `RESUMO_TOKEN` (o mesmo valor está no Vault
+  como `resumo_demandas_token`, que o cron usa).
+- Segredos da função: `RESUMO_TOKEN`, `EVOLUTION_API_KEY`.
+- **Publicar sempre com `--no-verify-jwt`**: o cron não manda JWT, a porta é
+  o token. `supabase functions deploy resumo-demandas --project-ref zpyxnkuvircukjlfexrv --use-api --no-verify-jwt`.
+- Teste do texto: `deno test supabase/functions/resumo-demandas/mensagem_test.ts`.
+
 ### O quadro na TV do escritório
 
 `/demandas/` é o mesmo quadro da aba Demandas desenhado para ser lido de longe:
