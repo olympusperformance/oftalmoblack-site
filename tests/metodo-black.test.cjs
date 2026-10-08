@@ -1,6 +1,26 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const M=require('../public/assets/club-metodo.js');
+test('progresso mostra os marcos sem alterar os pontos e distingue ausência de zero',()=>{
+ assert.equal(M.followersProgress(null),null);
+ assert.equal(M.followersProgress(1138).remaining,1362);
+ assert.ok(Math.abs(M.followersProgress(1138).percent-45.52)<1e-9);
+ assert.equal(M.followersProgress(-5).percent,0);
+ assert.equal(M.followersProgress(2500).target,5000);
+ assert.equal(M.followersProgress(6000).percent,100);
+ assert.equal(M.followersPoints(1138),0);
+});
+test('semanas: Manaus, entrada parcial, repetição, cobertura incompleta e semana aberta',()=>{
+ const videos=[{ig_user_id:'a',media_id:'1',media_type:'VIDEO',published_at:'2026-10-05T02:00:00Z'}, {ig_user_id:'a',media_id:'2',media_type:'VIDEO',published_at:'2026-10-06T14:00:00Z'}];
+ const sync=[{period:'2026-T4',covered_from:'2026-10-01',covered_until:'2026-10-07'}];
+ const rows=M.videoWeeks('2026-T4','2026-09-01',[...videos,videos[0]],sync,'2026-10-08');
+ assert.equal(rows.length,2);assert.equal(rows[0].count,1);assert.equal(rows[0].target,2);assert.equal(rows[0].credit,1/3);
+ assert.equal(rows[1].count,1);assert.equal(rows[1].closed,false);assert.equal(rows[1].credit,null);assert.equal(rows[1].through,'2026-10-07');
+ assert.equal(M.videoWeeks('2026-T4','2026-09-01',[],[],'2026-10-08')[0].credit,null);
+ assert.equal(M.videoWeeks('2026-T4','2026-10-04',videos,sync,'2026-10-08')[0].credit,1/7);
+ assert.equal(M.videoWeeks('2026-T4',null,videos,sync,'2026-10-08').length,0);
+ assert.equal(M.videoWeeks('2026-T4','2026-10-12',videos,sync,'2026-10-08').length,0);
+});
 test('12 degraus: novos pilares, movimentos e vínculos sem pontuar módulos como degrau',()=>{
   assert.equal(M.steps.length,12);assert.equal(M.steps[3].name,'Time Premium');assert.equal(M.steps[8].name,'Chamada Consultiva');assert.equal(M.steps[9].name,'Método In The Bag');
   assert.deepEqual(M.artifactSteps({nome:'Tracker Black',method_steps:['D03','D06']}),['D03','D06']);assert.deepEqual(M.artifactSteps({nome:'Fábrica de Conteúdo'}),[]);

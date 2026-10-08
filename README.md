@@ -144,6 +144,13 @@ reverter o front-end não exige remover dados.
   Só semanas encerradas após a entrada entram, com mínimo de duas semanas
   equivalentes para pontuar. Cobertura incompleta fica pendente. Leituras e
   correções usam fontes separadas em `cb_instagram_scores`/`cb_scores`.
+- **Progresso antes dos pontos (08/10):** a graduação mostra crescimento líquido,
+  percentual e distância até o próximo marco de seguidores, além de vídeos por
+  semana, meta proporcional, créditos e cobertura. Semana aberta ou coleta
+  incompleta não recebe crédito antecipado. O painel da equipe mostra perfis
+  sem coleta e o @ informado para conferir autorização/vínculo. A régua de
+  pontos permanece igual. Na auditoria inicial, as 17 contas pendentes não
+  existiam no coletor: 16 tinham @ na planilha; Helcio estava sem perfil informado.
 - **Demais fontes da primeira fase:** presença, Sistema vivo e juízes de
   resultado são apurados pela equipe nos formulários.
   O membro envia evidência, mas não altera pesos, prazos ou conclusão verificada.

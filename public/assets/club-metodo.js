@@ -59,6 +59,27 @@
     growth=number(growth);
     return growth===null?null:growth>=5000?5:growth>=2500?2.5:0;
   }
+  function followersProgress(growth){
+    growth=number(growth);if(growth===null)return null;
+    var target=growth<2500?2500:5000;
+    return {growth:growth,target:target,percent:Math.max(0,Math.min(100,growth/target*100)),remaining:Math.max(0,target-growth),points:target===2500?2.5:5};
+  }
+  function videoWeeks(period,enteredOn,videos,sync,today){
+    if(!enteredOn)return [];
+    var b=bounds(period),start=enteredOn>b.start?enteredOn:b.start,end=today<b.end?today:b.end;
+    var day=86400000,parse=function(d){return Date.parse(d+'T00:00:00Z');},iso=function(t){return new Date(t).toISOString().slice(0,10);};
+    var first=parse(start),monday=first-((new Date(first).getUTCDay()+6)%7)*day,out=[],seen={};
+    var published=(videos||[]).filter(function(v){var key=v.ig_user_id+'/'+v.media_id;if(seen[key]||v.media_type!=='VIDEO'||v.product_type==='STORY')return false;seen[key]=true;return true;}).map(function(v){return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Manaus',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(v.published_at));});
+    for(var t=monday;t<=parse(end);t+=7*day){
+      var from=iso(Math.max(t,first)),to=iso(Math.min(t+6*day,parse(b.end))),closed=to<today;
+      var coverage=(sync||[]).filter(function(s){return s.period===period;});
+      var complete=coverage.length===1&&coverage[0].covered_from<=from&&coverage[0].covered_until>=to;
+      var through=coverage.length===1&&coverage[0].covered_until>=from?coverage[0].covered_until<to?coverage[0].covered_until:to:null;
+      var n=published.filter(function(d){return d>=from&&d<=to;}).length,weight=(parse(to)-parse(from)+day)/(7*day);
+      out.push({from:from,to:to,closed:closed,complete:complete,through:through,count:n,target:Math.ceil(weight*3-1e-9),credit:closed&&complete?Math.min(weight,n/3):null,weight:weight});
+    }
+    return out;
+  }
   function socialOverrides(d){
     var r={followers_growth:null,followers_evidence:null,video_credits:null,weeks:null,videos_evidence:null,followers_baseline:null,followers_baseline_date:null,followers_baseline_evidence:null};
     if(d.followers_mode==='manual'){
@@ -153,6 +174,6 @@
     if(key==='macula'||key==='no')return n===0?'ok':n===1?'warn':n===2||n===3?'crit':'off';
     return 'off';
   }
-  C.metodo={steps:steps,movements:movements,quarter:quarter,bounds:bounds,number:number,score:score,followersPoints:followersPoints,socialOverrides:socialOverrides,artifactSteps:artifactSteps,catalogGroups:catalogGroups,deliveries:deliveries,pending:pending,canonical:canonical,referenceSignal:referenceSignal};
+  C.metodo={steps:steps,movements:movements,quarter:quarter,bounds:bounds,number:number,score:score,followersPoints:followersPoints,followersProgress:followersProgress,videoWeeks:videoWeeks,socialOverrides:socialOverrides,artifactSteps:artifactSteps,catalogGroups:catalogGroups,deliveries:deliveries,pending:pending,canonical:canonical,referenceSignal:referenceSignal};
   if (typeof module!=='undefined') module.exports=C.metodo;
 })(typeof window!=='undefined'?window:globalThis);

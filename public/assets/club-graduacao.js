@@ -157,9 +157,12 @@
         return (state.status === 'all' || r.model.status === state.status) && r.member.nome.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().indexOf(term) !== -1;
       }).sort(function (a, b) { return (b.model.points == null ? -1 : b.model.points) - (a.model.points == null ? -1 : a.model.points) || a.member.nome.localeCompare(b.member.nome, 'pt-BR'); });
       root.querySelector('[data-gr-count]').textContent = shown.length + ' mentorados';
-      root.querySelector('[data-gr-table]').innerHTML = shown.length ? '<div class="gr-table-wrap"><table class="gr-table"><thead><tr><th>Mentorado / graduação</th><th>Pontos no trimestre</th><th>Faltam para 50</th><th>Situação</th><th><span class="gr-sr-only">Abrir graduação</span></th></tr></thead><tbody>' + shown.map(function (r) {
-        var m = r.model;
-        return '<tr><td><b>' + esc(r.member.nome) + '</b><small>' + (r.record||state.period>='2026-T4' ? esc(beltName(m.grade) + ' · ' + degreeLabel(m.grade)) : 'Aguardando apuração') + '</small></td><td><strong>' + (m.points == null ? '—' : fmt(m.points) + ' pts') + '</strong>' + (m.partial?'<small>Apuração parcial</small>':'') + progress(m.percent, 'Meta de ' + r.member.nome) + '</td><td>' + (m.missing == null ? '—' : fmt(m.missing) + ' pts') + '</td><td>' + badge(m.status) + '</td><td><button type="button" class="btn btn-sm" data-gr-member="' + esc(r.member.id) + '" data-gr-selected-period="' + esc(state.period) + '">Ver graduação ' + C.icon('chevron-right') + '</button></td></tr>';
+      root.querySelector('[data-gr-table]').innerHTML = shown.length ? '<div class="gr-table-wrap"><table class="gr-table"><thead><tr><th>Mentorado / graduação</th><th>Pontos no trimestre</th><th>Faltam para 50</th><th>Instagram</th><th>Situação</th><th><span class="gr-sr-only">Abrir graduação</span></th></tr></thead><tbody>' + shown.map(function (r) {
+        var m = r.model, ig=(state.scores||[]).find(function(s){return s.member_id===r.member.id&&s.period===state.period;})||{}, profile=(state.profiles||[]).find(function(p){return p.member_id===r.member.id;})||{}, fp=C.metodo&&C.metodo.followersProgress(ig.followers_growth);
+        var igText=state.period<'2026-T4'?'Histórico':(fp?(fp.growth>0?'+':'')+fmt(fp.growth)+' seguidores · '+fmt(fp.percent)+'% do marco de +'+fmt(fp.target):'Seguidores: sem apuração');
+        var igVideos=state.period<'2026-T4'?'':ig.videos_updated_at?'Vídeos: '+(ig.auto_weeks==null?'cobertura pendente':fmt(ig.auto_weeks)+' de 2 semanas mínimas apuradas'):'Vídeos: sem coleta';
+        var handle=profile.instagram_username||r.member.instagram;
+        return '<tr><td><b>' + esc(r.member.nome) + '</b><small>' + (r.record||state.period>='2026-T4' ? esc(beltName(m.grade) + ' · ' + degreeLabel(m.grade)) : 'Aguardando apuração') + '</small></td><td><strong>' + (m.points == null ? '—' : fmt(m.points) + ' pts') + '</strong>' + (m.partial?'<small>Apuração parcial</small>':'') + progress(m.percent, 'Meta de ' + r.member.nome) + '</td><td>' + (m.missing == null ? '—' : fmt(m.missing) + ' pts') + '</td><td>' + esc(igText) + '<small>' + esc(igVideos) + '</small>' + (state.period>='2026-T4'&&!ig.videos_updated_at?'<small>'+esc(handle?'@'+handle.replace(/^@/,'')+' · conferir autorização e vínculo':'Informar @ e conectar Instagram')+'</small>':'') + '</td><td>' + badge(m.status) + '</td><td><button type="button" class="btn btn-sm" data-gr-member="' + esc(r.member.id) + '" data-gr-selected-period="' + esc(state.period) + '">Ver graduação ' + C.icon('chevron-right') + '</button></td></tr>';
       }).join('') + '</tbody></table></div>' : '<div class="gr-empty"><p>Nenhum mentorado neste filtro.</p></div>';
     }
     table();
@@ -194,13 +197,13 @@
     root.innerHTML = '<p class="gr-loading" role="status">Carregando sua graduação…</p>';
     var query = C.sb.from('member_graduations').select('member_id,source_date,is_demo,snapshot');
     if (member) query = query.eq('member_id', member.id);
-    var requests=member?[query]:[query,C.sb.from('cb_scores').select('*').gte('period','2026-T4'),C.sb.from('cb_grades').select('member_id,grade,period')];
+    var requests=member?[query]:[query,C.sb.from('cb_scores').select('*').gte('period','2026-T4'),C.sb.from('cb_grades').select('member_id,grade,period'),C.sb.from('cb_scoring_profiles').select('member_id,instagram_username')];
     return Promise.all(requests).then(function (results) {
       results.forEach(function(result){if(result.error)throw new Error(result.error.message);});
       var result=results[0];
       if (root.dataset.grRequest !== requestId) return;
       if (member) renderMember(root, (result.data || [])[0], '2026-T3');
-      else renderAdmin(root, result.data || [], members, Object.assign({ period:currentPeriod(), status:'all', search:'' },previousState||{},{scores:results[1].data||[],grades:results[2].data||[]}));
+      else renderAdmin(root, result.data || [], members, Object.assign({ period:currentPeriod(), status:'all', search:'' },previousState||{},{scores:results[1].data||[],grades:results[2].data||[],profiles:results[3].data||[]}));
     }).catch(function () {
       if (root.dataset.grRequest !== requestId) return;
       root.innerHTML = '<div class="gr-empty"><h2>Não foi possível carregar a graduação</h2><p>Tente novamente em instantes.</p><button class="btn" data-gr-retry>Tentar novamente</button></div>';
