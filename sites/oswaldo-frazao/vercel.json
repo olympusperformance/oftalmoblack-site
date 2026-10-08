@@ -12,6 +12,11 @@
       "permanent": true
     },
     {
+      "source": "/agendamento/oswaldofrazao/",
+      "destination": "/agendamento/",
+      "permanent": true
+    },
+    {
       "source": "/agendamento/oswaldofrazao/:path*",
       "destination": "/agendamento/:path*",
       "permanent": true
