@@ -3236,6 +3236,19 @@
      as células de situação, prioridade, dono, mentorado e prazo são as mesmas
      da linha: trocar aqui grava igual e redesenha os dois lugares. */
 
+  /* Texto da demanda com os links clicáveis. Link do Fathom com ?timestamp
+     vira "Ouvir trecho (mm:ss)"; sem, "Abrir gravação no Fathom". */
+  function comLinks(texto) {
+    return esc(texto).replace(/https?:\/\/[^\s<>"']+/g, function (url) {
+      var cru = url.replace(/&amp;/g, '&');
+      var fathom = /^https:\/\/fathom\.video\//.test(cru);
+      var t = fathom && /[?&]timestamp=(\d+)/.exec(cru);
+      var rotulo = t ? 'Ouvir trecho (' + Math.floor(t[1] / 60) + ':' + ('0' + t[1] % 60).slice(-2) + ')'
+        : fathom ? 'Abrir gravação no Fathom' : url;
+      return '<a href="' + url + '" target="_blank" rel="noopener">' + rotulo + '</a>';
+    });
+  }
+
   function corpoDetalhe(d, r, subId) {
     var escopo = subId ? 's' : 'd';
     var ctxo = contextoDe(d), frente = frenteDe(d);
@@ -3278,10 +3291,10 @@
           esc(etapaLigada ? etapaLigada.titulo : 'Sem etapa') + '</span>', !etapaLigada, chave('etapa'))) : '') +
         (!subId && d.projeto_legado ? campo('Projeto (legado)', '<span class="tx tx-s" style="color:var(--faint)">' +
           esc(d.projeto_legado) + '</span>') : '') +
-        (!subId ? campo('Origem', esc(r.origem || 'Não informada')) : '') +
+        (!subId ? campo('Origem', r.origem ? comLinks(r.origem) : 'Não informada') : '') +
       '</dl>' +
       (!subId ? '<section class="demand-section"><h4>Descrição</h4><p class="demand-description">' +
-        esc(d.descricao || 'Nenhuma descrição adicionada.') + '</p></section>' : '') +
+        (d.descricao ? comLinks(d.descricao) : 'Nenhuma descrição adicionada.') + '</p></section>' : '') +
       (!subId ? '<section class="demand-section"><h4>Checklist <span>' + feitas + '/' + etapas.length +
         '</span></h4>' + (etapas.length ? '<ul class="demand-checklist">' + etapas.map(function (e) {
           return '<li' + (e.feito ? ' class="feito"' : '') + '>' +
