@@ -185,8 +185,8 @@
   function liveModel(memberId,record,state){
     var score=(state.scores||[]).find(function(s){return s.member_id===memberId&&s.period===state.period;});
     var grade=Math.max.apply(null,[Number(record&&record.snapshot&&record.snapshot.grade)||0].concat((state.grades||[]).filter(function(g){return g.member_id===memberId;}).map(function(g){return Number(g.grade);})));
-    var points=score?Number(score.total):null;
-    return {grade:grade,points:points,missing:points===null?null:Math.max(0,Math.round((META-points)*100)/100),percent:points===null?0:Math.min(100,points/META*100),partial:!!score&&!score.complete,status:state.period>currentPeriod()?'future':scoreStatus(points)};
+    var points=score&&score.total!=null?Number(score.total):null;
+    return {grade:grade,points:points,missing:points===null?null:Math.max(0,Math.round((META-points)*100)/100),percent:points===null?0:Math.min(100,points/META*100),partial:points!==null&&!score.complete,status:state.period>currentPeriod()?'future':scoreStatus(points)};
   }
   function load(root, member, members, previousState) {
     var requestId = String(Date.now()) + Math.random();

@@ -35,6 +35,13 @@ test('v2.2: seguidores por faixas e vídeos somente com duas semanas apuradas',(
   assert.equal(M.score({period:'2026-T3',followers_growth:3000,video_credits:1,weeks:1}).parts.followers,3);
   assert.equal(M.score({period:'2026-T3',video_credits:1,weeks:1}).parts.videos,10);
 });
+test('ajustes sociais preservam zero, exigem motivo e podem voltar ao automático',()=>{
+  const fields={followers_mode:'manual',followers_growth:'0',followers_evidence:'Conferência da equipe',videos_mode:'manual',video_credits:'1.5',weeks:'3',videos_evidence:'Planilha',followers_base_mode:'manual',followers_baseline:'5000',followers_baseline_date:'2026-09-30',followers_baseline_evidence:'Planilha D8'};
+  const manual=M.socialOverrides(fields);assert.equal(manual.followers_growth,0);assert.equal(manual.video_credits,1.5);assert.equal(manual.followers_baseline,5000);
+  assert.throws(()=>M.socialOverrides({...fields,weeks:'1'}));assert.throws(()=>M.socialOverrides({...fields,followers_evidence:''}));
+  const auto=M.socialOverrides({...fields,followers_mode:'auto',videos_mode:'auto',followers_base_mode:'auto'});
+  assert.equal(auto.followers_growth,null);assert.equal(auto.video_credits,null);assert.equal(auto.weeks,null);assert.equal(auto.followers_baseline,null);
+});
 test('indicações sem teto, bônus 10 e ativação uma vez por módulo',()=>{
   const extras=[...Array.from({length:5},(_,i)=>({kind:'referral',reference:String(i)})),{kind:'bonus'},{kind:'bonus'},{kind:'module',reference:'iris'},{kind:'module',reference:'iris'},{kind:'module',reference:'fabrica'}];
   assert.equal(M.score({},[],extras).extra,145);assert.equal(M.score({},[],extras).vouchers,5);

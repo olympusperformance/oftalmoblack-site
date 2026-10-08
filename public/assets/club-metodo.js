@@ -59,6 +59,22 @@
     growth=number(growth);
     return growth===null?null:growth>=5000?5:growth>=2500?2.5:0;
   }
+  function socialOverrides(d){
+    var r={followers_growth:null,followers_evidence:null,video_credits:null,weeks:null,videos_evidence:null,followers_baseline:null,followers_baseline_date:null,followers_baseline_evidence:null};
+    if(d.followers_mode==='manual'){
+      r.followers_growth=number(d.followers_growth);r.followers_evidence=String(d.followers_evidence||'').trim();
+      if(r.followers_growth===null||!Number.isInteger(r.followers_growth)||!r.followers_evidence)throw new Error('Informe o crescimento inteiro de seguidores e a fonte do ajuste.');
+    }
+    if(d.videos_mode==='manual'){
+      r.video_credits=number(d.video_credits);r.weeks=number(d.weeks);r.videos_evidence=String(d.videos_evidence||'').trim();
+      if(r.video_credits===null||r.weeks===null||r.video_credits<0||r.weeks<=0||r.video_credits>r.weeks||!r.videos_evidence)throw new Error('Informe créditos entre zero e o total de semanas, semanas positivas e a fonte do ajuste.');
+    }
+    if(d.followers_base_mode==='manual'){
+      r.followers_baseline=number(d.followers_baseline);r.followers_baseline_date=d.followers_baseline_date;r.followers_baseline_evidence=String(d.followers_baseline_evidence||'').trim();
+      if(r.followers_baseline===null||r.followers_baseline<0||!Number.isInteger(r.followers_baseline)||!/^\d{4}-\d{2}-\d{2}$/.test(r.followers_baseline_date||'')||!r.followers_baseline_evidence)throw new Error('Informe a base de seguidores, a data e sua fonte.');
+    }
+    return r;
+  }
   function score(q,missions,extras,editions) {
     q=q||{}; missions=missions||[]; extras=extras||[]; editions=editions||[];
     var modern=!q.period||q.period>='2026-T4';
@@ -137,6 +153,6 @@
     if(key==='macula'||key==='no')return n===0?'ok':n===1?'warn':n===2||n===3?'crit':'off';
     return 'off';
   }
-  C.metodo={steps:steps,movements:movements,quarter:quarter,bounds:bounds,number:number,score:score,followersPoints:followersPoints,artifactSteps:artifactSteps,catalogGroups:catalogGroups,deliveries:deliveries,pending:pending,canonical:canonical,referenceSignal:referenceSignal};
+  C.metodo={steps:steps,movements:movements,quarter:quarter,bounds:bounds,number:number,score:score,followersPoints:followersPoints,socialOverrides:socialOverrides,artifactSteps:artifactSteps,catalogGroups:catalogGroups,deliveries:deliveries,pending:pending,canonical:canonical,referenceSignal:referenceSignal};
   if (typeof module!=='undefined') module.exports=C.metodo;
 })(typeof window!=='undefined'?window:globalThis);

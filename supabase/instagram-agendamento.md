@@ -62,5 +62,34 @@ insights ainda permite salvar seguidores e publicacoes daquela conta; nenhuma
 conta coletada retorna HTTP 502. Os dias sem coleta nao sao preenchidos com
 totais de seguidores atuais, pois isso inventaria uma progressao historica.
 
+## Graduação automática (desde 2026-T4)
+
+Aplicar `20261008192117_instagram_graduacao_automatica.sql` antes de publicar
+o coletor e a interface. O mesmo agendamento coleta vídeos/Reels pela lista de
+publicações, com paginação, ID único e data em Manaus. A janela inclui o
+trimestre anterior para fechar sua última semana; a cobertura certificada vai
+até ontem. Fotos, carrosséis e stories não contam. Erro de paginação não
+certifica uma semana sem vídeos. Conferir também `videos.contas_pendentes`.
+
+`cb_instagram_videos` guarda as publicações e `cb_instagram_video_sync` guarda
+a cobertura por conta/trimestre. A RPC de gravação aceita apenas o serviço;
+as tabelas têm leitura protegida por RLS. `cb_scoring_profiles.entered_on`
+define a entrada elegível e pode ser corrigida pela equipe.
+
+`cb_instagram_scores` combina as leituras com ajustes auditados em
+`cb_quarters`; `cb_scores` calcula os pontos usados pela graduação e ranking.
+O coletor nunca escreve os ajustes. Manual, inclusive zero, prevalece até a
+equipe selecionar **Usar automático** em **Apurar rotina e resultado**.
+A base inicial de seguidores pode ser ajustada sem desligar a leitura atual.
+Sem conexão, base ou cobertura suficiente, a métrica fica pendente.
+
+Em 08/10/2026, a coleta de validação retornou 16 contas, 49 publicações e
+nenhuma pendência de vídeos. Dos 32 mentorados da planilha, 15 tinham ambas
+as fontes automáticas disponíveis e 17 aguardavam coleta/conexão. Foram
+importadas 32 datas de entrada e 29 bases de seguidores com referência às
+células da planilha v2.2; duas bases já coincidiam e uma estava vazia.
+Não havia ajustes de vídeos preenchidos no T4. Esta importação é pontual;
+o arquivo Excel não é sincronizado continuamente.
+
 Agendamento com pg_cron, pg_net e Vault conforme a
 [documentacao do Supabase](https://supabase.com/docs/guides/functions/schedule-functions).

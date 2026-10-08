@@ -125,13 +125,27 @@ reverter o front-end não exige remover dados.
   continuam as regras existentes (três condições para 5 pontos; bônus 10 uma
   vez por trimestre). Lead órfão significa lead sem resposta pelo Sistema Black,
   nunca apenas lead sem responsável. A apuração desse campo continua manual.
-- **Seguidores:** usa a coleta automaticamente quando existe uma medição no dia
-  anterior ao início do trimestre e uma leitura dentro do período; trimestre
-  encerrado exige também a leitura do último dia. Sem essa cobertura, usa uma
-  apuração manual com evidência ou mostra ausência. O funil e o total de
-  seguidores também são lidos das integrações existentes.
-- **Demais fontes da primeira fase:** presença, créditos semanais de vídeo,
-  Sistema vivo e juízes de resultado são apurados pela equipe nos formulários.
+- **Instagram automático com ajuste manual (08/10):** aplicar
+  `20261008192117_instagram_graduacao_automatica.sql` e publicar o coletor
+  `instagram-metricas` antes do front-end. Desde 2026-T4, a equipe pode escolher
+  “Usar automático” ou “Usar ajuste manual” em Graduação → mentorado → Apurar
+  rotina e resultado. O ajuste, inclusive zero, prevalece até ser removido;
+  a coleta continua sem sobrescrevê-lo. Fonte, autor e data ficam auditados.
+- **Seguidores:** crescimento entre a base inicial e a última leitura. A base
+  automática é a medição do dia anterior à entrada ou ao trimestre, o que for
+  mais recente. A equipe pode corrigir apenas a base ou todo o crescimento.
+  Trimestre encerrado exige leitura no último dia. Ausência de cobertura não
+  vira zero. Importação única da planilha v2.2: 32 datas de entrada e 29 bases
+  manuais onde a coleta não tinha a mesma base; duas já coincidiam e uma estava
+  vazia. Não havia créditos de vídeo preenchidos no T4 para importar.
+- **Vídeos:** o coletor pagina as publicações, identifica vídeos/Reels por ID e
+  data de Manaus e exclui fotos, carrosséis e stories. Três vídeos valem um
+  crédito semanal, limitado a um; semanas parciais têm peso proporcional.
+  Só semanas encerradas após a entrada entram, com mínimo de duas semanas
+  equivalentes para pontuar. Cobertura incompleta fica pendente. Leituras e
+  correções usam fontes separadas em `cb_instagram_scores`/`cb_scores`.
+- **Demais fontes da primeira fase:** presença, Sistema vivo e juízes de
+  resultado são apurados pela equipe nos formulários.
   O membro envia evidência, mas não altera pesos, prazos ou conclusão verificada.
 - **Encontro:** cadastrar todas as edições elegíveis, inclusive entregas ainda
   não realizadas. Os dois vídeos constituem uma única entrega; cada edição

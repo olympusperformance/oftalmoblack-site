@@ -31,6 +31,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2.49.4";
 import { normalizarGanhos } from "./seguidores.ts";
 import { normalizarAlcance } from "./alcance.ts";
+import { coletarVideos, diaManaus } from "./videos.ts";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -241,6 +242,14 @@ Deno.serve(async (req) => {
     const falhas: Array<{ username: string; erro: string }> = [];
     const pendenciasGanhos: Array<{ username: string; erro: string }> = [];
     const pendenciasAlcance: Array<{ username: string; erro: string }> = [];
+    const pendenciasVideos: Array<{ username: string; erro: string }> = [];
+    let videosAtualizados=0, contasVideos=0;
+    const hojeManaus=diaManaus(new Date().toISOString());
+    const hojePartes=hojeManaus.split('-').map(Number);
+    // Reconsulta também o trimestre anterior para completar sua última semana.
+    const desdeVideos=new Date(Date.UTC(hojePartes[0],Math.floor((hojePartes[1]-1)/3)*3-3,1)).toISOString().slice(0,10);
+    const inicioVideos=desdeVideos<'2026-10-01'?'2026-10-01':desdeVideos;
+    const ateVideos=new Date(Date.parse(hojeManaus+'T12:00:00Z')-86400000).toISOString().slice(0,10);
 
     // Limita a concorrencia para concluir a turma dentro do tempo da funcao.
     for (let inicio = 0; inicio < fontes.length; inicio += 3) {
@@ -254,6 +263,15 @@ Deno.serve(async (req) => {
           fields: "followers_count,follows_count,media_count",
           access_token: pageToken,
         });
+
+        try {
+          const videos=await coletarVideos(params=>ler('media',{...params,access_token:pageToken}),inicioVideos,hojeManaus);
+          const {data,error}=await db.rpc('instagram_sync_videos',{p_ig_user_id:ig.id,p_desde:inicioVideos,p_ate:ateVideos,p_videos:videos});
+          if(error)throw new Error(error.message);
+          if(data?.linked){videosAtualizados+=Number(data.videos)||0;contasVideos++;}
+        } catch(e) {
+          pendenciasVideos.push({username:ig.username,erro:mensagemErro(e)});
+        }
 
         const janela: Record<string, number | null> = {};
         try {
@@ -373,6 +391,7 @@ Deno.serve(async (req) => {
         atualizados: alcanceAtualizado,
         contas_pendentes: pendenciasAlcance,
       },
+      videos:{contas:contasVideos,publicacoes:videosAtualizados,contas_pendentes:pendenciasVideos},
     }, linhas.length > 0 ? 200 : 502);
   } catch (e) {
     console.error("[instagram-metricas]", e);

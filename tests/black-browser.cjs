@@ -34,11 +34,11 @@ window.__writes=[];window.__fixtures=fixtures;window.__failTable=null;
 window.Club.sb={supabaseUrl:'http://local.test',auth:{getSession:async()=>({data:{session:{access_token:'test',user:{id:'user1',email:'test@example.test'}}}}),signOut:async()=>({})},
 rpc:async(name,args)=>name==='marcar_etapa'?(window.__writes.push({table:'marcar_etapa',row:args}),{data:{member_id:args.p_member_id,step_id:args.p_step_id,feito:args.p_feito,feito_em:args.p_feito?new Date().toISOString():null}}):({data:name==='me'?{is_admin:${isAdmin},email:member.email,member:${isAdmin?'null':'member'}}:name==='cb_ranking'?[{position:1,alias:member.nome,member_id:member.id,total:28.5,grade:1,movement:null}]:[]}),
 functions:{invoke:async()=>({data:{status:'unlinked'}})},
-from(table){let one=false,filters=[],write=null;let q={};
+from(table){let one=false,filters=[],write=null,conflict=null;let q={};
 for(const key of ['select','order','gte','lte','gt','lt','or','in','is','not','limit','range'])q[key]=()=>q;
 q.eq=(key,value)=>{filters.push([key,value]);return q;};q.maybeSingle=q.single=()=>{one=true;return q;};
-q.insert=q.upsert=q.update=(row)=>{write=row;window.__writes.push({table,row});return q;};
-q.then=(resolve,reject)=>{if(window.__failTable===table)return Promise.resolve({data:null,error:{message:'Fonte indisponível'}}).then(resolve,reject);let data=fixtures[table]||[];if(write){const old=data.find(r=>write.id&&r.id===write.id);const merged={...old,...write,id:write.id||'new-id'};fixtures[table]=old?data.map(r=>r===old?merged:r):[...data,merged];data=[merged];}else for(const [k,v] of filters)data=data.filter(r=>r[k]===v);return Promise.resolve({data:one?(data[0]||null):data}).then(resolve,reject);};return q;}};
+q.insert=q.upsert=q.update=(row,options)=>{write=row;conflict=options&&options.onConflict;window.__writes.push({table,row});return q;};
+q.then=(resolve,reject)=>{if(window.__failTable===table)return Promise.resolve({data:null,error:{message:'Fonte indisponível'}}).then(resolve,reject);let data=fixtures[table]||[];if(write){const old=data.find(r=>write.id&&r.id===write.id||conflict&&conflict.split(',').every(k=>r[k]===write[k]));const merged={...old,...write,id:write.id||'new-id'};fixtures[table]=old?data.map(r=>r===old?merged:r):[...data,merged];data=[merged];}else for(const [k,v] of filters)data=data.filter(r=>r[k]===v);return Promise.resolve({data:one?(data[0]||null):data}).then(resolve,reject);};return q;}};
 const rpc=window.Club.sb.rpc;window.__failRanking=false;
 window.__rankingRequests=[];
 window.__ranking=[{position:1,alias:member.nome,member_id:member.id,total:63.9,grade:2,source:'graduacao',is_demo:true,source_date:'2026-09-20',complete:false,movement:null},...['Clínica Aurora','Clínica Horizonte','Clínica Novo Olhar','Consultório Central','Clínica Vista'].map((alias,i)=>({position:[2,2,3,4,5][i],alias:${isAdmin} ? alias:'Mestre '+['A12B34','B23C45','C34D56','D45E67','E56F78'][i],member_id:${isAdmin}?'synthetic-'+i:null,total:[58,58,49.6,27,0][i],grade:[2,1,0,1,0][i],source:'graduacao',is_demo:false,source_date:'2026-09-30',movement:[2,-1,0,null,null][i]}))];
@@ -456,6 +456,29 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
    assert.match(await page.locator('#black-graduacao').innerText(),/Leads sem resposta pelo sistema/);
    assert.match(await page.locator('#black-graduacao').innerText(),/mínimo de duas semanas/);
    assert.doesNotMatch(await page.locator('#black-graduacao').innerText(),/108,5/);
+   if(isAdmin){
+    await page.evaluate(()=>{const f=window.__fixtures;f.cb_scores=[{member_id:f.members[0].id,period:f.cb_quarters[0].period,followers_growth:2700,followers_auto_growth:2700,followers_source:'auto_base_manual',video_credits:.57,weeks:.57,auto_video_credits:.57,auto_weeks:.57,videos_source:'auto',total:2.5,complete:false}];});
+    await page.locator('#black-graduacao [data-cb-reload]').click();
+    await page.waitForFunction(()=>document.querySelector('#black-graduacao')?.textContent.includes('base ajustada pela equipe'));
+    await page.locator('#black-graduacao [data-cb-quarter]').click();
+    const form=page.locator('[data-cb-form=quarter]');
+    assert.equal(await form.locator('[name=followers_growth]').isDisabled(),true);
+    await form.locator('[name=followers_mode]').selectOption('manual');
+    await form.locator('[name=followers_growth]').fill('0');
+    await form.locator('[name=followers_evidence]').fill('Conferência da planilha');
+    await form.locator('[name=videos_mode]').selectOption('manual');
+    await form.locator('[name=video_credits]').fill('1');await form.locator('[name=weeks]').fill('2');
+    await form.locator('[name=videos_evidence]').fill('Conferência semanal');
+    await form.locator('[name=evidence]').fill('Apuração de teste');
+    await page.screenshot({path:path.join(out,'admin-instagram-ajuste-manual.png'),fullPage:true});
+    await form.locator('button[type=submit]').click();
+    await page.waitForFunction(()=>window.__writes.some(w=>w.table==='cb_quarters'&&w.row.followers_growth===0&&w.row.video_credits===1));
+    await page.waitForFunction(()=>document.querySelector('#black-graduacao')?.textContent.includes('Apuração registrada: Apuração de teste'));
+    await page.locator('#black-graduacao [data-cb-quarter]').click();
+    await page.locator('[name=followers_mode]').selectOption('auto');await page.locator('[name=videos_mode]').selectOption('auto');
+    await page.locator('[data-cb-form=quarter] button[type=submit]').click();
+    await page.waitForFunction(()=>window.__writes.some(w=>w.table==='cb_quarters'&&w.row.followers_growth===null&&w.row.video_credits===null&&w.row.weeks===null));
+   }
    await page.evaluate(()=>{for(const key of Object.keys(window.__fixtures))delete window.__fixtures[key];Object.assign(window.__fixtures,window.__savedGraduationFixtures);});
    await page.locator('#black-graduacao [data-cb-reload]').click();await page.locator('#black-graduacao .cb-score').waitFor();
    await page.locator('#rail [data-nav="modulos"]').click();assert.equal(await page.locator('#black-modulos .cb-module').count(),2);await page.locator('#black-modulos [data-nav=iris]').click();assert.equal(await page.locator('[data-view=iris]').isVisible(),true);
