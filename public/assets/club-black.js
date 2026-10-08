@@ -223,7 +223,6 @@
     if(key==='followers'){
       body+='<h3>Memória de cálculo</h3>'+inspectionTable(['Dado','Valor'],[['Base inicial',fmt(live.followers_baseline)],['Data da base',live.followers_baseline_date?date(live.followers_baseline_date):null],['Última leitura',fmt(live.latest_followers)],['Data da leitura',live.latest_date?date(live.latest_date):null],['Crescimento automático',fmt(live.followers_auto_growth)],['Crescimento usado nos pontos',fmt(live.followers_growth)],['Fonte aplicada',sourceLabel(live.followers_source)]])+
         '<p class="cb-note">Crescimento automático = última leitura − base. Um ajuste manual, inclusive zero, prevalece na pontuação.</p>'+
-        (live.followers_baseline_evidence?'<p>Fonte da base: '+esc(live.followers_baseline_evidence)+'</p>':'')+
         '<h3>Leituras do trimestre</h3>'+inspectionTable(['Dia','Seguidores'],state.ig.slice().reverse().map(function(r){return [date(r.dia),fmt(r.seguidores)];}));
     }
     if(key==='videos'){
