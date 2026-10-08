@@ -350,7 +350,7 @@
   var renderers={subida:subida,pendencias:pendencias,ranking:ranking,vitrine:vitrine,casos:cases,encontro:encontro,iris:iris,modulos:modulePage,rede:network,graduacao:placar};
   function render(){
     Object.keys(renderers).forEach(function(key){var el=document.getElementById('black-'+key);if(!el)return;
-      el.innerHTML=state.loading?'<div class="cb-loading" role="status">Carregando '+esc(labels[key]||'placar')+'…</div>':
+      el.innerHTML=key==='graduacao'&&(state.loading||state.scoreLoading)&&!state.error?head('Graduação','Pontos premiam o trimestre. Graus premiam a carreira.')+C.graduacao.loading(false):state.loading?'<div class="cb-loading" role="status">Carregando '+esc(labels[key]||'placar')+'…</div>':
         state.error?'<div class="cb-notice" role="alert">'+esc(state.error)+' '+button('Tentar novamente','reload')+'</div>':renderers[key]()+footer();
     });
     if(state.options&&state.options.onDeliveriesChange)state.options.onDeliveriesChange();
@@ -360,7 +360,7 @@
   async function list(table,filters,period){var result=[],start=0;while(true){var q=C.sb.from(table).select('*').order(table==='cb_instagram_videos'?'media_id':table==='cb_instagram_video_sync'?'ig_user_id':table==='cb_quarters'?'period':table==='cb_scoring_profiles'?'member_id':table==='cb_steps'?'method_step':'id');Object.keys(filters||{}).forEach(function(k){q=q.eq(k,filters[k]);});if(table==='cb_instagram_videos'){var b=M.bounds(period);q=q.gte('published_at',b.start+'T00:00:00-04:00').lte('published_at',b.end+'T23:59:59.999-04:00');}var chunk=ok(await q.range(start,start+999))||[];result=result.concat(chunk);if(chunk.length<1000)return result;start+=1000;}}
   async function load(){
     var version=++state.request,id=state.member.id,period=state.period;
-    state.loading=true;state.error=null;state.rankingLoading=true;state.rankingError=false;state.data={};state.crm=null;state.ig=[];render();
+    state.loading=true;state.scoreLoading=true;state.error=null;state.rankingLoading=true;state.rankingError=false;state.data={};state.crm=null;state.ig=[];render();
     var tasks={instagramVideos:['cb_instagram_videos',{member_id:id}],instagramSync:['cb_instagram_video_sync',{member_id:id,period:period}],scoringProfiles:['cb_scoring_profiles',{member_id:id}],checklistProgress:['cb_checklist_progress',{member_id:id}],vouchers:['cb_vouchers',{member_id:id}],checklistRequests:['cb_checklist_requests',{member_id:id}],quarters:['cb_quarters',{member_id:id,period:period}],steps:['cb_steps',{member_id:id}],missions:['cb_missions',{member_id:id,period:period}],extras:['cb_extras',{member_id:id}],encontros:['cb_encontros',{member_id:id,period:period}],grades:['cb_grades',{member_id:id}],redemptions:['cb_redemptions',{member_id:id}],cases:['cb_cases',{member_id:id}],files:['cb_case_files',{member_id:id}],allRewards:['cb_rewards',{}]};
     if(admin())tasks.queue=['cb_redemptions',{}];
     var keys=Object.keys(tasks);var results=await Promise.allSettled(keys.map(function(k){return list(tasks[k][0],tasks[k][1],period);}));
@@ -385,6 +385,7 @@
     state.data.legacy=others[1].status==='fulfilled'?others[1].value:[];
     state.crm=others[2].status==='fulfilled'?others[2].value:null;state.ig=others[3].status==='fulfilled'?others[3].value:[];
     state.data.history=others[4].status==='fulfilled'?others[4].value:[];
+    state.scoreLoading=false;
     if(others[4].status!=='fulfilled')state.error='Não foi possível consultar a apuração automática. Atualize a página para tentar novamente.';
     render(); if(drawerId){if(drawerId.includes('/'))openDelivery(drawerId);else if(/^D\d{2}$/.test(drawerId)||drawerId==='TREINO')openStep(drawerId);}
   }

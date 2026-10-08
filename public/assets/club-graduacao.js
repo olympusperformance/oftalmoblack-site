@@ -10,6 +10,13 @@
     { id:'2026-T4', label:'Out–dez 2026' }, { id:'2027-T1', label:'Jan–mar 2027' }
   ];
   function fmt(n) { return Number(n || 0).toLocaleString('pt-BR', { maximumFractionDigits:2 }); }
+  function loading(overview){
+    function line(width,kind){return '<span class="farol-skel gr-load-line '+(kind||'')+'" style="width:'+width+'"></span>';}
+    function card(title){return '<div class="gr-load-block"><b>'+title+'</b>'+line('55%','gr-load-number')+line('95%')+line('75%')+'</div>';}
+    return '<section class="gr-loading-layout" aria-busy="true" aria-label="Carregando graduação"><p class="farol-loading-note gr-load-note" role="status"><i aria-hidden="true"></i>Carregando graduação e fontes de pontuação…</p><div aria-hidden="true">'+
+      (overview?'<div class="gr-load-grid">'+['Podem graduar','Na reta final','Em progresso','Acompanhar'].map(card).join('')+'</div><div class="gr-load-block gr-load-list">'+Array.from({length:6},function(){return '<div class="gr-load-row">'+line('35%')+line('18%')+line('23%')+'</div>';}).join('')+'</div>':
+      '<div class="gr-load-block gr-load-hero"><div class="gr-load-hero-main">'+line('100%','gr-load-belt')+'<div>'+line('60%','gr-load-score')+line('90%')+line('70%')+'</div></div>'+line('100%','farol-skel-bar')+line('70%')+'</div><div class="gr-load-grid">'+['Rotina','Missões','Resultado','Fora da régua'].map(card).join('')+'</div><div class="gr-load-section">'+line('280px')+'</div><div class="gr-load-grid">'+['Presença','Vídeos','Encontro Grau Zero','Seguidores','Sistema Black vivo','Missões de execução','Resultado'].map(card).join('')+'</div>')+'</div></section>';
+  }
   function money(n) { return Number(n || 0).toLocaleString('pt-BR', { style:'currency', currency:'BRL', maximumFractionDigits:0 }); }
   function round(n) { return Math.round((n + Number.EPSILON) * 10) / 10; }
   function scoreStatus(points) { return points == null ? 'missing' : points >= 50 ? 'ready' : points >= 35 ? 'near' : points >= 20 ? 'progress' : 'starting'; }
@@ -194,7 +201,7 @@
   function load(root, member, members, previousState) {
     var requestId = String(Date.now()) + Math.random();
     root.dataset.grRequest = requestId;
-    root.innerHTML = '<p class="gr-loading" role="status">Carregando sua graduação…</p>';
+    root.innerHTML = loading(!member);
     var query = C.sb.from('member_graduations').select('member_id,source_date,is_demo,snapshot');
     if (member) query = query.eq('member_id', member.id);
     var requests=member?[query]:[query,C.sb.from('cb_scores').select('*').gte('period','2026-T4'),C.sb.from('cb_grades').select('member_id,grade,period'),C.sb.from('cb_scoring_profiles').select('member_id,instagram_username')];
@@ -210,7 +217,7 @@
       root.onclick = function (event) { if (event.target.closest('[data-gr-retry]')) load(root, member, members); };
     });
   }
-  C.graduacao = { model:model, liveModel:liveModel, status:scoreStatus, beltName:beltName, belt:belt,
+  C.graduacao = { loading:loading, model:model, liveModel:liveModel, status:scoreStatus, beltName:beltName, belt:belt,
     mountMember:function (root, member) { return load(root, member); },
     mountAdmin:function (root, members) { return load(root, null, members); },
     refreshAdmin:function(root,members){return load(root,null,members,root.grState);},

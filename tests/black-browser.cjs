@@ -38,7 +38,7 @@ from(table){let one=false,filters=[],write=null,conflict=null;let q={};
 for(const key of ['select','order','gte','lte','gt','lt','or','in','is','not','limit','range'])q[key]=()=>q;
 q.eq=(key,value)=>{filters.push([key,value]);return q;};q.maybeSingle=q.single=()=>{one=true;return q;};
 q.insert=q.upsert=q.update=(row,options)=>{write=row;conflict=options&&options.onConflict;window.__writes.push({table,row});return q;};
-q.then=(resolve,reject)=>{if(window.__failTable===table)return Promise.resolve({data:null,error:{message:'Fonte indisponível'}}).then(resolve,reject);let data=fixtures[table]||[];if(write){const old=data.find(r=>write.id&&r.id===write.id||conflict&&conflict.split(',').every(k=>r[k]===write[k]));const merged={...old,...write,id:write.id||'new-id'};fixtures[table]=old?data.map(r=>r===old?merged:r):[...data,merged];data=[merged];}else for(const [k,v] of filters)data=data.filter(r=>r[k]===v);return Promise.resolve({data:one?(data[0]||null):data}).then(resolve,reject);};return q;}};
+q.then=(resolve,reject)=>{if(table==='cb_scores'&&window.__holdScores)return window.__holdScores.then(()=>{window.__holdScores=null;return q.then(resolve,reject);});if(window.__failTable===table)return Promise.resolve({data:null,error:{message:'Fonte indisponível'}}).then(resolve,reject);let data=fixtures[table]||[];if(write){const old=data.find(r=>write.id&&r.id===write.id||conflict&&conflict.split(',').every(k=>r[k]===write[k]));const merged={...old,...write,id:write.id||'new-id'};fixtures[table]=old?data.map(r=>r===old?merged:r):[...data,merged];data=[merged];}else for(const [k,v] of filters)data=data.filter(r=>r[k]===v);return Promise.resolve({data:one?(data[0]||null):data}).then(resolve,reject);};return q;}};
 const rpc=window.Club.sb.rpc;window.__failRanking=false;
 window.__rankingRequests=[];
 window.__ranking=[{position:1,alias:member.nome,member_id:member.id,total:63.9,grade:2,source:'graduacao',is_demo:true,source_date:'2026-09-20',complete:false,movement:null},...['Clínica Aurora','Clínica Horizonte','Clínica Novo Olhar','Consultório Central','Clínica Vista'].map((alias,i)=>({position:[2,2,3,4,5][i],alias:${isAdmin} ? alias:'Mestre '+['A12B34','B23C45','C34D56','D45E67','E56F78'][i],member_id:${isAdmin}?'synthetic-'+i:null,total:[58,58,49.6,27,0][i],grade:[2,1,0,1,0][i],source:'graduacao',is_demo:false,source_date:'2026-09-30',movement:[2,-1,0,null,null][i]}))];
@@ -456,6 +456,17 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
    assert.match(await page.locator('#black-graduacao').innerText(),/Leads sem resposta pelo sistema/);
    assert.match(await page.locator('#black-graduacao').innerText(),/mínimo de duas semanas/);
    assert.doesNotMatch(await page.locator('#black-graduacao').innerText(),/108,5/);
+   await page.evaluate(()=>{window.__holdScores=new Promise(resolve=>window.__releaseScores=resolve);});
+   await page.locator('#black-graduacao [data-cb-reload]').click();
+   await page.locator('#black-graduacao .gr-loading-layout[aria-busy=true]').waitFor();
+   assert.equal(await page.locator('#black-graduacao .cb-score').count(),0,'Não exibir pontos provisórios antes da resposta da fonte');
+   for(const width of [390,1440]){await page.setViewportSize({width,height:1080});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1));await page.screenshot({path:path.join(out,(isAdmin?'admin':'member')+'-graduacao-loading-'+width+'.png'),fullPage:true});}
+   await page.emulateMedia({reducedMotion:'reduce'});
+   assert.equal(await page.locator('#black-graduacao .farol-skel').first().evaluate(el=>getComputedStyle(el).animationName),'none');
+   await page.emulateMedia({reducedMotion:'no-preference'});
+   await page.evaluate(()=>window.__releaseScores());
+   await page.locator('#black-graduacao .cb-score').waitFor();
+   assert.equal(await page.locator('#black-graduacao [aria-busy=true]').count(),0);
    for(const key of ['routine','missions','result','extra','attendance','videos','encontro','followers','system']){
     const card=page.locator('#black-graduacao .cb-inspect-card[data-cb-inspect='+key+']').first();
     await card.focus();await page.keyboard.press('Enter');
