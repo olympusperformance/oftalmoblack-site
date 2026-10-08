@@ -396,7 +396,7 @@
   C.data.demands = {
     list: function () {
       return todas(function () {
-        return sb().from('demands').select('*').order('criado_em').order('id');
+        return sb().from('demands').select('*').is('excluida_em', null).order('criado_em').order('id');
       }, AVISO_DEM).then(function (rows) { return rows.sort(byDemanda); });
     },
     save: function (d) { return grava('demands', d); },
