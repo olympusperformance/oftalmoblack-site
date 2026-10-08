@@ -397,6 +397,31 @@ h1,h2{margin:0}
   "use strict";
   var WA = "5521998900121";
   var MSG = {"local": "Olá! Vim pelo link da bio do Dr. Oswaldo Frazão. Sou de {unidade} e gostaria de agendar minha consulta presencial.", "tele": "Olá! Vim pelo link da bio do Dr. Oswaldo Frazão. Sou de {cidade}, tenho interesse em cirurgia e posso ir ao Rio de Janeiro. Gostaria de agendar a teleconsulta."};
+  var MSG_ADS = {"local": "Olá! Vi um anúncio do Dr. Oswaldo Frazão. Sou de {unidade} e gostaria de agendar minha consulta presencial.", "tele": "Olá! Vi um anúncio do Dr. Oswaldo Frazão. Sou de {cidade}, tenho interesse em cirurgia e posso ir ao Rio de Janeiro. Gostaria de agendar a teleconsulta."};
+  /* Seleção de frase por origem, isolada por médico. Não instala pixel nem integra CRM. */
+  var entradaPaga = (function(){
+    var KEY = "oswaldo_frazao_origem_v1", TTL = 90 * 24 * 3600 * 1000;
+    var agora = Date.now(), q;
+    try { q = new URLSearchParams(window.location.search); } catch(e) { return false; }
+    var meio = String(q.get("utm_medium") || "").toLowerCase();
+    var ids = ["aid", "fbclid", "gclid", "gbraid", "wbraid"];
+    var temId = ids.some(function(k){ return Boolean(q.get(k)); });
+    var explicita = Boolean(q.get("utm_source") || meio || temId);
+    if(explicita){
+      /* Origem orgânica explícita substitui o anúncio anterior, inclusive bio com fbclid. */
+      var paga = meio === "cpc" || (!meio && temId);
+      var teste = q.get("aid") === "teste" || /^(qa|teste)(?:-|$)/i.test(q.get("utm_campaign") || "");
+      if(!teste){
+        try { localStorage.setItem(KEY, JSON.stringify({ versao: 1, em: agora, paga: paga })); } catch(e) {}
+      }
+      return paga;
+    }
+    try {
+      var anterior = JSON.parse(localStorage.getItem(KEY) || "null");
+      return Boolean(anterior && anterior.versao === 1 && typeof anterior.em === "number" &&
+        anterior.em <= agora && agora - anterior.em < TTL && anterior.paga === true);
+    } catch(e) { return false; }
+  })();
   var telas = {}, ordem = [];
   Array.prototype.forEach.call(document.querySelectorAll("[data-tela]"), function(el){
     telas[el.getAttribute("data-tela")] = el; ordem.push(el);
@@ -547,7 +572,7 @@ h1,h2{margin:0}
        trata como popup e bloqueia (Safari sempre, Chrome com frequência). */
     if(chave === "local" && vemDeFora && MSG.vem) chave = "vem";
 
-    var texto = (MSG[chave] || "").replace("{unidade}", unidade)
+    var texto = ((entradaPaga && MSG_ADS[chave]) || MSG[chave] || "").replace("{unidade}", unidade)
                                       .replace("{motivo}", motivo)
                                   .replace("{cidade}", cidadePaciente)
                                   /* praca com WhatsApp direto nao passa pela tela de motivo */
