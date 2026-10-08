@@ -6,6 +6,50 @@
 <title>Agendamento · Dr. Oswaldo Frazão</title>
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#FBFBFC">
+<script data-oswaldo-pixel-version="1">
+(function(w,d){
+  var id = "1997823647581357", root = d.documentElement;
+  var q = new URLSearchParams(w.location.search);
+  var qa = q.get("utm_source") === "qa" || q.get("utm_medium") === "qa" ||
+    q.get("aid") === "teste" || /^(qa|teste)(-|$)/i.test(q.get("utm_campaign") || "");
+  var sent = {}, key = "oswaldo_frazao_pixel_sessao_v1";
+  root.setAttribute("data-pixel-id", id);
+  root.setAttribute("data-pixel-mode", qa ? "qa" : "live");
+  w.oswaldoPixel = function(event, standard){
+    if(qa){ root.setAttribute("data-pixel-last", event + ":qa-suppressed"); return; }
+    if(event !== "PageView"){
+      try { var saved = JSON.parse(w.sessionStorage.getItem(key) || "{}");
+        if(saved[event]) sent[event] = true;
+      } catch(e){}
+      if(sent[event]){ root.setAttribute("data-pixel-last", event + ":deduplicated"); return; }
+    }
+    if(typeof w.fbq !== "function") return;
+    // Sem respostas, cidade, modalidade, prefill ou dados pessoais nos parametros.
+    try { w.fbq(standard ? "trackSingle" : "trackSingleCustom", id, event, {}); }
+    catch(e){ root.setAttribute("data-pixel-last", event + ":track-error"); return; }
+    root.setAttribute("data-pixel-last", event + ":queued");
+    if(event !== "PageView"){
+      sent[event] = true;
+      try { var saved = JSON.parse(w.sessionStorage.getItem(key) || "{}");
+        saved[event] = true; w.sessionStorage.setItem(key, JSON.stringify(saved));
+      } catch(e){}
+    }
+  };
+  if(qa){ root.setAttribute("data-pixel-state", "qa-suppressed"); return; }
+  // SDK oficial, eventos sempre direcionados exclusivamente ao pixel do Oswaldo.
+  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+  n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;t.onload=function(){root.setAttribute("data-pixel-state","loaded")};
+  t.onerror=function(){root.setAttribute("data-pixel-state","load-error")};
+  s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)
+  }(w,d,'script','https://connect.facebook.net/en_US/fbevents.js');
+  w.fbq('set','autoConfig',false,id);
+  w.fbq('init',id);
+  root.setAttribute("data-pixel-state", "queued");
+  w.oswaldoPixel("PageView", true);
+})(window,document);
+</script>
 <style>
 :root{
   --primaria:#284878; --primaria-rgb:40,72,120;
@@ -450,13 +494,12 @@ h1,h2{margin:0}
     /* cidade que o paciente de fora digitou. A lista dos 5.571 municipios do IBGE
        vem embutida na propria pagina: nada de API do Google, nada de requisicao
        externa -- a pagina continua funcionando offline e sem chave de terceiros. */
-    var PAGE_PATH = "/agendamento", META_CAT = "";
+    var PAGE_PATH = "/agendamento";
     function ga(nome, dados){
       if (typeof gtag === "function") gtag("event", nome, dados);
     }
-    function meta(nome, conteudo){
-      if (typeof fbq === "function") fbq("trackCustom", nome,
-        { content_category: META_CAT, content_name: conteudo });
+    function meta(nome){
+      if (typeof window.oswaldoPixel === "function") window.oswaldoPixel(nome, false);
     }
     var cidadePaciente = "";
     var vemDeFora = false;
@@ -568,6 +611,8 @@ h1,h2{margin:0}
   }
 
   function abrirWhats(chave){
+    // Conclusao somente nas telas finais, apos informacoes e preco.
+    if(atual !== "preco" && atual !== "protocolo") return;
     /* window.open tem de acontecer DENTRO do clique: fora dele o navegador
        trata como popup e bloqueia (Safari sempre, Chrome com frequência). */
     if(chave === "local" && vemDeFora && MSG.vem) chave = "vem";
@@ -586,7 +631,7 @@ h1,h2{margin:0}
     var ramo = chave;
           ga("whatsapp_click", { page_path: PAGE_PATH, link_url: url, ramo: ramo });
 
-      meta("LeadQuiz", "quiz-agendamento");
+      meta("LeadQuiz");
         var aba = window.open(url, "_blank");
     if(!aba) window.location.href = url;
   }
@@ -594,6 +639,7 @@ h1,h2{margin:0}
   document.addEventListener("click", function(e){
     var alvo = e.target.closest ? e.target.closest("[data-ir],[data-whats]") : null;
     if(!alvo) return;
+    if(atual === "abertura" && alvo.getAttribute("data-ir") === "local") meta("QuizStart");
     if(alvo.hasAttribute("data-motivo")){
       motivo = alvo.getAttribute("data-motivo") || motivo;
     }
