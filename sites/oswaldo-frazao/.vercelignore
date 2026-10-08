@@ -1,10 +1,22 @@
-# This allowlist is evaluated from the Git repository root.
+# Exact file allowlist evaluated from the Git repository root.
 # CLI deployments require a separate staging folder containing only approved files.
-/*
-!sites/
+# Bare and trailing-slash directory names support the CLI recursive walker.
+*
+!/sites
+!/sites/
 /sites/*
-!sites/oswaldo-frazao/
+!/sites/oswaldo-frazao
+!/sites/oswaldo-frazao/
 /sites/oswaldo-frazao/*
-!sites/oswaldo-frazao/public/
-!sites/oswaldo-frazao/public/**
-!sites/oswaldo-frazao/vercel.json
+!/sites/oswaldo-frazao/public
+!/sites/oswaldo-frazao/public/
+/sites/oswaldo-frazao/public/*
+!/sites/oswaldo-frazao/public/agendamento
+!/sites/oswaldo-frazao/public/agendamento/
+/sites/oswaldo-frazao/public/agendamento/*
+!/sites/oswaldo-frazao/public/agendamento/index.html
+!/sites/oswaldo-frazao/public/agendamento/assets
+!/sites/oswaldo-frazao/public/agendamento/assets/
+/sites/oswaldo-frazao/public/agendamento/assets/*
+!/sites/oswaldo-frazao/public/agendamento/assets/dr-oswaldo-retrato.jpg
+!/sites/oswaldo-frazao/vercel.json
