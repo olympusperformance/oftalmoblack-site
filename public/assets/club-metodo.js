@@ -55,16 +55,21 @@
   function number(v) { return v === null || v === undefined || v === '' || !Number.isFinite(Number(v)) ? null : Number(v); }
   function ratio(a,b,max) { a=number(a); b=number(b); return a === null || b === null || b <= 0 ? null : Math.max(0,Math.min(max,a/b*max)); }
   function round(n) { return Math.round((n + Number.EPSILON)*100)/100; }
+  function followersPoints(growth) {
+    growth=number(growth);
+    return growth===null?null:growth>=5000?5:growth>=2500?2.5:0;
+  }
   function score(q,missions,extras,editions) {
     q=q||{}; missions=missions||[]; extras=extras||[]; editions=editions||[];
+    var modern=!q.period||q.period>='2026-T4';
     var eligible = missions.filter(function(m){return m.weight>0&&m.status!=='cancelled';});
     var asked=eligible.reduce(function(s,m){return s+Number(m.weight);},0);
     var done=eligible.reduce(function(s,m){return s+(m.status==='verified'?Number(m.weight):0);},0);
     var possible=editions.length*3;
     var delivered=editions.reduce(function(s,e){return s+(e.publicized?1:0)+(e.video_group&&e.video_ads?1:0)+(e.attended?1:0);},0);
     var parts={
-      attendance:ratio(q.attended,q.eligible,10), videos:ratio(q.video_credits,q.weeks,10),
-      encontro:ratio(delivered,possible,10), followers:q.followers_growth==null?null:Math.min(5,Math.max(0,q.followers_growth/1000)),
+      attendance:ratio(q.attended,q.eligible,10), videos:modern&&number(q.weeks)<2?null:ratio(q.video_credits,q.weeks,10),
+      encontro:ratio(delivered,possible,10), followers:modern?followersPoints(q.followers_growth):(q.followers_growth==null?null:Math.min(5,Math.max(0,q.followers_growth/1000))),
       system:q.orphan_leads==null||q.sla_recorded==null||q.outcomes_percent==null?null:(q.orphan_leads===0&&q.sla_recorded&&q.outcomes_percent>=95?5:0),
       missions:asked?done/asked*15:0,
       result:(q.cpv_percent!=null&&q.cpv_percent<15)||(q.call_conversion!=null&&q.call_conversion>=60)?5:(q.cpv_percent==null&&q.call_conversion==null?null:0)
@@ -132,6 +137,6 @@
     if(key==='macula'||key==='no')return n===0?'ok':n===1?'warn':n===2||n===3?'crit':'off';
     return 'off';
   }
-  C.metodo={steps:steps,movements:movements,quarter:quarter,bounds:bounds,number:number,score:score,artifactSteps:artifactSteps,catalogGroups:catalogGroups,deliveries:deliveries,pending:pending,canonical:canonical,referenceSignal:referenceSignal};
+  C.metodo={steps:steps,movements:movements,quarter:quarter,bounds:bounds,number:number,score:score,followersPoints:followersPoints,artifactSteps:artifactSteps,catalogGroups:catalogGroups,deliveries:deliveries,pending:pending,canonical:canonical,referenceSignal:referenceSignal};
   if (typeof module!=='undefined') module.exports=C.metodo;
 })(typeof window!=='undefined'?window:globalThis);

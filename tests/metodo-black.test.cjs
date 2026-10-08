@@ -26,6 +26,15 @@ test('limiares dos juízes: CPV estritamente abaixo de 15; chamada pelo menos 60
   assert.equal(M.score({}).result,null);
   assert.equal(M.score({}).complete,false);
 });
+test('v2.2: seguidores por faixas e vídeos somente com duas semanas apuradas',()=>{
+  for(const [growth,points] of [[null,null],[-100,0],[1000,0],[2499,0],[2500,2.5],[4999,2.5],[5000,5],[12000,5]])assert.equal(M.score({followers_growth:growth}).parts.followers,points);
+  assert.equal(M.score({video_credits:1,weeks:1}).parts.videos,null);
+  assert.equal(M.score({video_credits:1.99,weeks:1.99}).parts.videos,null);
+  assert.equal(M.score({video_credits:2,weeks:2}).parts.videos,10);
+  assert.equal(M.score({video_credits:1,weeks:2}).parts.videos,5);
+  assert.equal(M.score({period:'2026-T3',followers_growth:3000,video_credits:1,weeks:1}).parts.followers,3);
+  assert.equal(M.score({period:'2026-T3',video_credits:1,weeks:1}).parts.videos,10);
+});
 test('indicações sem teto, bônus 10 e ativação uma vez por módulo',()=>{
   const extras=[...Array.from({length:5},(_,i)=>({kind:'referral',reference:String(i)})),{kind:'bonus'},{kind:'bonus'},{kind:'module',reference:'iris'},{kind:'module',reference:'iris'},{kind:'module',reference:'fabrica'}];
   assert.equal(M.score({},[],extras).extra,145);assert.equal(M.score({},[],extras).vouchers,5);

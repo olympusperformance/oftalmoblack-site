@@ -69,3 +69,17 @@ test('limiares da régua e dez graus são preservados', () => {
   assert.equal(G.beltName(8), 'Coral vermelha e branca'); assert.equal(G.beltName(9), 'Faixa vermelha');
   assert.equal(G.beltName(10), 'Faixa dourada');
 });
+test('painel v2.2 usa placar real, distingue zero e ausência e não antecipa grau',()=>{
+  const record={snapshot:{grade:2,periods:[{id:'2026-T4',points:100,state:'closed'}]}};
+  const state={period:'2026-T4',scores:[],grades:[]};
+  assert.equal(G.liveModel('a',record,state).points,null,'Snapshot antigo não substitui a nova apuração');
+  state.scores=[{member_id:'a',period:'2026-T4',total:0,complete:false}];
+  assert.equal(G.liveModel('a',record,state).points,0);
+  assert.equal(G.liveModel('a',record,state).partial,true);
+  state.scores[0].total=50;
+  assert.equal(G.liveModel('a',record,state).status,'ready');
+  assert.equal(G.liveModel('a',record,state).grade,2,'Atingir meta não confere grau');
+  state.grades=[{member_id:'b',grade:9},{member_id:'a',grade:3}];
+  assert.equal(G.liveModel('a',record,state).grade,3);
+  assert.equal(G.liveModel('b',null,state).points,null);
+});

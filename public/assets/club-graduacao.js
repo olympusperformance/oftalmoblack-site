@@ -9,7 +9,7 @@
     { id:'2026-T2', label:'Abr–jun 2026' }, { id:'2026-T3', label:'Jul–set 2026' },
     { id:'2026-T4', label:'Out–dez 2026' }, { id:'2027-T1', label:'Jan–mar 2027' }
   ];
-  function fmt(n) { return Number(n || 0).toLocaleString('pt-BR', { maximumFractionDigits:1 }); }
+  function fmt(n) { return Number(n || 0).toLocaleString('pt-BR', { maximumFractionDigits:2 }); }
   function money(n) { return Number(n || 0).toLocaleString('pt-BR', { style:'currency', currency:'BRL', maximumFractionDigits:0 }); }
   function round(n) { return Math.round((n + Number.EPSILON) * 10) / 10; }
   function scoreStatus(points) { return points == null ? 'missing' : points >= 50 ? 'ready' : points >= 35 ? 'near' : points >= 20 ? 'progress' : 'starting'; }
@@ -38,11 +38,16 @@
   }
   function badge(status) { return '<span class="gr-status gr-status-' + status + '">' + statusLabels[status] + '</span>'; }
   function periodSelect(id) {
-    return '<label class="gr-period">Trimestre<select class="inp" data-gr-period>' + periods.map(function (p) {
+    var options=periods.slice(), current=currentPeriod();
+    for(var y=2027;y<=Math.max(2027,+current.slice(0,4));y++)for(var t=1;t<=4;t++){
+      var key=y+'-T'+t;if(!options.some(function(p){return p.id===key;}))options.push({id:key,label:['Jan–mar','Abr–jun','Jul–set','Out–dez'][t-1]+' '+y});
+    }
+    return '<label class="gr-period">Trimestre<select class="inp" data-gr-period>' + options.map(function (p) {
       return '<option value="' + p.id + '"' + (p.id === id ? ' selected' : '') + '>' + p.label + '</option>';
     }).join('') + '</select></label>';
   }
-  function top(id, records, embedded) {
+  function top(id, records, embedded, live) {
+    if(live)return '<div class="gr-toolbar"><p class="gr-demo"><span></span>Placar v2.2 <small>Rotina 40 · Missões 15 · Resultado 5 · meta 50</small></p>'+periodSelect(id)+'</div>';
     var dates = records.map(function (r) { return r.source_date || (r.snapshot || {}).sourceDate; }).filter(function (d, i, all) { return /^\d{4}-\d{2}-\d{2}$/.test(d || '') && all.indexOf(d) === i; }).sort();
     var label = records.some(function (r) { return r.is_demo; }) ? 'Prévia da graduação' : 'Graduação da planilha';
     var source = dates.length ? 'Dados da planilha de ' + dates.map(function (d) { return d.split('-').reverse().join('/'); }).join(' e ') : 'Data de apuração não informada';
@@ -130,20 +135,22 @@
     };
   }
   function renderAdmin(root, records, members, state) {
+    root.grState=state;
     var byId = {};
     records.forEach(function (r) { byId[r.member_id] = r; });
     var rows = members.filter(function (m) { return m.ativo !== false; }).map(function (member) {
-      return { member:member, record:byId[member.id], model:model(byId[member.id] && byId[member.id].snapshot, state.period) };
+      var record=byId[member.id];
+      return { member:member, record:record, model:state.period>='2026-T4'?liveModel(member.id,record,state):model(record&&record.snapshot,state.period) };
     });
     var counts = {};
     rows.forEach(function (r) { counts[r.model.status] = (counts[r.model.status] || 0) + 1; });
-    root.innerHTML = top(state.period, records) + '<div class="gr-radar">' + [
+    root.innerHTML = top(state.period, records, false, state.period>='2026-T4') + '<div class="gr-radar">' + [
       ['ready','Podem graduar','50 pontos ou mais'],['near','Na reta final','De 35 a 49,9 pontos'],
       ['progress','Em progresso','De 20 a 34,9 pontos'],['starting','Acompanhar','Abaixo de 20 pontos']
     ].map(function (item) {
       return '<button class="gr-radar-card gr-radar-' + item[0] + '" data-gr-status="' + item[0] + '" aria-pressed="' + (state.status === item[0]) + '"><span>' + item[1] + '</span><b>' + (counts[item[0]] || 0) + '</b><small>' + item[2] + '</small></button>';
     }).join('') + '</div><div class="gr-list-toolbar"><label class="gr-search">' + C.icon('search') + '<input class="inp" type="search" data-gr-search placeholder="Buscar mentorado" aria-label="Buscar mentorado" value="' + esc(state.search) + '"></label><button class="btn btn-sm" data-gr-all>Ver todos</button><span class="gr-caption" data-gr-count></span></div><div data-gr-table></div>' +
-      '<p class="gr-caption">A meta libera no máximo um grau por trimestre. O grau atual segue o painel da planilha; a data de entrega ainda precisa ser registrada.</p>';
+      '<p class="gr-caption">'+(state.period>='2026-T4'?'Apuração parcial não é trimestre fechado. Fontes sem leitura ficam pendentes. O grau só muda após conferência da equipe e encerramento do trimestre.':'A meta libera no máximo um grau por trimestre. O grau atual segue o painel da planilha; a data de entrega ainda precisa ser registrada.')+'</p>';
     function table() {
       var term = state.search.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
       var shown = rows.filter(function (r) {
@@ -152,7 +159,7 @@
       root.querySelector('[data-gr-count]').textContent = shown.length + ' mentorados';
       root.querySelector('[data-gr-table]').innerHTML = shown.length ? '<div class="gr-table-wrap"><table class="gr-table"><thead><tr><th>Mentorado / graduação</th><th>Pontos no trimestre</th><th>Faltam para 50</th><th>Situação</th><th><span class="gr-sr-only">Abrir graduação</span></th></tr></thead><tbody>' + shown.map(function (r) {
         var m = r.model;
-        return '<tr><td><b>' + esc(r.member.nome) + '</b><small>' + (r.record ? esc(beltName(m.grade) + ' · ' + degreeLabel(m.grade)) : 'Aguardando apuração') + '</small></td><td><strong>' + (m.points == null ? '—' : fmt(m.points) + ' pts') + '</strong>' + progress(m.percent, 'Meta de ' + r.member.nome) + '</td><td>' + (m.missing == null ? '—' : fmt(m.missing) + ' pts') + '</td><td>' + badge(m.status) + '</td><td><button type="button" class="btn btn-sm" data-gr-member="' + esc(r.member.id) + '" data-gr-selected-period="' + esc(state.period) + '">Ver graduação ' + C.icon('chevron-right') + '</button></td></tr>';
+        return '<tr><td><b>' + esc(r.member.nome) + '</b><small>' + (r.record||state.period>='2026-T4' ? esc(beltName(m.grade) + ' · ' + degreeLabel(m.grade)) : 'Aguardando apuração') + '</small></td><td><strong>' + (m.points == null ? '—' : fmt(m.points) + ' pts') + '</strong>' + (m.partial?'<small>Apuração parcial</small>':'') + progress(m.percent, 'Meta de ' + r.member.nome) + '</td><td>' + (m.missing == null ? '—' : fmt(m.missing) + ' pts') + '</td><td>' + badge(m.status) + '</td><td><button type="button" class="btn btn-sm" data-gr-member="' + esc(r.member.id) + '" data-gr-selected-period="' + esc(state.period) + '">Ver graduação ' + C.icon('chevron-right') + '</button></td></tr>';
       }).join('') + '</tbody></table></div>' : '<div class="gr-empty"><p>Nenhum mentorado neste filtro.</p></div>';
     }
     table();
@@ -174,26 +181,36 @@
       if (focus) focus.focus();
     };
   }
-  function load(root, member, members) {
+  function currentPeriod(){return C.metodo?C.metodo.quarter():new Date().getFullYear()+'-T'+(Math.floor(new Date().getMonth()/3)+1);}
+  function liveModel(memberId,record,state){
+    var score=(state.scores||[]).find(function(s){return s.member_id===memberId&&s.period===state.period;});
+    var grade=Math.max.apply(null,[Number(record&&record.snapshot&&record.snapshot.grade)||0].concat((state.grades||[]).filter(function(g){return g.member_id===memberId;}).map(function(g){return Number(g.grade);})));
+    var points=score?Number(score.total):null;
+    return {grade:grade,points:points,missing:points===null?null:Math.max(0,Math.round((META-points)*100)/100),percent:points===null?0:Math.min(100,points/META*100),partial:!!score&&!score.complete,status:state.period>currentPeriod()?'future':scoreStatus(points)};
+  }
+  function load(root, member, members, previousState) {
     var requestId = String(Date.now()) + Math.random();
     root.dataset.grRequest = requestId;
     root.innerHTML = '<p class="gr-loading" role="status">Carregando sua graduação…</p>';
     var query = C.sb.from('member_graduations').select('member_id,source_date,is_demo,snapshot');
     if (member) query = query.eq('member_id', member.id);
-    return query.then(function (result) {
-      if (result.error) throw new Error(result.error.message);
+    var requests=member?[query]:[query,C.sb.from('cb_scores').select('*').gte('period','2026-T4'),C.sb.from('cb_grades').select('member_id,grade,period')];
+    return Promise.all(requests).then(function (results) {
+      results.forEach(function(result){if(result.error)throw new Error(result.error.message);});
+      var result=results[0];
       if (root.dataset.grRequest !== requestId) return;
       if (member) renderMember(root, (result.data || [])[0], '2026-T3');
-      else renderAdmin(root, result.data || [], members, { period:'2026-T3', status:'all', search:'' });
+      else renderAdmin(root, result.data || [], members, Object.assign({ period:currentPeriod(), status:'all', search:'' },previousState||{},{scores:results[1].data||[],grades:results[2].data||[]}));
     }).catch(function () {
       if (root.dataset.grRequest !== requestId) return;
       root.innerHTML = '<div class="gr-empty"><h2>Não foi possível carregar a graduação</h2><p>Tente novamente em instantes.</p><button class="btn" data-gr-retry>Tentar novamente</button></div>';
       root.onclick = function (event) { if (event.target.closest('[data-gr-retry]')) load(root, member, members); };
     });
   }
-  C.graduacao = { model:model, status:scoreStatus, beltName:beltName, belt:belt,
+  C.graduacao = { model:model, liveModel:liveModel, status:scoreStatus, beltName:beltName, belt:belt,
     mountMember:function (root, member) { return load(root, member); },
     mountAdmin:function (root, members) { return load(root, null, members); },
+    refreshAdmin:function(root,members){return load(root,null,members,root.grState);},
     renderMember:renderMember, renderAdmin:renderAdmin,
     summary:function (record, id) { return memberContent(record, id, true); } };
 })();

@@ -110,6 +110,21 @@ reverter o front-end não exige remover dados.
   `cb_scores` é a fonte do ranking e da Visão Geral. A planilha anterior continua
   disponível dentro de “Consultar graduação histórica”, com suas regras originais.
   Os períodos novos começam sem pontuação inventada e precisam de apuração.
+- **Convergência de 08/10/2026:** a partir de 2026-T4, seguidores pontuam por
+  faixas: abaixo de +2.500 = 0; de +2.500 a +4.999 = 2,5; +5.000 ou mais = 5.
+  Vídeos exigem pelo menos duas semanas apuradas. O total é arredondado uma
+  única vez para duas casas no banco e na interface. Indicação convertida
+  continua valendo 25 pontos, sem teto. Aplicar
+  `20261008185902_graduacao_v22_convergencia.sql` antes de publicar o front-end.
+  Graduação administrativa e Ranking abrem no trimestre atual. A visão geral
+  lê `cb_scores` e graus efetivamente conferidos; o detalhe mostra os sete
+  critérios, suas fontes e pendências. Voltar à lista atualiza a apuração.
+  A equipe registra dados no Cérebro; a planilha v2.2 é referência, sem
+  sincronização automática com o arquivo Excel. Histórico anterior permanece.
+  Pesos separados do Sistema vivo e bônus de valor livre ainda aguardam decisão:
+  continuam as regras existentes (três condições para 5 pontos; bônus 10 uma
+  vez por trimestre). Lead órfão significa lead sem resposta pelo Sistema Black,
+  nunca apenas lead sem responsável. A apuração desse campo continua manual.
 - **Seguidores:** usa a coleta automaticamente quando existe uma medição no dia
   anterior ao início do trimestre e uma leitura dentro do período; trimestre
   encerrado exige também a leitura do último dia. Sem essa cobertura, usa uma

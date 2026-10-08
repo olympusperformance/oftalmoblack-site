@@ -47,7 +47,7 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
 (function testDirectStorageHost(){const source=fs.readFileSync(path.join(root,'assets/club-black.js'),'utf8');assert.match(source,/\.storage\.supabase\.co/,'Upload grande deve usar o host direto recomendado pelo Storage');})();
 (async()=>{
  await new Promise(r=>server.listen(0,'127.0.0.1',r));const url='http://127.0.0.1:'+server.address().port;
- const browser=await chromium.launch({headless:true});const errors=[];let memberCatalogNames;
+ const browser=await chromium.launch({headless:true,...(process.env.BLACK_BROWSER_EXECUTABLE?{executablePath:process.env.BLACK_BROWSER_EXECUTABLE}:{})});const errors=[];let memberCatalogNames;
  try{
   for(const isAdmin of [false,true]){
    const context=await browser.newContext({viewport:{width:1440,height:1080}});const page=await context.newPage();
@@ -345,9 +345,10 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
    await page.keyboard.press('Escape');
    await page.locator('#rail [data-nav="agenda"]').click();await page.locator('[data-view=agenda] [data-nav=encontro]').click();assert.equal(await page.locator('[data-view=encontro]').isVisible(),true);
    await page.locator('#rail [data-nav=ranking]').click();await page.locator('#black-ranking .cb-ranking-list').waitFor();
-   assert.equal(await page.locator('#black-ranking [data-cb-ranking-period]').inputValue(),'2026-T3');
-   assert.equal(await page.locator('#black-ranking .cb-ranking-list').getAttribute('aria-label'),'Ranking do trimestre 2026-T3');
-   assert.ok(await page.evaluate(()=>window.__rankingRequests.includes('2026-T3')));
+   const rankingQuarter=await page.evaluate(()=>Club.metodo.quarter());
+   assert.equal(await page.locator('#black-ranking [data-cb-ranking-period]').inputValue(),rankingQuarter);
+   assert.equal(await page.locator('#black-ranking .cb-ranking-list').getAttribute('aria-label'),'Ranking do trimestre '+rankingQuarter);
+   assert.ok(await page.evaluate(p=>window.__rankingRequests.includes(p),rankingQuarter));
    await page.locator('#black-ranking [data-cb-ranking-period]').selectOption('2026-T2');
    await page.waitForFunction(()=>window.__rankingRequests.includes('2026-T2'));
    await page.locator('#black-ranking .cb-ranking-list').waitFor();
@@ -414,7 +415,9 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
    if(isAdmin){
     await page.locator('#graduacaoAdmin .gr-radar').waitFor();
     assert.equal(await page.locator('#black-graduacao').isVisible(),false,'Admin abre primeiro o painel geral');
-    assert.equal(await page.locator('#graduacaoAdmin [data-gr-period]').inputValue(),'2026-T3');
+    assert.equal(await page.locator('#graduacaoAdmin [data-gr-period]').inputValue(),await page.evaluate(()=>Club.metodo.quarter()));
+    assert.match(await page.locator('#graduacaoAdmin').innerText(),/Placar v2.2/);
+    await page.locator('#graduacaoAdmin [data-gr-period]').selectOption('2026-T3');
     await page.locator('#graduacaoAdmin [data-gr-search]').fill('Outro');
     assert.equal(await page.locator('#graduacaoAdmin tbody tr').count(),1);
     const adminPath=new URL(page.url()).pathname;
@@ -449,6 +452,9 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
    await page.locator('#black-graduacao [data-cb-reload]').click();
    await page.locator('#black-graduacao .cb-score').waitFor();
    assert.match(await page.locator('#black-graduacao').innerText(),/Placar v2.2/i);
+   assert.match(await page.locator('#black-graduacao').innerText(),/De onde vêm seus pontos/);
+   assert.match(await page.locator('#black-graduacao').innerText(),/Leads sem resposta pelo sistema/);
+   assert.match(await page.locator('#black-graduacao').innerText(),/mínimo de duas semanas/);
    assert.doesNotMatch(await page.locator('#black-graduacao').innerText(),/108,5/);
    await page.evaluate(()=>{for(const key of Object.keys(window.__fixtures))delete window.__fixtures[key];Object.assign(window.__fixtures,window.__savedGraduationFixtures);});
    await page.locator('#black-graduacao [data-cb-reload]').click();await page.locator('#black-graduacao .cb-score').waitFor();
