@@ -61,6 +61,7 @@ Deno.serve(async (req) => {
   const { data: demandas, error: erroDemandas } = await db
     .from("demands")
     .select("titulo,status,prioridade,vence_em,responsaveis,members(nome)")
+    .is("excluida_em", null)
     .not("status", "in", `(${ABERTAS_FORA.map((s) => `"${s}"`).join(",")})`);
   if (erroDemandas) return json({ error: erroDemandas.message }, 500);
 

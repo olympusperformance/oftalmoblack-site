@@ -11,7 +11,7 @@
   async function load(){
     if(busy)return;busy=true;$('fathomRefresh').disabled=true;
     try{
-      var results=await Promise.all([allRows(function(){return C.sb.from('fathom_actions').select('*').order('occurred_at',{ascending:false}).order('id');}),C.sb.from('staff').select('id,nome').eq('ativo',true).order('nome'),C.sb.from('members').select('id,nome').eq('ativo',true).order('nome'),allRows(function(){return C.sb.from('demands').select('id,titulo,member_id,responsaveis,status').order('id');})]);
+      var results=await Promise.all([allRows(function(){return C.sb.from('fathom_actions').select('*').order('occurred_at',{ascending:false}).order('id');}),C.sb.from('staff').select('id,nome').eq('ativo',true).order('nome'),C.sb.from('members').select('id,nome').eq('ativo',true).order('nome'),allRows(function(){return C.sb.from('demands').select('id,titulo,member_id,responsaveis,status').is('excluida_em',null).order('id');})]);
       results.forEach(function(r){if(r.error)throw r.error;});actions=results[0].data;staff=results[1].data;members=results[2].data;demands=results[3].data;
       var selected=$('fathomMeeting').value,seen={};$('fathomMeeting').innerHTML='<option value="">Todas as reuniões</option>'+actions.filter(function(a){if(seen[a.extraction_id])return false;seen[a.extraction_id]=true;return true;}).map(function(a){return '<option value="'+esc(a.extraction_id)+'">'+esc(date(a.occurred_at)+' · '+a.meeting_title)+'</option>';}).join('');
       $('fathomMeeting').value=seen[selected]?selected:'';

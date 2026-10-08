@@ -95,7 +95,7 @@ const CONSULTAS: Record<string, string> = {
 async function ler(tabela: string) {
   if (!SERVICE) throw new Error('sem chave de serviço no ambiente da função');
   const r = await fetch(
-    `${URL_BASE}/rest/v1/${tabela}?select=${CONSULTAS[tabela]}`,
+    `${URL_BASE}/rest/v1/${tabela}?select=${CONSULTAS[tabela]}${tabela === 'demands' ? '&excluida_em=is.null' : ''}`,
     { headers: { apikey: SERVICE, Authorization: `Bearer ${SERVICE}` } }
   );
   if (!r.ok) throw new Error(`${tabela}: ${r.status} ${await r.text()}`);
