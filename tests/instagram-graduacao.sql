@@ -39,11 +39,12 @@ do $$begin
 end$$;
 reset role;
 set local role service_role;
-select public.instagram_sync_videos('ig-test','2026-10-01','2026-10-07','[{"media_id":"v1","published_at":"2026-10-04T12:00:00Z","media_type":"VIDEO","product_type":"REELS"},{"media_id":"v2","published_at":"2026-10-04T13:00:00Z","media_type":"VIDEO","product_type":"FEED"},{"media_id":"photo","published_at":"2026-10-04T12:00:00Z","media_type":"IMAGE"}]');
+select public.instagram_sync_videos('ig-test','2026-10-01','2026-10-07','[{"media_id":"v1","published_at":"2026-10-04T12:00:00Z","media_type":"VIDEO","product_type":"REELS","permalink":"https://www.instagram.com/reel/Ab_123/"},{"media_id":"v2","published_at":"2026-10-04T13:00:00Z","media_type":"VIDEO","product_type":"FEED"},{"media_id":"photo","published_at":"2026-10-04T12:00:00Z","media_type":"IMAGE"}]');
 -- Repetir a coleta não duplica publicações.
 select public.instagram_sync_videos('ig-test','2026-10-01','2026-10-07','[{"media_id":"v1","published_at":"2026-10-04T12:00:00Z","media_type":"VIDEO","product_type":"REELS"}]');
 reset role;
 do $$begin
+ if (select permalink from public.cb_instagram_videos where media_id='v1') is distinct from 'https://www.instagram.com/reel/Ab_123/' then raise exception 'Link perdido na recoleta sem permalink'; end if;
  if (select count(*) from public.cb_instagram_videos)<>2 then raise exception 'Contagem duplicada ou imagem contou como vídeo'; end if;
 end$$;
 set local role authenticated;

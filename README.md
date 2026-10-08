@@ -151,6 +151,13 @@ reverter o front-end não exige remover dados.
   sem coleta e o @ informado para conferir autorização/vínculo. A régua de
   pontos permanece igual. Na auditoria inicial, as 17 contas pendentes não
   existiam no coletor: 16 tinham @ na planilha; Helcio estava sem perfil informado.
+- **Inspeção da graduação:** cartões de rotina, missões, resultado, extras e
+  critérios individuais abrem a memória de cálculo e as evidências do membro
+  selecionado. Seguidores mostram base e leituras; vídeos mostram semanas e
+  publicações, com links oficiais quando disponíveis. Aplicar
+  `20261008210434_instagram_videos_inspecao.sql` e publicar `instagram-metricas`
+  para preencher os links na próxima coleta. A inspeção não altera pontos;
+  editar apuração continua restrito à equipe.
 - **Demais fontes da primeira fase:** presença, Sistema vivo e juízes de
   resultado são apurados pela equipe nos formulários.
   O membro envia evidência, mas não altera pesos, prazos ou conclusão verificada.

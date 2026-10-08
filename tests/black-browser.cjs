@@ -456,14 +456,34 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
    assert.match(await page.locator('#black-graduacao').innerText(),/Leads sem resposta pelo sistema/);
    assert.match(await page.locator('#black-graduacao').innerText(),/mínimo de duas semanas/);
    assert.doesNotMatch(await page.locator('#black-graduacao').innerText(),/108,5/);
+   for(const key of ['routine','missions','result','extra','attendance','videos','encontro','followers','system']){
+    const card=page.locator('#black-graduacao .cb-inspect-card[data-cb-inspect='+key+']').first();
+    await card.focus();await page.keyboard.press('Enter');
+    await page.locator('.cb-drawer[role=dialog]').waitFor();
+    assert.match(await page.locator('.cb-drawer').getAttribute('aria-label'),/Inspecionar/);
+    assert.equal(await page.locator('.cb-drawer [data-cb-quarter]').count(),isAdmin&&['attendance','videos','followers','system','result'].includes(key)?1:0);
+    await page.keyboard.press('Escape');assert.equal(await card.evaluate(el=>el===document.activeElement),true);
+   }
    if(isAdmin){
-    await page.evaluate(()=>{const f=window.__fixtures;f.cb_quarters[0].period='2026-T4';f.cb_scoring_profiles=[{member_id:f.members[0].id,entered_on:'2026-09-01',instagram_username:'perfil_teste'}];f.cb_instagram_video_sync=[{member_id:f.members[0].id,ig_user_id:'ig-1',period:'2026-T4',covered_from:'2026-10-01',covered_until:'2026-10-07'}];f.cb_instagram_videos=[{member_id:f.members[0].id,ig_user_id:'ig-1',media_id:'v1',media_type:'VIDEO',published_at:'2026-10-03T12:00:00Z'}];f.cb_scores=[{member_id:f.members[0].id,videos_updated_at:'2026-10-08T15:00:00Z',videos_status:'ready',period:f.cb_quarters[0].period,followers_growth:2700,followers_auto_growth:2700,followers_source:'auto_base_manual',video_credits:.57,weeks:.57,auto_video_credits:.57,auto_weeks:.57,videos_source:'auto',total:2.5,complete:false}];});
+    await page.evaluate(()=>{const f=window.__fixtures;f.cb_quarters[0].period='2026-T4';f.cb_scoring_profiles=[{member_id:f.members[0].id,entered_on:'2026-09-01',instagram_username:'perfil_teste'}];f.cb_instagram_video_sync=[{member_id:f.members[0].id,ig_user_id:'ig-1',period:'2026-T4',covered_from:'2026-10-01',covered_until:'2026-10-07'}];f.cb_instagram_videos=[{member_id:f.members[0].id,ig_user_id:'ig-1',media_id:'v1',permalink:'https://www.instagram.com/reel/Ab_123/',media_type:'VIDEO',published_at:'2026-10-03T12:00:00Z'}];f.cb_scores=[{member_id:f.members[0].id,videos_updated_at:'2026-10-08T15:00:00Z',videos_status:'ready',period:f.cb_quarters[0].period,followers_growth:2700,followers_auto_growth:2700,followers_source:'auto_base_manual',video_credits:.57,weeks:.57,auto_video_credits:.57,auto_weeks:.57,videos_source:'auto',total:2.5,complete:false}];});
     await page.locator('#black-graduacao [data-cb-period]').selectOption('2026-T4');
     await page.waitForFunction(()=>document.querySelector('#black-graduacao')?.textContent.includes('base ajustada pela equipe'));
     assert.match(await page.locator('#black-graduacao').innerText(),/Seu progresso no Instagram/);
     assert.match(await page.locator('#black-graduacao').innerText(),/54% do marco de/);
     assert.match(await page.locator('[data-cb-video-weeks]').innerText(),/01\/10\/2026 a 04\/10\/2026/);
     for(const width of [390,1440]){await page.setViewportSize({width,height:1080});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1));await page.screenshot({path:path.join(out,'instagram-progresso-'+width+'.png'),fullPage:true});}
+    await page.locator('[data-cb-video-weeks] [data-week]').first().click();
+    assert.match(await page.locator('.cb-drawer').innerText(),/Publicações identificadas/);
+    assert.equal(await page.locator('.cb-drawer a:has-text("Abrir no Instagram")').getAttribute('href'),'https://www.instagram.com/reel/Ab_123/');
+    await page.screenshot({path:path.join(out,'instagram-inspecao-videos.png'),fullPage:true});
+    await page.keyboard.press('Escape');
+    await page.locator('#black-graduacao [data-cb-inspect=followers]').first().click();
+    assert.match(await page.locator('.cb-drawer').innerText(),/Memória de cálculo/);
+    await page.setViewportSize({width:390,height:844});
+    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1));
+    await page.screenshot({path:path.join(out,'instagram-inspecao-seguidores-mobile.png'),fullPage:true});
+    await page.keyboard.press('Escape');
+    await page.setViewportSize({width:1440,height:1080});
     await page.locator('#black-graduacao [data-cb-quarter]').click();
     const form=page.locator('[data-cb-form=quarter]');
     assert.equal(await form.locator('[name=followers_growth]').isDisabled(),true);

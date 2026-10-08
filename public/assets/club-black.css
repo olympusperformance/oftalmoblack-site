@@ -158,3 +158,10 @@
 .cb-vit-st{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;text-align:right}.cb-vit-st.gold{color:var(--gold)}.cb-vit-st.ok{color:var(--success)}.cb-vit-st.muted{color:var(--muted)}
 .cb-vit-acts{display:flex;gap:6px}
 @media(max-width:900px){.cb-vit-grid{grid-template-columns:1fr}.cb-vit-dot{display:none}.cb-vit-open{margin-left:0}.cb-vit-row{grid-template-columns:1fr;gap:6px}.cb-vit-st{text-align:left}}
+
+/* Cartões de pontuação abrem a memória de cálculo por teclado e toque. */
+.cb-inspect-card{font:inherit;text-align:left;color:var(--text);cursor:pointer;width:100%;min-width:0;transition:border-color .15s,box-shadow .15s}
+.cb-inspect-card:hover{border-color:var(--gold)}
+.cb-inspect-card .cb-inspect-title{display:block;font-size:15px;font-weight:600}
+.cb-inspect-card .cb-inspect-description{display:block;font-size:12px;color:var(--muted);line-height:1.65}
+.cb-inspect-card>.cb-link{display:block;margin-top:12px}

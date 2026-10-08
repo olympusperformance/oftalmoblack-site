@@ -1,6 +1,10 @@
 import { coletarVideos,diaManaus } from './videos.ts';
 function equal(a:unknown,b:unknown){if(JSON.stringify(a)!==JSON.stringify(b))throw new Error(`Esperado ${JSON.stringify(b)}, recebido ${JSON.stringify(a)}`);}
 const media=(id:string,type='VIDEO',time='2026-10-04T12:00:00Z',product='REELS')=>({id,media_type:type,timestamp:time,media_product_type:product});
+Deno.test('links de inspeção aceitam somente publicações do Instagram',async()=>{
+ const r=await coletarVideos(async()=>({data:[{...media('a'),permalink:'https://www.instagram.com/reel/Ab_123/'},{...media('b'),permalink:'https://instagram.com.evil.test/reel/Ab/'},{...media('c'),permalink:'javascript:alert(1)'}]}),'2026-10-01','2026-10-08');
+ equal(r.map(x=>x.permalink),['https://www.instagram.com/reel/Ab_123/',null,null]);
+});
 Deno.test('paginação, identidade única e só vídeos/reels de feed',async()=>{
  const calls:unknown[]=[];
  const result=await coletarVideos(async params=>{calls.push(params.after);return params.after?{data:[media('video2','VIDEO','2026-10-02T12:00:00Z','FEED'),media('old','VIDEO','2026-09-30T12:00:00Z')]}:{data:[media('video1'),media('video1'),media('photo','IMAGE'),media('carousel','CAROUSEL_ALBUM'),media('story','VIDEO','2026-10-04T12:00:00Z','STORY')],paging:{next:'ignored',cursors:{after:'page2'}}};},'2026-10-01','2026-10-08');
