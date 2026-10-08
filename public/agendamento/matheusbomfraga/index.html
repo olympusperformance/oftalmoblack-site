@@ -311,7 +311,9 @@ h1,h2{margin:0}
             <p class="texto texto--menor" style="margin-bottom:18px">Nossa consulta oftalmológica completa está no valor de:</p>
                         <div class="tt preco" id="preco-valor">R$ 450</div>
             <div class="regua regua--fina regua--centro"></div>
-            <div class="preco-obs"></div>
+
+            <div class="preco-parcelas" id="preco-parcelas">No Pix, em dinheiro ou em até 2x no cartão</div>
+                        <div class="preco-obs"></div>
           </div>
         </div>
         <button class="btn" type="button" data-whats="local">Agendar consulta</button>
@@ -325,61 +327,12 @@ h1,h2{margin:0}
         <p class="texto texto--menor texto--gap">O Dr. Matheus atende e realiza as cirurgias em Porto Alegre. Você viria até aqui para realizar o seu sonho de ter a liberdade visual?</p>
         <div class="opcoes">
           <button class="btn" type="button" style="animation-delay:.1s" data-vem="1"
-                  data-ir="b1">Sim, eu iria a Porto Alegre</button>
+                  data-ir="a1">Sim, eu iria a Porto Alegre</button>
           <button class="btn btn--secundario" type="button" data-ir="fora">Não</button>
         </div>
       </section>
       
 
-
-      <section class="tela" data-tela="b1" data-titulo="Que ótimo!" data-progresso="45%">
-        <div class="miolo pilha">
-          <i class="icone">&#9733;</i>
-          <h2 class="tt h2--g">Que ótimo!</h2>
-          <p class="texto">Ficamos muito felizes com a sua decisão de cuidar da sua visão.</p>
-        </div>
-        <button class="btn" type="button" data-ir="tele_etapas">Continuar</button>
-      </section>
-
-      <section class="tela" data-tela="tele" data-titulo="Primeiro passo" data-progresso="78%">
-        <div class="miolo">
-          <span class="kicker">Primeiro passo</span>
-          <div class="cartao cartao--centro">
-            <p class="texto texto--menor" style="margin-bottom:18px">O primeiro passo é uma <strong>teleconsulta</strong> com o Dr. Matheus, no valor de:</p>
-            <div class="tt preco preco--menor">R$ 450</div>
-            <div class="regua regua--fina regua--centro"></div>
-            <div class="preco-obs">Atendimento on-line com o Dr. Matheus</div>
-          </div>
-        </div>
-        <button class="btn" type="button" data-ir="protocolo">Continuar</button>
-      </section>
-
-      <section class="tela tela--recuada" data-tela="tele_etapas" data-titulo="Na teleconsulta" data-progresso="60%">
-        <span class="kicker kicker--curto">Na teleconsulta</span>
-        <h2 class="tt h2--p">O Dr. Matheus avalia o seu caso</h2>
-        <p class="texto texto--menor" style="margin-bottom:20px">Ele analisará seus exames, esclarecerá todas as suas dúvidas e avaliará se o seu caso é indicado para cirurgia:</p>
-        <div class="marcadores">
-
-          <span class="marcador">Catarata</span>
-          
-          <span class="marcador">Cirurgia refrativa</span>
-          
-          <span class="marcador">Ceratocone</span>
-                  </div>
-        <button class="btn" type="button" style="margin-top:30px" data-ir="tele">Continuar</button>
-      </section>
-
-      <section class="tela" data-tela="protocolo" data-titulo="Último passo" data-progresso="92%">
-        <div class="miolo pilha">
-          <span class="kicker">Último passo</span>
-          <h2 class="tt h2--p">Catarata e Cirurgia Refrativa</h2>
-          <div class="regua"></div>
-          <p class="texto">Se o seu caso for indicado, orientaremos você sobre como realizar a cirurgia com o Dr. Matheus aqui em Porto Alegre, com todo o suporte da nossa equipe.</p>
-        </div>
-
-        <button class="btn" type="button" data-whats="tele">Agendar teleconsulta</button>
-              </section>
-      
 
 
       <section class="tela" data-tela="fora" data-titulo="Entendemos<br>perfeitamente">
@@ -400,7 +353,7 @@ h1,h2{margin:0}
 (function(){
   "use strict";
   var WA = "5551991096558";
-  var MSG = {"local": "Olá! Vim pelo link da bio do Dr. Matheus Bom Fraga. Sou de {unidade} e gostaria de agendar minha consulta presencial.", "tele": "Olá! Vim pelo link da bio do Dr. Matheus Bom Fraga. Sou de {cidade}, tenho interesse em cirurgia e posso ir a Porto Alegre. Gostaria de agendar a teleconsulta."};
+  var MSG = {"local": "Olá! Vim pelo link da bio do Dr. Matheus Bom Fraga. Sou de {unidade} e gostaria de agendar minha consulta presencial.", "vem": "Olá! Vim pelo link da bio do Dr. Matheus Bom Fraga. Sou de {cidade} e posso ir a Porto Alegre. Gostaria de agendar minha consulta presencial."};
   var telas = {}, ordem = [];
   Array.prototype.forEach.call(document.querySelectorAll("[data-tela]"), function(el){
     telas[el.getAttribute("data-tela")] = el; ordem.push(el);
