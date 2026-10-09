@@ -237,9 +237,9 @@ h1,h2{margin:0}
       <section class="tela tela--abertura pilha" data-tela="abertura" data-titulo="Início">
         <div class="avatar avatar--grande"><img src="assets/dr-diogo-retrato.jpg" alt="Dr. Diogo Rodrigues"></div>
         <span class="kicker">DSR Oftalmologia</span>
-        <h1 class="tt h1">Libertar-se<br>dos óculos.</h1>
+        <h1 class="tt h1">Em busca da sua<br>liberdade visual?</h1>
         <div class="regua"></div>
-        <p class="texto texto--fim">Retina e vítreo, catarata e ultrassonografia ocular. Saiba em poucos passos qual é o melhor caminho para o seu caso, com o Dr. Diogo.</p>
+        <p class="texto texto--fim">Retina e vítreo, catarata e ultrassonografia ocular. Saiba em poucos passos se você é um possível candidato e qual é o melhor caminho para o seu caso, com o Dr. Diogo.</p>
         <button class="btn" type="button" data-ir="local">Começar</button>
       </section>
 
@@ -307,8 +307,9 @@ h1,h2{margin:0}
         <div class="miolo">
           <span class="kicker">Investimento</span>
           <div class="cartao cartao--centro">
+
             <p class="texto texto--menor" style="margin-bottom:18px">Nossa consulta oftalmológica completa está no valor de:</p>
-            <div class="tt preco" id="preco-valor">R$ 500</div>
+                        <div class="tt preco" id="preco-valor">R$ 500</div>
             <div class="regua regua--fina regua--centro"></div>
 
             <div class="preco-parcelas" id="preco-parcelas">À vista no Pix, débito ou crédito</div>
@@ -364,8 +365,6 @@ h1,h2{margin:0}
           <span class="marcador">Retina e vítreo</span>
           
           <span class="marcador">Catarata</span>
-          
-          <span class="marcador">Ultrassonografia ocular</span>
                   </div>
         <button class="btn" type="button" style="margin-top:30px" data-ir="tele">Continuar</button>
       </section>
@@ -570,8 +569,9 @@ h1,h2{margin:0}
     /* window.open tem de acontecer DENTRO do clique: fora dele o navegador
        trata como popup e bloqueia (Safari sempre, Chrome com frequência). */
     if(chave === "local" && vemDeFora && MSG.vem) chave = "vem";
+
     var texto = (MSG[chave] || "").replace("{unidade}", unidade)
-                                  .replace("{motivo}", motivo)
+                                      .replace("{motivo}", motivo)
                                   .replace("{cidade}", cidadePaciente)
                                   /* praca com WhatsApp direto nao passa pela tela de motivo */
                                   .replace(" Meu caso: .", "");
