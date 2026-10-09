@@ -179,3 +179,5 @@
 
 .cb-vit-history{margin-top:28px;border-top:1px solid var(--border);padding-top:18px}.cb-vit-history summary{cursor:pointer;color:var(--muted);margin-bottom:14px}.cb-vit-history .cb-vit-row{grid-template-columns:100px minmax(0,1fr) auto auto auto}.cb-vit-history .cb-vit-row small{display:block;color:var(--muted)}
 @media(max-width:900px){.cb-vit-history .cb-vit-row{grid-template-columns:1fr}.cb-vit-history .cb-vit-row .btn{justify-self:start}}
+
+.cb-vit-result{margin-bottom:26px}.cb-vit-winners{display:flex;flex-direction:column;align-items:flex-end;text-align:right;gap:2px}.cb-vit-winners b{font-weight:500}.cb-vit-winners small{max-width:220px}.cb-vit-award{color:var(--gold)}
