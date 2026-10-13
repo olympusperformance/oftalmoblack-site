@@ -1,4 +1,4 @@
-import { ehImpulsionamento, montarLinhas, orcamentoTotal } from "./impulsionamentos.ts";
+import { ehImpulsionamento, mediaDoPost, montarLinhas, orcamentoTotal } from "./impulsionamentos.ts";
 
 function igual(atual: unknown, esperado: unknown) {
   const a = JSON.stringify(atual);
@@ -43,4 +43,9 @@ Deno.test("cruza campanha com insights e ignora o que não é impulsionamento", 
   igual([linhas[0].gasto, linhas[0].seguidores, linhas[0].visitas_perfil, linhas[0].orcamento_total,
          linhas[0].post_url], [475.94, 17, 489, 245, "https://www.instagram.com/p/ABC/"]);
   igual([linhas[1].gasto, linhas[1].seguidores, linhas[1].alcance], [0, 0, null]);
+});
+
+Deno.test("acha o ID da mídia quando falta o permalink", () => {
+  igual(mediaDoPost({ ads: { data: [{ creative: { effective_instagram_media_id: "18108645818580388" } }] } }), "18108645818580388");
+  igual(mediaDoPost({ ads: { data: [{ creative: {} }] } }), null);
 });

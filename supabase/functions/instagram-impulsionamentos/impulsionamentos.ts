@@ -46,6 +46,15 @@ export function linkDoPost(c: any): string | null {
   return null;
 }
 
+// Quando o criativo não traz o permalink, o ID da mídia permite buscá-lo.
+export function mediaDoPost(c: any): string | null {
+  for (const ad of c?.ads?.data ?? []) {
+    const id = ad?.creative?.effective_instagram_media_id;
+    if (typeof id === "string" && /^\d+$/.test(id)) return id;
+  }
+  return null;
+}
+
 export interface Conta { ad_account_id: string; member_id: string }
 
 export function montarLinhas(conta: Conta, campanhas: any[], insights: any[], agora: string) {

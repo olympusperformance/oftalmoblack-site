@@ -1866,27 +1866,45 @@
                'Post que traz seguidor por menos que a metade da média é post bom: ' +
                'R$ 100/dia até começar a ficar caro. Acompanhar uma vez por semana, no domingo.');
 
+    /* Faixas fixas da planilha, nos dois custos: abaixo de R$ 1 é verde, de
+       R$ 1 a R$ 2 amarelo, acima de R$ 2 vermelho. A lista vem nessa ordem pelo
+       custo por seguidor (sem seguidor nenhum vai por último), e dentro de cada
+       faixa do mais barato para o mais caro. */
+    function faixa(v) { return v === null ? 3 : v < 1 ? 0 : v <= 2 ? 1 : 2; }
+    function celCusto(v) {
+      if (v === null) return '<span class="tx-s">—</span>';
+      return '<span class="imp-faixa imp-f' + faixa(v) + '">' + dinheiro(v) + '</span>';
+    }
+    var porSeg = function (i) { return i.seguidores > 0 ? i.gasto / i.seguidores : null; };
+    var ordenadas = linhas.slice().sort(function (a, b) {
+      var ca = porSeg(a), cb = porSeg(b);
+      return (faixa(ca) - faixa(cb)) || ((ca === null ? 0 : ca) - (cb === null ? 0 : cb)) ||
+        String(b.inicio || '').localeCompare(String(a.inicio || ''));
+    });
+
     $('listaImp').innerHTML = tabela(
-      '92px 92px minmax(0,1.8fr) 108px 108px 96px 104px 104px',
-      ['Início', 'Término', 'Anúncio', 'Gasto', 'Total', 'Seguidores', 'Custo/visita', '>Custo/seguidor'],
-      linhas.map(function (i) {
-        var porSeg = i.seguidores > 0 ? i.gasto / i.seguidores : null;
+      '92px 92px minmax(0,1.8fr) 104px 104px 92px 108px 112px 92px',
+      ['Início', 'Término', 'Anúncio', 'Gasto', 'Total', 'Seguidores', 'Custo/visita', 'Custo/seguidor', '>Instagram'],
+      ordenadas.map(function (i) {
+        var cs = porSeg(i);
         var porVisita = i.visitas_perfil > 0 ? i.gasto / i.visitas_perfil : null;
-        var bom = porSeg !== null && metade !== null && porSeg <= metade;
         var titulo = esc(String(i.nome).replace(/^\s*(post do instagram|instagram post)\s*:\s*/i, ''));
+        var link = i.post_url ? esc(i.post_url) : null;
         return '<div class="tr">' +
           td(i.inicio ? esc(Club.fmtDataCurta(i.inicio)) : '—') +
           td(i.termino ? esc(Club.fmtDataCurta(i.termino)) : '—') +
           td('<div class="tx"><div class="tx tx-t">' +
-             (i.post_url ? '<a href="' + esc(i.post_url) + '" target="_blank" rel="noopener">' + titulo + '</a>' : titulo) +
+             (link ? '<a href="' + link + '" target="_blank" rel="noopener">' + titulo + '</a>' : titulo) +
              '</div><div class="tx tx-s">' + esc(situacaoImp(i)) +
              (i.visitas_perfil ? ' · ' + numeroCurto(i.visitas_perfil) + ' visitas ao perfil' : '') + '</div></div>') +
           td(dinheiro(Number(i.gasto))) +
           td(dinheiro(i.orcamento_total === null ? null : Number(i.orcamento_total))) +
           td(numeroCurto(i.seguidores)) +
-          td(dinheiro(porVisita)) +
-          tdCel(bom ? '<span style="color:var(--success)" title="Abaixo da metade da média: post bom">' +
-                dinheiro(porSeg) + ' ●</span>' : dinheiro(porSeg), 'end') +
+          tdCel(celCusto(porVisita)) +
+          tdCel(celCusto(cs)) +
+          tdCel(link ? '<a class="btn btn-sm imp-abrir" href="' + link + '" target="_blank" rel="noopener" ' +
+                'title="Abrir o post no Instagram"><svg class="ic"><use href="#i-instagram"/></svg>Abrir</a>' :
+                '<span class="tx-s">sem link</span>', 'end') +
         '</div>';
       }).join(''),
       st.impPeriodo === 'todos' ? 'Nenhum impulsionamento nesta conta.' :

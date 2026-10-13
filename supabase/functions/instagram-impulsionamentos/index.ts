@@ -17,7 +17,7 @@
    ========================================================================= */
 
 import { createClient } from "npm:@supabase/supabase-js@2.49.4";
-import { montarLinhas } from "./impulsionamentos.ts";
+import { mediaDoPost, montarLinhas } from "./impulsionamentos.ts";
 
 const G = "https://graph.facebook.com/v26.0";
 const FILTRO_NOME = JSON.stringify([{ field: "name", operator: "CONTAIN", value: "nstagram" }]);
@@ -82,7 +82,7 @@ Deno.serve(async (req) => {
       const campanhas = await todas(`${conta.ad_account_id}/campaigns`, {
         fields: "id,name,start_time,stop_time,effective_status,lifetime_budget,daily_budget," +
           "adsets.limit(5){lifetime_budget,daily_budget,start_time,end_time}," +
-          "ads.limit(1){creative{instagram_permalink_url}}," +
+          "ads.limit(1){creative{instagram_permalink_url,effective_instagram_media_id}}," +
           // Por campanha, e não /insights da conta: o relatório da conta inteira
           // desde sempre a Meta recusa por "número excessivo de linhas".
           "insights.date_preset(maximum){spend,reach,instagram_profile_visits,instagram_profile_follow,account_currency}",
@@ -93,6 +93,21 @@ Deno.serve(async (req) => {
         .filter((c) => c?.insights?.data?.[0])
         .map((c) => ({ ...c.insights.data[0], campaign_id: c.id }));
       const linhas = montarLinhas(conta, campanhas, insights, agora);
+      // Toda linha precisa abrir o post: sem permalink no criativo, busca pela mídia.
+      const midias = new Map<string, string>();
+      for (const c of campanhas) {
+        const m = mediaDoPost(c);
+        if (m && linhas.some((l) => l.campaign_id === String(c.id) && !l.post_url)) midias.set(String(c.id), m);
+      }
+      const ids = [...new Set(midias.values())];
+      for (let i = 0; i < ids.length; i += 50) {
+        const r = await graph("", { ids: ids.slice(i, i + 50).join(","), fields: "permalink" }, token).catch(() => ({}));
+        for (const l of linhas) {
+          const m = midias.get(l.campaign_id);
+          const url = m ? (r as any)?.[m]?.permalink : null;
+          if (!l.post_url && typeof url === "string" && url.startsWith("https://")) l.post_url = url;
+        }
+      }
       const { error: e } = await db.rpc("impulsionamentos_sync", { p_conta: conta.ad_account_id, p: linhas });
       if (e) throw new Error(e.message);
       return { conta: conta.ad_account_id, impulsionamentos: linhas.length };
