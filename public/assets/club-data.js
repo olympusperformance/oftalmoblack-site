@@ -276,6 +276,25 @@
          linhas e, como a ordem é do dia mais antigo, chegavam só os dias de
          março — que têm alcance, mas não ganho de seguidor. Recortar por data
          resolve na origem. */
+      /* Impulsionamentos de post, lidos da Meta pelo coletor
+         supabase/functions/instagram-impulsionamentos. Um mentorado por vez:
+         só o Daniel passa de 400 linhas, e o PostgREST corta em mil. */
+      impulsionamentoContas: function () {
+        return sb().from('instagram_impulsionamento_contas').select('*')
+          .order('mentorado').then(function (res) {
+            if (res.error) return [];
+            return res.data || [];
+          });
+      },
+      impulsionamentos: function (memberId) {
+        return sb().from('instagram_impulsionamentos').select('*')
+          .eq('member_id', memberId).order('inicio', { ascending: false })
+          .then(function (res) {
+            if (res.error) throw res.error;
+            return res.data || [];
+          });
+      },
+
       serie: function (dias) {
         var corte = new Date();
         corte.setDate(corte.getDate() - (dias || 45));

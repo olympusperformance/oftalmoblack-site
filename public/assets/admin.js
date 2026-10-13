@@ -13,7 +13,7 @@
              demands: [], staff: [], steps: [], progress: [], demandSteps: [],
              groups: [], artGrupo: '', catGrupo: '', progressNotes: [], notasEdit: {},
              qrLinks: [], qrScans: [],
-             view: 'farol', igOrdem: 'seguidores',
+             view: 'farol', igOrdem: 'seguidores', impPeriodo: '90',
              matCategoria: '', matMembro: '',
              demResp: '', demMembro: '', demFrente: '', demAbertas: 'open',
              /* Recorte aberto por um cartão do painel (atrasadas, sem dono…).
@@ -1768,6 +1768,122 @@
         '</div>';
       }).join(''),
       'Nenhuma conta coletada.'
+    );
+  }
+
+  /* ── impulsionamentos ─────────────────────────────────────────────────── */
+  /* A planilha "Controle de Anúncios" preenchida pela Meta. Custo por seguidor
+     e por visita saem da divisão aqui, para nunca ficarem velhos no banco.
+     Média e metade seguem a planilha: média simples do custo por seguidor dos
+     impulsionamentos do período, e metade dela. Post abaixo da metade é o
+     "post bom" da estratégia — vale R$ 100/dia até começar a encarecer. */
+
+  var brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+  function dinheiro(v) { return v === null || v === undefined ? '—' : brl.format(v); }
+
+  function renderImpulsionamentos() {
+    var contas = st.impContas;
+    if (contas === undefined) {
+      if (!st.impCarregandoContas) {
+        st.impCarregandoContas = true;
+        Club.data.instagram.impulsionamentoContas().then(function (c) {
+          st.impContas = c;
+          if (c.length && !st.impMembro) st.impMembro = c[0].member_id;
+          renderImpulsionamentos();
+        });
+      }
+      $('listaImp').innerHTML = '<div class="tbl-empty">Carregando…</div>';
+      return;
+    }
+    if (!contas.length) {
+      $('filtroImpMembro').innerHTML = '';
+      $('statsImp').innerHTML = '';
+      $('listaImp').innerHTML = '<div class="placeholder">' + ico('users') +
+        '<h2>Nenhuma conta de anúncios ligada</h2><p>Cadastre a conta em ' +
+        'cerebro.impulsionamento_contas para os impulsionamentos aparecerem aqui.</p></div>';
+      return;
+    }
+
+    var vistos = {};
+    $('filtroImpMembro').innerHTML = contas.filter(function (c) {
+      if (vistos[c.member_id]) return false;
+      return (vistos[c.member_id] = true);
+    }).map(function (c) {
+      return '<option value="' + esc(c.member_id) + '"' + (c.member_id === st.impMembro ? ' selected' : '') +
+        '>' + esc(c.mentorado) + '</option>';
+    }).join('');
+
+    var daConta = contas.filter(function (c) { return c.member_id === st.impMembro; });
+    var coleta = daConta.map(function (c) { return c.ultima_coleta; }).filter(Boolean).sort().pop();
+    var erro = daConta.map(function (c) { return c.ultimo_erro; }).filter(Boolean)[0];
+    $('impAtualizado').textContent = erro ? 'Última coleta falhou: ' + erro :
+      coleta ? 'Atualizado em ' + new Date(coleta).toLocaleString('pt-BR',
+        { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
+
+    var cache = st.impPorMembro || (st.impPorMembro = {});
+    var todos = cache[st.impMembro];
+    if (!todos) {
+      var alvo = st.impMembro;
+      $('statsImp').innerHTML = '';
+      $('listaImp').innerHTML = '<div class="tbl-empty">Carregando…</div>';
+      Club.data.instagram.impulsionamentos(alvo).then(function (l) {
+        cache[alvo] = l;
+        if (st.impMembro === alvo) renderImpulsionamentos();
+      }, function (e) {
+        $('listaImp').innerHTML = '<div class="tbl-empty">' + esc(e.message || 'Falha ao carregar') + '</div>';
+      });
+      return;
+    }
+
+    var corte = st.impPeriodo === 'todos' ? null : new Date(Date.now() - 90 * 86400000).toISOString();
+    var linhas = todos.filter(function (i) { return !corte || (i.inicio && i.inicio >= corte); });
+
+    var custos = linhas.filter(function (i) { return i.seguidores > 0; })
+      .map(function (i) { return i.gasto / i.seguidores; });
+    var media = custos.length ? custos.reduce(function (a, b) { return a + b; }, 0) / custos.length : null;
+    var metade = media === null ? null : media / 2;
+    var gasto = linhas.reduce(function (a, i) { return a + Number(i.gasto || 0); }, 0);
+    var seg = linhas.reduce(function (a, i) { return a + (i.seguidores || 0); }, 0);
+    var bons = media === null ? 0 : linhas.filter(function (i) {
+      return i.seguidores > 0 && i.gasto / i.seguidores <= metade;
+    }).length;
+
+    $('statsImp').innerHTML =
+      cardStat('INVESTIDO', dinheiro(gasto), linhas.length + ' impulsionamentos') +
+      cardStat('SEGUIDORES GANHOS', numeroCurto(seg), seg ? dinheiro(gasto / seg) + ' por seguidor no total' : 'nenhum atribuído',
+               'Seguidores que a Meta atribui aos impulsionamentos do período — o mesmo ' +
+               '"Seguidores no Instagram" do Gerenciador.') +
+      cardStat('MÉDIA DO SEGUIDOR', dinheiro(media), 'média do custo por seguidor',
+               'Média simples do custo por seguidor de cada impulsionamento, como na planilha.') +
+      cardStat('METADE DO SEGUIDOR', dinheiro(metade), bons + ' posts abaixo dela',
+               'Post que traz seguidor por menos que a metade da média é post bom: ' +
+               'R$ 100/dia até começar a ficar caro. Acompanhar uma vez por semana, no domingo.');
+
+    $('listaImp').innerHTML = tabela(
+      '92px 92px minmax(0,1.8fr) 108px 108px 96px 104px 104px',
+      ['Início', 'Término', 'Anúncio', 'Gasto', 'Total', 'Seguidores', 'Custo/visita', '>Custo/seguidor'],
+      linhas.map(function (i) {
+        var porSeg = i.seguidores > 0 ? i.gasto / i.seguidores : null;
+        var porVisita = i.visitas_perfil > 0 ? i.gasto / i.visitas_perfil : null;
+        var bom = porSeg !== null && metade !== null && porSeg <= metade;
+        var titulo = esc(String(i.nome).replace(/^\s*(post do instagram|instagram post)\s*:\s*/i, ''));
+        return '<div class="tr">' +
+          td(i.inicio ? esc(Club.fmtDataCurta(i.inicio)) : '—') +
+          td(i.termino ? esc(Club.fmtDataCurta(i.termino)) : '—') +
+          td('<div class="tx"><div class="tx tx-t">' +
+             (i.post_url ? '<a href="' + esc(i.post_url) + '" target="_blank" rel="noopener">' + titulo + '</a>' : titulo) +
+             '</div><div class="tx tx-s">' + esc(i.status === 'ACTIVE' ? 'rodando' : (i.status || '').toLowerCase()) +
+             (i.visitas_perfil ? ' · ' + numeroCurto(i.visitas_perfil) + ' visitas ao perfil' : '') + '</div></div>') +
+          td(dinheiro(Number(i.gasto))) +
+          td(dinheiro(i.orcamento_total === null ? null : Number(i.orcamento_total))) +
+          td(numeroCurto(i.seguidores)) +
+          td(dinheiro(porVisita)) +
+          tdCel(bom ? '<span style="color:var(--success)" title="Abaixo da metade da média: post bom">' +
+                dinheiro(porSeg) + ' ●</span>' : dinheiro(porSeg), 'end') +
+        '</div>';
+      }).join(''),
+      st.impPeriodo === 'todos' ? 'Nenhum impulsionamento nesta conta.' :
+        'Nenhum impulsionamento nos últimos 90 dias. Veja "Todos".'
     );
   }
 
@@ -4275,6 +4391,16 @@
       return;
     }
 
+    var bimp = e.target.closest('#filtroImpPeriodo button');
+    if (bimp) {
+      st.impPeriodo = bimp.dataset.imp;
+      Array.prototype.forEach.call(document.querySelectorAll('#filtroImpPeriodo button'), function (b) {
+        b.setAttribute('aria-selected', String(b === bimp));
+      });
+      renderImpulsionamentos();
+      return;
+    }
+
     var bap = e.target.closest('[data-bot-aprovar]');
     if (bap) { aprovarResposta(bap.dataset.botAprovar); return; }
 
@@ -4516,6 +4642,11 @@
     renderDemandas();
   });
 
+  $('filtroImpMembro').addEventListener('change', function () {
+    st.impMembro = this.value;
+    renderImpulsionamentos();
+  });
+
   $('filtroBotGrupo').addEventListener('change', function () {
     st.botGrupo = this.value;
     renderBotExemplos();
@@ -4542,6 +4673,7 @@
     renderMaterials();
     renderDemandas();
     renderIgMetricas();
+    renderImpulsionamentos();
     renderBotFila();
     renderBotExemplos();
     Club.graduacao.mountAdmin($('graduacaoAdmin'), st.members);

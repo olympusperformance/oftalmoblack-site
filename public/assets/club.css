@@ -218,6 +218,8 @@ button{font-family:inherit;color:inherit}
   margin:0;letter-spacing:.2px;line-height:1.15}
 .hello h1 b{font-weight:600;color:var(--gold)}
 .hello p{font-size:14px;color:var(--muted);margin:8px 0 0}
+.hello.imp-hello{margin-top:36px}
+.hello h2{font-family:var(--body);font-weight:600;letter-spacing:-.02em;font-size:clamp(20px,2.4vw,26px);margin:0}
 
 .dash{display:grid;gap:24px;grid-template-columns:repeat(6,1fr)}
 .col-6{grid-column:span 6}
