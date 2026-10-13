@@ -2,8 +2,8 @@
    instagram-impulsionamentos — a planilha "Controle de Anúncios" sozinha
 
    Para cada conta de anúncios em cerebro.impulsionamento_contas, lê as
-   campanhas de impulsionamento de post (nome começando por "Post do
-   Instagram:" ou "Instagram post:") e grava em cerebro.impulsionamentos o
+   campanhas de impulsionamento de post (nome com "Post do Instagram",
+   "Publicação do Instagram", "Instagram post"...; ver NOME_IMPULSIONAMENTO) e grava em cerebro.impulsionamentos o
    que a planilha pedia: início, término, link do post, gasto, total do
    impulsionamento, seguidores ganhos e visitas ao perfil. Os custos (por
    seguidor, por visita) saem da divisão na tela, para nunca ficarem velhos.
@@ -20,7 +20,6 @@ import { createClient } from "npm:@supabase/supabase-js@2.49.4";
 import { mediaDoPost, montarLinhas } from "./impulsionamentos.ts";
 
 const G = "https://graph.facebook.com/v26.0";
-const FILTRO_NOME = JSON.stringify([{ field: "name", operator: "CONTAIN", value: "nstagram" }]);
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
@@ -79,6 +78,8 @@ Deno.serve(async (req) => {
   const resultado = await Promise.all(((contas ?? []) as any[]).map(async (conta) => {
     const agora = new Date().toISOString();
     try {
+      // Sem filtro de nome na Meta: o CONTAIN dela deixava campanhas de fora
+      // (Gabriela vinha com 41 de 93). A regra fica em ehImpulsionamento.
       const campanhas = await todas(`${conta.ad_account_id}/campaigns`, {
         fields: "id,name,start_time,stop_time,effective_status,lifetime_budget,daily_budget," +
           "adsets.limit(5){lifetime_budget,daily_budget,start_time,end_time}," +
@@ -86,7 +87,6 @@ Deno.serve(async (req) => {
           // Por campanha, e não /insights da conta: o relatório da conta inteira
           // desde sempre a Meta recusa por "número excessivo de linhas".
           "insights.date_preset(maximum){spend,reach,instagram_profile_visits,instagram_profile_follow,account_currency}",
-        filtering: FILTRO_NOME,
         limit: "100",
       }, token);
       const insights = campanhas

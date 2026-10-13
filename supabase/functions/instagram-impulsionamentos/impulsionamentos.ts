@@ -1,11 +1,16 @@
 /* Lê a resposta da Marketing API e devolve as linhas de
    cerebro.impulsionamentos. Sem rede aqui, para dar para testar. */
 
-// "Post do Instagram: “Doutora, eu não consigo mais..." / "Instagram post: ..."
-const PREFIXO = /^\s*(post do instagram|instagram post)\s*:/i;
+// O nome que a Meta dá ao impulsionamento mudou com o tempo e com o idioma
+// da conta: "Post do Instagram: ...", "Publicação do Instagram: ...",
+// "Instagram post: ...", "Publicación de Instagram: ...". Às vezes sem os
+// dois-pontos, às vezes com etiqueta antes ("[ZA][07.24] Publicação do
+// Instagram: ..."). Por isso vale em qualquer posição do nome.
+export const NOME_IMPULSIONAMENTO =
+  /(post do instagram|publica[cç][aã]o do instagram|instagram post|publicaci[oó]n de instagram)/i;
 
 export function ehImpulsionamento(nome: unknown): boolean {
-  return typeof nome === "string" && PREFIXO.test(nome);
+  return typeof nome === "string" && NOME_IMPULSIONAMENTO.test(nome);
 }
 
 const num = (v: unknown): number | null => {

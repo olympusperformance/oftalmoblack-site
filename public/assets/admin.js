@@ -1888,7 +1888,7 @@
       ordenadas.map(function (i) {
         var cs = porSeg(i);
         var porVisita = i.visitas_perfil > 0 ? i.gasto / i.visitas_perfil : null;
-        var titulo = esc(String(i.nome).replace(/^\s*(post do instagram|instagram post)\s*:\s*/i, ''));
+        var titulo = esc(String(i.nome).replace(/^.*?(post do instagram|publica[cç][aã]o do instagram|instagram post|publicaci[oó]n de instagram)\s*:?\s*/i, '') || 'Post do Instagram');
         var link = i.post_url ? esc(i.post_url) : null;
         return '<div class="tr">' +
           td(i.inicio ? esc(Club.fmtDataCurta(i.inicio)) : '—') +

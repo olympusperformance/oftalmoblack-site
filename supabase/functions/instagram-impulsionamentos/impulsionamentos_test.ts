@@ -10,7 +10,12 @@ Deno.test("reconhece o nome que a Meta dá ao impulsionamento, em português e i
   igual(ehImpulsionamento("Post do Instagram: “Doutora, eu não consigo mais..."), true);
   igual(ehImpulsionamento("Instagram post: Não é para todo mundo que eu..."), true);
   igual(ehImpulsionamento("AlexSa_Branding_Trafego_Agost"), false);
-  igual(ehImpulsionamento("Tráfego Perfil junho 2026 - Instagram post"), false);
+  igual(ehImpulsionamento("Publicação do Instagram: Você sabia que é..."), true);
+  igual(ehImpulsionamento("[ZA][07.24] Publicação do Instagram: Fal..."), true);
+  igual(ehImpulsionamento("Post do Instagram"), true);
+  igual(ehImpulsionamento("Publicación de Instagram: Leía a le"), true);
+  igual(ehImpulsionamento("Tráfego Perfil - Dia do Medico"), false);
+  igual(ehImpulsionamento("CV WPP POSTS IG 11092024"), false);
 });
 
 Deno.test("orçamento vitalício da campanha vem em centavos", () => {
