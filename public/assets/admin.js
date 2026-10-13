@@ -1774,12 +1774,21 @@
   /* ── impulsionamentos ─────────────────────────────────────────────────── */
   /* A planilha "Controle de Anúncios" preenchida pela Meta. Custo por seguidor
      e por visita saem da divisão aqui, para nunca ficarem velhos no banco.
-     Média e metade seguem a planilha: média simples do custo por seguidor dos
-     impulsionamentos do período, e metade dela. Post abaixo da metade é o
-     "post bom" da estratégia — vale R$ 100/dia até começar a encarecer. */
+     Média do seguidor é gasto ÷ seguidores do período, e não a média simples
+     da planilha: com dezenas de posts, um impulsionamento com 2 seguidores a
+     R$ 80 cada puxava a média para o triplo do custo real. Post abaixo da
+     metade dela é o "post bom" da estratégia — R$ 100/dia até encarecer. */
 
   var brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
   function dinheiro(v) { return v === null || v === undefined ? '—' : brl.format(v); }
+
+  // effective_status continua ACTIVE depois do término; a data decide.
+  function situacaoImp(i) {
+    if (i.termino && new Date(i.termino) < new Date()) return 'encerrado';
+    return { ACTIVE: 'rodando', PAUSED: 'pausado', CAMPAIGN_PAUSED: 'pausado', ADSET_PAUSED: 'pausado',
+             IN_PROCESS: 'em análise', WITH_ISSUES: 'com problema', DISAPPROVED: 'reprovado',
+             ARCHIVED: 'arquivado', DELETED: 'excluído' }[i.status] || 'encerrado';
+  }
 
   function renderImpulsionamentos() {
     var contas = st.impContas;
@@ -1838,23 +1847,21 @@
     var corte = st.impPeriodo === 'todos' ? null : new Date(Date.now() - 90 * 86400000).toISOString();
     var linhas = todos.filter(function (i) { return !corte || (i.inicio && i.inicio >= corte); });
 
-    var custos = linhas.filter(function (i) { return i.seguidores > 0; })
-      .map(function (i) { return i.gasto / i.seguidores; });
-    var media = custos.length ? custos.reduce(function (a, b) { return a + b; }, 0) / custos.length : null;
-    var metade = media === null ? null : media / 2;
     var gasto = linhas.reduce(function (a, i) { return a + Number(i.gasto || 0); }, 0);
     var seg = linhas.reduce(function (a, i) { return a + (i.seguidores || 0); }, 0);
+    var media = seg > 0 ? gasto / seg : null;
+    var metade = media === null ? null : media / 2;
     var bons = media === null ? 0 : linhas.filter(function (i) {
       return i.seguidores > 0 && i.gasto / i.seguidores <= metade;
     }).length;
 
     $('statsImp').innerHTML =
       cardStat('INVESTIDO', dinheiro(gasto), linhas.length + ' impulsionamentos') +
-      cardStat('SEGUIDORES GANHOS', numeroCurto(seg), seg ? dinheiro(gasto / seg) + ' por seguidor no total' : 'nenhum atribuído',
+      cardStat('SEGUIDORES GANHOS', numeroCurto(seg), seg ? 'atribuídos pela Meta' : 'nenhum atribuído',
                'Seguidores que a Meta atribui aos impulsionamentos do período — o mesmo ' +
                '"Seguidores no Instagram" do Gerenciador.') +
-      cardStat('MÉDIA DO SEGUIDOR', dinheiro(media), 'média do custo por seguidor',
-               'Média simples do custo por seguidor de cada impulsionamento, como na planilha.') +
+      cardStat('MÉDIA DO SEGUIDOR', dinheiro(media), 'investido ÷ seguidores',
+               'Quanto custou, em média, cada seguidor trazido pelos impulsionamentos do período.') +
       cardStat('METADE DO SEGUIDOR', dinheiro(metade), bons + ' posts abaixo dela',
                'Post que traz seguidor por menos que a metade da média é post bom: ' +
                'R$ 100/dia até começar a ficar caro. Acompanhar uma vez por semana, no domingo.');
@@ -1872,7 +1879,7 @@
           td(i.termino ? esc(Club.fmtDataCurta(i.termino)) : '—') +
           td('<div class="tx"><div class="tx tx-t">' +
              (i.post_url ? '<a href="' + esc(i.post_url) + '" target="_blank" rel="noopener">' + titulo + '</a>' : titulo) +
-             '</div><div class="tx tx-s">' + esc(i.status === 'ACTIVE' ? 'rodando' : (i.status || '').toLowerCase()) +
+             '</div><div class="tx tx-s">' + esc(situacaoImp(i)) +
              (i.visitas_perfil ? ' · ' + numeroCurto(i.visitas_perfil) + ' visitas ao perfil' : '') + '</div></div>') +
           td(dinheiro(Number(i.gasto))) +
           td(dinheiro(i.orcamento_total === null ? null : Number(i.orcamento_total))) +
