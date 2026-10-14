@@ -7,6 +7,12 @@
 (function () {
   'use strict';
 
+  // O login encaminha a recuperação antes de inicializar o SDK. Evitar
+  // consumir o token nesta página enquanto a navegação ainda está pendente.
+  var retorno = new URLSearchParams(location.hash.slice(1));
+  if (location.pathname === '/entrar/' &&
+      (retorno.get('type') === 'recovery' || retorno.has('error'))) return;
+
   var C = window.Club = window.Club || {};
   var cfg = window.CLUB_CONFIG || {};
 
