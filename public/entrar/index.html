@@ -2,6 +2,14 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
+<script>
+/* O painel Supabase usa Site URL quando não há redirectTo. Encaminhar antes
+   de inicializar Auth, preservando o token de recuperação de uso único. */
+var retornoAuth = new URLSearchParams(location.hash.slice(1));
+if (retornoAuth.get('type') === 'recovery' || retornoAuth.has('error')) {
+  location.replace('/recuperar-senha/' + location.search + location.hash);
+}
+</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#07060A">
@@ -42,11 +50,12 @@
       </div>
       <p class="err" id="erro" hidden></p>
       <button class="btn btn-primary btn-block" type="submit" id="submit">Entrar</button>
+      <a class="btn btn-ghost btn-block" href="/recuperar-senha/">Esqueci minha senha</a>
     </form>
 
     <div class="auth-foot" id="rodape">
       Acesso exclusivo dos mentorados e da equipe do Club.<br>
-      Perdeu o acesso? Fale com a equipe no seu grupo de operação.
+      Precisa de ajuda? Fale com a equipe no seu grupo de operação.
     </div>
 
   </div>
@@ -61,6 +70,9 @@
 <script>
 (function () {
   'use strict';
+
+  var retorno = new URLSearchParams(location.hash.slice(1));
+  if (retorno.get('type') === 'recovery' || retorno.has('error')) return;
 
   var form = document.getElementById('loginForm');
   var erro = document.getElementById('erro');

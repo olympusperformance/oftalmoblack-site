@@ -3,6 +3,25 @@
 Landing page e área de membros do Club OftalmoBlack. HTML estático, sem build
 step e sem backend — o nginx só entrega arquivos.
 
+### Recuperação de senha
+
+`/recuperar-senha/` solicita o e-mail de recuperação e permite salvar a nova
+senha depois que o Supabase Auth valida a sessão. `/entrar/` oferece o atalho
+“Esqueci minha senha” e encaminha retornos `type=recovery` antes de inicializar
+o cliente, preservando o token recebido pelo painel Supabase.
+
+No projeto OftalmoBlack Web (`zpyxnkuvircukjlfexrv`), configurar `site_url` como
+`https://oftalmoblack.com.br/entrar/` e cadastrar em `uri_allow_list` os endereços
+`https://oftalmoblack.com.br/entrar/` e
+`https://oftalmoblack.com.br/recuperar-senha/`. Publicar a interface antes de
+trocar essas configurações. Links antigos que apontam para localhost precisam
+ser solicitados novamente. Nenhuma senha é definida pela equipe no código.
+
+Validação: `PLAYWRIGHT_MODULE=/caminho/para/playwright node
+tests/password-recovery.cjs` (opcionalmente `BLACK_BROWSER_EXECUTABLE` para o
+Chromium local). Testes usam sessões e respostas simuladas, sem enviar e-mails
+nem trocar senhas de usuários reais.
+
 ## Cérebro Black · 12 degraus
 
 A entrada do membro é a **Visão Geral**, seguida de **Subida: Rumo ao Olympus**

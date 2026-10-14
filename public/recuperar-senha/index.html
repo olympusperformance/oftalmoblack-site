@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#07060A">
+<title>Recuperar senha — Cérebro Black</title>
+<link rel="icon" href="/assets/favicon.png">
+<link rel="stylesheet" href="/assets/club.css">
+<script src="/assets/club-tema.js"></script>
+</head>
+<body>
+<div class="halo"></div><div class="halo2"></div>
+<main class="auth">
+  <div class="auth-card">
+    <div class="auth-mark">
+      <img class="logo-mark" src="/assets/graduacao-olho.png" alt="">
+      <div>
+        <div class="auth-eb">CLUB OFTALMO BLACK</div>
+        <h1 id="titulo">Recuperar senha</h1>
+        <p class="sub" id="descricao">Receba um link no seu e-mail cadastrado.</p>
+      </div>
+    </div>
+    <p class="err" id="erro" role="alert" hidden></p>
+    <p class="sub" id="mensagem" role="status" hidden></p>
+    <form id="emailForm" hidden>
+      <div class="fld">
+        <label for="email">E-mail</label>
+        <input class="inp" type="email" id="email" autocomplete="username" required>
+      </div>
+      <button class="btn btn-primary btn-block" type="submit" id="enviar">Enviar link de recuperação</button>
+    </form>
+    <form id="senhaForm" hidden>
+      <div class="fld">
+        <label for="senha">Nova senha</label>
+        <input class="inp" type="password" id="senha" autocomplete="new-password" minlength="8" required>
+      </div>
+      <div class="fld">
+        <label for="confirmacao">Confirme a nova senha</label>
+        <input class="inp" type="password" id="confirmacao" autocomplete="new-password" minlength="8" required>
+      </div>
+      <button class="btn btn-primary btn-block" type="submit" id="salvar" disabled>Salvar nova senha</button>
+    </form>
+    <div class="auth-foot"><a href="/entrar/">Voltar para entrar</a></div>
+  </div>
+</main>
+<script src="/assets/vendor/supabase.js"></script>
+<script src="/config.js"></script>
+<script src="/assets/club-supabase.js"></script>
+<script src="/assets/club-password.js"></script>
+</body>
+</html>
