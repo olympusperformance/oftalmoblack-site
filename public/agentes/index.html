@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex,follow">
+<meta name="description" content="Mapa da equipe de agentes Olympus: conhecimento, sistemas, atendimento e desenvolvimento com revisão, testes e publicação.">
+<meta property="og:title" content="Olympus · Equipe de agentes">
+<meta property="og:description" content="Estrutura em planejamento. Veja os agentes, as conexões e o caminho da demanda à versão publicada.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://oftalmoblack.com.br/agentes/">
+<link rel="canonical" href="https://oftalmoblack.com.br/agentes/">
+<title>Olympus · Equipe de agentes e fluxo de trabalho</title>
+<style>
+  :root{--bg:#0a0a0a;--panel:#121110;--panel2:#1c1a16;--ink:#f5f0e6;--muted:#b4ae9f;--gold:#d89d4d;--bright:#e6bd74;--line:#3a3327;--api:#99b7c7;--ui:#c1b1d7;--clinical:#a8c9b6}
+  *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Segoe UI",Arial,sans-serif}
+  button,select{font:inherit}button{color:inherit;cursor:pointer}button:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--bright);outline-offset:5px}
+  button:disabled{cursor:default}button,select{touch-action:manipulation}button:not(:disabled){-webkit-tap-highlight-color:transparent}
+  [hidden]{display:none!important}h1,h2,h3,p{margin:0}a{color:var(--bright)}.shell{max-width:1520px;margin:auto;padding:32px 44px 26px}
+  .topline{display:flex;justify-content:space-between;align-items:center;gap:20px;color:var(--muted);font-size:13px}
+  .brand{font-family:"Cinzel","Palatino Linotype",Georgia,serif;font-size:18px;color:var(--bright);letter-spacing:.09em}.brand span{color:var(--ink)}
+  .status{display:flex;align-items:center;gap:8px}.dot{width:6px;height:6px;border-radius:50%;background:var(--gold);display:inline-block}
+  .hero{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin:24px 0 25px}
+  h1{font-family:"Cinzel","Palatino Linotype",Georgia,serif;font-size:clamp(30px,3.5vw,48px);font-weight:400;line-height:1.14;max-width:820px}
+  .subtitle{margin-top:12px;color:var(--muted);max-width:760px;font-size:15px}.meta{text-align:right;white-space:nowrap;color:var(--muted);font-size:12px}.meta strong{display:block;font-weight:500;color:var(--ink)}
+  .navrow{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:0 0 20px;border-bottom:1px solid var(--line)}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap}.tab,.plainbutton{border:1px solid var(--line);background:transparent;border-radius:6px;padding:10px 16px;min-height:44px;color:var(--muted)}
+  .tab[aria-selected=true]{background:var(--bright);color:#0a0a0a;border-color:var(--bright);font-weight:600}
+  .plainbutton:hover{color:var(--ink);background:var(--panel2)}.tab:hover:not([aria-selected=true]){background:var(--panel2);color:var(--ink)}
+  .legend{display:flex;align-items:center;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--muted)}.legend span{display:flex;gap:6px;align-items:center}.swatch{height:7px;width:7px;border-radius:2px;display:inline-block;background:var(--gold)}
+  .swatch.clinical{background:var(--clinical)}.swatch.tool{background:var(--api)}
+  .pane{padding-top:22px}.sectionlead{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:20px}.sectionlead h2{font-size:20px;font-weight:500}.sectionlead p{font-size:13px;color:var(--muted);max-width:630px}
+  .focusstrip{display:flex;align-items:center;justify-content:space-between;gap:20px;margin:0 0 24px;padding:12px 16px;border-left:2px solid var(--gold);background:var(--panel);min-height:72px}
+  .focusstrip strong{font-size:15px;font-weight:600;display:block}.focusstrip p{font-size:13px;color:var(--muted);margin-top:3px}.focusstrip .owner{font-size:12px;color:var(--bright);text-align:right;min-width:155px}
+  .diagram{position:relative}.wires{position:absolute;inset:0;z-index:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+  .wires path{fill:none;stroke:#70604a;stroke-width:1.3}.wires .clinicalwire{stroke:var(--clinical)}
+  .mapcols{display:grid;grid-template-columns:minmax(0,3fr) minmax(250px,1fr);gap:42px;position:relative}
+  .realm{min-width:0;position:relative;z-index:1}.realm.clinicalrealm{padding-left:24px;border-left:1px solid var(--line)}
+  .realmhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;gap:10px}.realmhead h3{font-size:16px;font-weight:500}.realmhead small{font-size:11px;color:var(--muted)}.realmhead.clinicalhead h3{color:var(--clinical)}
+  .person{background:var(--panel2);border:1px solid var(--line);padding:12px 16px;border-radius:5px;text-align:center;max-width:360px;margin:auto;position:relative;z-index:2}
+  .person strong{display:block;font-size:14px;font-weight:500}.person small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+  .intake{display:grid;grid-template-columns:1fr 1fr;gap:38px;margin:28px auto 34px;max-width:640px}
+  .node{position:relative;z-index:2;border:1px solid var(--line);border-radius:6px;display:flex;width:100%;text-align:left;align-items:flex-start;gap:10px;background:var(--panel);padding:14px 13px;min-height:109px;transition:background .15s,border-color .15s}
+  .node:hover{background:var(--panel2);border-color:#827053}.node.is-active{border-color:var(--bright);background:#231c12;box-shadow:0 0 0 1px var(--bright)}
+  .sigil{flex:0 0 28px;min-height:28px;border:1px solid #655037;border-radius:5px;display:grid;place-items:center;font-size:11px;font-weight:600;color:var(--bright)}
+  .nodecontent{flex:1;min-width:0}.nodetitle{display:block;font-size:14px;line-height:1.25;font-weight:600}.nodedesc{display:block;margin-top:6px;color:var(--muted);font-size:12px;line-height:1.4}
+  .node .tag{display:inline-block;margin-top:8px;font-size:10px;line-height:1.4;letter-spacing:.01em;color:var(--bright)}
+  .branches{display:grid;grid-template-columns:minmax(0,1.13fr) minmax(0,1fr);gap:30px;align-items:start}
+  .groupcaption{position:relative;z-index:2;text-align:center;font-size:12px;color:var(--muted);background:var(--bg);padding:0 7px;display:table;margin:0 auto 16px}
+  .specialists{display:grid;grid-template-columns:1fr 1fr;gap:16px}.specialists .node{min-height:127px}
+  .returnline{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px;padding:17px 0 0}.returnline:before{content:"";width:25px;height:1px;background:var(--gold)}
+  .enginecompact>.node{max-width:310px;margin:0 auto 24px}.builderrow{display:grid;grid-template-columns:1fr 1fr;gap:12px;position:relative;z-index:2}.builderrow .node{min-height:108px;padding:12px 10px}
+  .builderrow .sigil{flex-basis:22px;font-size:10px;min-height:24px}.builderrow .nodetitle{font-size:13px}.builderrow .nodedesc{font-size:11px}
+  .buildercaption{font-size:11px;color:var(--muted);text-align:center;margin:9px 0 12px}.miniworkflow{display:flex;gap:6px;align-items:center;justify-content:center;flex-wrap:wrap;padding:12px 6px;border-top:1px solid var(--line);font-size:11px;color:var(--ink)}
+  .miniworkflow b{font-weight:500;background:var(--panel2);padding:4px 7px;border-radius:3px}.miniworkflow i{font-style:normal;color:var(--gold)}.minifoot{font-size:11px;color:var(--muted);text-align:center;margin-top:7px}
+  .pgznode{margin:37px auto 33px;min-height:147px;border-color:#485f51;max-width:320px}.pgznode .sigil{color:var(--clinical);border-color:#485f51}.pgznode .tag{color:var(--clinical)}
+  .pgznode.is-active{border-color:var(--clinical);background:#18201b;box-shadow:0 0 0 1px var(--clinical)}
+  .clinicalrealm .person{border-color:#3a493e}.clinicalloop{margin:30px auto 0;padding:13px 0 0;border-top:1px solid var(--line);max-width:320px;font-size:12px;color:var(--muted)}
+  .clinicalloop strong{font-weight:500;color:var(--clinical)}.clinicalloop p{margin-top:6px}
+  .shared{position:relative;margin-top:30px;border-top:1px solid var(--line);padding-top:22px;display:grid;grid-template-columns:minmax(260px,1fr) minmax(0,1.7fr);gap:24px}
+  .library{padding:15px 18px;background:var(--panel2);border-left:3px solid var(--gold);border-radius:0 5px 5px 0;position:relative;z-index:2}
+  .library h3{font-size:16px;font-weight:500}.library p{font-size:12px;color:var(--muted);margin-top:5px}.versionflow{display:flex;gap:7px;align-items:center;flex-wrap:wrap;font-size:11px;margin-top:12px}.versionflow span{padding:3px 7px;background:var(--bg);border-radius:3px}.versionflow i{font-style:normal;color:var(--gold)}
+  .sources{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding-bottom:11px;margin-bottom:10px;font-size:12px}.sources strong{font-weight:500;color:var(--ink)}.sources span{color:var(--muted)}
+  .systems{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.system{border:1px solid var(--line);border-radius:4px;padding:9px 10px;font-size:12px;min-height:55px;transition:opacity .15s,background .15s,border-color .15s}.system small{display:block;font-size:10px;color:var(--muted);margin-top:2px}.system.is-linked{background:#202018;border-color:var(--bright)}.system.is-dim{opacity:.4}
+  .methodnote{font-size:12px;color:var(--muted);padding-top:14px;display:flex;justify-content:space-between;gap:20px}.methodnote strong{color:var(--ink);font-weight:500}
+  .diagramhint{font-size:11px;color:var(--muted);margin-top:17px}.arrowtext{color:var(--gold)}
+  .engineering .sectionlead{margin-bottom:22px}.ownership{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:25px}.ownershipitem{padding:12px 16px;border-left:2px solid var(--gold);background:var(--panel);font-size:13px}.ownershipitem strong{display:block;font-weight:500}.ownershipitem span{color:var(--muted);font-size:12px}
+  .engtree{max-width:920px;margin:0 auto;position:relative}.engtree .node{max-width:340px;margin:auto}.engtree .request{max-width:440px;margin:0 auto 25px;text-align:center;font-size:13px;color:var(--muted)}.engtree .request b{display:block;color:var(--ink);font-weight:500;font-size:15px}
+  .engbuilders{display:grid;grid-template-columns:1fr 1fr 1fr;gap:30px;margin-top:32px;position:relative;z-index:2}.engbuilders .node{min-height:125px;max-width:none}.rolebox{border:1px solid var(--line);background:var(--panel);padding:16px 18px;border-radius:5px;font-size:14px}.rolebox strong{display:block;font-weight:500}.rolebox small{display:block;color:var(--muted);font-size:12px;margin-top:5px}.rolebox .rolelabel{font-size:11px;color:var(--gold);margin-top:9px}
+  .prrail{margin:27px auto 0;text-align:center;padding:12px;background:var(--panel2);border:1px solid #655037;border-radius:4px;max-width:740px;font-size:14px}.prrail small{display:block;font-size:12px;color:var(--muted);margin-top:3px}
+  .pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;margin-top:28px}.step{position:relative;padding:16px 15px 14px;background:var(--panel);border-top:2px solid var(--gold);min-height:150px}.step:not(:last-child):after{content:"→";position:absolute;right:-22px;top:58px;color:var(--gold);font-size:19px}
+  .stepnum{font-size:11px;color:var(--gold);display:block;margin-bottom:8px}.step h3{font-size:15px;line-height:1.25;font-weight:500}.step p{font-size:12px;color:var(--muted);margin-top:7px}.step small{display:block;color:var(--bright);font-size:11px;margin-top:9px}
+  .feedback{display:grid;grid-template-columns:1.2fr 1fr;gap:24px;margin-top:19px}.loopback{padding:12px 15px;border-left:2px solid var(--ui);font-size:12px;background:var(--panel)}.loopback strong{display:block;color:var(--ui);font-weight:500}.loopback span{color:var(--muted)}.proof{padding:12px 15px;border-left:2px solid var(--gold);font-size:12px;background:var(--panel)}.proof strong{display:block;font-weight:500}.proof span{color:var(--muted)}
+  .englegend{margin-top:24px;display:flex;gap:25px;flex-wrap:wrap;color:var(--muted);font-size:12px}.englegend strong{color:var(--ink);font-weight:500}
+  .modelead{padding:14px 18px;border-left:2px solid var(--gold);background:var(--panel);font-size:15px;margin-bottom:25px}.modelead small{display:block;color:var(--muted);font-size:13px;margin-top:4px}
+  .modecontrols{display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:28px}.field{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted)}select{background:var(--panel);border:1px solid var(--line);color:var(--ink);padding:10px 36px 10px 12px;min-height:44px;border-radius:4px;min-width:280px;max-width:100%}
+  .segmented{display:flex;gap:6px}.modebutton{min-height:44px;padding:10px 18px;background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:4px}.modebutton[aria-pressed=true]{background:var(--panel2);border-color:var(--bright);color:var(--ink)}
+  .modecanvas{display:grid;grid-template-columns:1fr 1.2fr 1.2fr 1fr;gap:32px;align-items:stretch}.modestep{background:var(--panel);padding:20px 19px;border:1px solid var(--line);border-radius:5px;position:relative;min-height:185px}.modestep:not(:last-child):after{content:"→";position:absolute;right:-26px;top:72px;font-size:20px;color:var(--gold)}.modestep .symbol{font-size:25px;line-height:1;color:var(--gold);font-family:Georgia,serif;margin-bottom:18px;display:block}.modestep h3{font-size:15px;font-weight:500}.modestep p{font-size:13px;color:var(--muted);margin-top:9px}
+  .modestep.modeapi{border-top:3px solid var(--api)}.modestep.modeui{border-top:3px solid var(--ui)}.modestep.modeapi .symbol{color:var(--api)}.modestep.modeui .symbol{color:var(--ui)}
+  .modecards{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:25px}.modecard{padding:17px 19px;border-top:1px solid var(--line)}.modecard h3{font-size:15px;font-weight:500}.modecard p{font-size:13px;color:var(--muted);margin-top:7px;max-width:65ch}
+  .modecard.api h3{color:var(--api)}.modecard.ui h3{color:var(--ui)}.modeexception{margin:22px 0 0;padding:14px 18px;background:var(--panel2);font-size:13px}.modeexception strong{color:var(--bright);font-weight:500}.modeexception p{color:var(--muted);margin-top:4px}
+  footer{border-top:1px solid var(--line);margin-top:28px;padding-top:16px;display:flex;justify-content:space-between;gap:20px;font-size:12px;color:var(--muted)}footer strong{font-weight:500;color:var(--ink)}.printtitle{display:none}
+  @media(min-width:1500px){.node{padding:17px 15px}.specialists .node{min-height:140px}.mapcols{gap:56px}.branches{gap:42px}}
+  @media(max-width:1120px){.shell{padding:24px}.mapcols{grid-template-columns:minmax(0,2.5fr) minmax(235px,1fr);gap:24px}.branches{grid-template-columns:1fr;gap:24px}.enginecompact{max-width:500px;margin:auto;width:100%}.specialists{grid-template-columns:repeat(4,1fr)}.specialists .node{padding:12px 10px;display:block;min-height:154px}.specialists .sigil{display:inline-grid;width:25px;margin-bottom:8px}.shared{grid-template-columns:1fr 1.5fr}.systems{grid-template-columns:repeat(3,1fr)}.modecanvas{gap:24px}.modestep:not(:last-child):after{right:-21px}.pipeline{gap:22px}.step:not(:last-child):after{right:-20px}}
+  @media(max-width:820px){.hero{align-items:flex-start}.meta{display:none}.navrow{align-items:flex-start;flex-direction:column}.topline{align-items:flex-start}.status{font-size:11px}.mapcols{grid-template-columns:1fr}.realm.clinicalrealm{padding-left:0;border-left:0;border-top:1px solid var(--line);padding-top:24px}.clinicalrealm{display:grid;grid-template-columns:1fr 1fr;gap:20px}.clinicalrealm .realmhead{grid-column:1/-1;margin-bottom:0}.clinicalrealm .person{margin:0;width:100%;max-width:none}.pgznode{margin:0;max-width:none;grid-row:2/4;grid-column:2}.clinicalloop{grid-column:1/-1;max-width:none;margin:0}.branches{grid-template-columns:1fr 1fr}.specialists{grid-template-columns:1fr 1fr}.specialists .node{display:flex;min-height:125px}.specialists .sigil{margin:0}.enginecompact{max-width:none}.shared{grid-template-columns:1fr}.focusstrip{align-items:flex-start}.pipeline{grid-template-columns:1fr 1fr;gap:18px}.step:nth-child(2):after{display:none}.modecanvas{grid-template-columns:1fr 1fr;gap:20px}.modestep:nth-child(2):after{display:none}.modestep:not(:last-child):after{right:-18px}.engbuilders{gap:16px}.engbuilders .node{padding:14px 11px}.ownership{gap:14px}.wires{display:none}}
+  @media(max-width:560px){.shell{padding:18px 16px}.brand{font-size:15px}.status{max-width:120px;text-align:right}.hero{margin-top:24px}.subtitle{font-size:14px}.tabs{gap:5px}.tab{padding:9px 11px;font-size:12px}.plainbutton{font-size:12px;padding:8px 12px}.legend{gap:12px}.sectionlead{display:block}.sectionlead p{margin-top:7px}.focusstrip{display:block}.focusstrip .owner{text-align:left;margin-top:8px}.intake{gap:18px;margin-top:18px}.node{padding:13px 10px;gap:8px}.nodetitle{font-size:13px}.sigil{flex-basis:24px}.branches{grid-template-columns:1fr}.specialists .node{min-height:112px}.enginecompact{max-width:440px}.clinicalrealm{display:block}.clinicalrealm .realmhead{margin-bottom:16px}.clinicalrealm .person{max-width:360px;margin:auto}.pgznode{max-width:360px;margin:24px auto}.clinicalloop{max-width:360px;margin:20px auto 0}.systems{grid-template-columns:1fr 1fr}.sources{align-items:flex-start;gap:15px}.methodnote{display:block}.methodnote span{display:block;margin-top:6px}.ownership{grid-template-columns:1fr}.engbuilders{grid-template-columns:1fr;gap:14px}.engbuilders .node{max-width:420px}.engbuilders .rolebox{max-width:420px;width:100%;margin:auto}.pipeline{gap:12px}.step{padding:13px 11px;min-height:178px}.step:after{display:none}.feedback{grid-template-columns:1fr;gap:12px}.modecanvas{grid-template-columns:1fr}.modestep{min-height:auto;padding:17px}.modestep:not(:last-child):after{display:none}.modestep .symbol{margin-bottom:12px;font-size:21px}.modecards{grid-template-columns:1fr;gap:10px}.modecontrols{display:block}.segmented{margin-top:14px}select{width:100%;min-width:0}.modecard{padding:16px 0}.englegend{gap:12px}footer{display:block}footer span{display:block;margin-top:5px}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+  @media print{@page{size:A3 landscape;margin:13mm}body{print-color-adjust:exact;-webkit-print-color-adjust:exact}.shell{max-width:none;padding:0}.navrow,.focusstrip,.diagramhint,.modecontrols,.meta,.plainbutton{display:none!important}.pane[hidden]{display:block!important}.pane{break-before:page}.pane:first-of-type{break-before:auto}.printtitle{display:block;margin-bottom:15px;font-size:24px}.hero{margin:15px 0}.topline{font-size:11px}h1{font-size:30px}.mapcols{grid-template-columns:3fr 1fr}.branches{grid-template-columns:1.13fr 1fr}.specialists{grid-template-columns:1fr 1fr}.specialists .node{display:flex}.shared{grid-template-columns:1fr 1.7fr}.systems{grid-template-columns:repeat(4,1fr)}.node,.person,.step,.modestep{break-inside:avoid}.wires{display:none}.node.is-active{box-shadow:none;border-color:var(--line);background:var(--panel)}.system.is-dim{opacity:1}.system.is-linked{border-color:var(--line);background:none}footer{margin-top:20px}.clinicalrealm{display:block;padding-left:24px;border-left:1px solid var(--line)}.clinicalrealm .pgznode{margin:37px auto 33px}.clinicalrealm .person{margin:auto}.pipeline,.modecanvas{grid-template-columns:repeat(4,1fr)}.ownership,.feedback,.modecards{grid-template-columns:1fr 1fr}.engbuilders{grid-template-columns:repeat(3,1fr)}}
+  /* Ampliação da equipe: gerências, jornada e produção autônoma planejada. */
+  .intake{grid-template-columns:repeat(3,minmax(0,1fr));max-width:870px;gap:24px}
+  .branches{grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+  .family{min-width:0}.family>.node{margin:0 0 24px;min-height:131px}.familykids{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .familykids .node{padding:12px 10px;display:block;min-height:132px}.familykids .sigil{display:inline-grid;width:24px;min-height:24px;margin-bottom:8px}
+  .familykids .nodetitle{font-size:13px}.familykids .nodedesc{font-size:11px}.familykids .full{grid-column:1/-1;min-height:96px;display:flex}
+  .familykids .full .sigil{flex:0 0 24px;margin-bottom:0}.family .returnline{font-size:11px;line-height:1.45}
+  .proposed{color:var(--ui)!important}.familyfoot{padding:12px 0;border-top:1px solid var(--line);margin-top:14px;font-size:11px;color:var(--muted)}
+  .familyfoot strong{font-weight:500;color:var(--ink)}.trackingrow{margin-top:26px;padding-top:19px;border-top:1px solid var(--line)}
+  .trackingrow .node{min-height:100px}.trackingrow .nodetitle{font-size:15px}.trackingrow .nodedesc{font-size:12px}
+  .realmhead small{text-align:right}.person small{line-height:1.4}.family .miniworkflow{font-size:10px;gap:4px;padding:11px 0}.family .miniworkflow b{padding:4px}
+  .journeymanager{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-bottom:24px}.journeymanager .node{min-height:116px}
+  .journeyflow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:26px}.journeycol{position:relative;padding:17px;border:1px solid var(--line);background:var(--panel);border-radius:5px}
+  .journeycol:not(:last-child):after{content:"→";position:absolute;right:-23px;top:28px;color:var(--gold);font-size:20px}.journeycol h3{font-size:17px;font-weight:500}
+  .journeycol>p{font-size:12px;color:var(--muted);margin-top:6px}.journeycol .node{margin-top:14px;min-height:85px;background:var(--bg)}
+  .journeycol .node .nodedesc{font-size:11px}.flowitems{display:flex;flex-wrap:wrap;gap:7px;margin-top:15px}
+  .flowitems span{padding:5px 8px;background:var(--panel2);border:1px solid var(--line);font-size:12px;border-radius:3px}
+  .journeybar{margin-top:22px;display:grid;grid-template-columns:1fr 1fr;gap:22px}.journeybar>div{padding:14px 17px;border-left:2px solid var(--gold);background:var(--panel);font-size:13px}
+  .journeybar strong{display:block;font-weight:500}.journeybar p{font-size:12px;color:var(--muted);margin-top:5px}.npspaths{display:grid;gap:9px;margin-top:14px}.npspaths div{padding:9px 11px;background:var(--panel2);font-size:12px;border-left:2px solid var(--gold)}
+  .npspaths strong{display:block;font-weight:500;color:var(--ink)}.npspaths span{color:var(--muted);display:block;margin-top:3px}
+  .npspaths .google{border-left-color:var(--api)}.policyfoot{font-size:11px;color:var(--muted);margin-top:14px}.policyfoot a{color:var(--muted)}
+  .ticketflow{display:flex;align-items:stretch;gap:12px;margin:0 0 24px}.ticketflow>div{flex:1;padding:12px 15px;background:var(--panel);border-left:2px solid var(--gold);font-size:13px}.ticketflow strong{display:block;font-weight:500}.ticketflow span{display:block;font-size:12px;color:var(--muted);margin-top:4px}
+  .batchrules{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:22px}.batchrule{border-top:1px solid var(--line);padding-top:13px;font-size:13px}.batchrule strong{display:block;color:var(--bright);font-weight:500}.batchrule p{font-size:12px;color:var(--muted);margin-top:5px}
+  .plannednote{padding:13px 16px;background:var(--panel2);margin-top:22px;font-size:12px;color:var(--muted)}.plannednote strong{color:var(--ink);font-weight:500}
+  .modebutton:disabled{opacity:.45}.mode-specific{display:block;color:var(--bright);font-size:12px;max-width:550px;margin-top:12px}
+  @media(max-width:1250px){.mapcols{grid-template-columns:1fr;gap:28px}.realm.clinicalrealm{padding:22px 0 0;border-left:0;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;align-items:start}.clinicalrealm .realmhead{grid-column:1/-1;margin:0}.clinicalrealm .person{width:100%;margin:0;max-width:none}.clinicalrealm .pgznode{margin:0;max-width:none;min-height:130px}.clinicalrealm .clinicalloop{grid-column:1/-1;margin:0;max-width:none}.wires{display:none}}
+  @media(max-width:820px){.branches{grid-template-columns:1fr 1fr}.family.enginefamily{grid-column:1/-1;max-width:540px;margin:auto;width:100%}.intake{gap:14px}.journeyflow{grid-template-columns:1fr 1fr;gap:20px}.journeycol:nth-child(2):after{display:none}.journeycol:not(:last-child):after{right:-18px}.journeymanager{gap:18px}.ticketflow{flex-wrap:wrap}.ticketflow>div{flex-basis:45%}.batchrules{gap:15px}.realm.clinicalrealm{grid-template-columns:1fr 1fr}.clinicalrealm .pgznode{grid-column:2;grid-row:2/4}.clinicalrealm .person{grid-column:1}}
+  @media(max-width:560px){.intake{grid-template-columns:1fr}.intake .node{max-width:420px;margin:auto;min-height:94px}.branches{grid-template-columns:1fr;gap:24px}.family>.node{margin-bottom:14px;min-height:108px}.familykids .node{min-height:119px}.family.enginefamily{grid-column:auto}.realm.clinicalrealm{display:block}.clinicalrealm .realmhead{margin-bottom:16px}.clinicalrealm .person{margin:auto;max-width:360px}.clinicalrealm .pgznode{margin:20px auto;max-width:360px}.clinicalrealm .clinicalloop{margin:20px auto 0;max-width:360px}.journeymanager,.journeyflow,.journeybar,.batchrules{grid-template-columns:1fr}.journeycol:after{display:none}.ticketflow{display:block}.ticketflow>div+div{margin-top:12px}.batchrules{gap:18px}.mode-specific{font-size:11px}}
+  @media print{.mapcols{grid-template-columns:3fr 1fr}.realm.clinicalrealm{display:block;padding-left:22px;border-left:1px solid var(--line);border-top:0}.clinicalrealm .pgznode{margin:32px auto}.clinicalrealm .person{margin:auto}.clinicalrealm .clinicalloop{margin-top:25px}.branches{grid-template-columns:repeat(3,1fr)}.family.enginefamily{grid-column:auto}.intake{grid-template-columns:repeat(3,1fr)}.journeyflow{grid-template-columns:repeat(4,1fr)}.journeymanager,.journeybar{grid-template-columns:1fr 1fr}.batchrules{grid-template-columns:repeat(3,1fr)}.ticketflow{display:flex}}
+  /* Jurídico: apoio estratégico a Felipe e Alex, fora da operação do time. */
+  .intake{grid-template-columns:1fr 1fr;max-width:640px}
+  .supportcolumn{min-width:0}.strategicrealm{margin-top:28px;padding:22px 0 0 24px;border-left:1px solid var(--line)}
+  .strategicrealm .realmhead{margin-bottom:17px}.strategicrealm .person{margin:0 auto 24px}.strategicrealm .node{max-width:320px;margin:auto;min-height:134px}
+  .strategicrealm .nodedesc{font-size:12px}.strategicnote{margin:16px auto 0;max-width:320px;color:var(--muted);font-size:12px}
+  .swatch.strategic{background:var(--muted)}
+  @media(max-width:1250px){.supportcolumn{display:grid;grid-template-columns:1.2fr 1fr;gap:28px;border-top:1px solid var(--line);padding-top:24px}.supportcolumn .realm.clinicalrealm{display:block;padding:0;border:0}.supportcolumn .clinicalrealm .realmhead{margin-bottom:17px}.supportcolumn .pgznode{margin:24px auto;max-width:320px}.supportcolumn .clinicalrealm .person{max-width:360px;margin:auto}.supportcolumn .clinicalloop{max-width:360px;margin:20px auto 0}.supportcolumn .strategicrealm{margin:0;padding:0 0 0 24px}}
+  @media(max-width:560px){.intake{grid-template-columns:1fr}.supportcolumn{display:block}.supportcolumn .strategicrealm{margin-top:24px;padding:24px 0 0;border-left:0;border-top:1px solid var(--line)}}
+  @media print{.supportcolumn{display:block;border-top:0;padding-top:0}.supportcolumn .realm.clinicalrealm{padding-left:22px;border-left:1px solid var(--line)}.supportcolumn .strategicrealm{margin-top:28px;padding:22px 0 0 22px;border-left:1px solid var(--line)}.intake{grid-template-columns:1fr 1fr}}
+
+  /* Engenharia: responsabilidades, evidências e decisões por etapa. */
+  .engineeringflow{max-width:1200px;margin:auto}.engineeringflow .sectionlead{align-items:start}
+  .engroad{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 28px;list-style:none;padding:0}
+  .engroad li{padding:8px 11px;border:1px solid var(--line);background:var(--panel);font-size:12px;border-radius:4px}
+  .engroad li:not(:last-child):after{content:" →";color:var(--gold);margin-left:7px}
+  .engphase{position:relative;padding:22px 0 26px 54px;border-left:1px solid var(--line);margin-left:16px}
+  .engphase:before{content:attr(data-step);position:absolute;left:-17px;top:22px;width:33px;height:33px;border-radius:50%;display:grid;place-items:center;background:var(--gold);color:var(--bg);font-weight:650}
+  .engphase:last-of-type{border-left-color:transparent}.engphase h3{font-size:22px;line-height:1.2;font-weight:500;margin-bottom:9px}
+  .engphase>.engintro{max-width:76ch;color:var(--muted);margin-bottom:16px;font-size:14px}
+  .engcards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.engcards.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .engcards .node{min-height:152px;height:100%;align-items:start}.engcards .nodedesc{font-size:13px;line-height:1.5}.engcards .nodetitle{font-size:16px;line-height:1.3}
+  .engoutput{margin-top:13px;padding:12px 15px;border-left:2px solid var(--gold);background:var(--panel2);font-size:13px;color:var(--muted)}
+  .engoutput strong{color:var(--ink);font-weight:550}.engchecks{margin-top:15px;padding:16px 18px;background:var(--panel);border:1px solid var(--line);border-radius:4px}
+  .engchecks h4{font-size:15px;font-weight:550;margin:0 0 9px}.engchecks ul{margin:0;padding-left:19px;color:var(--muted);font-size:13px}.engchecks li+li{margin-top:6px}
+  .engdecision{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}.engdecision>div{padding:15px 18px;border:1px solid var(--line);background:var(--panel)}
+  .engdecision strong{display:block;color:var(--ink);font-weight:550}.engdecision p{color:var(--muted);font-size:13px;margin-top:5px}.engdecision .pass{border-top:2px solid var(--clinical)}.engdecision .return{border-top:2px solid var(--gold)}
+  .engterms{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:28px}.engterms>div{border-top:1px solid var(--line);padding-top:13px;font-size:13px}.engterms strong{display:block;font-weight:550}.engterms p{margin-top:6px;color:var(--muted)}
+  .engsources{font-size:12px;color:var(--muted);margin-top:26px;max-width:85ch}.engsources a{margin-right:12px}.sharefeedback{font-size:12px;color:var(--muted);min-height:18px;margin:8px 0 16px}
+  .family.enginefamily .familykids .node{min-height:115px}.engineering-more{display:block;font-size:12px;color:var(--bright);margin-top:14px;background:none;border:0;text-align:left;padding:8px 0;min-height:40px}
+  @media(max-width:820px){.engcards{grid-template-columns:1fr 1fr}.engcards .node:last-child{grid-column:auto}.engterms{grid-template-columns:1fr}.engphase{padding-left:37px}.engphase h3{font-size:20px}}
+  @media(max-width:560px){.engcards,.engcards.two,.engdecision{grid-template-columns:1fr}.engcards .node{min-height:unset}.engphase{margin-left:13px;padding:20px 0 22px 27px}.engphase:before{width:27px;height:27px;left:-14px;font-size:12px}.engroad{gap:6px}.engroad li{font-size:11px;padding:7px 9px}.engoutput,.engchecks{padding:12px}.engphase h3{font-size:19px}.engphase>.engintro{font-size:13px}.engsources a{display:block;margin-top:8px}.plainbutton{min-height:44px}}
+  @media print{.engphase,.engcards,.engdecision{break-inside:avoid}.engphase{padding-bottom:18px}.engcards{grid-template-columns:repeat(3,1fr)}.engcards.two,.engdecision{grid-template-columns:1fr 1fr}.engterms{grid-template-columns:repeat(3,1fr)}.engroad{display:flex}.engineering-more,.sharefeedback,#share-button{display:none!important}}
+</style>
+</head>
+<body>
+<main class="shell">
+  <div class="topline"><div class="brand">OLYMPUS <span>/ BLACK</span></div><div class="status"><span class="dot" aria-hidden="true"></span>Proposta de estrutura</div></div>
+  <header class="hero">
+    <div><h1>Uma equipe de agentes.<br>Da demanda ao resultado.</h1><p class="subtitle">Marketing gera demanda. Comercial evolui o funil. Tecnologia sustenta a operação.</p></div>
+    <div class="meta"><strong>Revisão com Felipe e Ítalo</strong>Atualizado em 14 de outubro de 2026<br>Estrutura, sem plano de construção</div>
+  </header>
+  <div class="navrow">
+    <nav class="tabs" role="tablist" aria-label="Visões do fluxo">
+      <button class="tab" id="tab-map" type="button" role="tab" aria-selected="true" aria-controls="pane-map" data-pane="map">Equipe e sistemas</button>
+      <button class="tab" id="tab-journey" type="button" role="tab" aria-selected="false" aria-controls="pane-journey" data-pane="journey">Funil da clínica</button>
+      <button class="tab" id="tab-engineering" type="button" role="tab" aria-selected="false" aria-controls="pane-engineering" data-pane="engineering">Desenvolvimento e PRs</button>
+      <button class="tab" id="tab-modes" type="button" role="tab" aria-selected="false" aria-controls="pane-modes" data-pane="modes">API e Computer Use</button>
+    </nav>
+    <button class="plainbutton" id="share-button" type="button">Compartilhar link</button>
+    <button class="plainbutton" id="print-button" type="button">Imprimir as quatro visões</button>
+  </div>
+
+  <p class="sharefeedback" id="share-feedback" role="status" aria-live="polite"></p>
+
+  <section class="pane" id="pane-map" role="tabpanel" aria-labelledby="tab-map">
+    <div class="sectionlead"><h2>O projeto conecta o trabalho. Cada agente tem seu responsável.</h2><div class="legend"><span><i class="swatch" aria-hidden="true"></i>Operação</span><span><i class="swatch clinical" aria-hidden="true"></i>Uso clínico</span><span><i class="swatch strategic" aria-hidden="true"></i>Apoio estratégico</span><span><i class="swatch tool" aria-hidden="true"></i>Sistemas e ferramentas</span></div></div>
+    <div class="focusstrip" id="focusstrip" aria-live="polite"><div><strong id="focus-title">Selecione um agente para ver suas conexões</strong><p id="focus-description">As funções estão propostas. Recuperação/cadência aparece separada como recomendação para discussão.</p></div><div class="owner" id="focus-owner">24 papéis no desenho<br>23 definidos + recuperação proposta</div></div>
+    <div class="diagram" id="overview-diagram">
+      <svg class="wires" id="overview-wires" aria-hidden="true"><defs><marker id="arrow-gold" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7Z" style="fill:#70604a;stroke:none"></path></marker><marker id="arrow-clinical" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7Z" style="fill:#a8c9b6;stroke:none"></path></marker></defs><g id="overview-paths"></g></svg>
+      <div class="mapcols">
+        <section class="realm operationalrealm" aria-label="Agentes de apoio à operação">
+          <div class="realmhead"><h3>Agentes de apoio à operação</h3><small>Proposta de coordenação</small></div>
+          <div class="person" id="map-team"><strong>Felipe + equipe</strong><small>Usam, validam e ajustam os agentes</small></div>
+          <div class="intake">
+            <button class="node" id="map-cs" type="button" data-agent="cs" aria-pressed="false"><span class="sigil" aria-hidden="true">CS</span><span class="nodecontent"><span class="nodetitle">Comunicação / CS</span><span class="nodedesc">Recebe, alinha e acompanha o mentorado. Registra suporte em tickets individuais.</span><span class="tag">Entrada e comunicação</span></span></button>
+            <button class="node" id="map-project" type="button" data-agent="project" aria-pressed="false"><span class="sigil" aria-hidden="true">GP</span><span class="nodecontent"><span class="nodetitle">Gestão de Projetos</span><span class="nodedesc">Dono do projeto de cada mentorado.</span><span class="tag">Coordena prioridades e entregas</span></span></button>
+          </div>
+          <div class="branches">
+            <div class="family" id="marketing-family">
+              <button class="node" id="map-marketing" type="button" data-agent="marketing" aria-pressed="false"><span class="sigil" aria-hidden="true">GM</span><span class="nodecontent"><span class="nodetitle">Gerente de Marketing</span><span class="nodedesc">Analisa demanda, qualidade e resultados entregues pelo marketing.</span><span class="tag">Visão de demanda e crescimento</span></span></button>
+              <div class="familykids">
+                <button class="node" id="map-traffic" type="button" data-agent="traffic" aria-pressed="false"><span class="sigil" aria-hidden="true">TR</span><span class="nodecontent"><span class="nodetitle">Gestor de Tráfego</span><span class="nodedesc">Campanhas, leitura de resultados e propostas de ajustes.</span><span class="tag">Mídia e aquisição</span></span></button>
+                <button class="node" id="map-seo" type="button" data-agent="seo" aria-pressed="false"><span class="sigil" aria-hidden="true">SE</span><span class="nodecontent"><span class="nodetitle">SEO / AEO</span><span class="nodedesc">Busca, presença digital e conteúdo encontrável.</span><span class="tag">Descoberta e autoridade</span></span></button>
+                <button class="node full" id="map-gbp" type="button" data-agent="gbp" aria-pressed="false"><span class="sigil" aria-hidden="true">GB</span><span class="nodecontent"><span class="nodetitle">Agente de GBP</span><span class="nodedesc">Perfil da clínica no Google, presença local e demanda.</span><span class="tag">Busca e Maps</span></span></button>
+              </div>
+              <div class="returnline">A gerência compara o que cada canal entrega com a qualidade e os desfechos no comercial.</div>
+            </div>
+            <div class="family" id="commercial-family">
+              <button class="node" id="map-commercial" type="button" data-agent="commercial" aria-pressed="false"><span class="sigil" aria-hidden="true">GC</span><span class="nodecontent"><span class="nodetitle">Gerente Comercial</span><span class="nodedesc">Avalia o funil da clínica e onde as SDRs podem melhorar.</span><span class="tag">Atendimento e conversão</span></span></button>
+              <div class="familykids">
+                <button class="node" id="map-iris-wa" type="button" data-agent="iris-wa" aria-pressed="false"><span class="sigil" aria-hidden="true">WA</span><span class="nodecontent"><span class="nodetitle">SDR Íris / WhatsApp</span><span class="nodedesc">Conduz a conversa e o avanço do lead.</span><span class="tag">Evolution API</span></span></button>
+                <button class="node" id="map-iris-ig" type="button" data-agent="iris-ig" aria-pressed="false"><span class="sigil" aria-hidden="true">IG</span><span class="nodecontent"><span class="nodetitle">SDR Íris / Instagram</span><span class="nodedesc">Atende e evolui os contatos do Instagram.</span><span class="tag">Canal Instagram</span></span></button>
+                <button class="node full" id="map-recovery" type="button" data-agent="recovery" aria-pressed="false"><span class="sigil" aria-hidden="true">RC</span><span class="nodecontent"><span class="nodetitle">Recuperação / Cadência</span><span class="nodedesc">Responsável pelos retornos programados dos leads elegíveis.</span><span class="tag proposed">Separação recomendada</span></span></button>
+                <button class="node full" id="map-postsale" type="button" data-agent="postsale" aria-pressed="false"><span class="sigil" aria-hidden="true">PV</span><span class="nodecontent"><span class="nodetitle">Pós-venda</span><span class="nodedesc">NPS, avaliação Google e pedido de indicação.</span><span class="tag">Experiência e relacionamento</span></span></button>
+              </div>
+              <div class="returnline">Cadência pausa com resposta, atendimento humano ou mudança de etapa. Uma conversa tem um responsável ativo.</div>
+            </div>
+            <div class="family enginefamily" id="engineering-family">
+              <button class="node" id="map-senior" type="button" data-agent="senior" aria-pressed="false"><span class="sigil" aria-hidden="true">SR</span><span class="nodecontent"><span class="nodetitle">Programador Sênior</span><span class="nodedesc">Recebe a demanda, esclarece o objetivo e coordena a equipe técnica.</span><span class="tag">Coordenação técnica</span></span></button>
+              <div class="familykids">
+                <button class="node full" id="map-planner" type="button" data-agent="planner" aria-pressed="false"><span class="sigil" aria-hidden="true">PT</span><span class="nodecontent"><span class="nodetitle">Planejador Técnico</span><span class="nodedesc">Planeja a solução, os testes e a divisão em PRs.</span><span class="tag">Um papel para os dois planos</span></span></button>
+                <button class="node full" id="map-software" type="button" data-agent="software" aria-pressed="false"><span class="sigil" aria-hidden="true">DS</span><span class="nodecontent"><span class="nodetitle">Desenvolvedor de Sistemas</span><span class="nodedesc">Implementa código do CRM: interface, APIs, funções e dados.</span><span class="tag">Backend e frontend conforme a tarefa</span></span></button>
+                <button class="node" id="map-lp" type="button" data-agent="lp" aria-pressed="false"><span class="sigil" aria-hidden="true">LP</span><span class="nodecontent"><span class="nodetitle">Desenvolvedor de LP</span><span class="nodedesc">Builder de páginas de conversão.</span><span class="tag">Entrega por PR</span></span></button>
+                <button class="node" id="map-site" type="button" data-agent="site" aria-pressed="false"><span class="sigil" aria-hidden="true">ST</span><span class="nodecontent"><span class="nodetitle">Desenvolvedor de Site</span><span class="nodedesc">Builder de sites e suas jornadas.</span><span class="tag">Entrega por PR</span></span></button>
+              </div>
+              <div class="miniworkflow"><b>Revisão</b><i>→</i><b>QA técnico + UI</b><i>→</i><b>Auditoria</b></div>
+              <div class="familyfoot"><strong>Publicação após evidências.</strong><br>Planejador define solução e PRs. Desenvolvedores implementam; revisores e QA conferem. Auditor decide; Publicador executa e verifica produção.</div>
+              <button class="engineering-more" type="button" id="engineering-more">Ver todos os agentes e as etapas de desenvolvimento</button>
+            </div>
+          </div>
+          <div class="trackingrow"><button class="node" id="map-tracking" type="button" data-agent="tracking" aria-pressed="false"><span class="sigil" aria-hidden="true">TK</span><span class="nodecontent"><span class="nodetitle">Agente de Tracking</span><span class="nodedesc">Certifica medição, origem e integrações entre marketing, comercial e sistemas. Mostra falhas e limitações dos números.</span><span class="tag">Certificação transversal do funcionamento</span></span></button></div>
+        </section>
+        <div class="supportcolumn">
+        <section class="realm clinicalrealm" aria-label="Agente clínico usado pelos mentorados">
+          <div class="realmhead clinicalhead"><h3>Agente clínico</h3><small>Mesmo ecossistema</small></div>
+          <div class="person" id="map-mentee"><strong>Mentorados</strong><small>Usam o agente para casos clínicos</small></div>
+          <button class="node pgznode" id="map-pgz" type="button" data-agent="pgz" aria-pressed="false"><span class="sigil" aria-hidden="true">PZ</span><span class="nodecontent"><span class="nodetitle">Agente PGZ</span><span class="nodedesc">Revisão de casos clínicos e sugestão de lentes.</span><span class="tag">Método PGZ de Alex</span></span></button>
+          <div class="person" id="map-alex"><strong>Alex</strong><small>Valida os casos e ajusta o agente</small></div>
+          <div class="clinicalloop"><strong>Uso → revisão → ajustes → nova versão</strong><p>PGZ participa da base comum. Seu público, seus dados e sua validação seguem a função clínica.</p></div>
+        </section>
+        <section class="realm strategicrealm" aria-label="Apoio jurídico estratégico a Felipe e Alex">
+          <div class="realmhead"><h3>Apoio estratégico</h3><small>Mesmo ecossistema</small></div>
+          <div class="person" id="map-strategic-owners"><strong>Felipe + Dr. Alex</strong><small>Questões contratuais e decisões estratégicas</small></div>
+          <button class="node" id="map-legal" type="button" data-agent="legal" aria-pressed="false"><span class="sigil" aria-hidden="true">JU</span><span class="nodecontent"><span class="nodetitle">Agente Jurídico</span><span class="nodedesc">Auxilia Felipe e Alex na análise contratual e no apoio a decisões estratégicas.</span><span class="tag">Apoio direto a Felipe e Alex</span></span></button>
+          <p class="strategicnote">Finalidade e público próprios. Não integra a operação da equipe nem a coordenação do projeto de cada mentorado.</p>
+        </section>
+        </div>
+      </div>
+    </div>
+    <div class="shared">
+      <section class="library" aria-label="Biblioteca comum de conhecimento">
+        <h3>Biblioteca comum / Cérebro</h3>
+        <p>Métodos de Alex + métodos e processos de Felipe/equipe.</p>
+        <div class="versionflow"><span>Fonte autoral</span><i>→</i><span>Versão publicada</span><i>→</i><span>Agentes</span></div>
+        <p>Original + conteúdo legível + histórico + materiais no Drive.</p>
+      </section>
+      <section aria-label="Sistemas conectados por ferramentas autorizadas">
+        <div class="sources"><strong>Ferramentas e conexões por agente</strong><span>API ou interface, conforme a tarefa e o acesso</span></div>
+        <div class="systems" id="systems">
+          <div class="system" data-system="brain">Cérebro<small>Método e contexto permitido</small></div>
+          <div class="system" data-system="admin">Admin<small>Projeto e demandas</small></div>
+          <div class="system" data-system="crm">Sistema Black<small>Fatos da clínica</small></div>
+          <div class="system" data-system="ads">Meta / Google<small>Mídia e presença digital</small></div>
+          <div class="system" data-system="drive">Drive<small>Fontes e materiais</small></div>
+          <div class="system" data-system="git">Git / PRs<small>Código e revisões</small></div>
+          <div class="system" data-system="web">Sites / LPs<small>Experiência publicada</small></div>
+          <div class="system" data-system="clinical">Base clínica PGZ<small>Casos e revisões próprios</small></div>
+          <div class="system" data-system="channels">Canais de atendimento<small>WhatsApp / Instagram</small></div>
+        </div>
+      </section>
+    </div>
+    <div class="methodnote"><span><strong>Autor do método ≠ responsável pelo agente.</strong> Alex pode atualizar o método de tráfego; Felipe/equipe ajustam o agente que o utiliza.</span><span>Dados e permissões seguem a função de cada agente.</span></div>
+    <p class="diagramhint">Clique em um agente para destacar seus sistemas. CS e Gestão de Projetos alinham o trabalho continuamente. Tracking verifica o conjunto. Relações propostas para revisão com Ítalo.</p>
+  </section>
+
+  <section class="pane journey" id="pane-journey" role="tabpanel" aria-labelledby="tab-journey" hidden>
+    <div class="printtitle">Funil da clínica</div>
+    <div class="sectionlead"><h2>Demanda, atendimento, recuperação e experiência.</h2><p>Marketing e comercial compartilham os fatos do funil. Cada gerência analisa a parte pela qual responde e sinaliza melhorias ao projeto.</p></div>
+    <div class="journeymanager">
+      <button class="node" type="button" data-agent="marketing" aria-pressed="false"><span class="sigil" aria-hidden="true">GM</span><span class="nodecontent"><span class="nodetitle">Gerente de Marketing</span><span class="nodedesc">Analisa o que Tráfego, SEO/AEO e GBP entregam. Cruza demanda, qualidade e desfechos comerciais.</span><span class="tag">Nome sugerido: manter Gerente de Marketing</span></span></button>
+      <button class="node" type="button" data-agent="commercial" aria-pressed="false"><span class="sigil" aria-hidden="true">GC</span><span class="nodecontent"><span class="nodetitle">Gerente Comercial</span><span class="nodedesc">Avalia perdas e avanço do funil. Identifica oportunidades de melhoria nas SDRs, no atendimento e na recuperação.</span><span class="tag">Funil da clínica como referência</span></span></button>
+    </div>
+    <div class="journeyflow">
+      <section class="journeycol"><h3>Gerar demanda</h3><p>Presença, campanhas e canais de aquisição.</p><div class="flowitems"><span>Gestor de Tráfego</span><span>SEO / AEO</span><span>GBP</span><span>LPs e sites</span></div><div class="familyfoot">Marketing recebe entregas e analisa os resultados de cada frente.</div></section>
+      <section class="journeycol"><h3>Atender e avançar</h3><p>Conversas e fatos registrados no CRM.</p><button class="node" type="button" data-agent="iris-wa" aria-pressed="false"><span class="nodecontent"><span class="nodetitle">SDR Íris / WhatsApp</span><span class="nodedesc">Conversas do canal WhatsApp.</span></span></button><button class="node" type="button" data-agent="iris-ig" aria-pressed="false"><span class="nodecontent"><span class="nodetitle">SDR Íris / Instagram</span><span class="nodedesc">Conversas do canal Instagram.</span></span></button></section>
+      <section class="journeycol"><h3>Recuperar oportunidades</h3><p>Para quem não avançou e continua elegível.</p><button class="node" type="button" data-agent="recovery" aria-pressed="false"><span class="nodecontent"><span class="nodetitle">Recuperação / Cadência</span><span class="nodedesc">Programa retornos e reavalia o estado do lead antes de agir.</span><span class="tag proposed">Proposta: responsabilidade separada</span></span></button><div class="familyfoot">Com resposta ou atendimento humano, pausa a cadência e devolve a conversa ao responsável.</div></section>
+      <section class="journeycol"><h3>Cuidar do pós-venda</h3><p>Após o marco de atendimento definido para a clínica.</p><button class="node" type="button" data-agent="postsale" aria-pressed="false"><span class="nodecontent"><span class="nodetitle">Agente de Pós-venda</span><span class="nodedesc">Pesquisa NPS e acompanha a experiência.</span></span></button><div class="npspaths"><div><strong>Avaliou bem</strong><span>Pedido de indicação.</span></div><div><strong>Experiência insatisfatória</strong><span>Tratativa e retorno à equipe responsável.</span></div><div class="google"><strong>Avaliação Google</strong><span>Convite neutro aos elegíveis, independente da nota do NPS.</span></div></div></section>
+    </div>
+    <div class="journeybar"><div><strong>Tracking certifica a leitura do funil</strong><p>Verifica fontes, eventos, integrações e cobertura. Dados faltantes ficam como lacuna, não como resultado zero.</p></div><div><strong>Feedback volta aos agentes e ao projeto</strong><p>Gerências identificam o que melhorar. Felipe/equipe validam e ajustam os agentes e os processos da operação.</p></div></div>
+    <div class="plannednote"><strong>Separar a responsabilidade da cadência é viável e recomendado neste desenho.</strong> A SDR conduz a conversa; recuperação cuida dos retornos programados. O ritmo e as regras podem ser executados por uma rotina agendada, sem um agente consultando a fila continuamente. A implementação fica para depois.</div>
+    <p class="policyfoot">Avaliações Google seguem convite autêntico e sem seleção por nota. <a href="https://support.google.com/contributionpolicy/answer/7400114?hl=pt-BR" target="_blank" rel="noopener noreferrer">Política oficial de avaliações</a>.</p>
+  </section>
+
+  <section class="pane engineeringflow" id="pane-engineering" role="tabpanel" aria-labelledby="tab-engineering" hidden>
+    <div class="printtitle">Desenvolvimento e PRs</div>
+    <div class="sectionlead"><h2>Da demanda à versão publicada.</h2><p>Quem constrói entrega uma versão candidata. Revisão, testes e auditoria conferem essa mesma versão antes da integração e da publicação.</p></div>
+    <ol class="engroad" aria-label="Caminho da entrega"><li>Ticket e objetivo</li><li>Plano e PRs</li><li>Código isolado</li><li>Revisão + testes</li><li>Auditoria</li><li>Integração</li><li>Publicação e prova</li></ol>
+
+    <section class="engphase" data-step="1"><h3>O Sênior entende a demanda.</h3><p class="engintro">CS ou Gestão de Projetos entrega um ticket por suporte ou ajuste. O Sênior confirma o problema, o resultado esperado e o que precisa ser esclarecido antes de planejar.</p>
+      <div class="engcards two"><button class="node" type="button" data-agent="senior" aria-pressed="false"><span class="sigil" aria-hidden="true">SR</span><span class="nodecontent"><span class="nodetitle">Programador Sênior</span><span class="nodedesc">Entende a demanda, esclarece dúvidas, distribui o trabalho e resolve impedimentos.</span><span class="tag">Coordenação técnica</span></span></button><div class="engchecks"><h4>O ticket acompanha a entrega inteira</h4><ul><li>Problema, contexto e critério de pronto.</li><li>Sistema e clínica afetados, quando aplicável.</li><li>Responsáveis, prioridade e dependências.</li><li>PR, versão testada, evidências e retorno ao solicitante.</li></ul></div></div>
+    </section>
+
+    <section class="engphase" data-step="2"><h3>Um Planejador cuida da solução e das PRs.</h3><p class="engintro">Começar com um único papel evita dois planejadores repetindo trabalho. Ele define o que mudar, como comprovar o resultado e como dividir a entrega em PRs pequenas. Em mudanças grandes, o Sênior pode pedir uma revisão específica do plano.</p>
+      <div class="engcards two"><button class="node" type="button" data-agent="planner" aria-pressed="false"><span class="sigil" aria-hidden="true">PT</span><span class="nodecontent"><span class="nodetitle">Planejador Técnico</span><span class="nodedesc">Desenha a solução, os critérios de teste e a sequência das PRs.</span><span class="tag">Solução + divisão em PRs</span></span></button><div class="engchecks"><h4>Entrega do planejamento</h4><ul><li>Escopo, componentes e contratos afetados.</li><li>PRs, ordem e dependências entre elas.</li><li>Critérios de aceite, regressões e cenários de interface.</li><li>Componentes de publicação e caminho de reversão.</li></ul></div></div>
+      <div class="engoutput"><strong>PR é a proposta de integrar uma mudança.</strong> Pode começar em rascunho e evoluir com o código e os testes. Planejar uma PR e implementá-la são responsabilidades diferentes.</div>
+    </section>
+
+    <section class="engphase" data-step="3"><h3>Os desenvolvedores implementam em isolamento.</h3><p class="engintro">O Sênior distribui o trabalho conforme o sistema. Desenvolvedores de Sistemas cuidam do código do CRM e suas funções; os builders de LP e Site mantêm suas especialidades. Cada tarefa usa branch e worktree próprios.</p>
+      <div class="engcards"><button class="node" type="button" data-agent="software" aria-pressed="false"><span class="sigil" aria-hidden="true">DS</span><span class="nodecontent"><span class="nodetitle">Desenvolvedor de Sistemas</span><span class="nodedesc">Implementa backend e frontend do CRM, APIs, funções e alterações de dados conforme o plano.</span><span class="tag">Código do sistema</span></span></button> <button class="node" type="button" data-agent="lp" aria-pressed="false"><span class="sigil" aria-hidden="true">LP</span><span class="nodecontent"><span class="nodetitle">Desenvolvedor de LP</span><span class="nodedesc">Implementa páginas de conversão e as integrações previstas para elas.</span><span class="tag">Builder especializado</span></span></button> <button class="node" type="button" data-agent="site" aria-pressed="false"><span class="sigil" aria-hidden="true">ST</span><span class="nodecontent"><span class="nodetitle">Desenvolvedor de Site</span><span class="nodedesc">Implementa sites, componentes e jornadas de navegação.</span><span class="tag">Builder especializado</span></span></button></div>
+      <div class="engoutput"><strong>Saída:</strong> código, testes relevantes, PR e ambiente de preview ou homologação. O desenvolvedor confere seu trabalho; a revisão seguinte usa contexto próprio e as evidências da mudança.</div>
+    </section>
+
+    <section class="engphase" data-step="4"><h3>Três verificações, com perguntas diferentes.</h3><p class="engintro">Depois de existir uma versão testável, as verificações podem acontecer em paralelo. Todas registram o commit e o ambiente avaliados. Se o código mudar, as verificações afetadas precisam ser refeitas.</p>
+      <div class="engcards"><button class="node" type="button" data-agent="code-review" aria-pressed="false"><span class="sigil" aria-hidden="true">RC</span><span class="nodecontent"><span class="nodetitle">Revisor de Código</span><span class="nodedesc">Confere lógica, contratos, segurança e qualidade da solução, com leitura própria da PR.</span><span class="tag">Revisão independente do autor</span></span></button> <button class="node" type="button" data-agent="qa-tech" aria-pressed="false"><span class="sigil" aria-hidden="true">QT</span><span class="nodecontent"><span class="nodetitle">QA Técnico</span><span class="nodedesc">Define e executa testes relevantes, investiga falhas e exige os resultados do CI.</span><span class="tag">Build + integração + regressão</span></span></button> <button class="node" type="button" data-agent="qa-ui" aria-pressed="false"><span class="sigil" aria-hidden="true">QU</span><span class="nodecontent"><span class="nodetitle">QA de UI e Usabilidade</span><span class="nodedesc">Usa o CRM no preview e verifica tarefas, feedback das telas, acessibilidade básica e uso no celular.</span><span class="tag">Jornadas pela interface</span></span></button></div>
+      <div class="engchecks"><h4>CI executa os testes; o agente interpreta e investiga.</h4><ul><li>Build, análise estática e testes unitários, de integração e regressão adequados à mudança.</li><li>Verificações de segurança e isolamento de permissões conforme os componentes afetados.</li><li>Jornadas reais do CRM no preview: navegação, formulários, estados vazios/erro e uso no celular.</li><li>Falha bloqueia a integração. Um parecer positivo de IA não substitui um teste obrigatório que falhou.</li></ul></div>
+    </section>
+
+    <section class="engphase" data-step="5"><h3>O Auditor decide com o conjunto das evidências.</h3><p class="engintro">O Auditor de Entrega confere o ticket, a solução, a revisão e os dois tipos de QA. Ele não é o autor do código e não contorna verificações obrigatórias. A decisão vale para a versão identificada no parecer.</p>
+      <div class="engcards two"><button class="node" type="button" data-agent="auditor" aria-pressed="false"><span class="sigil" aria-hidden="true">AE</span><span class="nodecontent"><span class="nodetitle">Auditor de Entrega</span><span class="nodedesc">Reúne revisão e testes, confronta o resultado com o ticket e libera a integração ou devolve para ajustes.</span><span class="tag">Decisão sobre a versão candidata</span></span></button><div class="engchecks"><h4>Pronto para integrar</h4><ul><li>Critério de aceite atendido e escopo conferido.</li><li>Revisão de código sem pendência bloqueadora.</li><li>Testes obrigatórios aprovados para o commit atual.</li><li>QA de UI/usabilidade aprovado quando a jornada é afetada.</li><li>Publicação, migrações necessárias e reversão descritas.</li></ul></div></div>
+      <div class="engdecision"><div class="return"><strong>Voltar para ajustes</strong><p>Registra o que falhou e encaminha ao Sênior e ao desenvolvedor. A PR é atualizada e as verificações afetadas são repetidas.</p></div><div class="pass"><strong>Liberar para integração</strong><p>Registra o aceite da versão. Mudança nova, conflito ou verificação vencida devolve o trabalho à etapa correspondente.</p></div></div>
+    </section>
+
+    <section class="engphase" data-step="6"><h3>A fila confere a combinação com a main.</h3><p class="engintro">Uma PR pode passar sozinha e entrar em conflito com outra mudança recente. A fila de integração verifica a combinação com a main atual antes de efetivar o merge.</p>
+      <div class="engoutput"><strong>Fila de integração:</strong> usar o recurso de merge queue do GitHub quando disponível para o repositório, ou uma fila serial com verificação equivalente. A configuração dos checks obrigatórios faz parte da futura implementação.</div>
+    </section>
+
+    <section class="engphase" data-step="7"><h3>O Publicador entrega e verifica produção.</h3><p class="engintro">O Publicador executa a integração liberada, aciona a publicação na janela permitida e registra o que chegou a produção. Não decide ignorar falhas nem aprova o próprio código.</p>
+      <div class="engcards two"><button class="node" type="button" data-agent="release" aria-pressed="false"><span class="sigil" aria-hidden="true">PB</span><span class="nodecontent"><span class="nodetitle">Publicador</span><span class="nodedesc">Executa o merge e o deploy autorizados, confere os componentes publicados e verifica o resultado.</span><span class="tag">Entrega + verificação + reversão</span></span></button><div class="engchecks"><h4>A entrega termina com prova do uso</h4><ul><li>Conferir os componentes afetados: frontend, serviços, funções e banco.</li><li>Verificar a versão publicada, dependências e testes rápidos da jornada.</li><li>Em falha, interromper a liberação e executar a reversão prevista quando aplicável.</li><li>CS retorna ao solicitante e registra a confirmação de uso antes de fechar o suporte.</li></ul></div></div>
+    </section>
+
+    <div class="batchrules"><section class="batchrule"><strong>Correções comuns</strong><p>Preparação e testes seguem por ticket. Mantida a janela noturna definida para commits e publicação das correções comuns; horário e elegibilidade serão detalhados nos guardrails.</p></section><section class="batchrule"><strong>Urgências</strong><p>Podem seguir no fluxo imediato, com os mesmos critérios de revisão, testes e auditoria. A classificação de urgência ainda será definida.</p></section><section class="batchrule"><strong>Sem suporte na fila</strong><p>Os agentes investigam melhorias e registram tickets. As propostas passam pelo mesmo caminho de planejamento, verificação e publicação.</p></section></div>
+    <div class="engterms"><div><strong>Push</strong><p>Envia os commits da branch ao GitHub. Um push na branch da PR não integra automaticamente a mudança à main.</p></div><div><strong>Merge</strong><p>Integra a PR à main após os critérios passarem. Se o repositório publica automaticamente a main, esse merge também inicia o deploy.</p></div><div><strong>Publicação</strong><p>Coloca a versão nos serviços usados pelas pessoas. Sucesso do merge ou do CI não comprova que todos os componentes foram publicados.</p></div></div>
+    <div class="plannednote"><strong>Estrutura aprovada para o planejamento em 14/10.</strong> São responsabilidades especializadas, sem exigir uma instância permanente por papel. A automação, os acessos, os testes e os guardrails ainda serão construídos e validados com Ítalo.</div>
+    <p class="engsources">Referências para o desenho: <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener noreferrer">Orquestração e revisão por especialistas</a><a href="https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks" target="_blank" rel="noopener noreferrer">Checks do commit atual</a><a href="https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue" target="_blank" rel="noopener noreferrer">Fila de integração</a></p>
+  </section>
+
+  <section class="pane modes" id="pane-modes" role="tabpanel" aria-labelledby="tab-modes" hidden>
+    <div class="printtitle">API e Computer Use</div>
+    <div class="sectionlead"><h2>A área define o agente. A tarefa define a forma de execução.</h2><p>O mesmo papel pode operar por API, pela interface ou combinar os caminhos, conforme o acesso e a tarefa.</p></div>
+    <div class="modelead">API e Computer Use são modos de trabalho dos agentes.<small>Uma execução de SEO por interface continua sendo trabalho do agente SEO/AEO. Não nasce um novo agente de UI.</small></div>
+    <div class="modecontrols">
+      <label class="field" for="mode-agent">Área do agente<select id="mode-agent"><option value="tracking">Tracking</option><option value="marketing">Gerente de Marketing</option><option value="traffic">Gestor de Tráfego</option><option value="seo">SEO / AEO</option><option value="gbp">GBP</option><option value="commercial">Gerente Comercial</option><option value="iris-wa">SDR Íris / WhatsApp</option><option value="iris-ig">SDR Íris / Instagram</option><option value="recovery">Recuperação / Cadência (proposta)</option><option value="postsale">Pós-venda</option><option value="lp">Desenvolvedor de LP</option><option value="site">Desenvolvedor de Site</option><option value="senior">Programador Sênior</option><option value="planner">Planejador Técnico</option><option value="software">Desenvolvedor de Sistemas</option><option value="code-review">Revisor de Código</option><option value="qa-tech">QA Técnico</option><option value="qa-ui">QA de UI e Usabilidade</option><option value="auditor">Auditor de Entrega</option><option value="release">Publicador</option><option value="cs">Comunicação / CS</option><option value="project">Gestão de Projetos</option><option value="legal">Jurídico</option><option value="pgz">PGZ</option></select></label>
+      <div class="segmented" aria-label="Modo de execução"><button class="modebutton" type="button" data-mode="api" aria-pressed="true">Via API</button><button class="modebutton" type="button" data-mode="ui" aria-pressed="false">Via Computer Use</button></div>
+    </div>
+    <p class="mode-specific" id="mode-specific" aria-live="polite"></p>
+    <div class="modecanvas" id="modecanvas" aria-live="polite">
+      <section class="modestep"><span class="symbol" aria-hidden="true">◎</span><h3 id="mode-role">Agente de Tracking</h3><p id="mode-task">Trabalha a medição e as integrações do projeto.</p></section>
+      <section class="modestep modeapi" id="mode-adapter"><span class="symbol" id="mode-symbol" aria-hidden="true">{ }</span><h3 id="mode-channel">Ferramenta de API</h3><p id="mode-channel-description">Chama uma operação permitida com argumentos e escopo definidos.</p></section>
+      <section class="modestep"><span class="symbol" aria-hidden="true">↗</span><h3 id="mode-target">Sistema ou plataforma</h3><p id="mode-target-description">Sistema Black, ferramentas de medição e páginas do projeto.</p></section>
+      <section class="modestep"><span class="symbol" aria-hidden="true">✓</span><h3>Resultado e validação</h3><p id="mode-proof">Recibo da operação e evidências. Felipe/equipe validam e ajustam o agente.</p></section>
+    </div>
+    <div class="modecards"><section class="modecard api"><h3>API</h3><p>Operações estruturadas, retornos verificáveis e integrações entre sistemas. O acesso técnico pertence à ferramenta autorizada.</p></section><section class="modecard ui"><h3>Computer Use</h3><p>Lê e opera a interface como usuário: navega, preenche e verifica telas. Usa a conta e as permissões autorizadas para aquela tarefa.</p></section></div>
+    <div class="modeexception"><strong>Programação segue por código + Git + PR. Teste funcional segue pela UI.</strong><p>API/UI descrevem o acesso aos sistemas e às ferramentas. Escolher um modo não muda quem valida a ação. Mensagens WhatsApp usam Evolution API.</p></div>
+    <p class="diagramhint">Os caminhos acima ilustram a estrutura proposta; não declaram que todas as operações já têm API ou interface integrada. Não há execução real neste mapa.</p>
+  </section>
+  <footer><div><strong>Para discutir a estrutura com Ítalo.</strong> Gerências, agentes, tickets, conhecimento e caminhos de execução. Engenharia revisada em 14/10.</div><span>Estrutura em revisão · Recuperação separada é proposta · Autonomia futura</span></footer>
+</main>
+<script>
+(function(){
+  "use strict";
+  var agents = {
+    marketing:{title:"Agente Gerente de Marketing",description:"Analisa a demanda e os resultados de Tráfego, SEO/AEO e GBP, cruzando qualidade e desfechos no funil comercial.",owner:"Felipe + equipe",systems:["brain","admin","ads","crm"],target:"Resultados dos canais de marketing e fatos comerciais autorizados.",task:"Avalia o conjunto que o marketing entrega ao projeto."},
+    commercial:{title:"Agente Gerente Comercial",description:"Avalia o funil da clínica, suas perdas e onde as SDRs, a recuperação e o atendimento podem melhorar.",owner:"Felipe + equipe",systems:["brain","admin","crm","channels"],target:"Sistema Black, conversas autorizadas e estado do funil.",task:"Identifica melhorias no atendimento e na conversão da clínica."},
+    "iris-wa":{title:"Agente SDR Íris / WhatsApp",description:"Conduz as conversas de WhatsApp e o avanço dos leads, com supervisão da Gerente Comercial e coordenação de cadência.",owner:"Felipe + equipe",systems:["brain","crm","channels"],target:"Sistema Black e canal WhatsApp via Evolution API.",task:"Atende e evolui o lead no WhatsApp.",apiOnly:true},
+    "iris-ig":{title:"Agente SDR Íris / Instagram",description:"Conduz as conversas do Instagram e registra o avanço dos contatos conforme o fluxo comercial da clínica.",owner:"Felipe + equipe",systems:["brain","crm","channels","ads"],target:"Canal Instagram e registro comercial autorizado.",task:"Atende e evolui o lead no Instagram."},
+    recovery:{title:"Agente de Recuperação / Cadência (proposta)",description:"Responsabilidade separada recomendada: retornos programados dos leads elegíveis. Pausa com resposta ou atendimento humano e revalida o estado antes de agir.",owner:"Felipe + equipe",systems:["brain","crm","channels"],target:"Estado do lead, fila de retornos e canais autorizados.",task:"Programa e executa a recuperação sem disputar a conversa com a SDR."},
+    postsale:{title:"Agente de Pós-venda",description:"Pesquisa NPS, acompanha a experiência, convida a avaliar no Google sem filtro por nota e pede indicação a quem avaliou bem.",owner:"Felipe + equipe",systems:["brain","crm","channels","ads"],target:"Marcos do atendimento, pesquisa NPS e convite de avaliação/indicação.",task:"Cuida da experiência e do relacionamento após o atendimento."},
+    gbp:{title:"Agente de GBP",description:"Trabalha o Perfil da Empresa no Google, sua presença local e a demanda gerada pela ficha, integrado à análise da gerência de marketing.",owner:"Felipe + equipe",systems:["brain","admin","ads"],target:"Perfil da Empresa no Google e informações autorizadas da clínica.",task:"Cuida da presença e da demanda local no Google."},
+    project:{title:"Agente de Gestão de Projetos",description:"Coordena o projeto do mentorado, reúne contexto, distribui pedidos e acompanha entregas.",owner:"Felipe + equipe",systems:["brain","admin","drive"],target:"Cérebro, Admin e materiais do projeto.",task:"Organiza o trabalho e os compromissos do projeto."},
+    cs:{title:"Agente de Comunicação / CS",description:"Recebe pedidos, prepara alinhamentos e acompanha o mentorado com a Gestão de Projetos.",owner:"Felipe + equipe",systems:["brain","admin","drive"],target:"Admin, canais de comunicação e materiais autorizados.",task:"Prepara alinhamentos e acompanha o mentorado."},
+    traffic:{title:"Agente Gestor de Tráfego",description:"Usa o método vigente e dados da mídia para analisar campanhas e propor ações no projeto.",owner:"Felipe + equipe",systems:["brain","admin","ads","crm"],target:"Meta/Google e métricas autorizadas da clínica.",task:"Analisa resultados e trabalha campanhas dentro do escopo autorizado."},
+    tracking:{title:"Agente de Tracking",description:"Conecta medição, origem e fatos dos sistemas, com evidências do funcionamento das integrações.",owner:"Felipe + equipe",systems:["brain","admin","crm","ads","web"],target:"Sistema Black, ferramentas de medição e páginas do projeto.",task:"Trabalha a medição e as integrações do projeto."},
+    seo:{title:"Agente SEO / AEO",description:"Relaciona conteúdo, site e presença digital ao método técnico vigente e às prioridades do projeto.",owner:"Felipe + equipe",systems:["brain","admin","ads","web","drive"],target:"Site, Search Console, GBP e outras fontes autorizadas.",task:"Trabalha busca, presença digital e conteúdo encontrável."},
+    legal:{title:"Agente Jurídico",description:"Apoia Felipe e Dr. Alex em questões contratuais e decisões estratégicas. Tem público próprio, fora da operação da equipe e da Gestão de Projetos dos mentorados.",owner:"Felipe + Alex",systems:["brain","drive"],target:"Contratos e materiais autorizados de Felipe e Alex, com alcance próprio.",task:"Auxilia a análise contratual e as decisões estratégicas de Felipe e Alex."},
+    senior:{title:"Agente Programador Sênior",description:"Coordena builders, PRs e testadores por ticket. Autonomia futura em produção: correções comuns no batch noturno e urgências no fluxo imediato.",owner:"Felipe + equipe",systems:["brain","admin","git","web"],target:"Tickets, repositórios, PRs, ambiente de teste e produção dentro dos guardrails.",task:"Coordena a execução técnica e busca melhorias quando não há suporte na fila."},
+    lp:{title:"Agente Desenvolvedor de LP",description:"Builder especializado em páginas de conversão. Recebe direção do Sênior e entrega alterações por PR.",owner:"Felipe + equipe",systems:["brain","admin","git","web"],target:"Repositório da LP e ambiente de preview.",task:"Constrói e ajusta páginas de conversão por PR."},
+    site:{title:"Agente Desenvolvedor de Site",description:"Builder especializado em sites. Trabalha com o Sênior, o método aplicável e a jornada do projeto.",owner:"Felipe + equipe",systems:["brain","admin","git","web"],target:"Repositório do site e ambiente de preview.",task:"Constrói e ajusta sites e suas jornadas por PR."},
+    "planner":{"title":"Agente Planejador Técnico","description":"Planeja a solução, os testes e a divisão em PRs, com dependências e critérios de aceite.","owner":"Felipe + equipe","systems":["brain","admin","git","web"],"target":"Tickets, documentação técnica e repositórios autorizados.","task":"Define uma solução executável e PRs que possam ser revisadas e testadas.","codeRole":true},
+    "software":{"title":"Agente Desenvolvedor de Sistemas","description":"Implementa código de backend e frontend do CRM, APIs e funções, seguindo o plano e os contratos.","owner":"Felipe + equipe","systems":["brain","admin","git","web"],"target":"Worktree, código, testes e preview do sistema autorizado.","task":"Implementa mudanças do sistema em branch isolada e entrega por PR.","codeRole":true},
+    "code-review":{"title":"Agente Revisor de Código","description":"Revisa a PR com contexto próprio, confere lógica, segurança e contratos e registra pendências.","owner":"Felipe + equipe","systems":["brain","admin","git","web"],"target":"Diff, código e evidências da versão candidata.","task":"Analisa a solução sem ser o autor da implementação.","codeRole":true},
+    "qa-tech":{"title":"Agente QA Técnico","description":"Executa e interpreta build e testes de integração e regressão. Falhas obrigatórias impedem a integração.","owner":"Felipe + equipe","systems":["brain","admin","git","web"],"target":"Ambiente de teste isolado, CI e relatórios da versão candidata.","task":"Comprova o comportamento técnico e investiga regressões.","codeRole":true},
+    "qa-ui":{"title":"Agente QA de UI e Usabilidade","description":"Usa o CRM em preview para conferir as jornadas, a clareza das telas e o uso no celular.","owner":"Felipe + equipe","systems":["brain","admin","git","web"],"target":"Interface do CRM em ambiente de teste, com dados de homologação.","task":"Testa a experiência de uso e registra problemas reproduzíveis.","codeRole":true,"uiOnly":true},
+    "auditor":{"title":"Agente Auditor de Entrega","description":"Confere ticket, revisão e QA do commit atual; libera integração ou devolve para ajustes, sem contornar checks.","owner":"Felipe + equipe","systems":["brain","admin","git","web"],"target":"Ticket, PR, resultados de CI e evidências de interface do mesmo commit.","task":"Decide se a versão atende aos critérios para integração.","codeRole":true},
+    "release":{"title":"Agente Publicador","description":"Executa integração e publicação liberadas, verifica a versão real e aplica a reversão prevista em falhas.","owner":"Felipe + equipe","systems":["brain","admin","git","web"],"target":"Git, pipeline e serviços autorizados para a janela de publicação.","task":"Publica e comprova a entrega dos componentes afetados.","codeRole":true},
+    pgz:{title:"Agente PGZ",description:"Mentorados usam para revisão de casos clínicos e sugestão de lentes. Alex valida e ajusta o agente.",owner:"Alex",systems:["brain","drive","clinical"],target:"Fluxo clínico e base de casos do PGZ, com acesso próprio.",task:"Revisa casos clínicos e sugere lentes aos mentorados."}
+  };
+  var activePane="map", selectedAgent=null, mode="api";
+  var tabButtons=Array.from(document.querySelectorAll("[data-pane]"));
+  var agentButtons=Array.from(document.querySelectorAll("[data-agent]"));
+  function setPane(name){
+    activePane=name;
+    tabButtons.forEach(function(button){var on=button.dataset.pane===name;button.setAttribute("aria-selected",String(on));document.getElementById("pane-"+button.dataset.pane).hidden=!on;});
+    requestAnimationFrame(drawAll);
+  }
+  tabButtons.forEach(function(button,index){
+    button.addEventListener("click",function(){setPane(button.dataset.pane);});
+    button.addEventListener("keydown",function(event){
+      var next=index;
+      if(event.key==="ArrowRight")next=(index+1)%tabButtons.length;else if(event.key==="ArrowLeft")next=(index-1+tabButtons.length)%tabButtons.length;else if(event.key==="Home")next=0;else if(event.key==="End")next=tabButtons.length-1;else return;
+      event.preventDefault();tabButtons[next].focus();setPane(tabButtons[next].dataset.pane);
+    });
+  });
+  function selectAgent(key){
+    selectedAgent=selectedAgent===key?null:key;
+    agentButtons.forEach(function(button){var on=button.dataset.agent===selectedAgent;button.classList.toggle("is-active",on);button.setAttribute("aria-pressed",String(on));});
+    var item=selectedAgent?agents[selectedAgent]:null;
+    document.getElementById("focus-title").textContent=item?item.title:"Selecione um agente para ver suas conexões";
+    document.getElementById("focus-description").textContent=item?item.description:"As funções estão propostas. As conexões destacadas mostram onde cada agente buscaria ou entregaria trabalho.";
+    document.getElementById("focus-owner").textContent=item?"Valida e ajusta: "+item.owner:"24 papéis · 23 definidos + recuperação proposta";
+    document.querySelectorAll("[data-system]").forEach(function(el){var linked=item&&item.systems.indexOf(el.dataset.system)!==-1;el.classList.toggle("is-linked",Boolean(linked));el.classList.toggle("is-dim",Boolean(item&&!linked));});
+    if(item){document.getElementById("mode-agent").value=selectedAgent;renderMode();}
+  }
+  agentButtons.forEach(function(button){button.addEventListener("click",function(){selectAgent(button.dataset.agent);});});
+  function renderMode(){
+    var item=agents[document.getElementById("mode-agent").value];
+    if(item.apiOnly)mode="api";
+    if(item.uiOnly)mode="ui";
+    var ui=mode==="ui";
+    document.querySelectorAll("[data-mode]").forEach(function(button){button.setAttribute("aria-pressed",String(button.dataset.mode===mode));button.disabled=Boolean((item.apiOnly&&button.dataset.mode==="ui")||(item.uiOnly&&button.dataset.mode==="api"));});
+    document.getElementById("mode-specific").textContent=item.uiOnly?"QA de UI e Usabilidade executa as jornadas pela interface do ambiente de teste.":item.codeRole?"Engenharia trabalha com código, Git e CI. API/UI aqui descrevem o acesso às ferramentas, não substituem a revisão e os testes.":item.apiOnly?"WhatsApp: envio exclusivamente pela Evolution API. Computer Use não é usado para enviar mensagens.":"As tarefas de interface mantêm o escopo autorizado. Mensagens WhatsApp, inclusive cadência e pós-venda, usam Evolution API.";
+    document.getElementById("mode-role").textContent=item.title;
+    document.getElementById("mode-task").textContent=item.task;
+    var adapter=document.getElementById("mode-adapter");adapter.classList.toggle("modeapi",!ui);adapter.classList.toggle("modeui",ui);
+    document.getElementById("mode-symbol").textContent=ui?"▤":"{ }";
+    document.getElementById("mode-channel").textContent=ui?"Computer Use":"Ferramenta de API";
+    document.getElementById("mode-channel-description").textContent=ui?"Navega e opera a interface da plataforma na identidade autorizada.":"Chama uma operação permitida com argumentos e escopo definidos.";
+    document.getElementById("mode-target").textContent=ui?"Interface do sistema":"Sistema ou plataforma";
+    document.getElementById("mode-target-description").textContent=item.target;
+    document.getElementById("mode-proof").textContent=(ui?"Registro dos passos e evidências do resultado. ":"Retorno da operação e evidências do resultado. ")+item.owner+" valida e ajusta o agente.";
+  }
+  document.getElementById("mode-agent").addEventListener("change",renderMode);
+  document.querySelectorAll("[data-mode]").forEach(function(button){button.addEventListener("click",function(){mode=button.dataset.mode;renderMode();});});
+  document.getElementById("engineering-more").addEventListener("click",function(){setPane("engineering");document.getElementById("tab-engineering").focus();});
+  document.getElementById("share-button").addEventListener("click",async function(){
+    var url="https://oftalmoblack.com.br/agentes/",feedback=document.getElementById("share-feedback");
+    try{if(navigator.share){await navigator.share({title:"Olympus · Equipe de agentes",url:url});feedback.textContent="Link pronto para compartilhar.";}
+    else if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(url);feedback.textContent="Link copiado: "+url;}
+    else{feedback.replaceChildren();var link=document.createElement("a");link.href=url;link.textContent=url;feedback.append("Copie o endereço: ",link);}}
+    catch(error){if(error.name!=="AbortError")feedback.textContent="Compartilhe este endereço: "+url;}
+  });
+  document.getElementById("print-button").addEventListener("click",function(){window.print();});
+  function point(el,side,base){
+    var r=el.getBoundingClientRect(),b=base.getBoundingClientRect();
+    if(side==="right")return{x:r.right-b.left,y:r.top+r.height/2-b.top};
+    if(side==="left")return{x:r.left-b.left,y:r.top+r.height/2-b.top};
+    return{x:r.left+r.width/2-b.left,y:(side==="top"?r.top:r.bottom)-b.top};
+  }
+  function draw(groupId,baseId,edges,marker){
+    var group=document.getElementById(groupId),base=document.getElementById(baseId);
+    if(!base||base.getBoundingClientRect().width===0)return;
+    group.replaceChildren();
+    edges.forEach(function(edge){
+      var from=document.getElementById(edge[0]),to=document.getElementById(edge[1]);
+      if(!from||!to)return;
+      var horizontal=edge[2]==="h",p=point(from,horizontal?"right":"bottom",base),q=point(to,horizontal?"left":"top",base);
+      var path=document.createElementNS("http://www.w3.org/2000/svg","path"),d;
+      if(horizontal){var mid=(p.x+q.x)/2;d="M"+p.x+" "+p.y+" C"+mid+" "+p.y+" "+mid+" "+q.y+" "+q.x+" "+q.y;}
+      else{var my=(p.y+q.y)/2;d="M"+p.x+" "+p.y+" C"+p.x+" "+my+" "+q.x+" "+my+" "+q.x+" "+q.y;}
+      path.setAttribute("d",d);path.setAttribute("marker-end","url(#"+(edge[3]||marker)+")");
+      if(edge[3]==="arrow-clinical")path.setAttribute("class","clinicalwire");
+      group.appendChild(path);
+    });
+  }
+  function drawAll(){
+    if(activePane==="map")draw("overview-paths","overview-diagram",[
+      ["map-team","map-cs"],["map-team","map-project"],["map-strategic-owners","map-legal"],["map-cs","map-project","h"],
+      ["map-project","map-marketing"],["map-project","map-commercial"],["map-project","map-senior"],
+      ["map-marketing","map-traffic"],["map-marketing","map-seo"],["map-marketing","map-gbp"],
+      ["map-commercial","map-iris-wa"],["map-commercial","map-iris-ig"],
+      ["map-senior","map-planner"],["map-planner","map-software"],["map-planner","map-lp"],["map-planner","map-site"],
+      ["map-mentee","map-pgz","v","arrow-clinical"],["map-pgz","map-alex","v","arrow-clinical"]
+    ],"arrow-gold");
+  }
+  var resizeTimer;window.addEventListener("resize",function(){clearTimeout(resizeTimer);resizeTimer=setTimeout(drawAll,50);});
+  if(window.ResizeObserver)new ResizeObserver(function(){requestAnimationFrame(drawAll);}).observe(document.getElementById("overview-diagram"));
+  renderMode();requestAnimationFrame(drawAll);
+})();
+</script>
+</body>
+</html>
