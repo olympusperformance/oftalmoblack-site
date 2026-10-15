@@ -76,7 +76,44 @@ O contrato SQL `structured-session/1` e a taxonomia `operational/3` permanecem.
 A política adicional e a saída são versionadas como `participants-and-ownership/1`
 em `processing.identity_version`, `processing.instruction_versions` e `routing`.
 O prompt base conserva sua versão; a política adicional especializa sua definição
-ampla de demanda. Não é necessário alterar permissões ou tabelas do Supabase.
+ampla de demanda.
+
+### Nomes alternativos confirmados
+
+O catálogo consulta `memoria_operacional.mentorado_aliases` para mentorados e
+`memoria_operacional.staff_aliases` para integrantes da equipe. A segunda tabela
+é criada pela migração `20261015173740_fathom_staff_aliases.sql`; seus registros
+exigem uma referência de quem confirmou a identidade. Não há acesso para `anon`
+ou `authenticated`. O processador privado usa a conexão Postgres existente.
+
+Cadastrar somente nomes confirmados por um operador, mantendo os nomes principais
+e IDs existentes. Os valores reais e a evidência da confirmação ficam no ambiente
+privado, fora deste repositório. Sem alias explícito, nomes curtos não recebem
+correspondência aproximada. Conflitos, cadastros inativos e suspeitas de troca de
+falantes continuam bloqueando atribuição automática.
+
+Ordem de aplicação: criar a tabela, registrar os aliases confirmados e atualizar
+as consultas dos dois workflows existentes: `CATALOG_SQL` no nó **Identificar
+cadastros** da extração e `RESERVE_REVIEW_SQL` no nó **Reservar revisão** da revisão
+final. Essas constantes são exportadas em `patch-workflow.mjs` e
+`review-workflow.mjs`. Alterar apenas as consultas, preservando credenciais, nós,
+conexões e agendamentos. Publicar somente após revisar o diff contra a versão
+ativa e guardar backup privado. Reverter as consultas anteriores permite rollback
+sem apagar os aliases. PR ou merge não atualiza automaticamente o n8n.
+
+A mudança afeta novas extrações/revisões. Reuniões já processadas exigem revisão
+separada: não reiniciar a fila nem aprovar ações históricas por causa de um alias.
+Uma obrigação cumprida após a reunião deve continuar concluída, com a evidência
+registrada; uma dúvida sobre quem assumiu a ação não é resolvida pelo alias.
+
+Teste isolado do catálogo SQL e das permissões, com PostgreSQL em memória:
+
+```sh
+# Instalar @electric-sql/pglite@0.5.10 em um diretório temporário de ferramentas.
+PGLITE_MODULE=/caminho/temporario/node_modules/@electric-sql/pglite/dist/index.js \
+  node --test tests/fathom-alias-catalog.integration.mjs
+node --test tests/fathom-*.test.mjs
+```
 
 `patchWorkflow(original, postgresCredentials)` gera uma cópia pronta para revisão,
 mantendo credenciais, nós de panoramas, atas, gravação e tratamento de falhas.
