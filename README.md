@@ -47,6 +47,24 @@ fontes, formulários e painéis; `club-black.css` usa os temas existentes. Nenhu
 dado de demonstração é incluído nos arquivos públicos. Os números usados na QA
 ficam exclusivamente em `tests/`.
 
+### Campanha de Branding
+
+A aba `#branding`, em Admin e Membros, reúne os impulsionamentos do Instagram
+antes exibidos no fim da aba Instagram do Admin. A equipe escolhe o mentorado;
+o membro consulta apenas sua campanha. A pré-visualização preserva mentorado
+e aba na ida e volta.
+
+`club-branding.js` compartilha tabela, indicadores, filtros de 90 dias/todo o
+histórico e estados de carregamento. Sem campanha/dados disponíveis, orienta
+sobre iniciar a campanha ou liberar acesso à conta Meta. Primeira coleta
+pendente e falha de consulta/coleta têm mensagens próprias. O botão Atualizar
+relê os dados já coletados; a rotina de coleta existente permanece.
+
+As views `instagram_impulsionamentos` e `instagram_impulsionamento_contas`
+já usam `security_invoker` e RLS de membro/equipe. Nenhuma migração nova é
+necessária. O histórico é lido em páginas de 500, mantendo o filtro por membro.
+Testes: `node --test tests/branding-data.test.cjs` e `tests/black-browser.cjs`.
+
 ### Banco antes da interface
 
 Aplicar **uma única vez** a migração
