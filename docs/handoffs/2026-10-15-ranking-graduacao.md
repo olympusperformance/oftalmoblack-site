@@ -12,7 +12,7 @@ graus conferidos e participantes elegíveis não são alterados.
 
 ## Banco e publicação
 
-Aplicar somente `20261015212346_ranking_prioridade_graduacao.sql` no projeto
+Aplicar somente `20261015212703_ranking_prioridade_graduacao.sql` no projeto
 Site/Admin antes do front-end. A view privada `ranking_standings` fornece a
 mesma posição para leitura e referência semanal. Não concede leitura direta
 a usuários; as RPCs mantêm as verificações de acesso e pseudônimos.
@@ -41,3 +41,10 @@ Reverter o texto/versão do front-end não desfaz a ordem calculada no banco.
 Para restaurar a ordem anterior, substituir as duas funções usando a lógica
 anterior, adaptando os conflitos e a leitura para `ranking_rule='points_v1'`.
 Conservar a coluna/chave e o histórico; não apagar referências novas.
+
+## Verificação hospedada
+
+Migração aplicada em 15/10/2026 antes do deploy. Consulta autenticada da RPC
+confirmou a ordem por graduação/pontos, sem inversões. Referências anteriores
+não geraram comparação com a regra nova. Advisors de segurança sem novos
+apontamentos em relação à leitura anterior à migração.

@@ -190,7 +190,7 @@ reverter o front-end não exige remover dados.
   exige meta atingida, só avança um por trimestre e preserva o histórico.
 - **Ranking:** maior graduação primeiro (faixa e graus); pontos do trimestre
   desempatam dentro da mesma graduação. O grau cumulativo de 0 a 10 já representa
-  a hierarquia das faixas. Aplicar `20261015212346_ranking_prioridade_graduacao.sql`
+  a hierarquia das faixas. Aplicar `20261015212703_ranking_prioridade_graduacao.sql`
   antes do front-end. Referências semanais usam a mesma ordem e só comparam
   registros da mesma regra; referências antigas ficam preservadas.
   Pseudônimos para outros membros; administração vê os nomes.
