@@ -43,7 +43,7 @@ q.insert=q.upsert=q.update=(row,options)=>{write=row;conflict=options&&options.o
 q.then=(resolve,reject)=>{if(table==='cb_scores'&&window.__holdScores)return window.__holdScores.then(()=>{window.__holdScores=null;return q.then(resolve,reject);});if(window.__failTable===table)return Promise.resolve({data:null,error:{message:'Fonte indisponível'}}).then(resolve,reject);let data=fixtures[table]||[];if(write){const old=data.find(r=>write.id&&r.id===write.id||conflict&&conflict.split(',').every(k=>r[k]===write[k]));const merged={...old,...write,id:write.id||'new-id'};fixtures[table]=old?data.map(r=>r===old?merged:r):[...data,merged];data=[merged];}else for(const [k,v] of filters)data=data.filter(r=>r[k]===v);return Promise.resolve({data:one?(data[0]||null):data}).then(resolve,reject);};return q;}};
 const rpc=window.Club.sb.rpc;window.__failRanking=false;
 window.__rankingRequests=[];
-window.__ranking=[{position:1,alias:member.nome,member_id:member.id,total:63.9,grade:2,source:'graduacao',is_demo:true,source_date:'2026-09-20',complete:false,movement:null},...['Clínica Aurora','Clínica Horizonte','Clínica Novo Olhar','Consultório Central','Clínica Vista'].map((alias,i)=>({position:[2,2,3,4,5][i],alias:${isAdmin} ? alias:'Mestre '+['A12B34','B23C45','C34D56','D45E67','E56F78'][i],member_id:${isAdmin}?'synthetic-'+i:null,total:[58,58,49.6,27,0][i],grade:[2,1,0,1,0][i],source:'graduacao',is_demo:false,source_date:'2026-09-30',movement:[2,-1,0,null,null][i]}))];
+window.__ranking=[{position:1,alias:member.nome,member_id:member.id,total:63.9,grade:2,source:'graduacao',is_demo:true,source_date:'2026-09-20',complete:false,movement:null},...['Clínica Aurora','Clínica Horizonte','Clínica Novo Olhar','Consultório Central','Clínica Vista'].map((alias,i)=>({position:[2,2,3,4,5][i],alias:${isAdmin} ? alias:'Mestre '+['A12B34','B23C45','C34D56','D45E67','E56F78'][i],member_id:${isAdmin}?'synthetic-'+i:null,total:[58,58,99,27,0][i],grade:[2,2,1,0,0][i],source:'graduacao',is_demo:false,source_date:'2026-09-30',movement:[2,-1,0,null,null][i]}))];
 window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRequests.push(args.p_period);if(window.__failRanking)return {data:null,error:{message:'Ranking indisponível'}};return {data:window.__ranking};}return rpc(name,args);};
 `;}
 (function testDirectStorageHost(){const source=fs.readFileSync(path.join(root,'assets/club-black.js'),'utf8');assert.match(source,/\.storage\.supabase\.co/,'Upload grande deve usar o host direto recomendado pelo Storage');})();
@@ -364,7 +364,10 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
    assert.match(await page.locator('#black-ranking [role=alert]').innerText(),/Não foi possível carregar/);
    assert.equal(await page.locator('#black-ranking .cb-ranking-list').count(),0);
    await page.evaluate(()=>window.__failRanking=false);await page.locator('#black-ranking [role=alert] [data-cb-reload]').click();await page.locator('#black-ranking .cb-ranking-list').waitFor();
+   assert.match(await page.locator('#black-ranking').innerText(),/Maior graduação primeiro/);
+   assert.match(await page.locator('#black-ranking').innerText(),/pontos do trimestre desempatam/);
    assert.equal(await page.locator('#black-ranking .cb-ranking-card').count(),6);
+   assert.deepEqual(await page.locator('#black-ranking .cb-rank-points strong').allTextContents(),['63,9','58','58','99','27','0']);
    assert.deepEqual(await page.locator('#black-ranking .cb-ranking-card').evaluateAll(rows=>rows.map(r=>r.value)),[1,2,2,3,4,5]);
    assert.equal(await page.locator('#black-ranking .cb-rank-move.up').count(),1);
    assert.equal(await page.locator('#black-ranking .cb-rank-move.down').count(),1);
