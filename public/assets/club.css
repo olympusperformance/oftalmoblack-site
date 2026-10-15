@@ -1083,3 +1083,12 @@ input[type="file"].inp::file-selector-button:hover{background:var(--surface);bor
 .painel-b .demand-title{font-size:18px;margin-bottom:14px}
 .painel-b .demand-meta{grid-template-columns:1fr 1fr;gap:14px 16px;padding:14px 16px}
 @media(max-width:640px){.painel-dem{left:8px!important;right:8px;top:auto!important;bottom:8px;width:auto;max-height:60vh}}
+
+/* Campanha de Branding — tabela rola dentro da aba em telas pequenas. */
+.branding-view .tbl{min-width:1100px}
+.branding-toolbar{flex-wrap:wrap;align-items:flex-end}
+.branding-toolbar label{display:flex;flex-direction:column;gap:6px;color:var(--muted);font-size:12px;max-width:100%}
+.branding-toolbar label[hidden]{display:none}
+.branding-toolbar select{max-width:300px}
+.branding-view .seg button[aria-pressed="true"]{color:var(--text);background:var(--surface-hi)}
+.branding-view #impAtualizado{margin:0 0 18px;white-space:normal}

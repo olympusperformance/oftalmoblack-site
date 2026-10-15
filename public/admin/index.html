@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#07060A">
 <title>Cérebro Black — Administração</title>
 <link rel="icon" href="/assets/favicon.png">
-<link rel="stylesheet" href="/assets/club.css?v=20261013-impulsionamentos3">
+<link rel="stylesheet" href="/assets/club.css?v=20261015-branding">
 <link rel="stylesheet" href="/assets/club-graduacao.css?v=20260924">
 <link rel="stylesheet" href="/assets/club-farol.css?v=20260929">
 <link rel="stylesheet" href="/assets/club-black.css?v=20261008-vitrine-rodadas">
@@ -141,6 +141,8 @@
       <div id="listaMateriais"></div>
     </div>
 
+    <div class="view branding-view" data-view="branding" hidden><div id="brandingPanel"></div></div>
+
     <div class="view" data-view="igMetricas" hidden>
       <div class="hello"><h1>Instagram dos mentorados</h1>
         <p>Um retrato por dia de cada conta. A variação aparece assim que houver
@@ -156,20 +158,6 @@
       </div>
       <div id="listaIg"></div>
 
-      <div class="hello imp-hello"><h2>Impulsionamentos</h2>
-        <p>Cada post turbinado, direto da Meta. Seguidores são os que a Meta atribui
-           àquele impulsionamento, não o crescimento do perfil.</p></div>
-      <div class="toolbar">
-        <select class="inp" id="filtroImpMembro" style="max-width:300px"></select>
-        <div class="seg" id="filtroImpPeriodo">
-          <button data-imp="90" aria-selected="true">Últimos 90 dias</button>
-          <button data-imp="todos" aria-selected="false">Todos</button>
-        </div>
-        <span class="sp"></span>
-        <span class="tx-s" id="impAtualizado"></span>
-      </div>
-      <div class="statgrid" id="statsImp"></div>
-      <div id="listaImp"></div>
     </div>
 
     <div class="view" data-view="botFila" hidden>
@@ -241,13 +229,14 @@
 <script src="/assets/club-table.js"></script>
 <script src="/assets/club-supabase.js"></script>
 <script src="/assets/club-auth.js"></script>
-<script src="/assets/club-data.js?v=20261013-impulsionamentos"></script>
+<script src="/assets/club-data.js?v=20261015-branding"></script>
 <script src="/assets/club-graduacao.js?v=20261001-graduacao-admin"></script>
 <script src="/assets/club-farol.js?v=20260930-metodo"></script>
 <script src="/assets/club-metodo.js?v=20261001-catalog"></script>
 <script src="/assets/club-checklist.js?v=20261001-catalog"></script>
 <script src="/assets/club-vitrine.js?v=20261008-rodadas"></script>
 <script src="/assets/club-black.js?v=20261015-ranking-graduacao"></script>
-<script src="/assets/admin.js?v=20261013-impulsionamentos4"></script>
+<script src="/assets/club-branding.js?v=20261015-branding"></script>
+<script src="/assets/admin.js?v=20261015-branding"></script>
 </body>
 </html>

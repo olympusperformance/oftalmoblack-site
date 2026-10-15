@@ -26,6 +26,7 @@
     { key:'ranking', label:'Ranking Black', icon:'trophy' },
     { key:'vitrine', label:'Vitrine Black', icon:'star' },
     { key:'instagram', label:'Instagram', icon:'instagram' },
+    { key:'branding', label:'Campanha de Branding', icon:'trending-up' },
     { key:'artifacts', label:'Processos Black', icon:'box' },
     { key:'materials', label:'Materiais', icon:'book-open' },
     { key:'agenda', label:'Agenda', icon:'calendar' },
@@ -593,6 +594,7 @@
       v.hidden = v.dataset.view !== key;
     });
     renderNav(key);
+    if (key === 'branding') Club.branding.enter();
     if(admin&&$('voltarPainel'))$('voltarPainel').href='/admin/?membro='+encodeURIComponent(st.membro.id)+'#'+key;
     if (key === 'farol') {
       montarFarol();
@@ -635,6 +637,7 @@
     renderMateriais();
     renderPerfil();
     Club.instagramMember.mount($('instagramMembro'), st.membro);
+    Club.branding.mount($('brandingPanel'),{admin:false,member:st.membro});
     Club.black.install({ member:st.membro, members:[st.membro], admin:false,
       artifacts:st.artifacts, steps:st.steps, progress:st.progress, onDeliveriesChange:renderArtifacts });
   }

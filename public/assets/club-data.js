@@ -279,20 +279,27 @@
       /* Impulsionamentos de post, lidos da Meta pelo coletor
          supabase/functions/instagram-impulsionamentos. Um mentorado por vez:
          só o Daniel passa de 400 linhas, e o PostgREST corta em mil. */
-      impulsionamentoContas: function () {
-        return sb().from('instagram_impulsionamento_contas').select('*')
-          .order('mentorado').then(function (res) {
-            if (res.error) return [];
-            return res.data || [];
-          });
+      impulsionamentoContas: function (memberId) {
+        var query=sb().from('instagram_impulsionamento_contas').select('*').order('mentorado');
+        if(memberId)query=query.eq('member_id',memberId);
+        return query.then(function(res){
+          if(res.error)throw res.error;
+          return res.data||[];
+        });
       },
       impulsionamentos: function (memberId) {
-        return sb().from('instagram_impulsionamentos').select('*')
-          .eq('member_id', memberId).order('inicio', { ascending: false })
-          .then(function (res) {
-            if (res.error) throw res.error;
-            return res.data || [];
-          });
+        if(!memberId)return Promise.resolve([]);
+        var rows=[],size=500;
+        function page(offset) {
+          return sb().from('instagram_impulsionamentos').select('*')
+            .eq('member_id',memberId).order('inicio',{ascending:false}).order('campaign_id')
+            .range(offset,offset+size-1).then(function(res){
+              if(res.error)throw res.error;
+              var data=res.data||[];rows=rows.concat(data);
+              return data.length===size?page(offset+size):rows;
+            });
+        }
+        return page(0);
       },
 
       serie: function (dias) {

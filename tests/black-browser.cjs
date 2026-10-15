@@ -29,6 +29,8 @@ const methodCatalog=${JSON.stringify(methodCatalog)};
 fixtures.cb_method_stages=methodCatalog.stages;fixtures.cb_deliveries=methodCatalog.deliveries;fixtures.cb_checklist_catalog=methodCatalog.items;
 fixtures.cb_delivery_artifacts=methodCatalog.bindings.flatMap(b=>fixtures.artifacts.filter(a=>a.nome===b.artifact_name&&a.method_steps.includes(b.stage_id)).map(a=>({...b,artifact_id:a.id})));
 if(${isAdmin})fixtures.cb_checklist_requests=[{id:'pedido-1',member_id:member.id,item_id:'D07-02',edition:'',requested_at:'2026-10-01T12:00:00Z',resolved_at:null}];
+fixtures.instagram_impulsionamento_contas=[{member_id:member.id,mentorado:member.nome,ativo:true,ultima_coleta:new Date().toISOString(),ultimo_erro:null}];
+fixtures.instagram_impulsionamentos=[{campaign_id:'brand-1',member_id:member.id,nome:'Post do Instagram: Branding de teste',post_url:'https://www.instagram.com/p/test/',inicio:new Date().toISOString(),termino:null,status:'ACTIVE',gasto:100,orcamento_total:200,seguidores:200,visitas_perfil:250},{campaign_id:'brand-other',member_id:fixtures.members[1].id,nome:'Privado outro mentorado',inicio:new Date().toISOString(),gasto:900,seguidores:10,visitas_perfil:10}];
 fixtures.cb_vouchers=[{id:'voucher-1',member_id:member.id,origin:'indicação convertida (Dra. M., Mentoria Grau Zero)',note:'Nota interna',status:'em_maos',granted_on:'2026-06-10'}];
 fixtures.cb_vitrine_rounds=[{id:'round-3',period:'2026-T3',status:'distributing',opens_on:'2026-10-01',offers:[...['Novembro','Dezembro','Janeiro'].map(label=>({benefit:'catarata',label,dates:'Datas da turma',venue:'Juruti',capacity:2,available:2})),{benefit:'grau_zero',label:'Edição de novembro',dates:'19 a 21/11/2026',venue:'Manaus',capacity:5,available:5},{benefit:'passagem',label:'Family Circle',dates:'11 a 13/12/2026',venue:'Lake Paradise',capacity:1,available:1}]},{id:'round-4',period:'2026-T4',status:'scheduled',opens_on:'2026-12-31',offers:[]}];
 fixtures.cb_vitrine_preferences=[{id:'choice-a',member_id:member.id,period:'2026-T3',response_status:'received',benefits:['catarata','grau_zero','passagem'],preferred_dates:['2027-01-13'],family_circle:'Não vai',pending_items:[],note:'Resposta de teste',source:'Planilha de teste',period_points:43.6,conferred_grade:0,quarter_vouchers:0},{id:'choice-b',member_id:fixtures.members[1].id,period:'2026-T3',response_status:'declined',benefits:[],preferred_dates:[],pending_items:[],source:'WhatsApp',note:'Privado do outro mentorado',period_points:50,conferred_grade:1,quarter_vouchers:2}];
@@ -62,11 +64,11 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
    assert.equal(await page.evaluate(()=>getComputedStyle(document.documentElement).getPropertyValue('--panel').trim()),'#0B0910');
    assert.equal(await page.evaluate(()=>getComputedStyle(document.documentElement).getPropertyValue('--gold').trim()),'#E8C07A');
    await page.screenshot({path:path.join(out,(isAdmin?'admin':'member')+'-farol-black-gold.png'),fullPage:true});
-   const mentoria=['Visão Geral','Subida: Rumo ao Olympus','Pendências','Protocolo Grau Zero','Graduação','Ranking Black','Vitrine Black','Instagram','Processos Black','Materiais','Agenda'];
+   const mentoria=['Visão Geral','Subida: Rumo ao Olympus','Pendências','Protocolo Grau Zero','Graduação','Ranking Black','Vitrine Black','Instagram','Campanha de Branding','Processos Black','Materiais','Agenda'];
    const menu=await page.locator('#rail .nav>span:not(.cb-badge)').allTextContents();
-   assert.deepEqual(menu.slice(0,12),[...mentoria,'Fábrica · Íris Black']);
+   assert.deepEqual(menu.slice(0,mentoria.length+1),[...mentoria,'Fábrica · Íris Black']);
    assert.deepEqual(await page.locator('#rail .rail-grupo').allTextContents(),isAdmin?['Mentoria','Módulos à parte','Administração','Operação da equipe']:['Mentoria','Módulos à parte']);
-   if(isAdmin)assert.deepEqual(menu.slice(12,14),['A Rede','Progressão']);
+   if(isAdmin)assert.deepEqual(menu.slice(mentoria.length+1,mentoria.length+3),['A Rede','Progressão']);
    else assert.equal(await page.locator('[data-view=rede]').count(),0);
    for(const key of ['home','encontro','iris','cerebro','profile'])assert.equal(await page.locator('#rail [data-nav="'+key+'"]').count(),0);
    assert.deepEqual(await page.locator('#navm [data-nav]').evaluateAll(nodes=>nodes.map(n=>n.dataset.nav)),await page.locator('#rail [data-nav]').evaluateAll(nodes=>nodes.map(n=>n.dataset.nav)));
@@ -346,6 +348,38 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
    await page.locator('.cb-drawer').waitFor();assert.match(await page.locator('.cb-drawer').innerText(),/Treinamento de vendas/);
    await page.keyboard.press('Escape');
    await page.locator('#rail [data-nav="agenda"]').click();await page.locator('[data-view=agenda] [data-nav=encontro]').click();assert.equal(await page.locator('[data-view=encontro]').isVisible(),true);
+   await page.locator('#rail [data-nav=branding]').click();
+   await page.locator('#brandingPanel .tbl').waitFor();
+   assert.match(await page.locator('#brandingPanel').innerText(),/Branding de teste/);
+   assert.doesNotMatch(await page.locator('#brandingPanel').innerText(),/Privado outro mentorado/);
+   assert.equal(await page.locator('#brandingPanel #filtroImpMembro').isVisible(),isAdmin);
+   assert.equal(await page.locator('#brandingPanel .stat').count(),4);
+   for(const width of [1440,390]){
+     await page.setViewportSize({width,height:900});
+     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'Branding não deve alargar a página');
+     await page.screenshot({path:path.join(out,(isAdmin?'admin':'member')+'-branding-'+width+'.png'),fullPage:true});
+   }
+   await page.setViewportSize({width:1440,height:1080});
+   if(isAdmin){
+     await page.locator('#filtroImpMembro').selectOption('10000000-0000-4000-8000-000000000002');
+     await page.waitForFunction(()=>document.querySelector('#listaImp').innerText.includes('Privado outro mentorado'));
+     assert.doesNotMatch(await page.locator('#listaImp').innerText(),/Branding de teste/);
+     const href=await page.locator('#verComoMembro').evaluate(el=>{el.addEventListener('click',e=>e.preventDefault(),{once:true});el.click();return el.href;});
+     assert.match(href,/membro=10000000-0000-4000-8000-000000000002#branding$/);
+     await page.locator('#filtroImpMembro').selectOption('10000000-0000-4000-8000-000000000001');
+     await page.locator('#brandingPanel .tbl').waitFor();
+   }
+   await page.evaluate(()=>{window.__brandingBackup={accounts:window.__fixtures.instagram_impulsionamento_contas,rows:window.__fixtures.instagram_impulsionamentos};window.__fixtures.instagram_impulsionamento_contas=[];window.__fixtures.instagram_impulsionamentos=[];});
+   await page.locator('#brandingPanel [data-branding-retry]').first().click();
+   await page.waitForFunction(()=>document.querySelector('#listaImp').innerText.includes('Campanha de Branding ainda não disponível'));
+   assert.match(await page.locator('#listaImp').innerText(),isAdmin?/Este mentorado ainda não está realizando/:/Você ainda não está realizando/);
+   await page.evaluate(()=>window.__failTable='instagram_impulsionamento_contas');
+   await page.locator('#brandingPanel [data-branding-retry]').first().click();
+   await page.locator('#brandingPanel [role=alert]').waitFor();
+   assert.doesNotMatch(await page.locator('#listaImp').innerText(),/ainda não está realizando/);
+   await page.evaluate(()=>{window.__failTable=null;window.__fixtures.instagram_impulsionamento_contas=window.__brandingBackup.accounts;window.__fixtures.instagram_impulsionamentos=window.__brandingBackup.rows;});
+   await page.locator('#brandingPanel [role=alert] [data-branding-retry]').click();
+   await page.locator('#brandingPanel .tbl').waitFor();
    await page.locator('#rail [data-nav=ranking]').click();await page.locator('#black-ranking .cb-ranking-list').waitFor();
    const rankingQuarter=await page.evaluate(()=>Club.metodo.quarter());
    assert.equal(await page.locator('#black-ranking [data-cb-ranking-period]').inputValue(),rankingQuarter);

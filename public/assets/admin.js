@@ -13,7 +13,7 @@
              demands: [], staff: [], steps: [], progress: [], demandSteps: [],
              groups: [], artGrupo: '', catGrupo: '', progressNotes: [], notasEdit: {},
              qrLinks: [], qrScans: [],
-             view: 'farol', igOrdem: 'seguidores', impPeriodo: '90',
+             view: 'farol', igOrdem: 'seguidores',
              matCategoria: '', matMembro: '',
              demResp: '', demMembro: '', demFrente: '', demAbertas: 'open',
              /* Recorte aberto por um cartão do painel (atrasadas, sem dono…).
@@ -50,6 +50,7 @@
       { key:'ranking', label:'Ranking Black', icon:'trophy' },
       { key:'vitrine', label:'Vitrine Black', icon:'star' },
       { key:'igMetricas', label:'Instagram', icon:'instagram' },
+      { key:'branding', label:'Campanha de Branding', icon:'trending-up' },
       { key:'artifacts', label:'Processos Black', icon:'box' },
       { key:'materials', label:'Materiais', icon:'book-open' },
       { key:'agenda', label:'Agenda', icon:'calendar' }
@@ -88,8 +89,8 @@
 
   $('sair').addEventListener('click', function () { Club.auth.logout(); });
   $('verComoMembro').addEventListener('click', function () {
-    var id = st.view === 'farol' ? Club.farol.selected() : Club.black.selected();
-    if (id) this.href = '/membros/?membro=' + encodeURIComponent(id) + (st.view==='artifacts'?'#artifacts':'');
+    var id = st.view === 'branding' ? Club.branding.selected() : st.view === 'farol' ? Club.farol.selected() : Club.black.selected();
+    if (id) this.href = '/membros/?membro=' + encodeURIComponent(id) + (['artifacts','branding'].includes(st.view)?'#'+st.view:'');
   });
 
   /* ── dados ────────────────────────────────────────────────────────────── */
@@ -391,6 +392,7 @@
     var painel = $('painelDemanda');
     if (painel) painel.hidden = key !== 'demands' || !st.painel;
     if (Club.black) Club.black.enter(key);
+    if (key === 'branding') Club.branding.enter();
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
@@ -1768,147 +1770,6 @@
         '</div>';
       }).join(''),
       'Nenhuma conta coletada.'
-    );
-  }
-
-  /* ── impulsionamentos ─────────────────────────────────────────────────── */
-  /* A planilha "Controle de Anúncios" preenchida pela Meta. Custo por seguidor
-     e por visita saem da divisão aqui, para nunca ficarem velhos no banco.
-     Média do seguidor é gasto ÷ seguidores do período, e não a média simples
-     da planilha: com dezenas de posts, um impulsionamento com 2 seguidores a
-     R$ 80 cada puxava a média para o triplo do custo real. Post abaixo da
-     metade dela é o "post bom" da estratégia — R$ 100/dia até encarecer. */
-
-  var brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
-  function dinheiro(v) { return v === null || v === undefined ? '—' : brl.format(v); }
-
-  // effective_status continua ACTIVE depois do término; a data decide.
-  function situacaoImp(i) {
-    if (i.termino && new Date(i.termino) < new Date()) return 'encerrado';
-    return { ACTIVE: 'rodando', PAUSED: 'pausado', CAMPAIGN_PAUSED: 'pausado', ADSET_PAUSED: 'pausado',
-             IN_PROCESS: 'em análise', WITH_ISSUES: 'com problema', DISAPPROVED: 'reprovado',
-             ARCHIVED: 'arquivado', DELETED: 'excluído' }[i.status] || 'encerrado';
-  }
-
-  function renderImpulsionamentos() {
-    var contas = st.impContas;
-    if (contas === undefined) {
-      if (!st.impCarregandoContas) {
-        st.impCarregandoContas = true;
-        Club.data.instagram.impulsionamentoContas().then(function (c) {
-          st.impContas = c;
-          if (c.length && !st.impMembro) st.impMembro = c[0].member_id;
-          renderImpulsionamentos();
-        });
-      }
-      $('listaImp').innerHTML = '<div class="tbl-empty">Carregando…</div>';
-      return;
-    }
-    if (!contas.length) {
-      $('filtroImpMembro').innerHTML = '';
-      $('statsImp').innerHTML = '';
-      $('listaImp').innerHTML = '<div class="placeholder">' + ico('users') +
-        '<h2>Nenhuma conta de anúncios ligada</h2><p>Cadastre a conta em ' +
-        'cerebro.impulsionamento_contas para os impulsionamentos aparecerem aqui.</p></div>';
-      return;
-    }
-
-    var vistos = {};
-    $('filtroImpMembro').innerHTML = contas.filter(function (c) {
-      if (vistos[c.member_id]) return false;
-      return (vistos[c.member_id] = true);
-    }).map(function (c) {
-      return '<option value="' + esc(c.member_id) + '"' + (c.member_id === st.impMembro ? ' selected' : '') +
-        '>' + esc(c.mentorado) + '</option>';
-    }).join('');
-
-    var daConta = contas.filter(function (c) { return c.member_id === st.impMembro; });
-    var coleta = daConta.map(function (c) { return c.ultima_coleta; }).filter(Boolean).sort().pop();
-    var erro = daConta.map(function (c) { return c.ultimo_erro; }).filter(Boolean)[0];
-    $('impAtualizado').textContent = erro ? 'Última coleta falhou: ' + erro :
-      coleta ? 'Atualizado em ' + new Date(coleta).toLocaleString('pt-BR',
-        { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
-
-    var cache = st.impPorMembro || (st.impPorMembro = {});
-    var todos = cache[st.impMembro];
-    if (!todos) {
-      var alvo = st.impMembro;
-      $('statsImp').innerHTML = '';
-      $('listaImp').innerHTML = '<div class="tbl-empty">Carregando…</div>';
-      Club.data.instagram.impulsionamentos(alvo).then(function (l) {
-        cache[alvo] = l;
-        if (st.impMembro === alvo) renderImpulsionamentos();
-      }, function (e) {
-        $('listaImp').innerHTML = '<div class="tbl-empty">' + esc(e.message || 'Falha ao carregar') + '</div>';
-      });
-      return;
-    }
-
-    var corte = st.impPeriodo === 'todos' ? null : new Date(Date.now() - 90 * 86400000).toISOString();
-    var linhas = todos.filter(function (i) { return !corte || (i.inicio && i.inicio >= corte); });
-
-    var gasto = linhas.reduce(function (a, i) { return a + Number(i.gasto || 0); }, 0);
-    var seg = linhas.reduce(function (a, i) { return a + (i.seguidores || 0); }, 0);
-    var media = seg > 0 ? gasto / seg : null;
-    var metade = media === null ? null : media / 2;
-    var bons = media === null ? 0 : linhas.filter(function (i) {
-      return i.seguidores > 0 && i.gasto / i.seguidores <= metade;
-    }).length;
-
-    $('statsImp').innerHTML =
-      cardStat('INVESTIDO', dinheiro(gasto), linhas.length + ' impulsionamentos') +
-      cardStat('SEGUIDORES GANHOS', numeroCurto(seg), seg ? 'atribuídos pela Meta' : 'nenhum atribuído',
-               'Seguidores que a Meta atribui aos impulsionamentos do período — o mesmo ' +
-               '"Seguidores no Instagram" do Gerenciador.') +
-      cardStat('MÉDIA DO SEGUIDOR', dinheiro(media), 'investido ÷ seguidores',
-               'Quanto custou, em média, cada seguidor trazido pelos impulsionamentos do período.') +
-      cardStat('METADE DO SEGUIDOR', dinheiro(metade), bons + ' posts abaixo dela',
-               'Post que traz seguidor por menos que a metade da média é post bom: ' +
-               'R$ 100/dia até começar a ficar caro. Acompanhar uma vez por semana, no domingo.');
-
-    /* Faixas fixas da planilha, nos dois custos: abaixo de R$ 1 é verde, de
-       R$ 1 a R$ 2 amarelo, acima de R$ 2 vermelho. A lista vem nessa ordem pelo
-       custo por seguidor (sem seguidor nenhum vai por último), e dentro de cada
-       faixa do mais barato para o mais caro. */
-    function faixa(v) { return v === null ? 3 : v < 1 ? 0 : v <= 2 ? 1 : 2; }
-    function celCusto(v) {
-      if (v === null) return '<span class="tx-s">—</span>';
-      return '<span class="imp-faixa imp-f' + faixa(v) + '">' + dinheiro(v) + '</span>';
-    }
-    var porSeg = function (i) { return i.seguidores > 0 ? i.gasto / i.seguidores : null; };
-    var ordenadas = linhas.slice().sort(function (a, b) {
-      var ca = porSeg(a), cb = porSeg(b);
-      return (faixa(ca) - faixa(cb)) || ((ca === null ? 0 : ca) - (cb === null ? 0 : cb)) ||
-        String(b.inicio || '').localeCompare(String(a.inicio || ''));
-    });
-
-    $('listaImp').innerHTML = tabela(
-      '92px 92px minmax(0,1.8fr) 104px 104px 92px 108px 112px 92px',
-      ['Início', 'Término', 'Anúncio', 'Gasto', 'Total', 'Seguidores', 'Custo/visita', 'Custo/seguidor', '>Instagram'],
-      ordenadas.map(function (i) {
-        var cs = porSeg(i);
-        var porVisita = i.visitas_perfil > 0 ? i.gasto / i.visitas_perfil : null;
-        var titulo = esc(String(i.nome).replace(/^.*?(post do instagram|publica[cç][aã]o do instagram|instagram post|publicaci[oó]n de instagram)\s*:?\s*/i, '') || 'Post do Instagram');
-        var link = i.post_url ? esc(i.post_url) : null;
-        return '<div class="tr">' +
-          td(i.inicio ? esc(Club.fmtDataCurta(i.inicio)) : '—') +
-          td(i.termino ? esc(Club.fmtDataCurta(i.termino)) : '—') +
-          td('<div class="tx"><div class="tx tx-t">' +
-             (link ? '<a href="' + link + '" target="_blank" rel="noopener">' + titulo + '</a>' : titulo) +
-             '</div><div class="tx tx-s">' + esc(situacaoImp(i)) +
-             (i.visitas_perfil ? ' · ' + numeroCurto(i.visitas_perfil) + ' visitas ao perfil' : '') + '</div></div>') +
-          td(dinheiro(Number(i.gasto))) +
-          td(dinheiro(i.orcamento_total === null ? null : Number(i.orcamento_total))) +
-          td(numeroCurto(i.seguidores)) +
-          tdCel(celCusto(porVisita)) +
-          tdCel(celCusto(cs)) +
-          tdCel(link ? '<a class="btn btn-sm imp-abrir" href="' + link + '" target="_blank" rel="noopener" ' +
-                'title="Abrir o post no Instagram"><svg class="ic"><use href="#i-instagram"/></svg>Abrir</a>' :
-                '<span class="tx-s">sem link</span>', 'end') +
-        '</div>';
-      }).join(''),
-      st.impPeriodo === 'todos' ? 'Nenhum impulsionamento nesta conta.' :
-        'Nenhum impulsionamento nos últimos 90 dias. Veja "Todos".'
     );
   }
 
@@ -4416,16 +4277,6 @@
       return;
     }
 
-    var bimp = e.target.closest('#filtroImpPeriodo button');
-    if (bimp) {
-      st.impPeriodo = bimp.dataset.imp;
-      Array.prototype.forEach.call(document.querySelectorAll('#filtroImpPeriodo button'), function (b) {
-        b.setAttribute('aria-selected', String(b === bimp));
-      });
-      renderImpulsionamentos();
-      return;
-    }
-
     var bap = e.target.closest('[data-bot-aprovar]');
     if (bap) { aprovarResposta(bap.dataset.botAprovar); return; }
 
@@ -4667,11 +4518,6 @@
     renderDemandas();
   });
 
-  $('filtroImpMembro').addEventListener('change', function () {
-    st.impMembro = this.value;
-    renderImpulsionamentos();
-  });
-
   $('filtroBotGrupo').addEventListener('change', function () {
     st.botGrupo = this.value;
     renderBotExemplos();
@@ -4698,7 +4544,7 @@
     renderMaterials();
     renderDemandas();
     renderIgMetricas();
-    renderImpulsionamentos();
+    Club.branding.mount($('brandingPanel'), {admin:true,members:st.members,member:st.members.find(function(m){return m.id===new URLSearchParams(location.search).get('membro');})});
     renderBotFila();
     renderBotExemplos();
     Club.graduacao.mountAdmin($('graduacaoAdmin'), st.members);
