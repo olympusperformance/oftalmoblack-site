@@ -1,5 +1,8 @@
 # Campanha de Branding
 
+Atualização posterior: por solicitação de Ítalo, a seção foi integrada à aba
+Instagram. Ver `2026-10-15-instagram-impulsionamentos-membro.md`.
+
 Nova aba em Admin/Membros, imediatamente após Instagram, no endereço
 `#branding`. A tabela de impulsionamentos saiu de Instagram e usa um componente
 compartilhado. Mantidos indicadores, faixas de custo, links dos posts e filtros

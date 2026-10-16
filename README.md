@@ -49,8 +49,8 @@ ficam exclusivamente em `tests/`.
 
 ### Campanha de Branding
 
-A aba `#branding`, em Admin e Membros, reúne os impulsionamentos do Instagram
-antes exibidos no fim da aba Instagram do Admin. A equipe escolhe o mentorado;
+A seção Campanha de Branding fica dentro de Instagram, em Admin e Membros.
+Os links antigos `#branding` abrem Instagram. A equipe escolhe o mentorado;
 o membro consulta apenas sua campanha. A pré-visualização preserva mentorado
 e aba na ida e volta.
 

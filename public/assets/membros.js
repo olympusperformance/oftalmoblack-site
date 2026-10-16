@@ -26,7 +26,6 @@
     { key:'ranking', label:'Ranking Black', icon:'trophy' },
     { key:'vitrine', label:'Vitrine Black', icon:'star' },
     { key:'instagram', label:'Instagram', icon:'instagram' },
-    { key:'branding', label:'Campanha de Branding', icon:'trending-up' },
     { key:'artifacts', label:'Processos Black', icon:'box' },
     { key:'materials', label:'Materiais', icon:'book-open' },
     { key:'agenda', label:'Agenda', icon:'calendar' },
@@ -215,7 +214,7 @@
         '<div style="flex:1 1 220px"><b>Pré-visualização.</b> Você está vendo a área como ' +
         esc(st.membro.nome) + '.</div>' +
         '<div class="pick pick-sm" id="trocaMembro" style="max-width:230px"></div>' +
-        '<a class="btn btn-sm" id="voltarPainel" href="/admin/?membro='+encodeURIComponent(st.membro.id)+esc(location.hash)+'">' + ico('arrow-left') + 'Painel</a>';
+        '<a class="btn btn-sm" id="voltarPainel" href="/admin/?membro='+encodeURIComponent(st.membro.id)+esc(location.hash.replace(/^#(?:instagram|branding)$/,'#igMetricas'))+'">' + ico('arrow-left') + 'Painel</a>';
 
       var main = document.querySelector('.main');
       main.insertBefore(barra, main.firstChild);
@@ -594,8 +593,8 @@
       v.hidden = v.dataset.view !== key;
     });
     renderNav(key);
-    if (key === 'branding') Club.branding.enter();
-    if(admin&&$('voltarPainel'))$('voltarPainel').href='/admin/?membro='+encodeURIComponent(st.membro.id)+'#'+key;
+    if (key === 'instagram') Club.branding.enter();
+    if(admin&&$('voltarPainel'))$('voltarPainel').href='/admin/?membro='+encodeURIComponent(st.membro.id)+'#'+(key==='instagram'?'igMetricas':key);
     if (key === 'farol') {
       montarFarol();
       Club.farol.enter(location.hash.indexOf('#farol/') === 0 ? location.hash : '');
@@ -667,6 +666,7 @@
       render();
       renderAvisoAdmin();
       var alvoInicial = location.hash.slice(1);
+      if(['branding','igMetricas'].includes(alvoInicial))alvoInicial='instagram';
       go(alvoInicial.indexOf('farol/') === 0 ? 'farol' : alvoInicial.indexOf('subida/') === 0 ? 'subida' : Array.from(document.querySelectorAll('.view')).some(function (v) { return v.dataset.view === alvoInicial; }) ? alvoInicial : 'farol');
     });
   }).catch(function (err) {
@@ -679,6 +679,7 @@
   window.addEventListener('hashchange', function () {
     if (!sessao) return;
     var h = location.hash.slice(1);
+    if(['branding','igMetricas'].includes(h))h='instagram';
     if (h.indexOf('farol/') === 0) { go('farol'); return; }
     if (h.indexOf('subida/') === 0) { go('subida'); return; }
     if (Array.from(document.querySelectorAll('.view')).some(function (v) { return v.dataset.view === h; })) go(h);
