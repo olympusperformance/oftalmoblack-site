@@ -91,3 +91,38 @@ test('n8n bundle runs without imports or node modules',()=>{
  const bundled=new Function(bundledCore()+'\nreturn { resolveParticipants, planSession };')();
  assert.deepEqual(bundled.resolveParticipants(payload,catalog),identity());
 });
+
+test('registered short names resolve a mentee and an explicitly named internal executor',()=>{
+ const c=structuredClone(catalog);
+ c.members[0].name='Carlos Alberto Souza';c.members[0].aliases=['Carlos Souza'];
+ c.staff[0].aliases=['Ana'];
+ const p=structuredClone(payload);
+ p.calendar_invitees=[];
+ p.transcript=[{speaker:{display_name:'Bruno Lima'},text:'A Ana vai enviar o planejamento.'}];
+ const i=resolveParticipants(p,c);
+ const r=record({executor_name:'Ana',basis:'named'});
+ r.evidence=[{segment_id:'0',quote:p.transcript[0].text,speaker:{name:'Bruno Lima'}}];
+ assert.equal(i.member_id,'member-a');assert.equal(i.member_match,'meeting_title');
+ assert.deepEqual(routeRecord(r,i,c).routing.responsaveis,['staff-a']);
+ // Removing the registered names restores the original unresolved behavior.
+ c.members[0].aliases=[];c.staff[0].aliases=[];
+ const unmatched=resolveParticipants(p,c);
+ assert.equal(unmatched.member_id,null);
+ assert.equal(routeRecord(r,unmatched,c).routing.status,'needs_identity');
+});
+
+test('registered aliases never bypass ambiguous identities, inactive staff or speaker uncertainty',()=>{
+ const c=structuredClone(catalog);c.staff[0].aliases=['Ana'];
+ const p=structuredClone(payload);p.transcript[0].speaker={display_name:'Ana'};
+ const r=record({executor_name:'Ana'});r.evidence[0].speaker={name:'Ana'};
+ assert.equal(routeRecord(r,resolveParticipants(p,c),c).routing.eligible_for_demand,true);
+ r.ownership.identity_uncertain=true;
+ assert.equal(routeRecord(r,resolveParticipants(p,c),c).routing.eligible_for_demand,false);
+ r.ownership.identity_uncertain=false;c.staff[0].active=false;
+ assert.equal(routeRecord(r,resolveParticipants(p,c),c).routing.eligible_for_demand,false);
+ c.staff[0].active=true;c.staff[1].aliases=['Ana'];
+ assert.equal(routeRecord(r,resolveParticipants(p,c),c).routing.eligible_for_demand,false);
+ c.staff[1].aliases=[];p.transcript[0].speaker.matched_calendar_invitee_email='bruno@team.test';
+ r.evidence[0].speaker.email='bruno@team.test';
+ assert.equal(routeRecord(r,resolveParticipants(p,c),c).routing.eligible_for_demand,false);
+});

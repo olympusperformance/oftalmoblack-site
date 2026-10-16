@@ -12,3 +12,17 @@ test('missing, duplicated and invented evidence abort the whole review',()=>{let
 test('existing demand must have compatible beneficiary and owner',()=>{const d={id:'d1',titulo:'Plano',member_id:'member1',responsaveis:['staff1'],document_hash:'h'};const g=group();g.existing_demand_id='d1';assert.equal(finish([g],[d]).groups[0].status,'linked');assert.equal(finish([g],[{...d,member_id:'other'}]).groups[0].status,'approved');assert.equal(finish([g],[{...d,responsaveis:['other']}]).groups[0].existing_demand_id,null);assert.throws(()=>finish([g]),/unknown_existing/);});
 test('backfill reviews original candidates even if previously reclassified',()=>{const d={records:[],previous_extraction:{document:snapshot.document}};assert.equal(reviewTargets(d).length,2);});
 test('approval is not completion; uncertain action requires confirmation',()=>{const g=group();g.disposition='uncertain_action';assert.equal(finish([g]).groups[0].status,'needs_confirmation');g.disposition='pending';g.ownership.state='performed';assert.throws(()=>finish([g]),/pending_without_commitment/);});
+
+test('confirmed aliases link the beneficiary and executor without approving uncertain or completed actions',()=>{
+ const c={staff:[{id:'staff1',name:'Ana Silva',active:true,aliases:['Ana']}],members:[{id:'member1',name:'Carlos Alberto Souza',active:true,aliases:['Carlos Souza']}]};
+ const s=structuredClone(snapshot);s.payload.title='Suporte — Carlos Souza';
+ s.payload.transcript=[{speaker:{display_name:'Equipe'},text:'A Ana vai enviar o planejamento.'}];
+ const g=group();g.ownership={...g.ownership,executor_name:'Ana',basis:'named'};
+ g.evidence=[{segment_id:'0',quote:s.payload.transcript[0].text}];
+ const plan=planFinalReview(s,c,[]);
+ const evaluate=()=>finishFinalReview(plan,response([g])).groups[0];
+ assert.equal(evaluate().status,'approved');assert.equal(evaluate().staff_id,'staff1');assert.equal(evaluate().member_id,'member1');
+ g.ownership.identity_uncertain=true;assert.equal(evaluate().status,'needs_identity');
+ g.ownership.identity_uncertain=false;g.disposition='completed_in_call';assert.equal(evaluate().status,'context');
+ g.disposition='uncertain_action';assert.equal(evaluate().status,'needs_confirmation');
+});
