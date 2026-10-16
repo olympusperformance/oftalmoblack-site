@@ -64,7 +64,7 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
    assert.equal(await page.evaluate(()=>getComputedStyle(document.documentElement).getPropertyValue('--panel').trim()),'#0B0910');
    assert.equal(await page.evaluate(()=>getComputedStyle(document.documentElement).getPropertyValue('--gold').trim()),'#E8C07A');
    await page.screenshot({path:path.join(out,(isAdmin?'admin':'member')+'-farol-black-gold.png'),fullPage:true});
-   const mentoria=['Visão Geral','Subida: Rumo ao Olympus','Pendências','Protocolo Grau Zero','Graduação','Ranking Black','Vitrine Black','Instagram','Campanha de Branding','Processos Black','Materiais','Agenda'];
+   const mentoria=['Visão Geral','Subida: Rumo ao Olympus','Pendências','Protocolo Grau Zero','Graduação','Ranking Black','Vitrine Black','Instagram','Processos Black','Materiais','Agenda'];
    const menu=await page.locator('#rail .nav>span:not(.cb-badge)').allTextContents();
    assert.deepEqual(menu.slice(0,mentoria.length+1),[...mentoria,'Fábrica · Íris Black']);
    assert.deepEqual(await page.locator('#rail .rail-grupo').allTextContents(),isAdmin?['Mentoria','Módulos à parte','Administração','Operação da equipe']:['Mentoria','Módulos à parte']);
@@ -348,8 +348,11 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
    await page.locator('.cb-drawer').waitFor();assert.match(await page.locator('.cb-drawer').innerText(),/Treinamento de vendas/);
    await page.keyboard.press('Escape');
    await page.locator('#rail [data-nav="agenda"]').click();await page.locator('[data-view=agenda] [data-nav=encontro]').click();assert.equal(await page.locator('[data-view=encontro]').isVisible(),true);
-   await page.locator('#rail [data-nav=branding]').click();
+   assert.equal(await page.locator('#rail [data-nav=branding]').count(),0);
+   await page.locator('#rail [data-nav='+ (isAdmin?'igMetricas':'instagram') +']').click();
    await page.locator('#brandingPanel .tbl').waitFor();
+   await page.evaluate(()=>location.hash='branding');
+   await page.waitForFunction(admin=>location.hash===(admin?'#igMetricas':'#instagram'),isAdmin);
    assert.match(await page.locator('#brandingPanel').innerText(),/Branding de teste/);
    assert.doesNotMatch(await page.locator('#brandingPanel').innerText(),/Privado outro mentorado/);
    assert.equal(await page.locator('#brandingPanel #filtroImpMembro').isVisible(),isAdmin);
@@ -365,7 +368,25 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
      await page.waitForFunction(()=>document.querySelector('#listaImp').innerText.includes('Privado outro mentorado'));
      assert.doesNotMatch(await page.locator('#listaImp').innerText(),/Branding de teste/);
      const href=await page.locator('#verComoMembro').evaluate(el=>{el.addEventListener('click',e=>e.preventDefault(),{once:true});el.click();return el.href;});
-     assert.match(href,/membro=10000000-0000-4000-8000-000000000002#branding$/);
+     assert.match(href,/membro=10000000-0000-4000-8000-000000000002#instagram$/);
+     const brandingPreview=await context.newPage();
+     brandingPreview.on('pageerror',e=>errors.push(e.message));
+     await brandingPreview.route('**/assets/club-supabase.js',route=>route.fulfill({contentType:'text/javascript',body:stub(true)}));
+     await brandingPreview.route('https://**',route=>route.abort());
+     await brandingPreview.goto(href);
+     await brandingPreview.locator('#brandingPanel .tbl').waitFor();
+     assert.equal(await brandingPreview.locator('[data-view=instagram]').isVisible(),true);
+     assert.match(await brandingPreview.locator('#brandingPanel').innerText(),/Privado outro mentorado/);
+     assert.doesNotMatch(await brandingPreview.locator('#brandingPanel').innerText(),/Branding de teste/);
+     assert.equal(await brandingPreview.locator('#filtroImpMembro').isVisible(),false);
+     await brandingPreview.locator('#voltarPainel').waitFor();
+     assert.match(await brandingPreview.locator('#voltarPainel').getAttribute('href'),/membro=10000000-0000-4000-8000-000000000002#igMetricas$/);
+     await brandingPreview.locator('#voltarPainel').click();
+     await brandingPreview.locator('#brandingPanel .tbl').waitFor();
+     assert.equal(await brandingPreview.locator('[data-view=igMetricas]').isVisible(),true);
+     assert.equal(await brandingPreview.locator('#filtroImpMembro').inputValue(),'10000000-0000-4000-8000-000000000002');
+     await brandingPreview.close();
+
      await page.locator('#filtroImpMembro').selectOption('10000000-0000-4000-8000-000000000001');
      await page.locator('#brandingPanel .tbl').waitFor();
    }

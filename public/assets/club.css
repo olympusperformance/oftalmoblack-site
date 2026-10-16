@@ -1092,3 +1092,5 @@ input[type="file"].inp::file-selector-button:hover{background:var(--surface);bor
 .branding-toolbar select{max-width:300px}
 .branding-view .seg button[aria-pressed="true"]{color:var(--text);background:var(--surface-hi)}
 .branding-view #impAtualizado{margin:0 0 18px;white-space:normal}
+
+.branding-embedded{margin-top:36px;padding-top:28px;border-top:1px solid var(--border-soft);min-width:0}

@@ -50,7 +50,6 @@
       { key:'ranking', label:'Ranking Black', icon:'trophy' },
       { key:'vitrine', label:'Vitrine Black', icon:'star' },
       { key:'igMetricas', label:'Instagram', icon:'instagram' },
-      { key:'branding', label:'Campanha de Branding', icon:'trending-up' },
       { key:'artifacts', label:'Processos Black', icon:'box' },
       { key:'materials', label:'Materiais', icon:'book-open' },
       { key:'agenda', label:'Agenda', icon:'calendar' }
@@ -89,8 +88,8 @@
 
   $('sair').addEventListener('click', function () { Club.auth.logout(); });
   $('verComoMembro').addEventListener('click', function () {
-    var id = st.view === 'branding' ? Club.branding.selected() : st.view === 'farol' ? Club.farol.selected() : Club.black.selected();
-    if (id) this.href = '/membros/?membro=' + encodeURIComponent(id) + (['artifacts','branding'].includes(st.view)?'#'+st.view:'');
+    var id = st.view === 'igMetricas' ? Club.branding.selected() : st.view === 'farol' ? Club.farol.selected() : Club.black.selected();
+    if (id) this.href = '/membros/?membro=' + encodeURIComponent(id) + (st.view==='igMetricas'?'#instagram':st.view==='artifacts'?'#artifacts':'');
   });
 
   /* ── dados ────────────────────────────────────────────────────────────── */
@@ -392,7 +391,7 @@
     var painel = $('painelDemanda');
     if (painel) painel.hidden = key !== 'demands' || !st.painel;
     if (Club.black) Club.black.enter(key);
-    if (key === 'branding') Club.branding.enter();
+    if (key === 'igMetricas') Club.branding.enter();
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
@@ -2369,7 +2368,7 @@
     }
     var id = '';
     try { id = decodeURIComponent(partes[1] || ''); } catch (err) { id = ''; }
-    return { secao:partes[0], id:id, foco:FOCOS[foco] ? foco : '' };
+    return { secao:['branding','instagram'].includes(partes[0])?'igMetricas':partes[0], id:id, foco:FOCOS[foco] ? foco : '' };
   }
 
   function sincronizarHash() {
