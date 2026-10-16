@@ -82,7 +82,7 @@ ampla de demanda.
 
 O catálogo consulta `memoria_operacional.mentorado_aliases` para mentorados e
 `memoria_operacional.staff_aliases` para integrantes da equipe. A segunda tabela
-é criada pela migração `20261015173740_fathom_staff_aliases.sql`; seus registros
+é criada pela migração `20261016180904_fathom_staff_aliases.sql`; seus registros
 exigem uma referência de quem confirmou a identidade. Não há acesso para `anon`
 ou `authenticated`. O processador privado usa a conexão Postgres existente.
 

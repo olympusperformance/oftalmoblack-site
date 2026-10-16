@@ -22,7 +22,7 @@ test('private alias storage reaches the actual extraction/review catalog and pre
    insert into public.members values('00000000-0000-0000-0000-000000000002','Carlos Alberto Souza',true,null);
    insert into memoria_operacional.mentorados values('00000000-0000-0000-0000-000000000002');
   `);
-  const migration=readFileSync(new URL('../supabase/migrations/20261015173740_fathom_staff_aliases.sql',import.meta.url),'utf8');
+  const migration=readFileSync(new URL('../supabase/migrations/20261016180904_fathom_staff_aliases.sql',import.meta.url),'utf8');
   await db.exec(migration);
   const payload={title:'Suporte — Carlos Souza',transcript:[{speaker:{display_name:'Bruno Lima'},text:'A Ana vai enviar o planejamento.'}]};
   const record={kind:'demand',evidence:[{segment_id:'0',quote:payload.transcript[0].text,speaker:{name:'Bruno Lima'}}],ownership:{executor_name:'Ana',basis:'named',segment_id:'0',state:'requested',beneficiary_name:null,identity_uncertain:false}};
