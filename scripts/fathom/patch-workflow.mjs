@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
 
 export const CATALOG_SQL = `select jsonb_build_object(
- 'staff',coalesce((select jsonb_agg(jsonb_build_object('id',s.id,'name',s.nome,'active',s.ativo,'email',u.email,'aliases','[]'::jsonb)) from public.staff s left join auth.users u on u.id=s.user_id where s.ativo),'[]'::jsonb),
+ 'staff',coalesce((select jsonb_agg(jsonb_build_object('id',s.id,'name',s.nome,'active',s.ativo,'email',u.email,'aliases',coalesce((select jsonb_agg(a.alias) from memoria_operacional.staff_aliases a where a.staff_id=s.id),'[]'::jsonb))) from public.staff s left join auth.users u on u.id=s.user_id where s.ativo),'[]'::jsonb),
  'members',coalesce((select jsonb_agg(jsonb_build_object('id',m.id,'name',m.nome,'active',m.ativo,'email',m.email,'aliases',coalesce((select jsonb_agg(a.alias) from memoria_operacional.mentorado_aliases a where a.mentorado_id=m.id),'[]'::jsonb))) from public.members m where m.ativo),'[]'::jsonb)
 ) as catalog;`;
 
