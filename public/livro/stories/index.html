@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Presbiopia Cirúrgica · Dr. Alex Sá</title>
+<script>
+(function(){
+  /* lk-livro-stories · link curto do livro Presbiopia Cirúrgica (20/10/2026).
+     Stories: ?c=DDMM vira utm_content (identifica o dia/story). UTMs pela regra Olympus (trafego/regras-utm-olympus.md); query recebida
+     tem prioridade (fbclid e afins seguem junto). */
+  var q = new URLSearchParams(window.location.search);
+  var def = { utm_source: 'ig', utm_medium: 'stories', utm_campaign: 'livro-presbiopia' };
+  if (q.has('c') && !q.has('utm_content')) { q.set('utm_content', q.get('c')); }
+  q.delete('c');
+  Object.keys(def).forEach(function(k){ if (!q.has(k)) q.set(k, def[k]); });
+  window.location.replace('/livro/?' + q.toString() + (window.location.hash || ''));
+})();
+</script>
+<noscript><meta http-equiv="refresh" content="0; url=/livro/?utm_source=ig&amp;utm_medium=stories&amp;utm_campaign=livro-presbiopia"></noscript>
+<style>body{margin:0;background:#021F26;color:#F5F1EA;font-family:system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;text-align:center;padding:16px}a{color:#E8BB79}</style>
+</head>
+<body>
+<p>Abrindo a página do livro... <a href="/livro/?utm_source=ig&amp;utm_medium=stories&amp;utm_campaign=livro-presbiopia">Toque aqui se não abrir.</a></p>
+</body>
+</html>
