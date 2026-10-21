@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0A0A0A">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="perfil-endpoint" content="https://zpyxnkuvircukjlfexrv.supabase.co/functions/v1/perfil-clinica">
+  <meta name="perfil-api-key" content="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpweXhua3V2aXJjdWtqbGZleHJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0MTk4NzksImV4cCI6MjEwMTk5NTg3OX0.YojmkK9fHsJwY1_81JeYdLJkIlI20xSQwqG-WuEZOrk">
+  <meta name="description" content="Conte um pouco sobre seu momento e os desafios da sua clínica.">
+  <title>Vamos conhecer sua clínica | OftalmoBlack</title>
+  <style>
+    @font-face{font-family:Cinzel;src:url('./assets/cinzel-latin.woff2') format('woff2');font-display:swap;font-weight:400 900}
+    :root{color-scheme:dark;--base:#0a0a0a;--panel:#121110;--gold:#d89d4d;--gold-light:#e6bd74;--text:#f5f0e6;--muted:#bdb6a9;--line:#393127;--control:#191714;--focus:#fdf3b5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px}
+    *{box-sizing:border-box}body{margin:0;background:var(--base);color:var(--text);line-height:1.5}body::before{content:'';position:absolute;inset:0 0 auto;height:470px;pointer-events:none;background:radial-gradient(ellipse at 50% 0,rgba(216,157,77,.095),transparent 70%);z-index:-1}a{color:var(--gold-light);text-underline-offset:4px}button,input,textarea{font:inherit}button,input,textarea,label{-webkit-tap-highlight-color:transparent}button{cursor:pointer}button:disabled{cursor:wait}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--focus);outline-offset:4px}::selection{color:#000;background:var(--gold-light)}[hidden]{display:none!important}
+    .page{width:min(100% - 48px,704px);margin:auto}.brand{padding:39px 0 30px;border-bottom:1px solid var(--line)}.brand img{width:207px;height:auto;display:block;margin:auto}header{padding:37px 0 32px}h1{font-family:Cinzel,Georgia,serif;font-size:clamp(1.8rem,4.7vw,2.65rem);font-weight:500;line-height:1.23;letter-spacing:-.035em;margin:0 0 16px;max-width:600px}header p{color:var(--muted);margin:0;max-width:470px;line-height:1.6;font-size:1.03rem}
+    form{padding:0;margin:0}fieldset{border:0;padding:0;margin:0;min-width:0}.section{padding:30px 0;border-top:1px solid var(--line)}.contact{padding-top:0;border-top:0;padding-bottom:34px}h2{font-size:1rem;font-weight:600;line-height:1.5;margin:0 0 19px;color:var(--gold-light)}.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:19px 16px}.wide{grid-column:1 / -1}.field-label{display:block;font-size:.92rem;margin-bottom:8px;font-weight:500}input[type=text],input[type=email],input[type=tel],textarea{width:100%;border:1px solid #514637;background:var(--panel);color:var(--text);padding:13px 14px;min-height:51px;border-radius:5px;box-shadow:none;transition:border-color .15s}input::placeholder,textarea::placeholder{color:#8d887e;opacity:1}input:hover,textarea:hover{border-color:#8c704c}input:focus,textarea:focus{border-color:var(--gold-light)}.hint{color:var(--muted);font-size:.83rem;margin:7px 0 0}.question legend{font-size:1.02rem;line-height:1.5;font-weight:600;padding:0;margin-bottom:17px;max-width:100%}.question .question-help{color:var(--muted);font-weight:400;font-size:.9rem;display:block;margin-top:5px}.options{display:grid;grid-template-columns:1fr 1fr;gap:10px}.choice{display:flex;align-items:center;gap:12px;min-height:53px;padding:12px 14px;border:1px solid var(--line);border-radius:5px;background:var(--panel);cursor:pointer;line-height:1.4;font-size:.94rem;position:relative;transition:background .15s,border-color .15s}.choice:hover{border-color:#9b7d53}.choice:has(input:checked){border-color:var(--gold);background:#242016}.choice:has(input:focus-visible){outline:2px solid var(--focus);outline-offset:3px}.choice input{accent-color:var(--gold-light);flex:0 0 19px;width:19px;height:19px;margin:0;cursor:pointer}.choice input:focus-visible{outline:none}.compact{grid-template-columns:1fr 1fr}.volume{margin:23px 0 0;padding:20px 0 0 18px;border-left:2px solid var(--gold)}.volume legend{float:left;width:100%;font-size:.94rem;font-weight:500;margin-bottom:13px}.volume .options{clear:both;grid-template-columns:repeat(4,1fr);gap:8px}.volume .choice{padding:11px 10px;gap:8px;font-size:.87rem}.volume .choice input{width:17px;height:17px;flex-basis:17px}.challenges{grid-template-columns:1fr}.challenges .choice{min-height:55px}.other{margin-top:17px}.other textarea{resize:vertical;min-height:96px}.actions{border-top:1px solid var(--line);padding-top:28px}.submit{width:100%;border:0;border-radius:999px;min-height:58px;padding:16px 18px;background:linear-gradient(180deg,#fdf3b5 0%,#e6bd74 35%,#d89d4d 70%,#c78039 100%);color:#000;font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700}.submit:hover{filter:brightness(1.06)}.submit:disabled{opacity:.7}.privacy{margin:16px auto 0;color:var(--muted);font-size:.78rem;text-align:center;max-width:455px;line-height:1.6}.message{border:1px solid var(--gold);padding:15px 17px;color:var(--text);background:#252016;border-radius:5px;margin:0 0 18px;font-size:.92rem;line-height:1.6}.success{padding:34px 0 44px;border-top:1px solid var(--line)}.success-symbol{display:grid;place-items:center;width:46px;height:46px;border:1px solid var(--gold);border-radius:50%;color:var(--gold-light);font-size:24px;margin-bottom:22px}.success h2{font-family:Cinzel,Georgia,serif;font-size:1.65rem;color:var(--text);margin:0 0 14px}.success p{color:var(--muted);margin:0;max-width:440px}footer{text-align:center;padding:30px 0 35px;color:#938b7d;font-size:.73rem;letter-spacing:.07em}.required-note{color:var(--muted);font-size:.8rem;margin:0 0 18px}.noscript{border:1px solid var(--gold);padding:18px;margin-bottom:24px}
+    @media(max-width:600px){.page{width:calc(100% - 36px)}.brand{padding:26px 0 22px}.brand img{width:183px}header{padding:28px 0 27px}h1{max-width:330px;font-size:1.95rem;line-height:1.25}header p{font-size:.95rem;max-width:330px}.contact-grid{grid-template-columns:1fr;gap:18px}.section{padding-top:25px;padding-bottom:25px}.contact{padding-top:0;padding-bottom:27px}.question legend{font-size:1rem}.volume{padding-left:13px}.volume .options{grid-template-columns:1fr 1fr}.volume .choice{font-size:.92rem;padding:12px}.options.revenue{grid-template-columns:1fr}.submit{font-size:.75rem;letter-spacing:.1em;padding-inline:12px}.privacy{font-size:.76rem}.actions{padding-top:25px}footer{padding-top:26px}}
+    @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="brand"><img src="./assets/logo-oftalmoblack.png" alt="Club OftalmoBlack" width="620" height="198"></div>
+    <header><h1>Vamos conhecer sua clínica</h1><p>Conte um pouco sobre seu momento e os desafios da sua clínica.</p></header>
+    <noscript><p class="noscript">Ative o JavaScript no seu navegador para preencher e enviar suas respostas.</p></noscript>
+    <form id="perfil-form">
+      <fieldset id="form-fields">
+        <section class="section contact" aria-labelledby="contact-title">
+          <h2 id="contact-title">Seus dados</h2>
+          <p class="required-note">Todos os campos são obrigatórios.</p>
+          <div class="contact-grid">
+            <div class="wide"><label class="field-label" for="nome">Nome</label><input id="nome" name="nome" type="text" autocomplete="name" minlength="2" maxlength="150" required placeholder="Seu nome completo"></div>
+            <div class="wide"><label class="field-label" for="email">E-mail</label><input id="email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="254" required placeholder="voce@exemplo.com.br"></div>
+            <div class="wide"><label class="field-label" for="whatsapp">WhatsApp</label><input id="whatsapp" name="whatsapp" type="tel" autocomplete="tel" inputmode="tel" maxlength="25" required placeholder="(11) 99999-9999" aria-describedby="phone-help"><p class="hint" id="phone-help">Brasil: DDD e número. Outros países: inclua + e o DDI.</p></div>
+          </div>
+        </section>
+        <section class="section">
+          <fieldset class="question"><legend>Você realiza cirurgias com implante de lentes premium?</legend>
+            <div class="options compact"><label class="choice"><input type="radio" name="lentes_premium" value="sim" required><span>Sim</span></label><label class="choice"><input type="radio" name="lentes_premium" value="nao" required><span>Não</span></label></div>
+          </fieldset>
+          <fieldset class="question volume" id="volume-group" hidden disabled><legend>Em média, quantas por mês?</legend>
+            <div class="options"><label class="choice"><input type="radio" name="volume_lentes" value="1_5"><span>1 a 5</span></label><label class="choice"><input type="radio" name="volume_lentes" value="6_10"><span>6 a 10</span></label><label class="choice"><input type="radio" name="volume_lentes" value="11_20"><span>11 a 20</span></label><label class="choice"><input type="radio" name="volume_lentes" value="mais_20"><span>Mais de 20</span></label></div>
+          </fieldset>
+        </section>
+        <section class="section"><fieldset class="question"><legend>Qual é o faturamento médio mensal da sua clínica hoje?</legend>
+          <div class="options revenue"><label class="choice"><input type="radio" name="faturamento" value="ate_50" required><span>Até R$50 mil</span></label><label class="choice"><input type="radio" name="faturamento" value="50_100" required><span>R$50 a 100 mil</span></label><label class="choice"><input type="radio" name="faturamento" value="100_200" required><span>R$100 a 200 mil</span></label><label class="choice"><input type="radio" name="faturamento" value="200_500" required><span>R$200 a 500 mil</span></label><label class="choice"><input type="radio" name="faturamento" value="acima_500" required><span>Acima de R$500 mil</span></label></div>
+        </fieldset></section>
+        <section class="section"><fieldset class="question"><legend>Quais são os principais desafios da sua clínica hoje?<span class="question-help">Marque todas as opções que se aplicam.</span></legend>
+          <div class="options challenges"><label class="choice"><input type="checkbox" name="desafios" value="atrair_particulares"><span>Atrair mais pacientes particulares.</span></label><label class="choice"><input type="checkbox" name="desafios" value="converter_cirurgias"><span>Converter mais consultas em cirurgias.</span></label><label class="choice"><input type="checkbox" name="desafios" value="faturamento_margem"><span>Aumentar o faturamento e a margem de lucro.</span></label><label class="choice"><input type="checkbox" name="desafios" value="equipe_processos"><span>Organizar a equipe e os processos.</span></label><label class="choice"><input type="checkbox" name="desafios" value="dependencia"><span>Fazer a clínica depender menos de mim.</span></label><label class="choice"><input id="outro" type="checkbox" name="desafios" value="outro"><span>Outro</span></label></div>
+          <div class="other" id="other-group" hidden><label class="field-label" for="outro-desafio">Qual outro desafio?</label><textarea id="outro-desafio" name="outro_desafio" rows="3" maxlength="500" disabled placeholder="Conte brevemente"></textarea></div>
+        </fieldset></section>
+      </fieldset>
+      <div class="actions"><p class="message" id="form-message" role="status" aria-live="polite" tabindex="-1" hidden></p><button class="submit" id="submit-button" type="submit">Enviar minhas respostas</button><p class="privacy">Usaremos suas respostas para conhecer sua clínica e entrar em contato. <a href="/politica-de-privacidade/" target="_blank" rel="noopener">Política de privacidade</a>.</p></div>
+    </form>
+    <section class="success" id="success" hidden aria-labelledby="success-title"><div class="success-symbol" aria-hidden="true">✓</div><h2 id="success-title" tabindex="-1">Respostas recebidas.</h2><p>Obrigado por compartilhar o momento da sua clínica.</p></section>
+    <footer>Club OftalmoBlack</footer>
+  </main>
+  <script>
+    (() => {
+      'use strict';
+      const form = document.getElementById('perfil-form');
+      const fields = document.getElementById('form-fields');
+      const button = document.getElementById('submit-button');
+      const message = document.getElementById('form-message');
+      const volumeGroup = document.getElementById('volume-group');
+      const otherGroup = document.getElementById('other-group');
+      const otherCheckbox = document.getElementById('outro');
+      const otherText = document.getElementById('outro-desafio');
+      const phone = document.getElementById('whatsapp');
+      const name = document.getElementById('nome');
+      const challenges = [...form.querySelectorAll('[name="desafios"]')];
+      let sending = false;
+      let pending = null;
+      const query = new URLSearchParams(window.location.search);
+      const origem = ['stories','presencial'].includes(query.get('origem')) ? query.get('origem') : 'direto';
+      const utm = {};
+      for (const key of ['utm_source','utm_medium','utm_campaign','utm_content','utm_term']) {
+        const value = (query.get(key) || '').replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, 200);
+        if (value) utm[key] = value;
+      }
+      function phoneE164(value) {
+        const raw = value.trim();
+        if (!/^[+\d\s().-]+$/.test(raw) || raw.slice(1).includes('+')) return null;
+        if (raw.startsWith('+') && !raw.startsWith('+55')) {
+          const international = raw.replace(/\D/g, '');
+          return /^[1-9]\d{7,14}$/.test(international) ? '+' + international : null;
+        }
+        // Local Brazilian numbers may begin with area code 55: remove the country
+        // code only when the complete number has 12 or 13 digits.
+        let digits = value.replace(/\D/g, '');
+        if ((digits.length === 12 || digits.length === 13) && digits.startsWith('55')) digits = digits.slice(2);
+        if (!/^[1-9]{2}(?:9\d{8}|[2-5]\d{7})$/.test(digits)) return null;
+        return '+55' + digits;
+      }
+      function validateChallenges() { challenges[0].setCustomValidity(challenges.some(input => input.checked) ? '' : 'Marque pelo menos um desafio.'); }
+      function syncVolume() {
+        const visible = form.querySelector('[name="lentes_premium"]:checked')?.value === 'sim';
+        volumeGroup.hidden = !visible;
+        volumeGroup.disabled = !visible;
+        for (const input of volumeGroup.querySelectorAll('input')) { input.required = visible; if (!visible) input.checked = false; }
+      }
+      function syncOther() {
+        otherGroup.hidden = !otherCheckbox.checked;
+        otherText.disabled = !otherCheckbox.checked;
+        otherText.required = otherCheckbox.checked;
+        if (!otherCheckbox.checked) { otherText.value = ''; otherText.setCustomValidity(''); }
+      }
+      for (const input of form.querySelectorAll('[name="lentes_premium"]')) input.addEventListener('change', syncVolume);
+      for (const input of challenges) input.addEventListener('change', () => { validateChallenges(); syncOther(); });
+      phone.addEventListener('input', () => phone.setCustomValidity(''));
+      name.addEventListener('input', () => name.setCustomValidity(''));
+      otherText.addEventListener('input', () => otherText.setCustomValidity(''));
+      function showMessage(text) { message.textContent = text; message.hidden = false; message.focus(); }
+      function uuid() {
+        if (crypto.randomUUID) return crypto.randomUUID();
+        const bytes = crypto.getRandomValues(new Uint8Array(16)); bytes[6] = (bytes[6] & 15) | 64; bytes[8] = (bytes[8] & 63) | 128;
+        const hex = [...bytes].map(b => b.toString(16).padStart(2, '0')).join('');
+        return `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20)}`;
+      }
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (sending) return;
+        name.setCustomValidity(name.value.trim() ? '' : 'Informe seu nome.');
+        phone.setCustomValidity(phoneE164(phone.value) ? '' : 'Informe DDD e número. Para outros países, inclua + e o DDI.');
+        otherText.setCustomValidity(otherCheckbox.checked && !otherText.value.trim() ? 'Conte qual é o outro desafio.' : '');
+        validateChallenges();
+        if (!form.reportValidity()) return;
+        const endpointValue = document.querySelector('meta[name="perfil-endpoint"]').content.trim();
+        const apiKey = document.querySelector('meta[name="perfil-api-key"]').content.trim();
+        let endpoint;
+        try {
+          if (!endpointValue || !apiKey) throw new Error('unconfigured');
+          endpoint = new URL(endpointValue, location.origin);
+          if (endpoint.protocol !== 'https:' && !(endpoint.protocol === 'http:' && ['localhost','127.0.0.1'].includes(endpoint.hostname))) throw new Error('unconfigured');
+        } catch { showMessage('O envio está indisponível no momento. Suas respostas continuam aqui. Tente novamente mais tarde.'); return; }
+        const data = new FormData(form);
+        const payload = { nome: name.value.trim(), email: String(data.get('email')).trim(), whatsapp: phoneE164(phone.value), lentes_premium: data.get('lentes_premium') === 'sim', volume_lentes: data.get('lentes_premium') === 'sim' ? data.get('volume_lentes') : null, faturamento: data.get('faturamento'), desafios: data.getAll('desafios'), outro_desafio: otherCheckbox.checked ? otherText.value.trim() : null, origem, utm, pagina: location.pathname };
+        const fingerprint = JSON.stringify(payload);
+        if (!pending || pending.fingerprint !== fingerprint) pending = { fingerprint, payload: { submission_id: uuid(), ...payload } };
+        const attempt = pending;
+        sending = true; fields.disabled = true; button.disabled = true; button.textContent = 'Enviando respostas...'; form.setAttribute('aria-busy', 'true'); message.hidden = true;
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 18000);
+        let received = false;
+        try {
+          const response = await fetch(endpoint.href, { method: 'POST', headers: { 'Content-Type': 'application/json', 'apikey': apiKey, 'Authorization': 'Bearer ' + apiKey }, body: JSON.stringify(attempt.payload), signal: controller.signal, credentials: 'omit', referrerPolicy: 'no-referrer' });
+          let ack; try { ack = await response.json(); } catch { throw new Error('unconfirmed'); }
+          if (!response.ok || ack?.ok !== true || ack.id !== attempt.payload.submission_id) throw new Error('unconfirmed');
+          received = true;
+          form.reset(); pending = null;
+          for (const input of form.querySelectorAll('input,textarea')) input.value = '';
+          form.remove();
+          document.getElementById('success').hidden = false;
+          document.getElementById('success-title').focus();
+        } catch {
+          showMessage('Não foi possível confirmar o recebimento. Suas respostas foram mantidas. Toque em enviar para tentar novamente.');
+        } finally {
+          clearTimeout(timer); sending = false;
+          if (!received) { fields.disabled = false; button.disabled = false; button.textContent = 'Enviar minhas respostas'; form.removeAttribute('aria-busy'); syncVolume(); syncOther(); }
+        }
+      });
+      validateChallenges();
+    })();
+  </script>
+</body>
+</html>
