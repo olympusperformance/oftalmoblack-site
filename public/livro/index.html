@@ -386,6 +386,143 @@ html.lb-on{overflow:hidden}
   .js [data-rv]{opacity:0}
   .js [data-rv].animate__animated{opacity:1}
 }
+
+/* Revisão visual 21/10: identidade da capa, leitura e mecanismo */
+.hero__grid{grid-template-columns:1fr;grid-template-areas:"copy" "stage" "cta" "proof"}
+.hero__stage{padding:32px 0}.hero__stage .book{--bw:210px}
+.hero__stage .engr{--s:390px;opacity:.65}
+.hero__cta{margin-top:12px}.hero__sub{max-width:44ch}
+.hero .kicker{text-transform:none;letter-spacing:.06em;font-size:14px}
+.proof{max-width:48ch;font-size:13px}
+.edicao{background:var(--pet-deep);border-block:1px solid #355058;padding:28px 0}
+.edicao__in{display:flex;flex-wrap:wrap;gap:24px 40px;align-items:center;justify-content:space-between}
+.edicao__name{display:grid;gap:4px}.edicao__name span{font-size:14px;color:var(--claro2)}
+.edicao__name strong{font:700 21px/1.3 var(--fd)}
+.edicao__price{display:flex;gap:20px;align-items:center}.edicao__price strong{font:800 34px/1 var(--fd);color:var(--cobre);white-space:nowrap}
+.edicao__price span{font-size:14px;line-height:1.5;color:var(--claro2)}
+.era__body{margin-top:24px}.era__title{max-width:20ch}.src::before{display:none}
+.mgz{background:#07313A;text-align:left;padding:64px 0 0}
+.mgz__name{font-size:15px;color:var(--cobre);margin-bottom:20px}
+.mgz__intro h2{margin:0;max-width:21ch;font-size:clamp(32px,4vw,50px)}
+.mgz__intro>p:last-child{color:var(--claro2);max-width:52ch;font-size:18px;line-height:1.6;margin-top:22px}
+.mechanism{display:grid;gap:16px;margin:32px 0 40px}
+.mechanism__step{padding:16px 0}.mechanism__icon{width:150px;height:116px;color:var(--cobre);margin:0 auto 16px;display:block}
+.mechanism__step h3{font:600 22px/1.35 var(--fb);color:var(--branco);letter-spacing:0}
+.mechanism__step h3 span{font:800 46px/1 var(--fd);color:var(--cobre);vertical-align:middle;margin-right:8px}
+.mechanism__step p{margin-top:16px;color:var(--claro2);max-width:34ch}
+.mechanism__core{position:relative;color:var(--cobre);width:min(100%,300px);margin:auto}
+.mechanism__core svg{width:100%;display:block}.mechanism__core span{display:block;text-align:center;font-size:13px;line-height:2;color:var(--claro2);margin-top:8px}
+.mechanism__core b{font-weight:500;font-size:17px;color:var(--cobre)}
+.mechanism__cases{display:flex;flex-wrap:wrap;gap:20px;align-items:center;border-top:1px solid #42616A;padding:30px 0 36px}
+.mechanism__cases>strong{font:800 64px/1 var(--fd);color:var(--cobre)}
+.mechanism__cases h3{font:500 21px/1.3 var(--fb);letter-spacing:0}.mechanism__cases p{color:var(--claro2);font-size:15px;margin-top:8px;max-width:54ch}
+.mechanism__cases a{color:var(--cobre);font-size:15px;text-underline-offset:6px}
+.sum::before{display:none}.themes__heading h2{font-size:clamp(30px,4vw,46px);max-width:23ch}.themes__heading>p{max-width:43ch;margin-top:24px;color:var(--tinta2);font-size:18px}
+.themes{display:grid;gap:0;margin:40px 0}.themes article{padding:26px 0;border-top:1px solid #B7C2BF}
+.themes h3{font-size:24px;line-height:1.2}.themes article p{color:var(--tinta2);margin:16px 0 20px;max-width:36ch}
+.themes article>span{font-size:13px;color:var(--terra)}
+.themes__mgz{background:var(--pet);color:var(--branco);padding:28px!important}.themes__mgz p{color:var(--claro2)!important}.themes__mgz>span{color:var(--cobre)!important}
+.toc{border-block:1px solid #A3B2AF}.toc>summary{padding:23px 0;cursor:pointer;font-size:18px;font-weight:500}.toc>summary span{display:block;font-size:13px;color:var(--tinta2);font-weight:400;margin:6px 0 0 18px}.toc .partes{margin-top:0}
+.pgs{margin-top:30px}.cap{text-transform:none;letter-spacing:0;font-weight:500;line-height:1.2}.cap::before,.cap::after{display:none}
+.pref figcaption::before,.voz footer::before{display:none}
+@media(min-width:760px){
+ .themes{grid-template-columns:repeat(6,minmax(0,1fr));gap:0 36px}.themes article{grid-column:span 2}.themes article:nth-child(4),.themes article:nth-child(5){grid-column:span 3}
+ .themes__heading{display:grid;grid-template-columns:1.2fr 1fr;align-items:start;gap:64px}.themes__heading>p{margin:0}
+ .mechanism{grid-template-columns:1fr 1fr 1fr;gap:35px;align-items:center;margin:50px 0}
+ .mechanism__cases a{margin-left:auto}.mechanism__step h3{font-size:20px}
+ .mechanism__core{width:100%}.mechanism__icon{margin-left:0}
+ .toc>summary span{display:inline;margin-left:28px}
+ .pgs{grid-template-columns:repeat(3,minmax(0,1fr));gap:32px}.pgs li:nth-child(3n+2){transform:none}
+}
+@media(min-width:960px){
+ .hero{padding:64px 0 76px}.hero__grid{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);grid-template-areas:"copy stage" "cta stage" "proof stage";grid-template-rows:auto auto 1fr;column-gap:60px}
+ .hero__stage{grid-row:1/4;padding:18px 0}.hero__stage .book{--bw:min(330px,26vw)}.hero__stage .engr{--s:620px;opacity:.55}
+ .hero__cta{margin-top:30px}.hero h1{font-size:clamp(48px,4.9vw,62px)}.proof{margin-top:24px}
+ .era{padding:88px 0}.era__in{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start}.era__title{grid-column:auto}.era__body{grid-column:auto;margin:0;font-size:18px}
+ .mgz{padding:88px 0 0}.mgz__intro{display:grid;grid-template-columns:1.2fr 1fr;gap:0 64px}.mgz__name{grid-column:1/-1}.mgz__intro>p:last-child{margin:0}
+ .sum{padding:88px 0}.folheie{padding:80px 0 88px}
+}
+@media(max-width:759px){
+ .edicao__in{gap:24px}.edicao__name{width:100%}.edicao__in .btn{width:100%}
+ .mechanism__step{display:grid;grid-template-columns:90px minmax(0,1fr);column-gap:18px}.mechanism__icon{grid-row:1/3;width:90px;height:92px;margin:0}.mechanism__step h3{font-size:19px}.mechanism__step h3 span{font-size:34px}.mechanism__step p{font-size:15px;margin-top:10px}
+ .mechanism__core{width:220px}.mechanism__cases>div{flex:1;min-width:190px}.mechanism__cases a{margin-left:0}
+ .pgs{grid-auto-columns:78%;margin-inline:-16px;padding-bottom:22px}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* Narrativa contínua com imagens de fundo e texto em primeiro plano. */
+.mgz-v2{padding:80px 0 0;background:#04252D;overflow:clip}
+.mgz-v2 .mgz__intro>p:last-child{max-width:46ch}
+.mgz-journey{margin-top:36px}
+.mgz-step{padding:44px 0;scroll-margin-top:90px}
+.mgz-step__inline{margin:0 0 28px}.mgz-step__inline img{width:100%;height:auto;aspect-ratio:3/2}
+.mgz-visual{display:none}
+.mgz-scene__copy{padding:0;max-width:620px}
+.mgz-scene__copy>.mgz-step__label{font-size:14px;color:var(--cobre);margin:0 0 24px}
+.mgz-scene__stat{display:flex;align-items:center;gap:18px;color:var(--cobre);margin-bottom:28px}
+.mgz-scene__stat strong{font:800 80px/.9 var(--fd);letter-spacing:-.05em}
+.mgz-scene__stat span{font-size:18px;line-height:1.35}
+.mgz-scene__copy h3{font-size:clamp(34px,4.2vw,54px);line-height:1.08;max-width:20ch;color:var(--branco);text-wrap:balance}
+.mgz-scene__copy>p:not(.mgz-scene__stat):not(.mgz-step__label){color:#D4DFE0;margin-top:26px;line-height:1.65;max-width:43ch;font-size:19px}
+.mgz-next{display:inline-flex;align-items:center;gap:22px;padding:13px 0 9px;margin-top:24px;border-bottom:1px solid #8F9D98;color:var(--cobre);text-decoration:none;font:500 15px/1.35 var(--fb)}
+.mgz-next span{font-size:22px;transition:transform .3s var(--ease)}.mgz-next:hover span{transform:translate(3px,-3px)}
+.mgz-note{color:#9CB1B5;font-size:12px;padding:16px 0 26px}
+.mgz-v2.is-ready .mgz-step__inline{display:none}
+.mgz-v2.is-ready .mgz-journey{position:relative;isolation:isolate;width:100vw;margin-left:calc(50% - 50vw)}
+.mgz-v2.is-ready .mgz-visual{display:block;position:sticky;top:68px;height:calc(100svh - 68px);margin-bottom:calc(68px - 100svh);z-index:0;pointer-events:none}
+.mgz-visual__frame{position:relative;isolation:isolate;overflow:hidden;height:100%;background:#04252D}
+.mgz-visual__frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:65% center;opacity:0;will-change:opacity}
+.mgz-visual__frame img:first-child{opacity:1}
+.mgz-visual__frame::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(2,21,27,.96) 0%,rgba(2,21,27,.91) 28%,rgba(2,21,27,.67) 49%,rgba(2,21,27,.12) 78%),linear-gradient(180deg,#04252D 0%,transparent 18%,transparent 82%,#04252D 100%)}
+.mgz-v2.is-ready .mgz-steps{position:relative;z-index:1;width:min(100% - 32px,var(--wrap));margin-inline:auto}
+.mgz-v2.is-ready .mgz-step{display:flex;align-items:center;min-height:calc(100svh - 68px);padding:80px 0}
+.reading-progress{position:fixed;z-index:60;left:0;right:0;top:0;height:2px;pointer-events:none;background:var(--cobre);transform:scaleX(0);transform-origin:left;will-change:transform}
+.hero__stage .book{transition:transform .6s var(--ease);transform:perspective(1200px) rotateX(var(--book-x,0deg)) rotateY(var(--book-y,0deg)) translateY(var(--book-lift,0px))}
+@keyframes optical-orbit{to{rotate:360deg}}
+@media(min-width:960px){.mgz-v2 .mgz__intro{grid-template-columns:1.2fr 1fr}}
+@media(max-width:859px){
+ .mgz-v2{padding-top:64px}.mgz-journey{margin-top:28px}
+ .mgz-v2.is-ready .mgz-visual{top:0;height:100svh;margin-bottom:-100svh}
+ .mgz-v2.is-ready .mgz-step{min-height:100svh;padding:60px 0 84px;scroll-margin-top:0}
+ .mgz-visual__frame img{object-position:58% center}
+ .mgz-visual__frame::after{background:linear-gradient(90deg,rgba(2,21,27,.83),rgba(2,21,27,.73) 65%,rgba(2,21,27,.56)),linear-gradient(180deg,#04252D 0%,transparent 20%,transparent 80%,#04252D 100%)}
+ .mgz-scene__copy{max-width:560px}.mgz-scene__stat strong{font-size:60px}
+ .mgz-scene__copy h3{font-size:clamp(34px,7vw,48px)}
+ .mgz-scene__copy>p:not(.mgz-scene__stat):not(.mgz-step__label){font-size:18px;max-width:38ch}
+}
+@media(max-width:479px){
+ .hero{padding-top:24px}.hero__stage .book{--bw:190px}.hero__stage{padding:28px 0}
+ .mgz-v2.is-ready .mgz-steps{width:calc(100% - 40px)}
+ .mgz-v2.is-ready .mgz-step{padding:42px 0 92px}
+ .mgz-scene__copy>.mgz-step__label{margin-bottom:18px}
+ .mgz-scene__stat{margin-bottom:22px;gap:14px}.mgz-scene__stat span{font-size:16px}
+ .mgz-scene__copy h3{font-size:clamp(30px,8vw,36px);max-width:20ch}
+ .mgz-scene__copy>p:not(.mgz-scene__stat):not(.mgz-step__label){font-size:17px;line-height:1.6;margin-top:22px}
+ .mgz-next{min-height:48px;font-size:14px}
+ .edicao__price{gap:14px}.edicao__price strong{font-size:31px}.edicao__price span{font-size:13px}
+}
+@media(max-width:359px){
+ .top .chip{display:none}.top__in{gap:8px}
+ .dock{padding-inline:12px;gap:8px}.dock .btn{padding-inline:12px;font-size:13px}.dock__p strong{font-size:18px}
+ .hero__stage .book{--bw:175px}.hero h1{font-size:31px}
+}
+@media(hover:none){.hero__stage .engr{animation:none!important}}
+@media(max-height:500px) and (max-width:859px){
+ .mgz-v2.is-ready .mgz-step{padding:36px 0 84px}
+ .mgz-scene__copy{max-width:610px}.mgz-scene__copy>.mgz-step__label{margin-bottom:12px}
+ .mgz-scene__stat{margin-bottom:16px}.mgz-scene__stat strong{font-size:48px}.mgz-scene__stat span{font-size:15px}
+ .mgz-scene__copy h3{font-size:30px;max-width:25ch}
+ .mgz-scene__copy>p:not(.mgz-scene__stat):not(.mgz-step__label){font-size:16px;line-height:1.5;margin-top:16px;max-width:58ch}
+ .mgz-next{margin-top:12px}
+}
+@media(prefers-reduced-motion:no-preference){
+ .hero__stage .engr{animation:optical-orbit 80s linear infinite;animation-play-state:paused}
+ .hero.is-in-view .hero__stage .engr{animation-play-state:running}
+ .themes article{transition:background-color .3s ease}.themes article:hover{background-color:rgba(232,187,121,.09)}.themes .themes__mgz:hover{background:var(--pet2)}
+ .pg:hover img{transform:scale(1.025)}.pg img{transition:transform .6s var(--ease)}.pg{overflow:hidden}
+}
+@media(prefers-reduced-motion:reduce){.reading-progress{display:none}}
+
 </style>
 
 <script>
@@ -445,14 +582,6 @@ gtag('event','view_item',{currency:'BRL',value:1050,items:[{item_id:'livro_presb
 </script>
 </head>
 <body>
-<!--
-THESIS: a página se lê como o próprio livro: capa petróleo, abertura de parte em terracota, miolo em papel. Recusa o hero centrado com mockup de tablet e o trio de cards de benefício.
-OWN-WORLD: petróleo #021F26 dominante, cobre #E8BB79 em números e ação, terracota #72341D nas aberturas, papel nas seções de leitura. Archivo pesado nos títulos, Outfit no texto, gravura de engrenagens e círculos em 1px. Cantos de 2px, sombras com deslocamento.
-STORY: o cirurgião reconhece o livro que tem na mão, entende que ele ensina a decidir a lente (7 critérios, 7 passos, 10 casos), folheia páginas reais, vê preço e logística sem surpresa e compra.
-FIRST VIEWPORT: H1 no topo; abaixo, livro 3D girando até mostrar a lombada sobre a gravura, preço ao lado; CTA cobre largo logo abaixo, dentro da primeira dobra em 390.
-FORM: brief pinado pelo planejador (IV do livro e ordem das seções); sem sorteio de direção.
-FINISH: revisão visual do planejador (lp-esteira-norte) fecha o build.
--->
 <a class="skip" href="#conteudo">Pular para o conteúdo</a>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><symbol id="engr" viewBox="-500 -500 1000 1000"><g fill="none" stroke="currentColor" stroke-width="1"><circle vector-effect="non-scaling-stroke" r="488"/><circle vector-effect="non-scaling-stroke" r="452" stroke-dasharray="3 7"/><path vector-effect="non-scaling-stroke" d="M404 0L430 0M417.4 21.9L429.4 22.5M415.7 43.7L427.6 44.9M412.9 65.4L424.7 67.3M408.9 86.9L420.6 89.4M403.8 108.2L415.3 111.3M397.5 129.2L409 132.9M390.2 149.8L401.4 154.1M381.9 170L392.8 174.9M372.4 189.8L383.1 195.2M349.9 202L372.4 215M350.6 227.7L360.6 234.2M338.2 245.7L347.9 252.7M324.8 263.1L334.2 270.6M310.6 279.7L319.6 287.7M295.6 295.6L304.1 304.1M279.7 310.6L287.7 319.6M263.1 324.8L270.6 334.2M245.7 338.2L252.7 347.9M227.7 350.6L234.2 360.6M202 349.9L215 372.4M189.8 372.4L195.2 383.1M170 381.9L174.9 392.8M149.8 390.2L154.1 401.4M129.2 397.5L132.9 409M108.2 403.8L111.3 415.3M86.9 408.9L89.4 420.6M65.4 412.9L67.3 424.7M43.7 415.7L44.9 427.6M21.9 417.4L22.5 429.4M0 404L0 430M-21.9 417.4L-22.5 429.4M-43.7 415.7L-44.9 427.6M-65.4 412.9L-67.3 424.7M-86.9 408.9L-89.4 420.6M-108.2 403.8L-111.3 415.3M-129.2 397.5L-132.9 409M-149.8 390.2L-154.1 401.4M-170 381.9L-174.9 392.8M-189.8 372.4L-195.2 383.1M-202 349.9L-215 372.4M-227.7 350.6L-234.2 360.6M-245.7 338.2L-252.7 347.9M-263.1 324.8L-270.6 334.2M-279.7 310.6L-287.7 319.6M-295.6 295.6L-304.1 304.1M-310.6 279.7L-319.6 287.7M-324.8 263.1L-334.2 270.6M-338.2 245.7L-347.9 252.7M-350.6 227.7L-360.6 234.2M-349.9 202L-372.4 215M-372.4 189.8L-383.1 195.2M-381.9 170L-392.8 174.9M-390.2 149.8L-401.4 154.1M-397.5 129.2L-409 132.9M-403.8 108.2L-415.3 111.3M-408.9 86.9L-420.6 89.4M-412.9 65.4L-424.7 67.3M-415.7 43.7L-427.6 44.9M-417.4 21.9L-429.4 22.5M-404 0L-430 0M-417.4 -21.9L-429.4 -22.5M-415.7 -43.7L-427.6 -44.9M-412.9 -65.4L-424.7 -67.3M-408.9 -86.9L-420.6 -89.4M-403.8 -108.2L-415.3 -111.3M-397.5 -129.2L-409 -132.9M-390.2 -149.8L-401.4 -154.1M-381.9 -170L-392.8 -174.9M-372.4 -189.8L-383.1 -195.2M-349.9 -202L-372.4 -215M-350.6 -227.7L-360.6 -234.2M-338.2 -245.7L-347.9 -252.7M-324.8 -263.1L-334.2 -270.6M-310.6 -279.7L-319.6 -287.7M-295.6 -295.6L-304.1 -304.1M-279.7 -310.6L-287.7 -319.6M-263.1 -324.8L-270.6 -334.2M-245.7 -338.2L-252.7 -347.9M-227.7 -350.6L-234.2 -360.6M-202 -349.9L-215 -372.4M-189.8 -372.4L-195.2 -383.1M-170 -381.9L-174.9 -392.8M-149.8 -390.2L-154.1 -401.4M-129.2 -397.5L-132.9 -409M-108.2 -403.8L-111.3 -415.3M-86.9 -408.9L-89.4 -420.6M-65.4 -412.9L-67.3 -424.7M-43.7 -415.7L-44.9 -427.6M-21.9 -417.4L-22.5 -429.4M0 -404L0 -430M21.9 -417.4L22.5 -429.4M43.7 -415.7L44.9 -427.6M65.4 -412.9L67.3 -424.7M86.9 -408.9L89.4 -420.6M108.2 -403.8L111.3 -415.3M129.2 -397.5L132.9 -409M149.8 -390.2L154.1 -401.4M170 -381.9L174.9 -392.8M189.8 -372.4L195.2 -383.1M202 -349.9L215 -372.4M227.7 -350.6L234.2 -360.6M245.7 -338.2L252.7 -347.9M263.1 -324.8L270.6 -334.2M279.7 -310.6L287.7 -319.6M295.6 -295.6L304.1 -304.1M310.6 -279.7L319.6 -287.7M324.8 -263.1L334.2 -270.6M338.2 -245.7L347.9 -252.7M350.6 -227.7L360.6 -234.2M349.9 -202L372.4 -215M372.4 -189.8L383.1 -195.2M381.9 -170L392.8 -174.9M390.2 -149.8L401.4 -154.1M397.5 -129.2L409 -132.9M403.8 -108.2L415.3 -111.3M408.9 -86.9L420.6 -89.4M412.9 -65.4L424.7 -67.3M415.7 -43.7L427.6 -44.9M417.4 -21.9L429.4 -22.5"/><path vector-effect="non-scaling-stroke" d="M-441.7 -160.7A470 470 0 0 1 -65.4 -465.4M441.7 160.7A470 470 0 0 1 65.4 465.4M-196 339.5A392 392 0 0 1 -339.5 196M196 -339.5A392 392 0 0 1 339.5 -196"/><path vector-effect="non-scaling-stroke" d="M0 -322A322 322 0 0 1 44.8 -318.9L62.2 -352.6A358 358 0 0 1 110.6 -340.5L110.1 -302.6A322 322 0 0 1 151.2 -284.3L179 -310A358 358 0 0 1 220.4 -282.1L207 -246.7A322 322 0 0 1 239.3 -215.5L274.2 -230.1A358 358 0 0 1 303.6 -189.7L278.9 -161A322 322 0 0 1 298.6 -120.6L336.4 -122.4A358 358 0 0 1 350.2 -74.4L317.1 -55.9A322 322 0 0 1 321.8 -11.2L358 0A358 358 0 0 1 354.5 49.8L317.1 55.9A322 322 0 0 1 306.2 99.5L336.4 122.4A358 358 0 0 1 316.1 168.1L278.9 161A322 322 0 0 1 253.7 198.2L274.2 230.1A358 358 0 0 1 239.5 266L207 246.7A322 322 0 0 1 170.6 273.1L179 310A358 358 0 0 1 134.1 331.9L110.1 302.6A322 322 0 0 1 66.9 315L62.2 352.6A358 358 0 0 1 12.5 357.8L0 322A322 322 0 0 1 -44.8 318.9L-62.2 352.6A358 358 0 0 1 -110.6 340.5L-110.1 302.6A322 322 0 0 1 -151.2 284.3L-179 310A358 358 0 0 1 -220.4 282.1L-207 246.7A322 322 0 0 1 -239.3 215.5L-274.2 230.1A358 358 0 0 1 -303.6 189.7L-278.9 161A322 322 0 0 1 -298.6 120.6L-336.4 122.4A358 358 0 0 1 -350.2 74.4L-317.1 55.9A322 322 0 0 1 -321.8 11.2L-358 0A358 358 0 0 1 -354.5 -49.8L-317.1 -55.9A322 322 0 0 1 -306.2 -99.5L-336.4 -122.4A358 358 0 0 1 -316.1 -168.1L-278.9 -161A322 322 0 0 1 -253.7 -198.2L-274.2 -230.1A358 358 0 0 1 -239.5 -266L-207 -246.7A322 322 0 0 1 -170.6 -273.1L-179 -310A358 358 0 0 1 -134.1 -331.9L-110.1 -302.6A322 322 0 0 1 -66.9 -315L-62.2 -352.6A358 358 0 0 1 -12.5 -357.8L0 -322Z"/><circle vector-effect="non-scaling-stroke" r="296"/><circle vector-effect="non-scaling-stroke" r="252" stroke-dasharray="10 8"/><circle vector-effect="non-scaling-stroke" r="168"/><circle vector-effect="non-scaling-stroke" r="146" stroke-dasharray="2 6"/><circle vector-effect="non-scaling-stroke" r="64"/><path vector-effect="non-scaling-stroke" d="M-500 0H-150M150 0H500M0 -500V-150M0 150V500"/><circle vector-effect="non-scaling-stroke" cx="-488" cy="0" r="12"/><circle vector-effect="non-scaling-stroke" cx="488" cy="0" r="6"/></g></symbol></defs></svg>
 
@@ -477,7 +606,7 @@ FINISH: revisão visual do planejador (lp-esteira-norte) fecha o build.
       <svg class="engr engr--c" viewBox="0 0 1000 1000" aria-hidden="true" focusable="false"><use href="#engr"/></svg>
       <div class="book">
         <div class="book__obj">
-          <div class="book__front"><img src="assets/capa-600.webp" srcset="assets/capa-600.webp 600w, assets/capa-1200.webp 1200w" sizes="(min-width: 960px) 330px, 150px" width="1200" height="1530" fetchpriority="high" alt="Capa do livro Presbiopia Cirúrgica, Lentes de alta tecnologia, Protocolo Mecanismo Grau Zero, de Alex Sá"></div>
+          <div class="book__front"><img src="assets/capa-600.webp" srcset="assets/capa-600.webp 600w, assets/capa-1200.webp 1200w" sizes="(min-width: 960px) 330px, 210px" width="1200" height="1530" fetchpriority="high" alt="Capa do livro Presbiopia Cirúrgica, Lentes de alta tecnologia, Protocolo Mecanismo Grau Zero, de Alex Sá"></div>
           <div class="book__spine" aria-hidden="true"><span>Presbiopia Cirúrgica</span><span>Alex Sá</span></div>
           <div class="book__top" aria-hidden="true"></div>
           <div class="book__back" aria-hidden="true"></div>
@@ -485,61 +614,91 @@ FINISH: revisão visual do planejador (lp-esteira-norte) fecha o build.
         <div class="book__shadow" aria-hidden="true"></div>
       </div>
     </div>
-    <div class="hero__price">
-      <span class="price__val">R$ 1.050</span>
-      <ul class="terms" aria-label="Condições">
-        <li>Pré-venda</li>
-        <li>Frete incluso</li>
-        <li>Em até 12x</li>
-      </ul>
-    </div>
     <div class="hero__cta">
-      <a class="btn btn--cta js-checkout" href="#oferta">Garantir meu exemplar <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15"/><path d="m13 6 6 6-6 6"/></svg></a>
+      <a class="btn btn--cta" href="#oferta">Garantir meu exemplar <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15"/><path d="m13 6 6 6-6 6"/></svg></a>
     </div>
-    <p class="proof">Prefácio de Renato Ambrósio Jr. · mais de 600 páginas · ISBN 978-65-84176-65-2</p>
+    <p class="proof">Prefácio de Renato Ambrósio Jr. · mais de 600 páginas</p>
+  </div>
+</section>
+
+<section class="edicao" aria-label="Condições da pré-venda">
+  <div class="wrap edicao__in">
+    <div class="edicao__name"><span>Reserve a edição impressa</span><strong>Presbiopia Cirúrgica</strong></div>
+    <p class="edicao__price"><strong>R$ 1.050</strong><span>Frete incluso no Brasil<br>Em até 12x no cartão, com juros</span></p>
+    <a class="btn btn--cta js-checkout" href="#oferta">Garantir meu exemplar</a>
   </div>
 </section>
 
 <section class="era" aria-labelledby="era-t">
   <svg class="engr" viewBox="0 0 1000 1000" aria-hidden="true" focusable="false"><use href="#engr"/></svg>
   <div class="wrap era__in">
-    <h2 class="era__title" id="era-t" data-rv="up">A cirurgia da presbiopia e da catarata entrou em uma nova era.</h2>
+    <h2 class="era__title" id="era-t">A cirurgia da presbiopia e da catarata entrou em uma nova era.</h2>
     <div class="era__body">
-      <p data-rv="in">Com pacientes cada vez mais ativos, exigentes e conectados, já não basta alcançar uma boa acuidade visual: é preciso buscar qualidade óptica, alcance visual e independência dos óculos, respeitando as particularidades de cada paciente.</p>
-      <p data-rv="in">Em <cite>Presbiopia Cirúrgica</cite>, o Dr. Alex Sá apresenta os fundamentos que orientam a escolha e a utilização das lentes intraoculares de alta tecnologia, conectando <mark>óptica cirúrgica, exames diagnósticos, biometria, aberrometria, topografia, tomografia</mark> e diferentes tecnologias de LIOs a uma lógica de decisão clínica.</p>
-      <p class="src">Texto da contracapa do livro</p>
+      <p>Com pacientes cada vez mais ativos, exigentes e conectados, já não basta alcançar uma boa acuidade visual: é preciso buscar qualidade óptica, alcance visual e independência dos óculos, respeitando as particularidades de cada paciente.</p>
+      <p>Em <cite>Presbiopia Cirúrgica</cite>, o Dr. Alex Sá apresenta os fundamentos que orientam a escolha e a utilização das lentes intraoculares de alta tecnologia, conectando <mark>óptica cirúrgica, exames diagnósticos, biometria, aberrometria, topografia, tomografia</mark> e diferentes tecnologias de LIOs a uma lógica de decisão clínica.</p>
     </div>
   </div>
 </section>
 
-<section class="mgz" aria-labelledby="mgz-t">
-  <svg class="engr engr--c" viewBox="0 0 1000 1000" aria-hidden="true" focusable="false"><use href="#engr"/></svg>
-  <div class="wrap mgz__in">
-    <p class="parte">Parte V · Mecanismo Grau Zero</p>
-    <h2 id="mgz-t" data-rv="up">Um método para decidir a lente, não só para conhecê-la.</h2>
-    <div class="nums">
-      <p class="num" style="grid-area:a" data-rv="in"><span class="num__n">7</span><span class="num__l">critérios para indicar</span></p>
-      <p class="num" style="grid-area:b" data-rv="in"><span class="num__n">7</span><span class="num__l">passos para customizar</span></p>
-      <p class="num" style="grid-area:c" data-rv="in"><span class="num__n">10</span><span class="num__l">casos clínicos</span></p>
-      <span class="brk brk--12" aria-hidden="true">Cap. 12</span>
-      <span class="brk brk--13" aria-hidden="true">Cap. 13</span>
-    </div>
-    <p class="mgz__txt" data-rv="in">No centro da obra está o <strong>Protocolo Mecanismo Grau Zero (MGZ)</strong>, desenvolvido para transformar decisões complexas em um método replicável, estruturado em 7 critérios para indicar e 7 passos para customizar. Seu princípio é encontrar, para cada paciente, o equilíbrio entre alcance visual e qualidade óptica, considerando não apenas exames e números, mas também rotina, expectativas e necessidades reais.</p>
+<section class="pref papel" aria-labelledby="pref-t">
+  <svg class="engr" viewBox="0 0 1000 1000" aria-hidden="true" focusable="false"><use href="#engr"/></svg>
+  <div class="wrap">
+    <h2 class="sr" id="pref-t">Prefácio</h2>
+    <figure>
+      <span class="pref__q" aria-hidden="true">&ldquo;</span>
+      <blockquote><p>Talvez um dos maiores méritos deste livro seja exatamente este: <em>procurar simplificar sem empobrecer.</em></p></blockquote>
+      <figcaption><span><b>Prof. Renato Ambrósio Jr.</b>, no prefácio</span></figcaption>
+    </figure>
   </div>
 </section>
+
+<section class="mgz mgz-v2" id="mecanismo" aria-labelledby="mgz-t">
+  <div class="wrap mgz__in">
+    <div class="mgz__intro">
+      <p class="mgz__name">Protocolo Mecanismo Grau Zero</p>
+      <h2 id="mgz-t">Da informação clínica à estratégia visual.</h2>
+      <p>Exames, rotina e expectativas se encontram em um planejamento individualizado. Conheça como a obra conecta indicação, customização e prática clínica.</p>
+    </div>
+    <div class="mgz-journey">
+      <div class="mgz-visual" aria-hidden="true">
+        <div class="mgz-visual__frame"><img src="assets/mgz-indicar-v2.webp" srcset="assets/mgz-indicar-v2-640.webp 640w, assets/mgz-indicar-v2.webp 1200w" sizes="100vw" width="1200" height="800" loading="lazy" decoding="async" alt=""><img src="assets/mgz-customizar-v2.webp" srcset="assets/mgz-customizar-v2-640.webp 640w, assets/mgz-customizar-v2.webp 1200w" sizes="100vw" width="1200" height="800" loading="lazy" decoding="async" alt=""><img src="assets/mgz-aplicar-v2.webp" srcset="assets/mgz-aplicar-v2-640.webp 640w, assets/mgz-aplicar-v2.webp 1200w" sizes="100vw" width="1200" height="800" loading="lazy" decoding="async" alt=""></div>
+
+      </div>
+      <div class="mgz-steps"><article class="mgz-step" id="mgz-scene-0" aria-labelledby="mgz-step-0">
+        <figure class="mgz-step__inline"><img src="assets/mgz-indicar-v2.webp" srcset="assets/mgz-indicar-v2-640.webp 640w, assets/mgz-indicar-v2.webp 1200w" sizes="(min-width: 960px) 700px, 100vw" width="1200" height="800" loading="lazy" decoding="async" alt="Ilustração conceitual de uma íris de vidro cercada por sete placas ópticas conectadas"></figure>
+        <div class="mgz-scene__copy"><p class="mgz-step__label">Indicar</p><p class="mgz-scene__stat"><strong>7</strong><span>critérios<br>para indicar</span></p><h3 id="mgz-step-0">Cada paciente é um ponto de partida.</h3><p>Antes da escolha da lente, vem a compreensão do paciente. O protocolo organiza a indicação considerando suas particularidades e os dados da avaliação.</p></div>
+      </article><article class="mgz-step" id="mgz-scene-1" aria-labelledby="mgz-step-1">
+        <figure class="mgz-step__inline"><img src="assets/mgz-customizar-v2.webp" srcset="assets/mgz-customizar-v2-640.webp 640w, assets/mgz-customizar-v2.webp 1200w" sizes="(min-width: 960px) 700px, 100vw" width="1200" height="800" loading="lazy" decoding="async" alt="Ilustração conceitual de lentes transparentes em sequência, atravessadas por raios de luz em cobre"></figure>
+        <div class="mgz-scene__copy"><p class="mgz-step__label">Customizar</p><p class="mgz-scene__stat"><strong>7</strong><span>passos<br>para customizar</span></p><h3 id="mgz-step-1">A lente faz parte de uma estratégia.</h3><p>Exames, rotina e expectativas orientam a construção do planejamento. Os passos de customização articulam alcance visual e qualidade óptica.</p></div>
+      </article><article class="mgz-step" id="mgz-scene-2" aria-labelledby="mgz-step-2">
+        <figure class="mgz-step__inline"><img src="assets/mgz-aplicar-v2.webp" srcset="assets/mgz-aplicar-v2-640.webp 640w, assets/mgz-aplicar-v2.webp 1200w" sizes="(min-width: 960px) 700px, 100vw" width="1200" height="800" loading="lazy" decoding="async" alt="Ilustração conceitual de dez placas de estudo óptico com padrões de íris, lentes e ondas"></figure>
+        <div class="mgz-scene__copy"><p class="mgz-step__label">Aplicar</p><p class="mgz-scene__stat"><strong>10</strong><span>casos<br>clínicos</span></p><h3 id="mgz-step-2">Acompanhe o raciocínio na prática.</h3><p>Da análise dos exames à aplicação do protocolo, os casos clínicos permitem acompanhar as decisões discutidas ao longo da obra.</p><a class="mgz-next" href="#folheie">Conheça as páginas do livro <span aria-hidden="true">↗</span></a></div>
+      </article></div>
+    </div>
+    <p class="mgz-note">Ilustrações conceituais do raciocínio de planejamento.</p>
+  </div>
+</section>
+
 
 <section class="sum papel" id="sumario" aria-labelledby="sum-t">
   <div class="wrap">
-    <h2 class="cap" id="sum-t">Sumário</h2>
-    <p class="sum__lead">Cinco partes e treze capítulos, dos fundamentos de óptica cirúrgica aos 10 casos clínicos do protocolo.</p>
+    <div class="themes__heading"><h2 id="sum-t">O que esta obra acrescenta ao seu planejamento.</h2><p>Da interpretação dos exames à estratégia visual: cinco frentes para aprofundar seu raciocínio clínico.</p></div>
+    <div class="themes">
+      <article><h3>Compreender o novo paciente</h3><p>A evolução das expectativas visuais e o nascimento do Mecanismo Grau Zero.</p><span>A Revolução do Grau Zero</span></article>
+      <article><h3>Entender a óptica</h3><p>Qualidade óptica, aberrometria e avaliação do desempenho funcional.</p><span>Óptica Cirúrgica</span></article>
+      <article><h3>Interpretar os exames</h3><p>Biometria, fórmulas, topografia, tomografia e segurança endotelial.</p><span>Exames e fundamentos diagnósticos</span></article>
+      <article><h3>Conhecer as tecnologias</h3><p>Lentes Full Range, EDOF, Enhanced e tóricas no contexto do planejamento.</p><span>Lentes de Alta Tecnologia</span></article>
+      <article class="themes__mgz"><h3>Construir a estratégia</h3><p>Critérios de indicação, customização e aplicação em 10 casos clínicos.</p><span>Mecanismo Grau Zero</span></article>
+    </div>
+    <details class="toc"><summary>Consultar o sumário completo <span>5 partes · 13 capítulos</span></summary>
     <ol class="partes">
-      <li class="pt" data-rv="in">
+      <li class="pt">
         <div><span class="pt__n">Parte I</span><h3>A Revolução do Grau Zero</h3></div>
         <ol class="caps">
           <li><span class="caps__n">Cap. 1</span><span>O novo paciente e o nascimento do Mecanismo Grau Zero</span></li>
         </ol>
       </li>
-      <li class="pt" data-rv="in">
+      <li class="pt">
         <div><span class="pt__n">Parte II</span><h3>Óptica Cirúrgica</h3></div>
         <ol class="caps">
           <li><span class="caps__n">Cap. 2</span><span>Fundamentos das lentes de alta tecnologia</span></li>
@@ -547,7 +706,7 @@ FINISH: revisão visual do planejador (lp-esteira-norte) fecha o build.
           <li><span class="caps__n">Cap. 4</span><span>Aberrometria: entender a luz antes de escolher a lente</span></li>
         </ol>
       </li>
-      <li class="pt" data-rv="in">
+      <li class="pt">
         <div><span class="pt__n">Parte III</span><h3>Exames e fundamentos diagnósticos do Grau Zero</h3></div>
         <ol class="caps">
           <li><span class="caps__n">Cap. 5</span><span>Biometria, fórmulas e casos desafiadores: ceratocone, pós-laser e pós-RK</span></li>
@@ -555,7 +714,7 @@ FINISH: revisão visual do planejador (lp-esteira-norte) fecha o build.
           <li><span class="caps__n">Cap. 7</span><span>Microscopia especular e segurança endotelial</span></li>
         </ol>
       </li>
-      <li class="pt" data-rv="in">
+      <li class="pt">
         <div><span class="pt__n">Parte IV</span><h3>Lentes de Alta Tecnologia</h3></div>
         <ol class="caps">
           <li><span class="caps__n">Cap. 8</span><span>Full Range: difrativas e não difrativas</span></li>
@@ -563,7 +722,7 @@ FINISH: revisão visual do planejador (lp-esteira-norte) fecha o build.
           <li><span class="caps__n">Cap. 10</span><span>Lentes tóricas</span></li>
         </ol>
       </li>
-      <li class="pt pt--mgz" data-rv="in">
+      <li class="pt pt--mgz">
         <div><span class="pt__n">Parte V</span><h3>Mecanismo Grau Zero</h3></div>
         <ol class="caps">
           <li><span class="caps__n">Cap. 11</span><span>Equilíbrio óptico funcional e lógica de decisão</span></li>
@@ -572,46 +731,34 @@ FINISH: revisão visual do planejador (lp-esteira-norte) fecha o build.
         </ol>
       </li>
     </ol>
+    </details>
   </div>
 </section>
 
 <section class="folheie" id="folheie" aria-labelledby="fo-t">
   <div class="wrap">
-    <h2 id="fo-t" data-rv="up">Folheie algumas páginas.</h2>
-    <p class="folheie__hint">Toque em uma página para ampliar.</p>
+    <h2 id="fo-t">Veja o livro por dentro.</h2>
+    <p class="folheie__hint">Três páginas da obra, dos fundamentos ao protocolo. Selecione para ampliar.</p>
     <ul class="pgs">
-      <li><button type="button" class="pg" data-full="assets/pagina-006-1300.webp" data-cap="p. 6 · Sumário"><img src="assets/pagina-006-700.webp" width="700" height="892" loading="lazy" decoding="async" alt="Página 6 do livro: sumário"><span class="pg__z" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.6-4.6M10.5 7.5v6M7.5 10.5h6"/></svg></span><span class="sr">Ampliar</span></button><p class="pg__cap"><b>p. 6</b><span>Sumário</span></p></li>
-      <li><button type="button" class="pg" data-full="assets/pagina-027-1300.webp" data-cap="p. 27 · Abertura da Parte I"><img src="assets/pagina-027-700.webp" width="700" height="892" loading="lazy" decoding="async" alt="Página 27 do livro: abertura da Parte I, A Revolução do Grau Zero"><span class="pg__z" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.6-4.6M10.5 7.5v6M7.5 10.5h6"/></svg></span><span class="sr">Ampliar</span></button><p class="pg__cap"><b>p. 27</b><span>Abertura da Parte I</span></p></li>
       <li><button type="button" class="pg" data-full="assets/pagina-100-1300.webp" data-cap="p. 100 · Cap. 4 · Aberrometria"><img src="assets/pagina-100-700.webp" width="700" height="892" loading="lazy" decoding="async" alt="Página 100 do livro: abertura do capítulo 4, Aberrometria"><span class="pg__z" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.6-4.6M10.5 7.5v6M7.5 10.5h6"/></svg></span><span class="sr">Ampliar</span></button><p class="pg__cap"><b>p. 100</b><span>Cap. 4 · Aberrometria</span></p></li>
       <li><button type="button" class="pg" data-full="assets/pagina-218-1300.webp" data-cap="p. 218 · Cap. 6 · Topografia e tomografia"><img src="assets/pagina-218-700.webp" width="700" height="892" loading="lazy" decoding="async" alt="Página 218 do livro: capítulo 6, topografia e tomografia corneana"><span class="pg__z" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.6-4.6M10.5 7.5v6M7.5 10.5h6"/></svg></span><span class="sr">Ampliar</span></button><p class="pg__cap"><b>p. 218</b><span>Cap. 6 · Topografia e tomografia</span></p></li>
-      <li><button type="button" class="pg" data-full="assets/pagina-290-1300.webp" data-cap="p. 290 · Abertura da Parte IV"><img src="assets/pagina-290-700.webp" width="700" height="892" loading="lazy" decoding="async" alt="Página 290 do livro: abertura da Parte IV, Lentes de Alta Tecnologia"><span class="pg__z" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.6-4.6M10.5 7.5v6M7.5 10.5h6"/></svg></span><span class="sr">Ampliar</span></button><p class="pg__cap"><b>p. 290</b><span>Abertura da Parte IV</span></p></li>
       <li><button type="button" class="pg" data-full="assets/pagina-425-1300.webp" data-cap="p. 425 · Cap. 12 · 7 critérios e 7 passos"><img src="assets/pagina-425-700.webp" width="700" height="892" loading="lazy" decoding="async" alt="Página 425 do livro: abertura do capítulo 12, os 7 critérios para indicar e os 7 passos para customizar"><span class="pg__z" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.6-4.6M10.5 7.5v6M7.5 10.5h6"/></svg></span><span class="sr">Ampliar</span></button><p class="pg__cap"><b>p. 425</b><span>Cap. 12 · 7 critérios e 7 passos</span></p></li>
     </ul>
   </div>
 </section>
 
-<section class="pref papel" aria-labelledby="pref-t">
-  <svg class="engr" viewBox="0 0 1000 1000" aria-hidden="true" focusable="false"><use href="#engr"/></svg>
-  <div class="wrap">
-    <h2 class="sr" id="pref-t">Prefácio</h2>
-    <figure data-rv="in">
-      <span class="pref__q" aria-hidden="true">&ldquo;</span>
-      <blockquote><p>Talvez um dos maiores méritos deste livro seja exatamente este: <em>procurar simplificar sem empobrecer.</em></p></blockquote>
-      <figcaption><span><b>Prof. Renato Ambrósio Jr.</b>, no prefácio</span></figcaption>
-    </figure>
-  </div>
-</section>
+
 
 <section class="autor" aria-labelledby="autor-t">
   <svg class="engr" viewBox="0 0 1000 1000" aria-hidden="true" focusable="false"><use href="#engr"/></svg>
   <div class="wrap autor__grid">
     <figure class="autor__foto"><img src="assets/alex-conduz-800.webp" srcset="assets/alex-conduz-800.webp 800w, assets/alex-conduz-1400.webp 1400w" sizes="(min-width: 960px) 440px, 100vw" width="800" height="1000" loading="lazy" decoding="async" alt="Retrato do Dr. Alex Sá, de jaleco branco"></figure>
     <div class="autor__txt">
-      <h2 id="autor-t" data-rv="up">Dr. Alex Gonçalves Sá</h2>
+      <h2 id="autor-t">Dr. Alex Gonçalves Sá</h2>
       <p class="crm">CRM-AM 7516 · RQE 3514</p>
       <p class="autor__bio">Cirurgião oftalmologista, especialista em catarata e cirurgia refrativa, à frente da Clínica Dr. Alex Sá, em Manaus. Criador do Protocolo Mecanismo Grau Zero e fundador do Club OftalmoBlack.</p>
       <p class="colab"><strong>39</strong><span>colaboradores no livro, em capítulos, depoimentos e discussões clínicas.</span></p>
-      <blockquote class="voz" data-rv="in"><p>&ldquo;Meu objetivo é ajudar o colega a planejar com mais clareza, reconhecer limites e avaliar o resultado pelo que ele representa na vida do paciente.&rdquo;</p><footer>Dr. Alex Sá, na apresentação do livro</footer></blockquote>
+      <blockquote class="voz"><p>&ldquo;Meu objetivo é ajudar o colega a planejar com mais clareza, reconhecer limites e avaliar o resultado pelo que ele representa na vida do paciente.&rdquo;</p><footer>Dr. Alex Sá, na apresentação do livro</footer></blockquote>
     </div>
   </div>
 </section>
@@ -636,7 +783,7 @@ FINISH: revisão visual do planejador (lp-esteira-norte) fecha o build.
         <p class="card__fmt">Livro impresso · pré-venda</p>
         <p class="card__price">R$ 1.050</p>
         <ul class="card__terms">
-          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg><span>Em até 12x no cartão ou à vista no Pix</span></li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg><span>Em até 12x no cartão, com juros, ou à vista no Pix</span></li>
           <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg><span>Frete incluso para todo o Brasil</span></li>
         </ul>
         <p class="card__log">É pré-venda. Depois da compra, a equipe OftalmoBlack fala com você pelo WhatsApp informado no checkout para combinar o envio.</p>
@@ -793,23 +940,6 @@ var REDUZ=!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: redu
   });
 })();
 
-/* ===== revelação na entrada (animate.css) ===== */
-(function(){
-  var els=document.querySelectorAll('[data-rv]');
-  function mostra(el){el.classList.add('animate__animated',el.getAttribute('data-rv')==='up'?'animate__fadeInUp':'animate__fadeIn')}
-  if(REDUZ||!('IntersectionObserver' in window)){[].forEach.call(els,function(el){el.classList.add('animate__animated')});return}
-  var io=new IntersectionObserver(function(entries){
-    entries.forEach(function(en){
-      if(!en.isIntersecting)return;
-      var el=en.target,irmaos=el.parentNode?el.parentNode.querySelectorAll(':scope > [data-rv]'):[];
-      var i=[].indexOf.call(irmaos,el);
-      el.style.animationDelay=(i>0?Math.min(i,4)*90:0)+'ms';
-      mostra(el);io.unobserve(el);
-    });
-  },{rootMargin:'0px 0px -6% 0px',threshold:.1});
-  [].forEach.call(els,function(el){io.observe(el)});
-})();
-
 /* ===== barra fixa (mobile): depois do hero, some na oferta e no fechamento ===== */
 (function(){
   var dock=document.getElementById('dock'),hero=document.querySelector('.hero'),
@@ -872,6 +1002,61 @@ var REDUZ=!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: redu
     if(Math.abs(dx)>50)mostra(idx+(dx<0?1:-1));
   },{passive:true});
 })();
+</script>
+<script>
+/* MGZ acompanha a rolagem nativa. Os três conteúdos permanecem no documento. */
+(function(){
+ var section=document.querySelector('.mgz-v2');if(!section)return;
+ var steps=[].slice.call(section.querySelectorAll('.mgz-step')),
+     visual=section.querySelector('.mgz-visual'),
+     images=[].slice.call(visual.querySelectorAll('img')),
+     mq=matchMedia('(prefers-reduced-motion: reduce)');
+ section.classList.add('is-ready');
+ // Carrega as três imagens antes de chegarem ao ponto de transição.
+ var loadObserver='IntersectionObserver' in window?new IntersectionObserver(function(entries){
+  if(entries.some(function(e){return e.isIntersecting})){images.forEach(function(img){img.loading='eager'});loadObserver.disconnect()}
+ },{rootMargin:'600px'}):null;
+ if(loadObserver)loadObserver.observe(section);else images.forEach(function(img){img.loading='eager'});
+ var hero=document.querySelector('.hero');
+ if(hero&&'IntersectionObserver' in window){var heroObserver=new IntersectionObserver(function(entries){entries.forEach(function(entry){hero.classList.toggle('is-in-view',entry.isIntersecting)})},{threshold:.1});heroObserver.observe(hero)}
+ var stage=document.querySelector('.hero__stage'),pointer=matchMedia('(hover:hover) and (pointer:fine)');
+ if(stage){
+  stage.addEventListener('pointermove',function(event){
+   if(mq.matches||!pointer.matches)return;
+   var r=stage.getBoundingClientRect(),x=(event.clientX-r.left)/r.width-.5,y=(event.clientY-r.top)/r.height-.5;
+   stage.style.setProperty('--book-x',(-y*7).toFixed(2)+'deg');stage.style.setProperty('--book-y',(x*9).toFixed(2)+'deg');stage.style.setProperty('--book-lift','-4px');
+  });
+  function reset(){stage.style.removeProperty('--book-x');stage.style.removeProperty('--book-y');stage.style.removeProperty('--book-lift')}
+  stage.addEventListener('pointerleave',reset);mq.addEventListener('change',reset);
+ }
+ var progress=document.createElement('div');progress.className='reading-progress';progress.setAttribute('aria-hidden','true');document.body.appendChild(progress);
+ var scheduled=false;
+ function update(){
+  scheduled=false;
+  var max=document.documentElement.scrollHeight-innerHeight;progress.style.transform='scaleX('+(max>0?Math.max(0,Math.min(1,scrollY/max)):0)+')';
+  var bounds=section.getBoundingClientRect();if(bounds.bottom<0||bounds.top>innerHeight)return;
+  var target=innerHeight*.54;
+  var centers=steps.map(function(step){var r=step.getBoundingClientRect();return r.top+r.height/2});
+  var position=0,blend=Math.min(140,innerHeight*.15);
+  for(var i=0;i<centers.length-1;i++){
+   var boundary=(centers[i]+centers[i+1])/2;
+   var t=Math.max(0,Math.min(1,(target-boundary+blend/2)/blend));
+   if(t>0)position=i+t;
+  }
+  var current=Math.round(position);
+  images.forEach(function(img,i){
+   var opacity=mq.matches?(i===current?1:0):Math.max(0,1-Math.abs(position-i));
+   img.style.opacity=opacity.toFixed(4);
+  });
+  section.dataset.current=String(current);
+ }
+ function schedule(){if(!scheduled){scheduled=true;requestAnimationFrame(update)}}
+ addEventListener('scroll',schedule,{passive:true});addEventListener('resize',schedule);mq.addEventListener('change',schedule);
+ images.forEach(function(img){img.addEventListener('load',schedule)});
+ if('ResizeObserver' in window){var sizeObserver=new ResizeObserver(schedule);sizeObserver.observe(section);sizeObserver.observe(visual)}
+ document.fonts.ready.then(schedule);update();
+})();
+
 </script>
 </body>
 </html>
