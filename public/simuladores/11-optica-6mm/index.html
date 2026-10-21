@@ -1,0 +1,117 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Óptica de 6 mm e pupila</title><style>
+:root{color-scheme:light;--background:#fff;--foreground:#17212a;--muted-foreground:#586570;--muted:#edf0f3;--border:#ccd3d9;--yellow:#f3b927;--viz-series-1:#1677b5;--viz-series-2:#d59b16;--viz-series-3:#8248ad;--viz-series-4:#178979;--viz-series-5:#ce594d;--viz-series-6:#697583;--viz-series-7:#a5673f;--viz-series-8:#3881a8}
+*{box-sizing:border-box}body{margin:0 auto;max-width:1260px;padding:22px 32px 44px;font-family:Arial,Helvetica,sans-serif;color:var(--foreground);background:var(--background);font-size:16px;line-height:1.45}h1,h2,h3{line-height:1.15}h3{font-size:26px;margin:18px 0}a{color:#146aa0}select,button,input{font:inherit}select{padding:7px;border:1px solid var(--border);background:#fff;color:var(--foreground);border-radius:4px;max-width:100%}button{padding:8px 12px;border:1px solid var(--border);background:#f4f5f6;border-radius:4px;color:var(--foreground);cursor:pointer}.btn-primary{background:#174f74;color:#fff}.viz-controls{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.form-label{display:block;font-size:14px;margin-bottom:5px}.form-range{width:100%;accent-color:#176d9f}.form-check{display:flex;align-items:center;gap:7px}.form-check-input{accent-color:#176d9f}.text-small{font-size:14px}.text-muted{color:var(--muted-foreground)}.tabular-nums{font-variant-numeric:tabular-nums}.aula-voltar{font-size:13px;margin-bottom:16px;display:block}svg text{font-family:Arial,Helvetica,sans-serif}
+</style></head><body><a class="aula-voltar" href="/simuladores/">Voltar ao índice da aula</a><div id="sb-optic6">
+  <style>
+    #sb-optic6 { color:var(--foreground); }
+    #sb-optic6 .so-meta { margin:4px 0 12px; }
+    #sb-optic6 .so-controls { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 18px; align-items:end; }
+    #sb-optic6 .so-field { min-width:0; }
+    #sb-optic6 .so-legend { display:flex; flex-wrap:wrap; gap:5px 15px; margin:12px 0 4px; }
+    #sb-optic6 .so-legend span { display:inline-flex; align-items:center; gap:5px; }
+    #sb-optic6 .so-key { display:inline-block; width:19px; height:0; border-top:2px solid var(--viz-series-1); }
+    #sb-optic6 .so-plot { display:block; width:100%; overflow:visible; }
+    #sb-optic6 .so-plot text { fill:var(--foreground); font-size:12px; font-weight:400; }
+    #sb-optic6 .so-panel { margin-top:10px; }
+    #sb-optic6 .so-readout { margin-top:6px; }
+    @media(max-width:440px) { #sb-optic6 .so-controls { grid-template-columns:1fr; } }
+  </style>
+  <h3>Aberração esférica · óptica de 6 mm</h3>
+  <div class="so-meta text-small">Lente fina genérica em ar, sem acomodação · retina fixa em 20 mm · base: 50 D<br><span id="so6-aperture-label">Óptica: 6 mm · abertura iluminada: 6 mm</span></div>
+  <div class="so-controls">
+    <div class="so-field"><label class="form-label" for="so6-case">Perfil do modelo</label><select id="so6-case" class="form-select"><option value="ideal">Ideal</option><option value="four" selected>Termo simples de 4ª ordem</option><option value="six">Termo simples de 6ª ordem</option><option value="eight">Termo simples de 8ª ordem</option><option value="mixed">4ª + 6ª com sinais opostos</option></select></div>
+    <div class="so-field"><label class="form-label" for="so6-pupil">Pupila simplificada · diâmetro</label><select id="so6-pupil" class="form-select"><option value="3">3 mm</option><option value="4.5">4,5 mm</option><option value="6" selected>6 mm</option></select></div>
+    <div class="so-field"><label class="form-label" for="so6-ray">Distância ao centro na entrada</label><select id="so6-ray" class="form-select"></select></div>
+    <div class="so-field"><label class="form-label" for="so6-object">Distância do objeto observado</label><select id="so6-object" class="form-select"><option value="0" selected>Infinito · 0 D de demanda</option><option value="0.75">133 cm · 0,75 D</option><option value="1">100 cm · 1 D</option><option value="1.6666666666666667">60 cm · 1,67 D</option><option value="2">50 cm · 2 D</option><option value="2.5">40 cm · 2,5 D</option><option value="3">33 cm · 3 D</option></select></div>
+    <div class="so-field"><label class="form-check"><input id="so6-sign" class="form-check-input" type="checkbox"><span class="form-check-label">Trocar os sinais</span></label></div>
+  </div>
+  <div class="so-legend text-small" aria-label="Cores fixas por distância ao centro; esmaecido indica raio bloqueado"></div>
+  <div class="so-panel text-small">Região focal ampliada · retina fixa</div>
+  <svg id="so6-detail" class="so-plot" role="img" aria-label="Ampliação entre dezoito e vinte e quatro milímetros com os cruzamentos dos raios admitidos e a retina fixa em vinte milímetros."></svg>
+  <div class="so-panel text-small">Objeto observado · distâncias em cm, espaçamento por demanda em D</div>
+  <svg id="so6-distance" class="so-plot" role="img" aria-label="Régua da distância do objeto, de infinito a trinta e três centímetros. Não é uma curva de qualidade visual."></svg>
+  <div id="so6-readout" class="so-readout text-small tabular-nums" aria-live="polite"></div>
+  <div class="text-small">Linha espessa = raio selecionado · sem cálculo de intensidade · termos radiais simples, não Zernike balanceados</div>
+  <script>
+  (()=>{
+    const root=document.getElementById('sb-optic6');
+    const caseInput=root.querySelector('#so6-case'),signInput=root.querySelector('#so6-sign'),rayInput=root.querySelector('#so6-ray'),pupilInput=root.querySelector('#so6-pupil'),objectInput=root.querySelector('#so6-object');
+    const detail=root.querySelector('#so6-detail');
+    const opticRadius=.003,P0=50,heights=[.0005,.001,.0015,opticRadius/Math.sqrt(2),.0025,.003];
+    const profiles={ideal:[0,0,0],four:[3,0,0],six:[0,3,0],eight:[0,0,3],mixed:[3,-3,0]};
+    const objectOptions=[0,.75,1,1/.6,2,2.5,3];
+    let profile='four',inverse=false,selected=5,pupilMm=6,objectDemand=0;
+    const fmt=(n,p=2)=>n.toFixed(p).replace('.',',');
+    const admitted=i=>heights[i]*1000<=pupilMm/2+1e-9;
+    function power(h){const r=Math.abs(h)/opticRadius,t=r*r,[A,B,C]=profiles[profile],sign=inverse?-1:1;return P0+sign*(A*t+B*t*t+C*t*t*t);}
+    function intercept(h){return 1000/(power(h)-objectDemand);}
+    function rayY(h,zmm){return h*1000*(1-zmm/1000*(power(h)-objectDemand));}
+    function color(i){return `var(--viz-series-${i+1})`;}
+    function updateControls(){
+      if(!admitted(selected))selected=heights.map((_,i)=>i).filter(admitted).at(-1);
+      rayInput.innerHTML=heights.map((h,i)=>`<option value="${i}" ${admitted(i)?'':'disabled'}>${fmt(h*1000)} mm${admitted(i)?(Math.abs(h*1000-pupilMm/2)<1e-8?' · borda da abertura':''):' · bloqueado'}</option>`).join('');
+      rayInput.value=String(selected);
+      root.querySelector('.so-legend').innerHTML=heights.map((h,i)=>`<span style="opacity:${admitted(i)?1:.35}" aria-label="${fmt(h*1000)} milímetros, ${admitted(i)?'admitido':'bloqueado'}"><i class="so-key" style="border-top-color:${color(i)}" aria-hidden="true"></i>${fmt(h*1000)} mm${admitted(i)?'':' ×'}</span>`).join('');
+      root.querySelector('#so6-aperture-label').textContent='Óptica: 6 mm · abertura iluminada: '+fmt(pupilMm,1)+' mm · pupila no plano do modelo';
+    }
+    function plot(svg){
+      const w=Math.max(280,root.getBoundingClientRect().width),height=216,l=72,r=16,top=25,bottom=46;
+      const zmin=18,zmax=24,ymax=.90,pw=w-l-r,ph=height-top-bottom,cy=top+ph/2;
+      const x=z=>l+(z-zmin)/(zmax-zmin)*pw,y=v=>cy-v/ymax*ph/2;
+      let s='<title>Ampliação da região focal</title><desc>Modelo genérico em ar. A prescrição da lente permanece fixa. A pupila admite ou bloqueia raios; a distância do objeto altera sua divergência de entrada. Cores indicam alturas físicas, não ordens de difração nem intensidades. Os valores verticais indicam distância ao eixo em ambos os lados, sem sinal.</desc>';
+      s+=`<rect data-chart-frame x="${l}" y="${top}" width="${pw}" height="${ph}" fill="none" stroke="var(--border)"/>`;
+      s+=`<path d="M${l},${cy}H${w-r}" fill="none" stroke="var(--border)"/>`;
+      s+=`<path data-retina x="${x(20)}" d="M${x(20)},${top}V${top+ph}" fill="none" stroke="var(--muted-foreground)" stroke-dasharray="3 4"/><text x="${x(20)}" y="${top-7}" text-anchor="start">retina · 20 mm</text>`;
+      const ticks=w<430?[18,20,24]:[18,20,22,24];
+      ticks.forEach(z=>s+=`<text x="${x(z)}" y="${height-25}" text-anchor="${z===zmin?'start':z===24?'end':'middle'}">${z}</text>`);
+      [-.6,0,.6].forEach(v=>s+=`<text x="${l-10}" y="${y(v)+4}" text-anchor="end">${fmt(Math.abs(v),1)}</text>`);
+      const drawOrder=heights.map((_,i)=>i).filter(i=>i!==selected).concat([selected]);
+      drawOrder.forEach(i=>{
+        const h=heights[i],stroke=color(i),active=admitted(i),opacity=i===selected?1:.52,lineWidth=i===selected?2.8:1.45;
+        for(const sign of [-1,1]){
+          if(active){
+            s+=`<path data-ray="${i}" data-height-mm="${h*1000}" d="M${x(zmin)},${y(rayY(h*sign,zmin))}L${x(zmax)},${y(rayY(h*sign,zmax))}" fill="none" stroke="${stroke}" stroke-width="${lineWidth}" opacity="${opacity}"/>`;
+          }
+        }
+        if(active)s+=`<circle data-focus="${i}" data-intercept-mm="${intercept(h)}" cx="${x(intercept(h))}" cy="${cy}" r="${i===selected?4.7:2.5}" fill="${stroke}" opacity="${opacity}"/>`;
+      });
+      s+=`<text class="axis-title" data-axis="x" x="${l+pw/2}" y="${height-4}" text-anchor="middle">distância após o elemento (mm)</text>`;
+      s+=`<text class="axis-title" data-axis="y" transform="translate(14 ${cy}) rotate(-90)" text-anchor="middle">distância ao eixo (mm)</text>`;
+      svg.setAttribute('viewBox',`0 0 ${w} ${height}`);svg.innerHTML=s;
+    }
+    function drawDistance(){
+      const svg=root.querySelector('#so6-distance'),w=Math.max(280,root.getBoundingClientRect().width),l=28,r=25,cy=21,x=d=>l+(w-l-r)*d/3;
+      const ticks=w<430?[[0,'∞'],[1,'100'],[2,'50'],[2.5,'40'],[3,'33']]:[[0,'∞'],[1,'100'],[1/.6,'60'],[2,'50'],[2.5,'40'],[3,'33']];
+      let s='<title>Distância do objeto em centímetros, escala linear de demanda em dioptrias</title><desc>Indicador de posição do objeto. Infinito equivale a zero dioptrias; quarenta centímetros a duas e meia. Não representa intensidade nem acuidade visual.</desc>';
+      s+=`<path d="M${x(0)},${cy}H${x(3)}" fill="none" stroke="var(--muted-foreground)"/>`;
+      ticks.forEach(([d,label])=>s+=`<path d="M${x(d)},${cy-4}V${cy+4}" fill="none" stroke="var(--muted-foreground)"/><text x="${x(d)}" y="${cy+23}" text-anchor="${d===0?'start':d===3?'end':'middle'}">${label}</text>`);
+      s+=`<circle data-object-marker data-demand="${objectDemand}" cx="${x(objectDemand)}" cy="${cy}" r="5" fill="var(--foreground)"/><text class="axis-title" data-axis="x" x="${w/2}" y="67" text-anchor="middle">distância do objeto (cm)</text>`;
+      svg.setAttribute('viewBox',`0 0 ${w} 76`);svg.innerHTML=s;
+    }
+    function draw(){
+      plot(detail);drawDistance();
+      const z=intercept(heights[selected]),delta=z-20;
+      const relation=Math.abs(delta)<1e-9?'no foco de referência':fmt(Math.abs(delta))+' mm '+(delta<0?'antes':'depois')+' da referência';
+      root.querySelector('#so6-readout').textContent='Objeto: '+(objectDemand===0?'infinito':fmt(100/objectDemand,0)+' cm')+' · entrada a '+fmt(heights[selected]*1000)+' mm do centro → cruza em '+fmt(z)+' mm · '+relation;
+    }
+    function save(){if(window.openai?.setWidgetState)window.openai.setWidgetState({modelContent:{perfil:profile,sinaisTrocados:inverse,opticaMm:6,pupilaMm:pupilMm,alturaMm:heights[selected]*1000,distanciaObjetoCm:objectDemand===0?'infinito':100/objectDemand,demandaObjetoD:objectDemand},privateContent:{raioSelecionado:selected}}).catch(()=>{});}
+    caseInput.addEventListener('change',()=>{profile=caseInput.value;draw();save();});
+    signInput.addEventListener('change',()=>{inverse=signInput.checked;draw();save();});
+    rayInput.addEventListener('change',()=>{selected=Number(rayInput.value);draw();save();});
+    pupilInput.addEventListener('change',()=>{pupilMm=Number(pupilInput.value);updateControls();draw();save();});
+    objectInput.addEventListener('change',()=>{objectDemand=Number(objectInput.value);draw();save();});
+    function restore(state){
+      const m=state?.modelContent,p=state?.privateContent;
+      if(m&&Object.hasOwn(profiles,m.perfil))profile=m.perfil;
+      if(typeof m?.sinaisTrocados==='boolean')inverse=m.sinaisTrocados;
+      if([3,4.5,6].includes(m?.pupilaMm))pupilMm=m.pupilaMm;
+      if(objectOptions.includes(m?.demandaObjetoD))objectDemand=m.demandaObjetoD;
+      if(Number.isInteger(p?.raioSelecionado)&&p.raioSelecionado>=0&&p.raioSelecionado<6)selected=p.raioSelecionado;
+      caseInput.value=profile;signInput.checked=inverse;pupilInput.value=String(pupilMm);objectInput.value=String(objectDemand);updateControls();draw();
+    }
+    window.addEventListener('openai:set_globals',e=>{if(e.detail?.globals?.widgetState)restore(e.detail.globals.widgetState);});
+    new ResizeObserver(draw).observe(root);restore(window.openai?.widgetState);
+  })();
+  </script>
+</div>
+</body></html>

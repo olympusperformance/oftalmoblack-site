@@ -1,0 +1,42 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ondas no ponto P</title><style>
+:root{color-scheme:light;--background:#fff;--foreground:#17212a;--muted-foreground:#586570;--muted:#edf0f3;--border:#ccd3d9;--yellow:#f3b927;--viz-series-1:#1677b5;--viz-series-2:#d59b16;--viz-series-3:#8248ad;--viz-series-4:#178979;--viz-series-5:#ce594d;--viz-series-6:#697583;--viz-series-7:#a5673f;--viz-series-8:#3881a8}
+*{box-sizing:border-box}body{margin:0 auto;max-width:1260px;padding:22px 32px 44px;font-family:Arial,Helvetica,sans-serif;color:var(--foreground);background:var(--background);font-size:16px;line-height:1.45}h1,h2,h3{line-height:1.15}h3{font-size:26px;margin:18px 0}a{color:#146aa0}select,button,input{font:inherit}select{padding:7px;border:1px solid var(--border);background:#fff;color:var(--foreground);border-radius:4px;max-width:100%}button{padding:8px 12px;border:1px solid var(--border);background:#f4f5f6;border-radius:4px;color:var(--foreground);cursor:pointer}.btn-primary{background:#174f74;color:#fff}.viz-controls{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.form-label{display:block;font-size:14px;margin-bottom:5px}.form-range{width:100%;accent-color:#176d9f}.form-check{display:flex;align-items:center;gap:7px}.form-check-input{accent-color:#176d9f}.text-small{font-size:14px}.text-muted{color:var(--muted-foreground)}.tabular-nums{font-variant-numeric:tabular-nums}.aula-voltar{font-size:13px;margin-bottom:16px;display:block}svg text{font-family:Arial,Helvetica,sans-serif}
+</style></head><body><a class="aula-voltar" href="/simuladores/">Voltar ao índice da aula</a><div id="ondas-ponto">
+<h3>As ondas no mesmo ponto P</h3>
+<div class="viz-controls"><label class="form-label">Situação observada<select id="op-scene" class="form-select">
+<option value="zf">Fresnel: P no foco, a 1 m</option>
+<option value="zo">Fresnel: P no eixo, a 1,5 m</option>
+<option value="z5">Fresnel: P no eixo, a 5 m</option>
+<option value="y1">Young: P no centro, a 1 m</option>
+<option value="y5">Young: P no centro, a 5 m</option>
+<option value="yd">Young: P numa franja escura, a 1 m</option>
+</select></label></div>
+<div id="op-plot"></div>
+<label class="form-label" for="op-time">Instante observado: <span id="op-tval" class="tabular-nums"></span></label>
+<input id="op-time" class="form-range" type="range" min="0" max="2" value="0.25" step="0.01">
+<div id="op-detail" aria-live="polite"></div>
+<div class="text-small">Modelo idealizado de fases · ondas de uma só cor · amplitudes normalizadas</div>
+</div>
+<style>
+#ondas-ponto .op-svg{display:block;width:100%;color:var(--foreground)}
+#ondas-ponto .op-svg text{fill:var(--foreground);font-size:12px}
+#ondas-ponto #op-detail{margin:12px 0}
+</style>
+<script>
+(()=>{
+const root=document.getElementById('ondas-ponto'),scene=root.querySelector('#op-scene'),time=root.querySelector('#op-time'),plot=root.querySelector('#op-plot'),tv=root.querySelector('#op-tval'),detail=root.querySelector('#op-detail');
+const ns='http://www.w3.org/2000/svg',tau=2*Math.PI;let phase=[0,0,0],labels=[],state=null,currentSvg=null;
+function node(tag,attrs,text){const n=document.createElementNS(ns,tag);Object.entries(attrs||{}).forEach(([k,v])=>n.setAttribute(k,v));if(text!==undefined)n.textContent=text;return n;}
+function setup(){const key=scene.value,isY=key.startsWith('y');phase=isY?[0,key==='yd'?Math.PI:0]:[0,tau/(key==='zf'?1:key==='zo'?1.5:5),2*tau/(key==='zf'?1:key==='zo'?1.5:5)];labels=isY?['Fenda A','Fenda B']:['Zona 1','Zona 3','Zona 5'];state={key,isY};draw();}
+function draw(){const w=Math.max(300,plot.getBoundingClientRect().width),left=64,right=w-18,rows=phase.length,centers=phase.map((_,i)=>48+i*76),sumY=rows*76+70,h=sumY+106;plot.innerHTML='';const svg=node('svg',{viewBox:`0 0 ${w} ${h}`,height:h,role:'img','aria-label':'Ondas de cada abertura no ponto P e sua soma ao longo de dois ciclos.','class':'op-svg'});currentSvg=svg;svg.append(node('title',{},'Contribuições separadas e soma no mesmo ponto P'));svg.append(node('text',{x:left,y:15},'Campo elétrico (unidades relativas)'));
+const waves=phase.map((p)=>t=>Math.sin(tau*t-p));waves.push(t=>phase.reduce((s,p)=>s+Math.sin(tau*t-p),0));
+[...centers,sumY].forEach((cy,i)=>{const sum=i===rows;svg.append(node('text',{x:0,y:cy-27},sum?'Soma':labels[i]));svg.append(node('line',{x1:left,y1:cy,x2:right,y2:cy,stroke:'var(--border)'}));let d='';for(let j=0;j<=240;j++){const t=j/120,x=left+(right-left)*j/240,y=cy-19*waves[i](t);d+=(j?'L':'M')+x.toFixed(2)+' '+y.toFixed(2)+' ';}svg.append(node('path',{d,fill:'none',stroke:sum?'var(--foreground)':'var(--viz-series-1)','stroke-width':sum?2.7:2}));svg.append(node('circle',{'data-wave':i,cx:left,cy,r:4,fill:sum?'var(--foreground)':'var(--viz-series-1)'}));});
+svg.append(node('line',{'data-cursor':'',x1:left,y1:24,x2:left,y2:sumY+60,stroke:'var(--muted-foreground)','stroke-dasharray':'3 4'}));[0,1,2].forEach(t=>{const x=left+(right-left)*t/2;svg.append(node('text',{x,y:h-24,'text-anchor':t===0?'start':t===2?'end':'middle'},t+' ciclo'+(t===1?'':'s')));});svg.append(node('text',{x:(left+right)/2,y:h-4,'text-anchor':'middle'},'Tempo no ponto P →'));plot.append(svg);svg._geometry={left,right,centers,sumY,waves};mark();}
+function mark(){if(!currentSvg)return;const t=Number(time.value),g=currentSvg._geometry,x=g.left+(g.right-g.left)*t/2;const cursor=currentSvg.querySelector('[data-cursor]');cursor.setAttribute('x1',x);cursor.setAttribute('x2',x);currentSvg.querySelectorAll('[data-wave]').forEach((n,i)=>{n.setAttribute('cx',x);n.setAttribute('cy',(i<phase.length?g.centers[i]:g.sumY)-19*g.waves[i](t));});tv.textContent=t.toFixed(2).replace('.',',')+' ciclo(s)';const nums=phase.map(p=>Math.sin(tau*t-p));const fmt=v=>(Math.abs(v)<0.005?0:v).toFixed(2).replace('.',',');detail.textContent='Neste instante: '+nums.map(v=>'('+fmt(v)+')').join(' + ')+' = '+fmt(nums.reduce((a,b)=>a+b,0));}
+function save(){if(window.openai?.setWidgetState)window.openai.setWidgetState({modelContent:{situacao:scene.value},privateContent:{tempo:Number(time.value)}}).catch(()=>{});}
+scene.addEventListener('change',()=>{setup();save();});time.addEventListener('input',mark);time.addEventListener('change',save);
+function restore(s){const v=s?.modelContent?.situacao;if(['zf','zo','z5','y1','y5','yd'].includes(v))scene.value=v;const t=s?.privateContent?.tempo;if(typeof t==='number'&&t>=0&&t<=2)time.value=t;setup();}
+window.addEventListener('openai:set_globals',e=>restore(e.detail?.globals?.widgetState));new ResizeObserver(draw).observe(plot);restore(window.openai?.widgetState);
+})();
+</script>
+</body></html>

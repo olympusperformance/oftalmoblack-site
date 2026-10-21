@@ -1,0 +1,158 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ordens: grade e lente · OftalmoBlack</title>
+<style>:root{--background:#fff;--foreground:#17252f;--border:#cad5dc;--muted-foreground:#657785;--viz-series-1:#087cc1;--viz-series-2:#a77935;--primary:#17252f;--primary-foreground:#fff}*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:var(--background);color:var(--foreground);line-height:1.5}main{max-width:1240px;margin:auto;padding:28px 30px}h1{font-size:32px;margin:18px 0}h3{font-size:20px;font-weight:500}a{color:#087cc1}button,input,select{font:inherit}select{padding:8px 12px;border:1px solid #aabac5;border-radius:4px;background:#fff;color:#17252f}.viz-controls,.viz-row{display:flex;align-items:center;flex-wrap:wrap;gap:22px}.form-label{display:grid;gap:4px}.form-check{display:flex;align-items:center;gap:8px;min-height:44px}.form-check-input{width:18px;height:18px;accent-color:#087cc1}.text-small{font-size:13px;color:#536370}.tabular-nums{font-variant-numeric:tabular-nums}details{margin-top:26px;border-top:1px solid #d7dfe4;padding-top:14px}summary{cursor:pointer;font-weight:700}details p{max-width:1000px}footer{margin-top:30px;font-size:13px;color:#657785}@media(max-width:600px){main{padding:18px}h1{font-size:26px}h3{font-size:18px}}</style></head><body><main><a href="/simuladores/">Voltar ao índice da aula</a><h1>Ordens: da grade à lente difrativa</h1><div id="order-bridge">
+  <h3>Da direção do feixe à posição do foco</h3>
+  <div class="viz-controls">
+    <label class="form-label">Explorar
+      <select id="ob-mode"><option value="general">Grade e lente · comparação inicial</option><option value="distance">Ordem −2 para longe · base +22 D</option></select>
+    </label>
+    <label class="form-label">Ordem destacada
+      <select class="form-select" id="ob-order"><option value="-2">−2</option><option value="-1" selected>−1</option><option value="0">0</option><option value="1">+1</option><option value="2">+2</option></select>
+    </label>
+    <label class="form-check form-switch" id="ob-base-control"><input id="ob-base" class="form-check-input" type="checkbox"><span class="form-check-label">Ligar base refrativa +6 D</span></label>
+    <label class="form-check"><input id="ob-all" class="form-check-input" type="checkbox"><span class="form-check-label">Mostrar todos os raios</span></label>
+  </div>
+  <div class="ob-panels">
+    <section><h3>Grade linear · direções</h3><svg id="ob-grating" role="img" aria-label="Grade linear: ordens em direções angulares diferentes, marcadas no anteparo."></svg></section>
+    <section><h3 id="ob-lens-title">Lente difrativa isolada · focos</h3><svg id="ob-lens" role="img" aria-label="Lente difrativa: raios de uma ordem selecionada e seu foco real ou virtual."></svg></section>
+  </div>
+  <div id="ob-result" class="tabular-nums" aria-live="polite"></div>
+  <div class="viz-row text-small"><span>Traço contínuo: luz propagando</span><span>Tracejado: prolongamento virtual</span><span>Espessura ≠ energia</span></div>
+  <p id="ob-model-note" class="text-small">Modelo paraxial em ar · incremento difrativo 2 D · cinco ordens selecionadas para comparação</p>
+  <section id="ob-distance-explanation" hidden>
+    <p class="ob-key"><strong>“Para o infinito” descreve o objeto.</strong> A luz chega paralela e a ordem −2 forma uma imagem real na retina. O foco da imagem continua a uma distância finita.</p>
+    <div class="ob-table-wrap"><table aria-label="Potências e adições das cinco ordens no exemplo"><thead><tr><th>Ordem</th><th>Contribuição difrativa</th><th>Potência total</th><th>Adição relativa a −2</th></tr></thead><tbody id="ob-powers"></tbody></table></div>
+    <p class="text-small">O +22 D é uma base escolhida para este exemplo. Não é a potência de base publicada da Intensity nem o valor rotulado de uma LIO. A analogia com a Intensity é usar −2 para longe; o desenho e as distâncias deste modelo não reproduzem a lente comercial nem um olho.</p>
+  </section>
+</div>
+<style>
+#order-bridge{color:var(--foreground)}
+#order-bridge .ob-panels{display:grid;grid-template-columns:1fr 1.65fr;gap:22px;margin-block:14px}
+#order-bridge svg{display:block;width:100%;height:330px;overflow:visible}
+#order-bridge svg text{fill:var(--foreground);font-size:14px;font-weight:400;font-family:inherit;paint-order:stroke;stroke:var(--background);stroke-width:3px;stroke-linejoin:round}
+#order-bridge [hidden]{display:none!important}
+#order-bridge .ob-key{border-left:4px solid var(--viz-series-1);padding:10px 14px;background:#f2f7fa}
+#order-bridge .ob-table-wrap{overflow-x:auto;margin:16px 0}
+#order-bridge table{border-collapse:collapse;width:100%;font-size:15px;text-align:center}
+#order-bridge th,#order-bridge td{padding:9px 12px;border-bottom:1px solid var(--border)}
+#order-bridge th{font-weight:600;background:#f3f6f8}
+#order-bridge tr.is-selected{background:#e6f2fa;font-weight:700}
+#order-bridge tr.is-selected td:first-child{border-left:4px solid var(--viz-series-1)}
+#order-bridge select{max-width:100%}
+#order-bridge .form-label{min-width:0}
+#order-bridge .ob-panels h3{margin-bottom:4px}
+#order-bridge #ob-result{margin-block:10px}
+#order-bridge .viz-row{gap:16px;margin-block:10px}
+@media(max-width:780px){#order-bridge .ob-panels{grid-template-columns:1fr}#order-bridge svg{height:310px}}
+</style>
+<script>
+(()=>{
+const root=document.getElementById('order-bridge'),sel=root.querySelector('#ob-order'),base=root.querySelector('#ob-base'),all=root.querySelector('#ob-all'),mode=root.querySelector('#ob-mode'),g=root.querySelector('#ob-grating'),l=root.querySelector('#ob-lens');
+let state={m:location.hash==='#longe'?-2:-1,base:false,all:false,mode:location.hash==='#longe'?'distance':'general'};
+const NS='http://www.w3.org/2000/svg',orders=[-2,-1,0,1,2];
+function e(tag,attrs={},text){const q=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(attrs))q.setAttribute(k,v);if(text!==undefined)q.textContent=text;return q;}
+function add(svg,tag,attrs,text){const q=e(tag,attrs,text);svg.appendChild(q);return q;}
+function color(m){return m<0?'var(--viz-series-2)':m>0?'var(--viz-series-1)':'var(--muted-foreground)'}
+function label(m){return m>0?'+'+m:m<0?'−'+Math.abs(m):'0'}
+function line(svg,x1,y1,x2,y2,c='var(--border)',width=1,extra={}){return add(svg,'line',{x1,y1,x2,y2,stroke:c,'stroke-width':width,...extra});}
+function txt(svg,x,y,t,anchor='middle',extra={}){return add(svg,'text',{x,y,'text-anchor':anchor,...extra},t)}
+function clear(svg,w,h){svg.replaceChildren();svg.setAttribute('viewBox',`0 0 ${w} ${h}`);}
+function grating(){
+ const w=g.clientWidth,h=g.clientHeight,cy=h/2,xg=w*.30,xs=w-46;clear(g,w,h);
+ line(g,14,cy,xs,cy);line(g,xs,42,xs,h-42,'var(--muted-foreground)',2);
+ txt(g,xs,28,'Anteparo');txt(g,xg,28,'Grade');txt(g,18,h-10,'Luz →','start');
+ for(let x=18;x<xg-10;x+=17)line(g,x,cy-46,x,cy+46,'var(--border)');
+ add(g,'rect',{x:xg-4,y:cy-65,width:8,height:130,fill:'var(--muted-foreground)'});
+ for(let y=cy-60;y<=cy+60;y+=10)line(g,xg-4,y,xg+4,y,'var(--background)',3);
+ for(const m of orders){const theta=Math.asin(m*.22),ye=cy-(xs-xg)*Math.tan(theta);const active=m===state.m,c=color(m);
+   line(g,xg,cy,xs,ye,c,active?3:1.5,{opacity:active?1:.28});
+   add(g,'circle',{cx:xs,cy:ye,r:active?5:3,fill:c,opacity:active?1:.5});
+   txt(g,xs+11,ye+5,label(m),'start');
+ }
+ txt(g,w/2,h-32,'Ordens no mesmo anteparo');
+}
+function generalLens(){
+ const w=l.clientWidth,h=l.clientHeight,cy=h*.48,x0=w*.50,span=(w-42)/1.2,x=v=>x0+v*span;clear(l,w,h);
+ const defs=add(l,'defs');const cp=e('clipPath',{id:'ob-ray-clip'});cp.appendChild(e('rect',{x:4,y:36,width:w-8,height:h-90}));defs.appendChild(cp);
+ line(l,14,cy,w-14,cy,'var(--border)',1);txt(l,w-10,cy-9,'eixo →','end');
+ for(let xx=18;xx<x0-16;xx+=27)line(l,xx,cy-36,xx,cy+36,'var(--border)');
+ const group=add(l,'g',{'clip-path':'url(#ob-ray-clip)'});
+ for(const m of orders){const p=(state.base?6:0)+m*2,active=m===state.m,c=color(m),f=p===0?Infinity:1/p;
+   if(active||state.all){
+     for(const off of [-32,0,32]){
+       line(group,12,cy+off,x0,cy+off,'var(--muted-foreground)',active?1.3:1,{opacity:active?.6:.13});
+       const end=.60,yend=cy+off*(1-end*p);
+       line(group,x0,cy+off,x(end),yend,c,active?2.6:1.4,{opacity:active?1:.25});
+       if(active){const ax=x(.10),ay=cy+off*(1-.10*p),len=Math.hypot(span,-off*p),ux=span/len,uy=-off*p/len;add(group,'polygon',{points:`${ax},${ay} ${ax-9*ux+4*uy},${ay-9*uy-4*ux} ${ax-9*ux-4*uy},${ay-9*uy+4*ux}`,fill:c});}
+       if(p<0)line(group,x(f),cy,x0,cy+off,c,active?2:1.2,{'stroke-dasharray':'5 5',opacity:active?.75:.2});
+     }
+   }
+   if(p!==0){
+     const xf=x(f);add(l,'circle',{cx:xf,cy,r:active?5:3,fill:active?c:'var(--muted-foreground)',opacity:active?1:.35,'data-order':m,'data-power':p,'data-focus':f});
+     if(!state.base||active){const ty=active?h-45:(m%2===0?36:57);line(l,xf,cy+(ty>cy?8:-8),xf,ty+(ty>cy?-17:8),active?c:'var(--border)',1);txt(l,xf,ty,'m = '+label(m));}
+   }
+ }
+ // The element is represented in meridional section; rings are the front view.
+ add(l,'rect',{x:x0-4,y:cy-55,width:8,height:110,fill:'var(--viz-series-1)'});
+ if(state.base)add(l,'path',{d:`M ${x0} ${cy-58} Q ${x0-24} ${cy} ${x0} ${cy+58} Q ${x0+24} ${cy} ${x0} ${cy-58}`,fill:'var(--viz-series-2)','fill-opacity':.16,stroke:'var(--viz-series-2)','stroke-width':1.5});
+ for(const r of [4,7,10,12,14])add(l,'circle',{cx:x0,cy:22,r,fill:'none',stroke:'var(--viz-series-1)','stroke-width':1});
+ txt(l,x0,57,'Anéis','middle');
+ if(!state.base){txt(l,w*.20,h-12,'Focos virtuais');txt(l,w*.79,h-12,'Focos reais');}
+ else txt(l,w/2,h-12,'Com esta base, as cinco ordens convergem');
+ if(state.m===0&&!state.base)txt(l,w-12,h-45,'m = 0 · sem foco finito','end');
+}
+function distanceLens(){
+ const w=l.clientWidth,h=410,cy=151,x0=w*.20,retina=1/20.5,span=w*.65/retina,x=z=>x0+z*span;clear(l,w,h);l.style.height='410px';
+ const group=add(l,'g');
+ line(l,12,cy,w-12,cy);txt(l,12,25,'Objeto no infinito →','start');
+ txt(l,w-12,25,'Retina fixa','end');
+ const xr=x(retina);line(l,xr,63,xr,236,'var(--foreground)',2.5,{'data-retina-position':retina});
+ for(const m of orders){const p=22+m*.75,f=1/p,active=m===state.m,c=color(m);
+  if(active||state.all){for(const off of [-46,0,46]){
+   line(group,10,cy+off,x0,cy+off,'var(--muted-foreground)',active?1.5:1,{opacity:active?.65:.16});
+   const end=retina*1.08;
+   line(group,x0,cy+off,x(end),cy+off*(1-end*p),c,active?2.7:1.2,{opacity:active?1:.20,'data-ray-order':m,'data-ray-offset':off});
+   const ax=x(.012),ay=cy+off*(1-.012*p),len=Math.hypot(span,-off*p),ux=span/len,uy=-off*p/len;
+   if(active)add(group,'polygon',{points:`${ax},${ay} ${ax-9*ux+4*uy},${ay-9*uy-4*ux} ${ax-9*ux-4*uy},${ay-9*uy+4*ux}`,fill:c});
+  }}
+  add(l,'circle',{cx:x(f),cy,r:active?5:3,fill:c,opacity:active?1:.4,'data-order':m,'data-power':p,'data-focus':f});
+  if(active){line(l,x(f),cy+10,x(f),239,c,1);txt(l,w*.55,262,`Ordem ${label(m)} · ${p.toLocaleString('pt-BR')} D`);}
+ }
+ add(l,'path',{d:`M ${x0} ${cy-58} Q ${x0-24} ${cy} ${x0} ${cy+58} Q ${x0+24} ${cy} ${x0} ${cy-58}`,fill:'var(--viz-series-2)','fill-opacity':.16,stroke:'var(--viz-series-2)','stroke-width':1.5});
+ add(l,'rect',{x:x0-3,y:cy-55,width:6,height:110,fill:'var(--viz-series-1)'});txt(l,x0,226,'Base +22 D');
+ txt(l,w/2,302,'Detalhe dos focos · luz do mesmo objeto distante');
+ const zx=z=>30+(z-.0415)/.008*(w-60),zy=345;
+ line(l,25,zy,w-25,zy);line(l,zx(retina),zy-25,zx(retina),zy+26,'var(--foreground)',1.5);
+ for(const m of orders){const f=1/(22+m*.75),active=m===state.m,c=color(m);add(l,'circle',{cx:zx(f),cy:zy,r:active?5:3,fill:c,opacity:active?1:.55});txt(l,zx(f),zy-12,label(m));txt(l,zx(f),zy+26,(f*1000).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1}));}
+ txt(l,w/2,402,'Distância da lente (mm) · ampliação horizontal');
+}
+function draw(){
+ sel.value=state.m;mode.value=state.mode;base.checked=state.base;all.checked=state.all;
+ const distance=state.mode==='distance';
+ root.querySelector('#ob-base-control').hidden=distance;
+ root.querySelector('#ob-distance-explanation').hidden=!distance;
+ root.querySelector('#ob-lens-title').textContent=distance?'Ordem −2 para longe · foco real na retina':state.base?'Lente híbrida · base + difração':'Lente difrativa isolada · focos';
+ l.setAttribute('aria-label',distance?'Luz de um objeto no infinito chega paralela. A ordem menos dois converge na retina fixa; as demais ordens convergem antes da retina.':'Lente difrativa: raios de uma ordem selecionada e seu foco real ou virtual.');
+ l.style.height=distance?'410px':'';grating();if(distance)distanceLens();else generalLens();
+ const pd=state.m*(distance?.75:2),pb=distance?22:state.base?6:0,p=pb+pd,sign=n=>n>0?'+'+n.toLocaleString('pt-BR'):n<0?'−'+Math.abs(n).toLocaleString('pt-BR'):'0';
+ root.querySelector('#ob-result').textContent=distance?`Ordem ${label(state.m)} · base +22 D ${pd<0?'−':'+'} ${Math.abs(pd).toLocaleString('pt-BR')} D = ${sign(p)} D · ${state.m===-2?'imagem em foco na retina para o objeto no infinito':'para este objeto distante, foco antes da retina'}`:`Ordem ${label(state.m)} · ${state.base?'Base +6 D + contribuição '+sign(pd)+' D = ':''}${sign(p)} D · ${p===0?'feixe paralelo, sem foco finito':(p>0?'foco real a ':'foco virtual a ')+(100/Math.abs(p)).toLocaleString('pt-BR',{maximumFractionDigits:1})+' cm '+(p>0?'à frente':'atrás')}`;
+ root.querySelector('#ob-model-note').textContent=distance?'Modelo fino, paraxial e em ar · P(m) = 22 D + m × 0,75 D · retina fixa em f(−2) = 48,8 mm':'Modelo paraxial em ar · incremento difrativo 2 D · cinco ordens selecionadas para comparação';
+ root.querySelector('#ob-powers').innerHTML=orders.map(m=>`<tr class="${m===state.m?'is-selected':''}"><td>${label(m)}${m===-2?' · longe':''}</td><td>${sign(m*.75)} D</td><td>${sign(22+m*.75)} D</td><td>${sign((m+2)*.75)} D</td></tr>`).join('');
+}
+function restore(s){const a=s?.modelContent||s;if(!a)return;if(orders.includes(a.m))state.m=a.m;if(typeof a.base==='boolean')state.base=a.base;if(typeof a.all==='boolean')state.all=a.all;if(['general','distance'].includes(a.mode))state.mode=a.mode;draw();}
+function save(){window.openai?.setWidgetState?.({modelContent:{...state},privateContent:null})?.catch(()=>{});}
+sel.addEventListener('change',()=>{state.m=Number(sel.value);draw();save()});base.addEventListener('change',()=>{state.base=base.checked;draw();save()});all.addEventListener('change',()=>{state.all=all.checked;draw();save()});
+mode.addEventListener('change',()=>{state.mode=mode.value;if(state.mode==='distance')state.m=-2;draw();save()});
+window.addEventListener('hashchange',()=>{if(location.hash==='#longe'){state.mode='distance';state.m=-2;draw();save()}});
+restore(window.openai?.widgetState);window.addEventListener('openai:set_globals',ev=>restore(ev.detail?.globals?.widgetState));new ResizeObserver(draw).observe(root);draw();
+})();
+</script>
+<details><summary>Como ler esta comparação</summary>
+<p>Na grade linear, o índice inteiro m identifica direções de interferência construtiva. Para incidência normal, d sen θ = mλ. Aqui λ/d = 0,22: mostramos apenas as cinco ordens de −2 a +2; outras direções propagantes são possíveis. Na dupla fenda também se numeram máximos, mas a grade com muitas fendas produz máximos mais estreitos.</p>
+<p>Na lente difrativa radial, cada ordem pode ter uma potência diferente. No modelo fino e paraxial em ar usado aqui: P(m) = Pbase + m × 2 D, e f = 1/P em metros. Sem base, as ordens positivas convergem e as negativas divergem. O foco negativo é virtual: a luz segue para a frente, enquanto os prolongamentos tracejados dos raios se encontram atrás da lente.</p>
+<p>Ao ligar a base de +6 D, a contribuição difrativa negativa permanece negativa, mas o total fica positivo. Por exemplo: m = −1 contribui −2 D, e +6 D − 2 D = +4 D. Essa componente passa a convergir a 25 cm. As ordens coexistem; o seletor apenas destaca uma delas. O tamanho dos pontos e a espessura das linhas não representam energia.</p>
+<p><strong>No modo “Ordem −2 para longe”:</strong> o objeto está no infinito e envia raios paralelos. Escolhemos uma base genérica de +22 D e um incremento de 0,75 D: P(−2) = 22 − 1,50 = +20,50 D. A retina do esquema fica em 1/20,50 m = 48,8 mm; assim a ordem −2 forma ali a imagem desse objeto. As outras ordens têm adições de +0,75, +1,50, +2,25 e +3,00 D em relação à ordem −2. Com o mesmo objeto distante, elas focalizam antes dessa retina. Alterar o seletor destaca uma ordem; não muda a posição da retina nem a distância do objeto.</p>
+<p><strong>Relação com a Intensity:</strong> o estudo de Assia et al. (2022) descreve as ordens −2, 0 e +2 associadas a longe, intermediário e perto, com −1 e +1 entre elas. A Hanita publica adições de +1,50 e +3,00 D no plano da LIO. O passo uniforme de 0,75 D, a base +22 D e a retina a 48,8 mm são escolhas didáticas deste esquema. Não representam a prescrição, a base refrativa ou as distâncias anatômicas da Intensity.</p>
+<p>Este exemplo não reproduz a Intensity nem outra LIO comercial. As distâncias em ar não são distâncias de leitura no olho. O perfil óptico determina a eficiência de cada ordem. Uma placa de zonas binária ideal opaca/transparente com proporções iguais não apresenta ordens pares não nulas; por isso este esquema é identificado como lente difrativa genérica.</p>
+<p>Fresnel aparece no conceito de zonas e de placa de zonas. Fraunhofer designa o regime de difração de campo distante, também observado no plano focal de uma lente apropriada. Não é o nome da lente difrativa representada aqui.</p>
+<p>Fontes: <a href="https://www.feynmanlectures.caltech.edu/I_30.html">Feynman: redes de difração</a> · <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8221951/">Vega et al.: contribuição refrativa e ordens difrativas</a> · <a href="https://xdb.lbl.gov/Section4/Sec_4-4.html">LBNL: placas de zonas</a> · <a href="https://www.hanitalenses.com/wp-content/uploads/Intensity-SL-40-eyes-JRS-Assia-2022.pdf">Assia et al. (2022): ordens da Intensity</a> · <a href="https://www.hanitalenses.com/intraocular-implants/multifocal/intensity-pentafocal/">Hanita: especificações da Intensity</a>.</p>
+</details><footer>Alex Sá · Club OftalmoBlack · S15 · Modelo didático, sem previsão clínica.</footer></main></body></html>

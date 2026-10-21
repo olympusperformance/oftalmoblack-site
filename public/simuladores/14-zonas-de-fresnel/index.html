@@ -1,0 +1,18 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Soma das zonas de Fresnel</title><style>
+:root{color-scheme:light;--background:#fff;--foreground:#17212a;--muted-foreground:#586570;--muted:#edf0f3;--border:#ccd3d9;--yellow:#f3b927;--viz-series-1:#1677b5;--viz-series-2:#d59b16;--viz-series-3:#8248ad;--viz-series-4:#178979;--viz-series-5:#ce594d;--viz-series-6:#697583;--viz-series-7:#a5673f;--viz-series-8:#3881a8}
+*{box-sizing:border-box}body{margin:0 auto;max-width:1260px;padding:22px 32px 44px;font-family:Arial,Helvetica,sans-serif;color:var(--foreground);background:var(--background);font-size:16px;line-height:1.45}h1,h2,h3{line-height:1.15}h3{font-size:26px;margin:18px 0}a{color:#146aa0}select,button,input{font:inherit}select{padding:7px;border:1px solid var(--border);background:#fff;color:var(--foreground);border-radius:4px;max-width:100%}button{padding:8px 12px;border:1px solid var(--border);background:#f4f5f6;border-radius:4px;color:var(--foreground);cursor:pointer}.btn-primary{background:#174f74;color:#fff}.viz-controls{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.form-label{display:block;font-size:14px;margin-bottom:5px}.form-range{width:100%;accent-color:#176d9f}.form-check{display:flex;align-items:center;gap:7px}.form-check-input{accent-color:#176d9f}.text-small{font-size:14px}.text-muted{color:var(--muted-foreground)}.tabular-nums{font-variant-numeric:tabular-nums}.aula-voltar{font-size:13px;margin-bottom:16px;display:block}svg text{font-family:Arial,Helvetica,sans-serif}
+</style></head><body><a class="aula-voltar" href="/simuladores/">Voltar ao índice da aula</a><div id="fresnel-demo">
+<h3>Contribuição resultante de cada zona ao chegar a P</h3>
+<div class="viz-controls"><label class="form-label">Placa<select class="form-select" id="fresnel-mode"><option value="open">Todas as zonas abertas</option><option value="amplitude" selected>Amplitude: bloquear zonas pares</option><option value="phase">Fase: inverter zonas pares</option></select></label></div>
+<div class="table-responsive"><table class="table"><thead><tr><th>Zona</th><th>Ação da placa</th><th>Contribuição em P</th></tr></thead><tbody id="fresnel-rows"></tbody></table></div>
+<div id="fresnel-result" aria-live="polite"></div>
+<div class="text-small">Modelo esquemático: cinco contribuições de módulos aproximadamente iguais; setas representam fases, não trajetórias.</div>
+</div>
+<script>
+(()=>{const root=document.getElementById('fresnel-demo');const select=root.querySelector('#fresnel-mode');const rows=root.querySelector('#fresnel-rows');const result=root.querySelector('#fresnel-result');
+function draw(){const mode=select.value;rows.innerHTML=Array.from({length:5},(_,i)=>{const even=i%2===1;const blocked=even&&mode==='amplitude';const reversed=even&&mode==='phase';return '<tr><td>'+(i+1)+'</td><td>'+(blocked?'Bloqueia':reversed?'Acrescenta meio ciclo':'Transmite sem mudar a fase')+'</td><td style="color:var(--viz-series-1)">'+(blocked?'0 · ausente':even&&mode==='open'?'← · oposta':'→ · mesma orientação')+'</td></tr>';}).join('');result.textContent=mode==='open'?'Soma em P: → − → + → − → + → = →':mode==='amplitude'?'Soma em P: → + 0 + → + 0 + → = →→→':'Soma em P: → + → + → + → + → = →→→→→';}
+function restore(s){const m=s?.modelContent?.placa;if(['open','amplitude','phase'].includes(m))select.value=m;draw();}
+select.addEventListener('change',()=>{draw();if(window.openai?.setWidgetState)window.openai.setWidgetState({modelContent:{placa:select.value},privateContent:null}).catch(()=>{});});window.addEventListener('openai:set_globals',e=>restore(e.detail?.globals?.widgetState));restore(window.openai?.widgetState);
+})();
+</script>
+</body></html>

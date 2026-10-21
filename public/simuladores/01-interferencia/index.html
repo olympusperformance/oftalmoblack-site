@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Interferência básica · ondas em perspectiva</title>
+<style>
+:root{color-scheme:light;--background:#fff;--foreground:#17252f;--muted-foreground:#586570;--muted:#edf0f3;--border:#ccd3d9;--viz-series-1:#1677b5;--viz-series-2:#c58e28;--font-size-base:16px}
+*{box-sizing:border-box}body{margin:0 auto;max-width:1320px;padding:22px 32px 40px;font-family:Arial,Helvetica,sans-serif;color:var(--foreground);background:var(--background);font-size:var(--font-size-base);line-height:1.45}h1{font-size:28px;font-weight:500;line-height:1.15;margin:15px 0}a{color:#146aa0}select,button,input{font:inherit}select{padding:7px;border:1px solid var(--border);background:var(--background);color:var(--foreground);border-radius:4px;max-width:100%}button{padding:8px 12px;border:1px solid var(--border);background:#f4f5f6;border-radius:4px;color:var(--foreground);cursor:pointer}button:disabled{opacity:.55}.btn-primary{background:#174f74;color:#fff}.viz-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin:12px 0}.form-label{display:block;font-size:14px;margin-bottom:5px}.form-range{width:100%;accent-color:#176d9f}.text-small{font-size:14px}.text-muted{color:var(--muted-foreground)}.tabular-nums{font-variant-numeric:tabular-nums}.aula-voltar{font-size:13px;margin-bottom:16px;display:block}[hidden]{display:none!important}
+#basic-interference .bi-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 24px;margin:14px 0}#basic-interference .bi-label{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}#basic-interference .bi-field{min-width:0}#basic-interference .bi-legend{display:flex;gap:18px;flex-wrap:wrap;font-size:14px;margin:8px 0}#basic-interference .bi-legend span{display:inline-flex;gap:6px;align-items:center}#basic-interference .bi-swatch{display:inline-block;width:17px;height:10px;background:var(--viz-series-1)}#basic-interference .bi-swatch.negative{background:var(--viz-series-2)}#basic-interference #bi-surface{display:block;width:100%;height:470px}#basic-interference .bi-plot{display:block;width:100%;height:450px}#basic-interference .bi-plot text{font-family:Arial,Helvetica,sans-serif;fill:var(--foreground);font-size:12px;font-weight:400}#basic-interference .bi-time-row{display:flex;align-items:center;gap:16px;margin:6px 0}#basic-interference .bi-time-row label{white-space:nowrap}#basic-interference .bi-time-row input{flex:1;min-width:60px}#basic-interference .bi-status{min-height:24px;margin-top:8px}#basic-interference .bi-note{margin:5px 0;font-size:14px;color:var(--muted-foreground)}#basic-interference .bi-components{margin-left:auto}button[aria-pressed="true"]{background:#17252f;color:white}
+@media(max-width:700px){body{padding:16px}#basic-interference .bi-controls{grid-template-columns:1fr 1fr}#basic-interference .bi-field:last-child{grid-column:1/-1}#basic-interference .bi-components{margin-left:0}h1{font-size:25px}}
+@media(max-width:440px){#basic-interference .bi-controls{grid-template-columns:1fr}#basic-interference .bi-field:last-child{grid-column:auto}.viz-controls>label{width:100%}.viz-controls select{width:100%}button{min-height:44px}#basic-interference .bi-time-row{flex-wrap:wrap}#basic-interference .bi-time-row input{flex-basis:100%}}
+</style>
+</head>
+<body>
+<a class="aula-voltar" href="/simuladores/">Voltar ao índice da aula</a>
+<main id="basic-interference">
+<h1>Duas ondas: cristas, vales e soma</h1>
+<div class="viz-controls">
+  <label class="form-label" for="bi-view">Vista<br><select id="bi-view"><option value="surface">Superfície em perspectiva</option><option value="time">Oscilação no ponto P</option></select></label>
+  <label class="form-label" for="bi-geometry">Ondas<br><select id="bi-geometry"><option value="plane">Planas · mesma direção</option><option value="circular">Duas fontes circulares</option></select></label>
+  <label class="form-label bi-components" for="bi-component" id="bi-component-label">Mostrar<br><select id="bi-component"><option value="sum">Soma das duas ondas</option><option value="one">Contribuição 1</option><option value="two">Contribuição 2</option><option value="compare">Comparar: 1 + 2 = soma</option></select></label>
+</div>
+<div class="bi-controls">
+  <div class="bi-field"><label class="form-label bi-label" for="bi-phase">Fase da contribuição 2 <span id="bi-phase-value" class="tabular-nums">0°</span></label><input id="bi-phase" class="form-range" type="range" min="0" max="360" step="1" value="0"></div>
+  <div class="bi-field"><label class="form-label bi-label" for="bi-amplitude">Amplitude da contribuição 2 <span id="bi-amplitude-value" class="tabular-nums">1,00</span></label><input id="bi-amplitude" class="form-range" type="range" min="0" max="1" step="0.01" value="1"></div>
+  <div class="bi-field"><label class="form-label bi-label" for="bi-lambda">Espaçamento das cristas · λ <span id="bi-lambda-value" class="tabular-nums">2,00 u.</span></label><input id="bi-lambda" class="form-range" type="range" min="1.2" max="3" step="0.05" value="2"></div>
+</div>
+<div class="viz-controls" aria-label="Exemplos e animação">
+  <button type="button" data-phase="0">Somar · 0°</button><button type="button" data-phase="90">Parcial · 90°</button><button type="button" data-phase="180" id="bi-cancel">Anular · 180°</button><button type="button" class="btn-primary" id="bi-play">Animar · 8 s por ciclo</button><button type="button" id="bi-step">Avançar ¼ de ciclo</button>
+</div>
+<div class="bi-legend" aria-label="Legenda do campo">
+  <span><i class="bi-swatch" aria-hidden="true"></i>Crista · campo positivo</span><span><i class="bi-swatch negative" aria-hidden="true"></i>Vale · campo negativo</span><span>Mesma escala de altura para 1, 2 e soma</span>
+</div>
+<canvas id="bi-surface" role="img" aria-label="Superfície em perspectiva: a altura mostra o valor instantâneo do campo elétrico. Azul é positivo, dourado é negativo. A soma é calculada ponto a ponto; não representa o caminho da luz.">A altura da superfície representa o campo elétrico, não uma superfície material nem o caminho percorrido pela luz.</canvas>
+<svg class="bi-plot" hidden role="img" aria-label="Campo elétrico das duas contribuições e da soma no ponto P em função do tempo, na mesma escala."></svg>
+<div class="bi-time-row"><label class="form-label" for="bi-time">Instante <span id="bi-time-value" class="tabular-nums">0,75 ciclo</span></label><input id="bi-time" class="form-range" type="range" min="0" max="2" step="0.005" value="0.75"></div>
+<div class="bi-status text-small" aria-live="polite"><span id="bi-result"></span></div>
+<p class="bi-note" id="bi-instant"></p>
+<p class="bi-note">Altura ampliada = campo elétrico; não é trajetória nem deslocamento da luz. Distâncias relativas; o ritmo foi desacelerado para visualização.</p>
+<p class="bi-note" id="bi-geometry-note"></p>
+</main>
+<script>
+(()=>{
+  'use strict';
+  const root=document.getElementById('basic-interference'),$=s=>root.querySelector(s),canvas=$('#bi-surface'),ctx=canvas.getContext('2d'),svg=$('.bi-plot'),reduced=matchMedia('(prefers-reduced-motion: reduce)'),tau=2*Math.PI;
+  const phaseInput=$('#bi-phase'),amplitudeInput=$('#bi-amplitude'),lambdaInput=$('#bi-lambda'),timeInput=$('#bi-time'),viewInput=$('#bi-view'),geometryInput=$('#bi-geometry'),componentInput=$('#bi-component'),play=$('#bi-play');
+  let phase=0,amplitude=1,lambda=2,sample=.75,view='surface',geometry='plane',component='sum',raf=0,playing=false;
+  const PX=7,PY=0,clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),fmt=n=>(Math.abs(n)<.0005?0:n).toFixed(2).replace('.',','),clean=n=>Math.abs(n)<1e-12?0:n;
+  // Scalar, monochromatic and coherent fields. Circular sources are a 2D
+  // pedagogical model with 1/sqrt(r) spreading, regularized inside r=0.5.
+  // The perspective height is E, never energy or a photon trajectory.
+  function sampleWaves(x,y,t,kind,lam,a,phaseDeg){
+    const w=2*Math.PI,k=w/lam,phi=w*phaseDeg/360;
+    let r1=x,r2=x,g1=1,g2=1;
+    if(kind==='circular'){
+      r1=Math.hypot(x,y-1.6);r2=Math.hypot(x,y+1.6);
+      g1=Math.sqrt(.5/Math.max(.5,r1));g2=Math.sqrt(.5/Math.max(.5,r2));
+    }
+    const one=g1*Math.sin(k*r1-w*t),two=a*g2*Math.sin(k*r2-w*t+phi);
+    return [one,two,one+two];
+  }
+  const at=(x,y,t=sample)=>sampleWaves(x,y,t,geometry,lambda,amplitude,phase);
+  const values=t=>at(PX,PY,t).map(clean);
+  function palette(){
+    const style=getComputedStyle(root),rgb=name=>{
+      const c=document.createElement('canvas').getContext('2d');c.fillStyle=style.getPropertyValue(name).trim();c.fillRect(0,0,1,1);return [...c.getImageData(0,0,1,1).data].slice(0,3);
+    };
+    return {positive:rgb('--viz-series-1'),negative:rgb('--viz-series-2'),ink:style.getPropertyValue('--foreground').trim(),muted:style.getPropertyValue('--muted-foreground').trim(),border:style.getPropertyValue('--border').trim(),background:rgb('--background')};
+  }
+  let colors=palette();
+  const rgb=c=>'rgb('+c.map(v=>Math.round(v)).join(',')+')';
+  function surfaceColor(v,shade){
+    if(Math.abs(v)<1e-10)return 'rgb(231,237,240)';
+    const c=v>=0?colors.positive:colors.negative,a=.08+.87*Math.min(1,Math.abs(v)),light=clamp(shade,.60,1.12);
+    return rgb(c.map((n,i)=>clamp(colors.background[i]*(1-a)+n*a*light,0,255)));
+  }
+  function line(points,color,width=1,dash=[]){ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.strokeStyle=color;ctx.lineWidth=width;ctx.setLineDash(dash);ctx.stroke();ctx.setLineDash([]);}
+  function dot(p,label){ctx.beginPath();ctx.arc(p[0],p[1],4,0,tau);ctx.fillStyle=colors.ink;ctx.fill();ctx.font='14px Arial';ctx.fillStyle=colors.ink;ctx.fillText(label,p[0]+8,p[1]-8);}
+  function drawPanel(rect,which,title,compact=false){
+    const {x,y,w,h}=rect,s=(w-64)/14.2,depth=1.44*s,vertical=Math.max(14,Math.min(58,(h-100-2*depth)/4)),ox=x+w/2,oy=y+h*.53;
+    const project=(xx,yy,z)=>[ox+s*(.94*(xx-6)+.40*yy),oy+s*(.07*(xx-6)-.30*yy)-z*vertical];
+    ctx.save();ctx.beginPath();ctx.rect(x,y,w,h);ctx.clip();ctx.fillStyle=colors.ink;ctx.font='16px Arial';ctx.fillText(title,x+10,y+22);
+    // A neutral contour at E=0 and axis labels establish the shared height scale.
+    const outline=[[0,-3.4,0],[12,-3.4,0],[12,3.4,0],[0,3.4,0],[0,-3.4,0]].map(p=>project(...p));
+    line(outline,colors.border,.9);
+    const nx=144,ny=56,dx=12/nx,dy=6.8/ny,grid=new Array((nx+1)*(ny+1)),cells=[];
+    for(let j=0;j<=ny;j++)for(let i=0;i<=nx;i++){
+      const xx=i*dx,yy=-3.4+j*dy,v=clean(at(xx,yy)[which]);grid[j*(nx+1)+i]={x:xx,y:yy,v,p:project(xx,yy,v)};
+    }
+    for(let j=0;j<ny;j++)for(let i=0;i<nx;i++)cells.push({i,j,depth:(j+.5)*dy+.18*(i+.5)*dx});
+    cells.sort((a,b)=>b.depth-a.depth);
+    for(const {i,j} of cells){
+      const a=grid[j*(nx+1)+i],b=grid[j*(nx+1)+i+1],c=grid[(j+1)*(nx+1)+i+1],d=grid[(j+1)*(nx+1)+i],v=(a.v+b.v+c.v+d.v)/4;
+      const gx=(b.v-a.v+c.v-d.v)/(2*dx),gy=(d.v-a.v+c.v-b.v)/(2*dy),shade=.91+.16*(-.3*gx+.6*gy)/Math.sqrt(1+gx*gx+gy*gy);
+      ctx.beginPath();ctx.moveTo(...a.p);ctx.lineTo(...b.p);ctx.lineTo(...c.p);ctx.lineTo(...d.p);ctx.closePath();ctx.fillStyle=surfaceColor(v,shade);ctx.fill();
+      // Subtle mesh makes the perspective legible without hiding the wave.
+      if(i%12===0||j%7===0){ctx.strokeStyle='rgba(23,37,47,.10)';ctx.lineWidth=.5;ctx.stroke();}
+    }
+    // At P the two contributions and the resultant are sampled at one location.
+    const pv=at(PX,PY)[which],pp=project(PX,PY,pv),base=project(PX,PY,0);
+    if(Math.abs(pv)>.02)line([base,pp],colors.ink,.8,[3,3]);dot(pp,'P');
+    if(geometry==='circular'){
+      if(which!==1)dot(project(0,1.6,0),'1');
+      if(which!==0)dot(project(0,-1.6,0),'2');
+    }
+    const axisA=project(0,-3.65,0),axisB=project(12,-3.65,0);line([axisA,axisB],colors.border,.8);
+    ctx.fillStyle=colors.muted;ctx.font='12px Arial';ctx.textAlign='left';ctx.fillText('0',axisA[0],axisA[1]+17);ctx.textAlign='right';ctx.fillText('12',axisB[0],axisB[1]+17);
+    ctx.textAlign='center';ctx.fillText(compact?'distância relativa →':'x · distância relativa →',(axisA[0]+axisB[0])/2,(axisA[1]+axisB[1])/2+25);ctx.textAlign='left';
+    // Vertical ruler uses exactly the same 0 / +1 / +2 scaling as the surface.
+    const origin=[x+16,oy];line([[origin[0],origin[1]+2*vertical],[origin[0],origin[1]-2*vertical]],colors.border,.8);
+    for(let n=-2;n<=2;n++){line([[origin[0]-3,origin[1]-n*vertical],[origin[0]+3,origin[1]-n*vertical]],colors.border,.8);ctx.fillText(String(n),origin[0]+6,origin[1]-n*vertical+4);}
+    ctx.fillText('E',origin[0]-4,origin[1]-2*vertical-11);
+    ctx.restore();
+  }
+  function drawSurface(){
+    const w=root.getBoundingClientRect().width,narrow=w<900,compare=component==='compare';
+    const h=compare?(narrow?1030:400):(w<440?365:470),dpr=Math.min(devicePixelRatio||1,2);
+    canvas.style.height=h+'px';if(canvas.width!==Math.round(w*dpr)||canvas.height!==Math.round(h*dpr)){canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);}
+    ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
+    if(compare){
+      if(narrow){drawPanel({x:0,y:0,w,h:330},0,'Contribuição 1');drawPanel({x:0,y:340,w,h:330},1,'Contribuição 2');drawPanel({x:0,y:680,w,h:330},2,'Soma = 1 + 2');}
+      else{const pw=(w-32)/3;drawPanel({x:0,y:0,w:pw,h:390},0,'Contribuição 1',true);drawPanel({x:pw+16,y:0,w:pw,h:390},1,'Contribuição 2',true);drawPanel({x:2*(pw+16),y:0,w:pw,h:390},2,'Soma = 1 + 2',true);}
+    }else{const which=component==='one'?0:component==='two'?1:2;drawPanel({x:0,y:0,w,h},which,['Contribuição 1','Contribuição 2','Soma = contribuição 1 + contribuição 2'][which]);}
+  }
+  function drawTemporal(){
+    const w=Math.max(280,root.getBoundingClientRect().width),h=450,left=64,right=14,plotW=w-left-right,ys=[78,202,326],X=t=>left+t/2*plotW,Y=(v,j)=>ys[j]-v*23;
+    let content='<title>Contribuições e soma no mesmo ponto P</title><desc>Mesma escala para os três gráficos. A linha sólida representa a contribuição1, a pontilhada a contribuição2, e a linha espessa é a soma. Azul positivo; dourado negativo.</desc>';
+    const names=['Contribuição 1','Contribuição 2 · tracejada','Soma em P'];
+    for(let j=0;j<3;j++){
+      content+=`<text x="${left}" y="${ys[j]-56}">${names[j]}</text>`;
+      for(const v of [-2,0,2])content+=`<path d="M${left},${Y(v,j)}H${w-right}" stroke="var(--border)" fill="none"/><text x="${left-8}" y="${Y(v,j)+4}" text-anchor="end">${v}</text>`;
+      for(let n=0;n<240;n++){
+        const t1=2*n/240,t2=2*(n+1)/240,v1=values(t1)[j],v2=values(t2)[j],c=Math.abs(v1)+Math.abs(v2)<1e-10?'var(--muted-foreground)':(v1+v2)/2>=0?'var(--viz-series-1)':'var(--viz-series-2)';
+        // Short segments have stable color by sign; the dashed contribution is sampled consistently.
+        if(j===1&&Math.floor(n/3)%2===1)continue;
+        content+=`<path d="M${X(t1)},${Y(v1,j)}L${X(t2)},${Y(v2,j)}" fill="none" stroke="${c}" stroke-width="${j===2?3:2}"/>`;
+      }
+      const v=values(sample)[j],c=Math.abs(v)<1e-10?'var(--muted-foreground)':v>=0?'var(--viz-series-1)':'var(--viz-series-2)';content+=`<path d="M${X(sample)},${ys[j]-48}V${ys[j]+48}" stroke="var(--muted-foreground)" stroke-dasharray="3 4"/><circle cx="${X(sample)}" cy="${Y(v,j)}" r="4" fill="${c}"/>`;
+    }
+    for(const t of [0,.5,1,1.5,2])content+=`<text x="${X(t)}" y="404" text-anchor="${t===0?'start':t===2?'end':'middle'}">${String(t).replace('.',',')}</text>`;
+    content+=`<text x="${left+plotW/2}" y="435" text-anchor="middle">tempo no ponto P · ciclos</text><text transform="translate(16 220) rotate(-90)" text-anchor="middle">campo elétrico · unidades relativas</text>`;
+    svg.setAttribute('viewBox',`0 0 ${w} ${h}`);svg.innerHTML=content;
+  }
+  function draw(){
+    canvas.hidden=view!=='surface';if(view==='time')svg.removeAttribute('hidden');else svg.setAttribute('hidden','');$('#bi-component-label').hidden=view!=='surface';
+    view==='surface'?drawSurface():drawTemporal();
+    timeInput.value=sample;$('#bi-time-value').textContent=fmt(sample)+' ciclo(s)';
+    const v=values(sample);$('#bi-instant').textContent='Neste instante em P: '+fmt(v[0])+' + ('+fmt(v[1])+') = '+fmt(v[2]);
+  }
+  function updateLabels(){
+    phaseInput.value=phase;amplitudeInput.value=amplitude;lambdaInput.value=lambda;viewInput.value=view;geometryInput.value=geometry;componentInput.value=component;
+    $('#bi-phase-value').textContent=phase+'°';$('#bi-amplitude-value').textContent=fmt(amplitude);$('#bi-lambda-value').textContent=fmt(lambda)+' u.';
+    const g=geometry==='plane'?1:Math.sqrt(.5/Math.hypot(PX,1.6)),result=g*Math.sqrt(Math.max(0,1+amplitude*amplitude+2*amplitude*Math.cos(tau*phase/360)));
+    $('#bi-result').textContent='Amplitude resultante em P: '+fmt(result)+(result<1e-8?(geometry==='plane'?' · cancelamento em toda esta região':' · cancelamento no eixo central'):'');
+    $('#bi-cancel').textContent=geometry==='plane'?'Anular · 180°':'Anular no eixo · 180°';
+    $('#bi-geometry-note').textContent=geometry==='plane'?'Ondas planas na mesma direção: com amplitudes iguais e 180°, o campo se anula ponto a ponto.':'Fontes circulares: o caminho até cada local muda a fase de chegada. Cancelar no eixo não elimina as franjas fora dele. Modelo 2D idealizado.';
+    root.querySelectorAll('[data-phase]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.phase===phase&&amplitude===1?'true':'false'));
+  }
+  function save(){window.openai?.setWidgetState({modelContent:{faseGraus:phase,amplitudeContribuicao2:amplitude,vista:view,geometria:geometry,comprimentoRelativo:lambda,mostrar:component},privateContent:{instanteCiclos:sample}}).catch(()=>{});}
+  function stop(){cancelAnimationFrame(raf);raf=0;playing=false;play.textContent=reduced.matches?'Avançar ¼ de ciclo':'Animar · 8 s por ciclo';}
+  function sync(){stop();phase=+phaseInput.value;amplitude=+amplitudeInput.value;lambda=+lambdaInput.value;view=viewInput.value;geometry=geometryInput.value;component=componentInput.value;updateLabels();draw();}
+  [phaseInput,amplitudeInput,lambdaInput].forEach(e=>{e.addEventListener('input',sync);e.addEventListener('change',save);});
+  [viewInput,geometryInput,componentInput].forEach(e=>e.addEventListener('change',()=>{sync();save();}));
+  timeInput.addEventListener('input',()=>{stop();sample=+timeInput.value;draw();});timeInput.addEventListener('change',save);
+  root.querySelectorAll('[data-phase]').forEach(b=>b.addEventListener('click',()=>{stop();phase=+b.dataset.phase;amplitude=1;updateLabels();draw();save();}));
+  function step(){stop();sample=sample>=1.999?0:Math.min(2,sample+.25);draw();save();}
+  $('#bi-step').addEventListener('click',step);
+  play.addEventListener('click',()=>{
+    if(playing){stop();save();return;}if(reduced.matches){step();return;}
+    playing=true;play.textContent='Pausar';const start=performance.now(),initial=sample;
+    function frame(now){const elapsed=(now-start)/8000;sample=(initial+elapsed)%2;draw();if(elapsed<2){raf=requestAnimationFrame(frame);}else{sample=initial;stop();draw();save();}}
+    raf=requestAnimationFrame(frame);
+  });
+  function restore(s){const m=s?.modelContent,p=s?.privateContent;
+    if(Number.isFinite(m?.faseGraus))phase=clamp(m.faseGraus,0,360);if(Number.isFinite(m?.amplitudeContribuicao2))amplitude=clamp(m.amplitudeContribuicao2,0,1);if(Number.isFinite(m?.comprimentoRelativo))lambda=clamp(m.comprimentoRelativo,1.2,3);
+    if(['surface','time'].includes(m?.vista))view=m.vista;if(['plane','circular'].includes(m?.geometria))geometry=m.geometria;if(['sum','one','two','compare'].includes(m?.mostrar))component=m.mostrar;if(Number.isFinite(p?.instanteCiclos))sample=clamp(p.instanteCiclos,0,2);
+    stop();updateLabels();draw();
+  }
+  new ResizeObserver(()=>draw()).observe(root);reduced.addEventListener('change',()=>stop());window.addEventListener('openai:set_globals',e=>restore(e.detail?.globals?.widgetState));restore(window.openai?.widgetState);
+})();
+</script>
+</body>
+</html>

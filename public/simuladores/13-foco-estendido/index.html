@@ -1,0 +1,138 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Foco estendido e intensidade axial</title><style>
+:root{color-scheme:light;--background:#fff;--foreground:#17212a;--muted-foreground:#586570;--muted:#edf0f3;--border:#ccd3d9;--yellow:#f3b927;--viz-series-1:#1677b5;--viz-series-2:#d59b16;--viz-series-3:#8248ad;--viz-series-4:#178979;--viz-series-5:#ce594d;--viz-series-6:#697583;--viz-series-7:#a5673f;--viz-series-8:#3881a8}
+*{box-sizing:border-box}body{margin:0 auto;max-width:1260px;padding:22px 32px 44px;font-family:Arial,Helvetica,sans-serif;color:var(--foreground);background:var(--background);font-size:16px;line-height:1.45}h1,h2,h3{line-height:1.15}h3{font-size:26px;margin:18px 0}a{color:#146aa0}select,button,input{font:inherit}select{padding:7px;border:1px solid var(--border);background:#fff;color:var(--foreground);border-radius:4px;max-width:100%}button{padding:8px 12px;border:1px solid var(--border);background:#f4f5f6;border-radius:4px;color:var(--foreground);cursor:pointer}.btn-primary{background:#174f74;color:#fff}.viz-controls{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.form-label{display:block;font-size:14px;margin-bottom:5px}.form-range{width:100%;accent-color:#176d9f}.form-check{display:flex;align-items:center;gap:7px}.form-check-input{accent-color:#176d9f}.text-small{font-size:14px}.text-muted{color:var(--muted-foreground)}.tabular-nums{font-variant-numeric:tabular-nums}.aula-voltar{font-size:13px;margin-bottom:16px;display:block}svg text{font-family:Arial,Helvetica,sans-serif}
+</style></head><body><a class="aula-voltar" href="/simuladores/">Voltar ao índice da aula</a><div id="smooth-focus">
+  <style>
+    #smooth-focus { color:var(--foreground); }
+    #smooth-focus .sf-header { margin-bottom:8px; }
+    #smooth-focus .sf-meta { margin:4px 0 10px; }
+    #smooth-focus .sf-controls { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px 20px; align-items:end; }
+    #smooth-focus .sf-field { min-width:0; }
+    #smooth-focus .sf-label { display:flex; flex-wrap:wrap; justify-content:space-between; gap:6px; }
+    #smooth-focus .sf-plot { display:block; width:100%; overflow:visible; }
+    #smooth-focus .sf-plot text { fill:var(--foreground); font-size:12px; font-weight:400; }
+    #smooth-focus .sf-legend { display:flex; flex-wrap:wrap; gap:8px 18px; margin-top:8px; }
+    #smooth-focus .sf-legend span { display:inline-flex; align-items:center; gap:6px; }
+    #smooth-focus .sf-key { display:inline-block; width:22px; border-top:2px solid var(--viz-series-1); }
+    #smooth-focus .sf-key.smooth { border-top-color:var(--viz-series-2); border-top-style:dashed; }
+    #smooth-focus .sf-sub { margin:8px 0 0; }
+    #smooth-focus .sf-status { margin-top:4px; }
+    @media(max-width:440px) { #smooth-focus .sf-controls { grid-template-columns:1fr; gap:8px; } }
+  </style>
+  <h3 class="sf-header">Fase suave e distribuição do foco</h3>
+  <div class="sf-meta text-small">Modelo didático radial · não é réplica da Galaxy<br>Melhores focos alinhados em ≈20 mm · pupila: 3 mm · λ: 550 nm</div>
+  <div class="sf-controls">
+    <div class="sf-field">
+      <label class="form-label" for="sf-mode">Perfil observado em P</label>
+      <select id="sf-mode" class="form-select"><option value="mono">Monofocal ideal</option><option value="smooth" selected>Fase radial suave genérica</option></select>
+    </div>
+    <div class="sf-field">
+      <label class="form-label sf-label" for="sf-z">Posição de P <span id="sf-z-value" class="tabular-nums">19,75 mm</span></label>
+      <input id="sf-z" class="form-range" type="range" min="19" max="20.5" step="0.005" value="19.75">
+    </div>
+  </div>
+  <div class="sf-legend text-small" aria-label="Legenda das curvas axiais"><span><i class="sf-key" aria-hidden="true"></i>Monofocal ideal</span><span><i class="sf-key smooth" aria-hidden="true"></i>Fase suave genérica</span></div>
+  <svg id="sf-axis" class="sf-plot" role="img" aria-label="Intensidade calculada ao longo do eixo óptico, com a mesma escala nos dois modelos."></svg>
+  <div id="sf-readout" class="text-small tabular-nums" aria-live="polite"></div>
+  <div class="viz-row sf-sub"><span>Oscilações que chegam a P</span><button id="sf-play" type="button" class="btn">Acompanhar 2 ciclos</button></div>
+  <svg id="sf-waves" class="sf-plot" role="img" aria-label="Seis contribuições de faixas radiais de igual área e a soma temporal em P. As escalas são fixas entre os dois modelos."></svg>
+  <div class="sf-status text-small">Faixas de igual área · campos elétricos · escalas fixas entre os modelos<br>Intensidade axial não mede diretamente visão ou curva de defocus clínica.</div>
+  <script>
+  (()=>{
+    const root=document.getElementById('smooth-focus');
+    const modeInput=root.querySelector('#sf-mode'),zInput=root.querySelector('#sf-z');
+    const axis=root.querySelector('#sf-axis'),waves=root.querySelector('#sf-waves'),play=root.querySelector('#sf-play');
+    const f=.020,a=.0015,lambda=550e-9,k=2*Math.PI/lambda,N=1024,strength=1.5;
+    const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
+    let mode='smooth',zmm=19.75,cursor=0,playing=false,raf=0;
+    const fmt=(x,n=2)=>x.toFixed(n).replace('.',',');
+    const clamp=(n,l,h)=>Math.max(l,Math.min(h,n));
+    const ts=Float64Array.from({length:N},(_,i)=>(i+.5)/N);
+    const ws=Float64Array.from(ts,t=>-strength*a*a*(1.8*t*t/4-.6*t*t*t/6));
+    function alignmentDerivative(C){
+      let re=0,im=0,dr=0,di=0;
+      for(let i=0;i<N;i++){
+        const B=k*a*a*ts[i]/2,phase=k*ws[i]+B*C,c=Math.cos(phase),s=Math.sin(phase);
+        re+=c;im+=s;dr-=B*s;di+=B*c;
+      }
+      const I=(re*re+im*im)/(N*N),dI=2*(re*dr+im*di)/(N*N);
+      return dI+2*f*I;
+    }
+    let alignLo=strength*.5,alignHi=strength*.95;
+    for(let j=0;j<60;j++){const mid=(alignLo+alignHi)/2;if(alignmentDerivative(mid)>0)alignLo=mid;else alignHi=mid;}
+    const alignC=(alignLo+alignHi)/2;
+    function field(z,m,groups=false){
+      const sums=Array.from({length:6},()=>({re:0,im:0}));
+      let re=0,im=0;
+      for(let i=0;i<N;i++){
+        const phase=k*((m==='smooth'?ws[i]+a*a*ts[i]/2*alignC:0)+a*a*ts[i]/2*(1/z-1/f));
+        const c=Math.cos(phase),s=Math.sin(phase);re+=c;im+=s;
+        if(groups){const g=Math.min(5,Math.floor(ts[i]*6));sums[g].re+=c;sums[g].im+=s;}
+      }
+      const scale=f/z/N;
+      if(groups)sums.forEach(v=>{v.re*=scale;v.im*=scale;});
+      return {re:re*scale,im:im*scale,intensity:(re*re+im*im)*scale*scale,groups:sums};
+    }
+    const curves={};
+    for(const m of ['mono','smooth'])curves[m]=Array.from({length:501},(_,i)=>{const z=19+1.5*i/500;return {z,I:field(z/1000,m).intensity};});
+    const maxI=Math.max(1,...curves.mono.map(v=>v.I),...curves.smooth.map(v=>v.I))*1.06;
+    function axisDraw(){
+      const w=Math.max(280,root.getBoundingClientRect().width),h=205,l=64,r=14,t=18,b=46;
+      const pw=w-l-r,ph=h-t-b,x=z=>l+(z-19)/1.5*pw,y=I=>t+ph-I/maxI*ph;
+      let s='<title>Intensidade ao longo do eixo óptico</title><desc>A mesma escala é usada para ambos os perfis. Intensidade um corresponde ao monofocal ideal a vinte milímetros, sem renormalizar o outro perfil.</desc>';
+      s+=`<rect data-chart-frame x="${l}" y="${t}" width="${pw}" height="${ph}" fill="none" stroke="var(--border)"/>`;
+      [0,.5,1].forEach(I=>{s+=`<path d="M${l},${y(I)}H${w-r}" fill="none" stroke="var(--border)"/><text x="${l-8}" y="${y(I)+4}" text-anchor="end">${fmt(I,1)}</text>`;});
+      const ticks=w<430?[19,19.5,20,20.5]:[19,19.25,19.5,19.75,20,20.25,20.5];
+      ticks.forEach(z=>s+=`<text x="${x(z)}" y="${h-26}" text-anchor="${z===19?'start':z===20.5?'end':'middle'}">${fmt(z,z%1===0?0:2)}</text>`);
+      for(const cm of ['mono','smooth']){
+        let d='';curves[cm].forEach((p,i)=>d+=(i?'L':'M')+x(p.z).toFixed(2)+','+y(p.I).toFixed(2));
+        s+=`<path data-intensity-curve="${cm}" d="${d}" fill="none" stroke="var(--viz-series-${cm==='mono'?1:2})" stroke-width="2.3" ${cm==='smooth'?'stroke-dasharray="7 4"':''}/>`;
+      }
+      const point=field(zmm/1000,mode);
+      s+=`<path d="M${x(zmm)},${t}V${t+ph}" fill="none" stroke="var(--muted-foreground)" stroke-dasharray="3 4"/><circle cx="${x(zmm)}" cy="${y(point.intensity)}" r="4" fill="var(--viz-series-${mode==='mono'?1:2})"/>`;
+      s+=`<text x="${x(zmm)}" y="${t-4}" text-anchor="middle">P</text>`;
+      s+=`<text class="axis-title" data-axis="x" x="${l+pw/2}" y="${h-5}" text-anchor="middle">posição no eixo óptico (mm)</text>`;
+      s+=`<text class="axis-title" data-axis="y" transform="translate(16 ${t+ph/2}) rotate(-90)" text-anchor="middle">intensidade relativa</text>`;
+      axis.setAttribute('viewBox',`0 0 ${w} ${h}`);axis.innerHTML=s;
+      root.querySelector('#sf-readout').textContent='P: '+fmt(zmm)+' mm · intensidade: '+fmt(point.intensity,3)+' · referência monofocal no foco: 1,000';
+    }
+    function wavesDraw(){
+      const w=Math.max(280,root.getBoundingClientRect().width),h=293,l=64,r=14,pw=w-l-r;
+      const current=field(zmm/1000,mode,true),ys=[21,53,85,117,149,181,234];
+      const groups=current.groups.concat([{re:current.re,im:current.im}]);
+      const x=t=>l+t/2*pw, amp=(v,j)=>j===6?v*19:v*75;
+      const value=(v,t)=>v.re*Math.cos(2*Math.PI*t)+v.im*Math.sin(2*Math.PI*t);
+      const names=['Centro','Faixa 2','Faixa 3','Faixa 4','Faixa 5','Borda','Soma'];
+      let s='<title>Contribuições radiais e sua soma em P</title><desc>As seis primeiras linhas representam seis faixas concêntricas de igual área. As amplitudes das contribuições usam escala fixa de menos zero vírgula dois a mais zero vírgula dois; a soma usa escala fixa de menos um vírgula um a mais um vírgula um. As escalas são preservadas ao trocar o perfil ou a posição.</desc>';
+      groups.forEach((v,j)=>{
+        const cy=ys[j],limit=j===6?1.1:.2,hh=amp(limit,j),color=j===6?'var(--foreground)':`var(--viz-series-${j+1})`;
+        s+=`<text x="${l-9}" y="${cy+4}" text-anchor="end">${names[j]}</text>`;
+        s+=`<rect data-chart-frame x="${l}" y="${cy-hh}" width="${pw}" height="${hh*2}" fill="none" stroke="var(--border)"/><path d="M${l},${cy}H${w-r}" fill="none" stroke="var(--border)"/>`;
+        let d='';for(let i=0;i<=240;i++){const t=2*i/240;d+=(i?'L':'M')+x(t).toFixed(2)+','+(cy-amp(value(v,t),j)).toFixed(2);}
+        s+=`<path data-field="${j}" d="${d}" fill="none" stroke="${color}" stroke-width="${j===6?2.5:1.8}"/>`;
+        s+=`<path d="M${x(cursor)},${cy-hh}V${cy+hh}" stroke="var(--muted-foreground)" opacity=".6"/><circle cx="${x(cursor)}" cy="${cy-amp(value(v,cursor),j)}" r="3" fill="${color}"/>`;
+      });
+      s+=`<text x="${l}" y="${ys[5]+25}">faixas: ±0,20</text><text x="${w-r}" y="${ys[5]+25}" text-anchor="end">soma: ±1,10</text>`;
+      [0,1,2].forEach(t=>s+=`<text x="${x(t)}" y="${h-22}" text-anchor="${t===0?'start':t===2?'end':'middle'}">${t}</text>`);
+      s+=`<text class="axis-title" data-axis="x" x="${l+pw/2}" y="${h-3}" text-anchor="middle">tempo em P (ciclos)</text>`;
+      waves.setAttribute('viewBox',`0 0 ${w} ${h}`);waves.innerHTML=s;
+    }
+    function draw(){root.querySelector('#sf-z-value').textContent=fmt(zmm)+' mm';axisDraw();wavesDraw();}
+    function save(){if(window.openai?.setWidgetState)window.openai.setWidgetState({modelContent:{perfil:mode,posicaoMm:zmm},privateContent:{instanteCiclos:cursor}}).catch(()=>{});}
+    function stop(){cancelAnimationFrame(raf);playing=false;play.textContent=reduced.matches?'Avançar ¼ de ciclo':'Acompanhar 2 ciclos';}
+    modeInput.addEventListener('change',()=>{stop();mode=modeInput.value;draw();save();});
+    zInput.addEventListener('input',()=>{stop();zmm=Number(zInput.value);draw();save();});
+    play.addEventListener('click',()=>{
+      if(playing){stop();save();return;}
+      if(reduced.matches){cursor=cursor>=2?0:Math.min(2,cursor+.25);wavesDraw();save();return;}
+      playing=true;cursor=0;play.textContent='Pausar';let start;
+      function frame(now){if(start===undefined)start=now;cursor=Math.min(2,(now-start)/3000);wavesDraw();if(cursor<2)raf=requestAnimationFrame(frame);else{stop();save();}}
+      raf=requestAnimationFrame(frame);
+    });
+    function restore(state){const m=state?.modelContent,p=state?.privateContent;if(m&&['mono','smooth'].includes(m.perfil))mode=m.perfil;if(Number.isFinite(m?.posicaoMm))zmm=clamp(m.posicaoMm,19,20.5);if(Number.isFinite(p?.instanteCiclos))cursor=clamp(p.instanteCiclos,0,2);stop();modeInput.value=mode;zInput.value=zmm;draw();}
+    window.addEventListener('openai:set_globals',e=>{if(e.detail?.globals?.widgetState)restore(e.detail.globals.widgetState);});
+    reduced.addEventListener('change',stop);new ResizeObserver(draw).observe(root);restore(window.openai?.widgetState);
+  })();
+  </script>
+</div>
+</body></html>

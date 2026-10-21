@@ -1,0 +1,93 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Aberração esférica por raios</title><style>
+:root{color-scheme:light;--background:#fff;--foreground:#17212a;--muted-foreground:#586570;--muted:#edf0f3;--border:#ccd3d9;--yellow:#f3b927;--viz-series-1:#1677b5;--viz-series-2:#d59b16;--viz-series-3:#8248ad;--viz-series-4:#178979;--viz-series-5:#ce594d;--viz-series-6:#697583;--viz-series-7:#a5673f;--viz-series-8:#3881a8}
+*{box-sizing:border-box}body{margin:0 auto;max-width:1260px;padding:22px 32px 44px;font-family:Arial,Helvetica,sans-serif;color:var(--foreground);background:var(--background);font-size:16px;line-height:1.45}h1,h2,h3{line-height:1.15}h3{font-size:26px;margin:18px 0}a{color:#146aa0}select,button,input{font:inherit}select{padding:7px;border:1px solid var(--border);background:#fff;color:var(--foreground);border-radius:4px;max-width:100%}button{padding:8px 12px;border:1px solid var(--border);background:#f4f5f6;border-radius:4px;color:var(--foreground);cursor:pointer}.btn-primary{background:#174f74;color:#fff}.viz-controls{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.form-label{display:block;font-size:14px;margin-bottom:5px}.form-range{width:100%;accent-color:#176d9f}.form-check{display:flex;align-items:center;gap:7px}.form-check-input{accent-color:#176d9f}.text-small{font-size:14px}.text-muted{color:var(--muted-foreground)}.tabular-nums{font-variant-numeric:tabular-nums}.aula-voltar{font-size:13px;margin-bottom:16px;display:block}svg text{font-family:Arial,Helvetica,sans-serif}
+</style></head><body><a class="aula-voltar" href="/simuladores/">Voltar ao índice da aula</a><div id="sb-rays">
+  <style>
+    #sb-rays { color:var(--foreground); }
+    #sb-rays .sb-meta { margin:4px 0 10px; }
+    #sb-rays .sb-controls { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 18px; align-items:end; }
+    #sb-rays .sb-field { min-width:0; }
+    #sb-rays .sb-legend { display:flex; flex-wrap:wrap; gap:5px 15px; margin:12px 0 3px; }
+    #sb-rays .sb-legend span { display:inline-flex; align-items:center; gap:5px; }
+    #sb-rays .sb-key { display:inline-block; width:19px; height:0; border-top:2px solid var(--viz-series-1); }
+    #sb-rays .sb-plot { display:block; width:100%; overflow:visible; }
+    #sb-rays .sb-plot text { fill:var(--foreground); font-size:12px; font-weight:400; }
+    #sb-rays .sb-panel-label { margin-top:10px; }
+    #sb-rays .sb-readout { margin-top:6px; }
+    @media(max-width:440px) { #sb-rays .sb-controls { grid-template-columns:1fr; } }
+  </style>
+  <h3>Aberração esférica: onde os raios cruzam o eixo?</h3>
+  <div class="sb-meta text-small">Termos radiais simples · não coeficientes Zernike; modelo genérico em ar<br>Referência: 20 mm (50 D) · pupila: 3 mm</div>
+  <div class="sb-controls">
+    <div class="sb-field"><label class="form-label" for="sb-case">Perfil do modelo</label><select id="sb-case" class="form-select"><option value="ideal">Ideal</option><option value="four">Termo simples de 4ª ordem</option><option value="six">Termo simples de 6ª ordem</option><option value="eight">Termo simples de 8ª ordem</option><option value="mixed" selected>4ª + 6ª com sinais opostos</option></select></div>
+    <div class="sb-field"><label class="form-label" for="sb-ray">Altura de entrada destacada</label><select id="sb-ray" class="form-select"><option value="0">0,25 mm · próximo do centro</option><option value="1">0,50 mm</option><option value="2">0,75 mm</option><option value="3" selected>1,06 mm · intermediário</option><option value="4">1,25 mm</option><option value="5">1,50 mm · borda</option></select></div>
+  </div>
+  <div class="viz-controls"><label class="form-check"><input id="sb-sign" class="form-check-input" type="checkbox"><span class="form-check-label">Trocar os sinais</span></label></div>
+  <div class="sb-legend text-small" aria-label="Cor fixa para cada altura de entrada"></div>
+  <div class="sb-panel-label text-small">Vista completa · raios retos após o elemento óptico</div>
+  <svg id="sb-overview" class="sb-plot" role="img" aria-label="Seis pares de raios simétricos, coloridos por altura de entrada, atravessam o elemento óptico e cruzam o eixo em posições diferentes."></svg>
+  <div class="sb-panel-label text-small">Ampliação do foco · os mesmos raios e as mesmas cores</div>
+  <svg id="sb-detail" class="sb-plot" role="img" aria-label="Ampliação entre dezoito e vinte e dois milímetros. Os pontos coloridos identificam os cruzamentos dos raios com o eixo."></svg>
+  <div id="sb-readout" class="sb-readout text-small tabular-nums" aria-live="polite"></div>
+  <div class="text-small">Linha mais espessa = raio selecionado · sem cálculo de intensidade luminosa</div>
+  <script>
+  (()=>{
+    const root=document.getElementById('sb-rays');
+    const caseInput=root.querySelector('#sb-case'),signInput=root.querySelector('#sb-sign'),rayInput=root.querySelector('#sb-ray');
+    const overview=root.querySelector('#sb-overview'),detail=root.querySelector('#sb-detail');
+    const a=.0015,P0=50,heights=[.00025,.0005,.00075,a/Math.sqrt(2),.00125,.0015];
+    const profiles={ideal:[0,0,0],four:[3,0,0],six:[0,3,0],eight:[0,0,3],mixed:[3,-3,0]};
+    let profile='mixed',inverse=false,selected=3;
+    const fmt=(n,p=2)=>n.toFixed(p).replace('.',',');
+    function power(h){const r=Math.abs(h)/a,t=r*r,[A,B,C]=profiles[profile],sign=inverse?-1:1;return P0+sign*(A*t+B*t*t+C*t*t*t);}
+    function intercept(h){return 1000/power(h);}
+    function rayY(h,zmm){return h*1000*(1-zmm/1000*power(h));}
+    function color(i){return `var(--viz-series-${i+1})`;}
+    root.querySelector('.sb-legend').innerHTML=heights.map((h,i)=>`<span><i class="sb-key" style="border-top-color:${color(i)}" aria-hidden="true"></i>${fmt(h*1000)} mm</span>`).join('');
+    function plot(svg,zoom){
+      const w=Math.max(280,root.getBoundingClientRect().width),height=zoom?192:168,l=zoom?48:64,r=14,top=18,bottom=43;
+      const zmin=zoom?18:0,zmax=22,ymax=zoom?.28:1.8,pw=w-l-r,ph=height-top-bottom,cy=top+ph/2;
+      const x=z=>l+(z-zmin)/(zmax-zmin)*pw,y=v=>cy-v/ymax*ph/2;
+      let s=`<title>${zoom?'Ampliação da região focal':'Vista completa dos raios'}</title><desc>Modelo radial genérico. O traçado representa direções de propagação por óptica geométrica; as cores identificam a altura de entrada, não ordens de difração ou intensidades.</desc>`;
+      s+=`<rect data-chart-frame x="${l}" y="${top}" width="${pw}" height="${ph}" fill="none" stroke="var(--border)"/>`;
+      s+=`<path d="M${l},${cy}H${w-r}" fill="none" stroke="var(--border)"/>`;
+      s+=`<path d="M${x(20)},${top}V${top+ph}" fill="none" stroke="var(--muted-foreground)" stroke-dasharray="3 4"/><text x="${x(20)}" y="${top-5}" text-anchor="middle">20 mm</text>`;
+      const ticks=zoom?(w<430?[18,20,22]:[18,19,20,21,22]):(w<430?[0,10,22]:[0,5,10,15,20,22]);
+      ticks.forEach(z=>s+=`<text x="${x(z)}" y="${height-24}" text-anchor="${z===zmin?'start':z===22?'end':'middle'}">${z}</text>`);
+      if(!zoom){
+        s+=`<rect x="${x(0)-4}" y="${y(a*1000)}" width="8" height="${y(-a*1000)-y(a*1000)}" fill="var(--accent)" stroke="var(--muted-foreground)"/><text x="${l}" y="${top-5}">Elemento óptico</text>`;
+        [-1.5,0,1.5].forEach(v=>s+=`<text x="${l-12}" y="${y(v)+4}" text-anchor="end">${fmt(v,1)}</text>`);
+      } else {
+        [-.2,0,.2].forEach(v=>s+=`<text x="${l-7}" y="${y(v)+4}" text-anchor="end">${fmt(v,1)}</text>`);
+      }
+      const drawOrder=heights.map((_,i)=>i).filter(i=>i!==selected).concat([selected]);
+      drawOrder.forEach(i=>{
+        const h=heights[i],stroke=color(i),opacity=i===selected?1:.52,lineWidth=i===selected?2.8:1.45;
+        for(const sign of [-1,1]){
+          const y1=rayY(h*sign,zmin),y2=rayY(h*sign,zmax);
+          s+=`<path data-ray="${i}" d="M${x(zmin)},${y(y1)}L${x(zmax)},${y(y2)}" fill="none" stroke="${stroke}" stroke-width="${lineWidth}" opacity="${opacity}"/>`;
+          if(!zoom)s+=`<path d="M${l-17},${y(h*sign*1000)}H${l}" fill="none" stroke="${stroke}" stroke-width="${lineWidth}" opacity="${opacity}"/>`;
+        }
+        s+=`<circle data-focus="${i}" cx="${x(intercept(h))}" cy="${cy}" r="${i===selected?4.7:2.5}" fill="${stroke}" opacity="${opacity}"/>`;
+      });
+      s+=`<text class="axis-title" data-axis="x" x="${l+pw/2}" y="${height-4}" text-anchor="middle">distância após o elemento (mm)</text>`;
+      s+=`<text class="axis-title" data-axis="y" transform="translate(13 ${cy}) rotate(-90)" text-anchor="middle">altura (mm)</text>`;
+      svg.setAttribute('viewBox',`0 0 ${w} ${height}`);svg.innerHTML=s;
+    }
+    function draw(){
+      plot(overview,false);plot(detail,true);
+      const z=intercept(heights[selected]),delta=z-20;
+      const relation=Math.abs(delta)<1e-9?'no foco de referência':fmt(Math.abs(delta))+' mm '+(delta<0?'antes':'depois')+' da referência';
+      root.querySelector('#sb-readout').textContent='Altura '+fmt(heights[selected]*1000)+' mm → cruza o eixo em '+fmt(z)+' mm · '+relation;
+    }
+    function save(){if(window.openai?.setWidgetState)window.openai.setWidgetState({modelContent:{perfil:profile,sinaisTrocados:inverse,alturaMm:heights[selected]*1000},privateContent:{raioSelecionado:selected}}).catch(()=>{});}
+    caseInput.addEventListener('change',()=>{profile=caseInput.value;draw();save();});
+    signInput.addEventListener('change',()=>{inverse=signInput.checked;draw();save();});
+    rayInput.addEventListener('change',()=>{selected=Number(rayInput.value);draw();save();});
+    function restore(state){const m=state?.modelContent,p=state?.privateContent;if(m&&Object.hasOwn(profiles,m.perfil))profile=m.perfil;if(typeof m?.sinaisTrocados==='boolean')inverse=m.sinaisTrocados;if(Number.isInteger(p?.raioSelecionado)&&p.raioSelecionado>=0&&p.raioSelecionado<6)selected=p.raioSelecionado;caseInput.value=profile;signInput.checked=inverse;rayInput.value=selected;draw();}
+    window.addEventListener('openai:set_globals',e=>{if(e.detail?.globals?.widgetState)restore(e.detail.globals.widgetState);});
+    new ResizeObserver(draw).observe(root);restore(window.openai?.widgetState);
+  })();
+  </script>
+</div>
+</body></html>

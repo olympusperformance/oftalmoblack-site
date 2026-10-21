@@ -1,0 +1,274 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Plano móvel e feixe fixo</title><style>
+:root{color-scheme:light;--background:#fff;--foreground:#17212a;--muted-foreground:#586570;--muted:#edf0f3;--border:#ccd3d9;--yellow:#f3b927;--viz-series-1:#1677b5;--viz-series-2:#d59b16;--viz-series-3:#8248ad;--viz-series-4:#178979;--viz-series-5:#ce594d;--viz-series-6:#697583;--viz-series-7:#a5673f;--viz-series-8:#3881a8}
+*{box-sizing:border-box}body{margin:0 auto;max-width:1260px;padding:22px 32px 44px;font-family:Arial,Helvetica,sans-serif;color:var(--foreground);background:var(--background);font-size:16px;line-height:1.45}h1,h2,h3{line-height:1.15}h3{font-size:26px;margin:18px 0}a{color:#146aa0}select,button,input{font:inherit}select{padding:7px;border:1px solid var(--border);background:#fff;color:var(--foreground);border-radius:4px;max-width:100%}button{padding:8px 12px;border:1px solid var(--border);background:#f4f5f6;border-radius:4px;color:var(--foreground);cursor:pointer}.btn-primary{background:#174f74;color:#fff}.viz-controls{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.form-label{display:block;font-size:14px;margin-bottom:5px}.form-range{width:100%;accent-color:#176d9f}.form-check{display:flex;align-items:center;gap:7px}.form-check-input{accent-color:#176d9f}.text-small{font-size:14px}.text-muted{color:var(--muted-foreground)}.tabular-nums{font-variant-numeric:tabular-nums}.aula-voltar{font-size:13px;margin-bottom:16px;display:block}svg text{font-family:Arial,Helvetica,sans-serif}
+</style></head><body><a class="aula-voltar" href="/simuladores/">Voltar ao índice da aula</a><div id="plano-retina-ae" class="orae">
+  <h2>Feixe fixo, plano de observação móvel</h2>
+  <div class="orae-meta text-small">Objeto no infinito · lente e raios fixos · óptica e pupila de 6 mm · modelo genérico em ar</div>
+  <div class="viz-controls orae-controls">
+    <label class="form-label" for="orae-distance">Referência equivalente de desfoco
+      <select id="orae-distance" class="form-select">
+        <option value="0">Infinito (∞)</option>
+        <option value="1">100 cm</option>
+        <option value="1.6666666666666667">60 cm</option>
+        <option value="2">50 cm</option>
+        <option value="2.5">40 cm</option>
+        <option value="3">≈ 33 cm</option>
+        <option value="custom" hidden>Corte livre</option>
+      </select>
+    </label>
+    <label class="form-label" for="orae-demand">Posição do plano: <output id="orae-distance-value" class="tabular-nums">20,000 mm</output>
+      <input id="orae-demand" class="form-range" type="range" min="18.5" max="20.5" step="0.001" value="20" aria-valuetext="Plano a vinte milímetros da lente">
+    </label>
+  </div>
+  <div class="orae-models">
+    <section class="orae-model" aria-labelledby="orae-mono-heading">
+      <h3 id="orae-mono-heading">Monofocal</h3>
+      <div class="text-small orae-model-meta">Potência fixa: 50 D</div>
+      <div class="orae-side-title text-small">Feixe fixo · vista de lado</div>
+      <svg class="orae-side" data-model="mono" role="img" aria-label="Raios fixos da lente monofocal e plano de observação móvel"></svg>
+      <div class="orae-focus text-small">Cruzamento com o eixo: <output id="orae-mono-focus" class="tabular-nums"></output></div>
+      <div class="orae-side-title text-small">Região focal ampliada · o plano atravessa os raios</div>
+      <svg class="orae-range" data-model="mono" role="img" aria-label="Ampliação do feixe fixo da monofocal atravessado pelo plano móvel"></svg>
+      <div class="orae-front-title text-small">Corte de frente no plano móvel</div>
+      <svg class="orae-front" data-model="mono" role="img" aria-label="Interseções geométricas da monofocal no plano móvel, com escala fixa"></svg>
+    </section>
+    <section class="orae-model" aria-labelledby="orae-ae-heading">
+      <h3 id="orae-ae-heading">Foco alongado por AE</h3>
+      <div class="text-small orae-model-meta">Exemplo genérico · potência fixa: 50–53 D</div>
+      <div class="orae-side-title text-small">Feixe fixo · vista de lado</div>
+      <svg class="orae-side" data-model="ae" role="img" aria-label="Raios fixos da lente com aberração esférica genérica e plano de observação móvel"></svg>
+      <div class="orae-focus text-small">Cruzamentos com o eixo: <output id="orae-ae-focus" class="tabular-nums"></output></div>
+      <div class="orae-side-title text-small">Região focal ampliada · o plano atravessa os raios</div>
+      <svg class="orae-range" data-model="ae" role="img" aria-label="Ampliação do feixe fixo com aberração esférica atravessado pelo plano móvel"></svg>
+      <div class="orae-front-title text-small">Corte de frente · mesma escala</div>
+      <svg class="orae-front" data-model="ae" role="img" aria-label="Interseções geométricas da lente com aberração esférica no plano móvel, na mesma escala fixa"></svg>
+    </section>
+  </div>
+  <div class="orae-legend text-small" aria-label="Cores pela distância do raio ao centro da pupila">
+    <span>Altura na pupila:</span>
+    <span><i style="--orae-band:var(--viz-series-1)"></i>0–0,5</span>
+    <span><i style="--orae-band:var(--viz-series-2)"></i>0,5–1</span>
+    <span><i style="--orae-band:var(--viz-series-3)"></i>1–1,5</span>
+    <span><i style="--orae-band:var(--viz-series-4)"></i>1,5–2,12</span>
+    <span><i style="--orae-band:var(--viz-series-5)"></i>2,12–2,5</span>
+    <span><i style="--orae-band:var(--viz-series-6)"></i>2,5–3 mm</span>
+  </div>
+  <div class="orae-foot text-small">1.200 raios por lente · amostragem uniforme da área pupilar · mesma escala e mesmos pontos</div>
+  <div id="orae-equivalence" class="orae-foot text-small" aria-live="polite">Referência de desfoco: infinito · o feixe permanece fixo</div>
+  <div class="orae-foot text-small">Interseções geométricas · sem intensidade, difração ou previsão da qualidade visual</div>
+  <div id="orae-status" class="sr-only" aria-live="polite"></div>
+</div>
+<style>
+#plano-retina-ae{color:var(--foreground);width:100%;min-width:0}
+#plano-retina-ae h2{margin:0 100px 8px 0}
+#plano-retina-ae h3{margin:0 0 4px}
+#plano-retina-ae .orae-meta{color:var(--muted-foreground);margin-bottom:16px}
+#plano-retina-ae .orae-controls{margin-bottom:18px}
+#plano-retina-ae .orae-models{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+#plano-retina-ae .orae-model{min-width:0}
+#plano-retina-ae .orae-model-meta{color:var(--muted-foreground);min-height:36px}
+#plano-retina-ae .orae-side-title{margin:8px 0 0}
+#plano-retina-ae .orae-side{display:block;width:100%;height:180px;overflow:hidden}
+#plano-retina-ae .orae-focus{min-height:36px}
+#plano-retina-ae .orae-range{display:block;width:100%;height:180px;overflow:hidden}
+#plano-retina-ae .orae-front-title{margin:8px 0 0}
+#plano-retina-ae .orae-front{display:block;width:100%;height:auto;aspect-ratio:1 / 1;overflow:hidden}
+#plano-retina-ae .orae-legend{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:14px 0 10px}
+#plano-retina-ae .orae-legend span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+#plano-retina-ae .orae-legend i{display:inline-block;width:14px;height:3px;background:var(--orae-band)}
+#plano-retina-ae .orae-foot{color:var(--muted-foreground);margin-top:6px}
+#plano-retina-ae .orae-axis{fill:none;stroke:var(--border);stroke-width:1}
+#plano-retina-ae .orae-centerline{fill:none;stroke:var(--muted-foreground);stroke-width:1;stroke-dasharray:3 5;opacity:.65}
+#plano-retina-ae .orae-lens{fill:var(--muted);stroke:var(--muted-foreground);stroke-width:1}
+#plano-retina-ae .orae-retina{fill:none;stroke:var(--foreground);stroke-width:2}
+#plano-retina-ae .orae-ray{fill:none;stroke-width:1.25;stroke-opacity:.7}
+#plano-retina-ae .orae-dot{fill-opacity:.55}
+#plano-retina-ae .orae-label{fill:var(--foreground);font-weight:400;font-size:12px}
+#plano-retina-ae .orae-label-secondary{fill:var(--muted-foreground);font-weight:400;font-size:12px}
+#plano-retina-ae .orae-center{fill:none;stroke:var(--foreground);stroke-width:1;pointer-events:none}
+@media(max-width:600px){#plano-retina-ae .orae-models{grid-template-columns:1fr;gap:20px}#plano-retina-ae .orae-model-meta{min-height:0}#plano-retina-ae .orae-focus{min-height:0}#plano-retina-ae .orae-front{max-width:420px;margin-inline:auto}}
+</style>
+<script>
+(() => {
+  const root = document.getElementById('plano-retina-ae');
+  if (!root) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const count = 1200;
+  const pupilRadius = 3;
+  const fieldRadius = 0.30;
+  const preset = root.querySelector('#orae-distance');
+  const slider = root.querySelector('#orae-demand');
+  const sideSvgs = Array.from(root.querySelectorAll('.orae-side'));
+  const rangeSvgs = Array.from(root.querySelectorAll('.orae-range'));
+  const frontSvgs = Array.from(root.querySelectorAll('.orae-front'));
+  const number = (v, decimals = 2) => v.toLocaleString('pt-BR', {minimumFractionDigits:decimals, maximumFractionDigits:decimals});
+  const distance = v => v < 0.000001 ? '∞' : `${number(100 / v, 100 / v < 100 ? 1 : 0)} cm`;
+  const power = (model, radius) => 50 + (model === 'ae' ? 3 * Math.pow(radius / pupilRadius, 2) : 0);
+  const bandLimits = [0.5,1,1.5,3/Math.sqrt(2),2.5,3];
+  const band = radius => {
+    const index = bandLimits.findIndex(limit => Math.abs(radius) <= limit + 1e-9);
+    return index < 0 ? 5 : index;
+  };
+  const series = index => `var(--viz-series-${index + 1})`;
+  const samples = Array.from({length:count}, (_, i) => {
+    const radius = pupilRadius * Math.sqrt((i + 0.5) / count);
+    const angle = i * Math.PI * (3 - Math.sqrt(5));
+    return {radius, x:radius * Math.cos(angle), y:radius * Math.sin(angle), band:band(radius)};
+  });
+  const sideHeights = bandLimits;
+  let planeZ = 20;
+  let frame = 0;
+  function svgElement(tag, attrs, parent, content) {
+    const node = document.createElementNS(NS, tag);
+    Object.entries(attrs || {}).forEach(([key,value]) => node.setAttribute(key, value));
+    if (content !== undefined) node.textContent = content;
+    parent.appendChild(node);
+    return node;
+  }
+  function text(svg, x, y, value, anchor = 'middle', cls = 'orae-label') {
+    return svgElement('text', {x,y,'text-anchor':anchor,class:cls}, svg, value);
+  }
+  function drawSide(svg) {
+    const width = Math.max(240, svg.getBoundingClientRect().width);
+    const height = 180;
+    const model = svg.dataset.model;
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    svg.replaceChildren();
+    svgElement('title', {}, svg, `${model === 'mono' ? 'Monofocal' : 'Aberração esférica genérica'}: raios na vista lateral`);
+    svgElement('desc', {}, svg, `Feixe fixo produzido por luz incidente paralela. Plano de observação a ${number(planeZ,3)} milímetros. A escala vertical foi ampliada. Doze raios de seis alturas pupilares representam uma seção da pupila.`);
+    const left = 16, right = width - 17, top = 30, bottom = 128;
+    const zMin = -5.2, zMax = 23.5;
+    const x = z => left + (z - zMin) / (zMax - zMin) * (right - left);
+    const y = h => (top + bottom) / 2 - h * (bottom - top) / 7.4;
+    const lensX = x(0), planeX = x(planeZ), axisY = y(0);
+    svgElement('path', {d:`M ${left} ${axisY} H ${right}`,class:'orae-centerline'},svg);
+    [-1,1].forEach(sign => sideHeights.forEach(h0 => {
+      const h = sign * h0;
+      const p = power(model,h0);
+      const outgoingY = h * (1 - zMax * p / 1000);
+      svgElement('path',{d:`M ${x(zMin)} ${y(h)} L ${lensX} ${y(h)} L ${x(zMax)} ${y(outgoingY)}`,class:'orae-ray',stroke:series(band(h0))},svg);
+    }));
+    svgElement('path', {d:`M ${lensX} ${y(3)} Q ${lensX-7} ${axisY} ${lensX} ${y(-3)} Q ${lensX+7} ${axisY} ${lensX} ${y(3)} Z`,class:'orae-lens'},svg);
+    svgElement('path',{'data-plane-mm':planeZ,d:`M ${planeX} ${top} V ${bottom}`,class:'orae-retina'},svg);
+    text(svg,lensX,18,'Lente');
+    text(svg,planeX,18,'Plano móvel',planeX>width-70?'end':'middle');
+    [0,10,20].forEach(z => {
+      svgElement('path',{d:`M ${x(z)} ${bottom+7} V ${bottom+12}`,class:'orae-axis'},svg);
+      text(svg,x(z),bottom+27,String(z));
+    });
+    text(svg,(lensX+x(20))/2,175,'Distância após a lente (mm)');
+  }
+  function drawFront(svg) {
+    const width = Math.max(240, svg.getBoundingClientRect().width);
+    const height = width;
+    const model = svg.dataset.model;
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    svg.replaceChildren();
+    svgElement('title',{},svg,`Corte de frente do feixe fixo: ${model === 'mono' ? 'monofocal' : 'aberração esférica genérica'}`);
+    svgElement('desc',{},svg,'Mil e duzentos raios amostrados uniformemente na área circular da pupila. Escalas horizontal e vertical de menos 0,30 a mais 0,30 milímetro. O tamanho e a opacidade de todos os pontos são iguais. O cruzamento central marca o eixo. Cada ponto é uma interseção real calculada com o plano móvel, sem representar intensidade luminosa.');
+    const margins = {left:64,right:15,top:12,bottom:49};
+    const plot = Math.min(width-margins.left-margins.right,height-margins.top-margins.bottom);
+    const x0 = margins.left, y0 = margins.top;
+    const x = v => x0 + (v + fieldRadius) / (2 * fieldRadius) * plot;
+    const y = v => y0 + (fieldRadius - v) / (2 * fieldRadius) * plot;
+    svgElement('rect',{x:x0,y:y0,width:plot,height:plot,class:'orae-axis'},svg);
+    svgElement('path',{d:`M ${x(0)} ${y0} V ${y0+plot} M ${x0} ${y(0)} H ${x0+plot}`,class:'orae-axis'},svg);
+    const pointGroup = svgElement('g',{},svg);
+    samples.forEach(sample => {
+      const factor = 1 - planeZ * power(model,sample.radius) / 1000;
+      svgElement('circle',{'data-x-mm':sample.x*factor,'data-y-mm':sample.y*factor,cx:x(sample.x*factor),cy:y(sample.y*factor),r:1.25,class:'orae-dot',fill:series(sample.band)},pointGroup);
+    });
+    svgElement('path',{d:`M ${x(0)-5} ${y(0)} H ${x(0)+5} M ${x(0)} ${y(0)-5} V ${y(0)+5}`,class:'orae-center'},svg);
+    [-0.3,0,0.3].forEach(v => {
+      text(svg,x(v),y0+plot+20,v === 0 ? '0' : `${v<0?'−':'+'}0,30`,v<0?'start':v>0?'end':'middle');
+      text(svg,x0-8,y(v)+4,v === 0 ? '0' : `${v<0?'−':'+'}0,30`,'end');
+    });
+    const xTitle = text(svg,x0+plot/2,y0+plot+43,'Posição no plano (mm)');
+    xTitle.setAttribute('class','orae-label axis-title');
+    xTitle.setAttribute('data-axis','x');
+    const yTitle = text(svg,13,y0+plot/2,'Posição (mm)');
+    yTitle.setAttribute('class','orae-label axis-title');
+    yTitle.setAttribute('data-axis','y');
+    yTitle.setAttribute('transform',`rotate(-90 13 ${y0+plot/2})`);
+  }
+  function drawRange(svg) {
+    const width = Math.max(240,svg.getBoundingClientRect().width);
+    const model = svg.dataset.model;
+    svg.setAttribute('viewBox',`0 0 ${width} 180`);
+    svg.replaceChildren();
+    svgElement('title',{},svg,'Corte ampliado dos raios fixos pelo plano móvel');
+    svgElement('desc',{},svg,'Escala fixa de 18,5 a 20,5 milímetros após a lente. Só o plano vertical se move. Os pontos coloridos sobre o eixo marcam os cruzamentos fixos dos raios. Graduação vertical em distância ao eixo, sem sinal.');
+    const left=64,right=width-15,top=26,bottom=132;
+    const x=z=>left+(z-18.5)/2*(right-left),y=h=>(top+bottom)/2-h/.3*(bottom-top)/2;
+    svgElement('rect',{'data-chart-frame':'',x:left,y:top,width:right-left,height:bottom-top,class:'orae-axis'},svg);
+    svgElement('path',{d:`M ${left} ${y(0)} H ${right}`,class:'orae-axis'},svg);
+    sideHeights.forEach(h0=>{
+      const p=power(model,h0),stroke=series(band(h0));
+      [-1,1].forEach(sign=>svgElement('path',{d:`M ${x(18.5)} ${y(sign*h0*(1-18.5*p/1000))} L ${x(20.5)} ${y(sign*h0*(1-20.5*p/1000))}`,class:'orae-ray',stroke},svg));
+      svgElement('circle',{'data-fixed-focus':1000/p,cx:x(1000/p),cy:y(0),r:2.2,fill:stroke},svg);
+    });
+    svgElement('path',{'data-plane-mm':planeZ,d:`M ${x(planeZ)} ${top} V ${bottom}`,class:'orae-retina'},svg);
+    const anchor=planeZ<18.85?'start':planeZ>20.15?'end':'middle';
+    text(svg,x(planeZ),16,'Plano',anchor);
+    const ticks=width<430?[18.5,19.5,20.5]:[18.5,19,19.5,20,20.5];
+    ticks.forEach(z=>text(svg,x(z),151,number(z,1),z===18.5?'start':z===20.5?'end':'middle'));
+    [-.2,0,.2].forEach(h=>text(svg,left-8,y(h)+4,number(Math.abs(h),1),'end'));
+    const xt=text(svg,(left+right)/2,175,'Distância após a lente (mm)');xt.setAttribute('class','orae-label axis-title');xt.setAttribute('data-axis','x');
+    const yt=text(svg,13,(top+bottom)/2,'Distância ao eixo (mm)');yt.setAttribute('class','orae-label axis-title');yt.setAttribute('data-axis','y');yt.setAttribute('transform',`rotate(-90 13 ${(top+bottom)/2})`);
+  }
+  function updateText(announce) {
+    const equivalentDemand=1000/planeZ-50;
+    root.querySelector('#orae-distance-value').textContent = `${number(planeZ,3)} mm`;
+    root.querySelector('#orae-equivalence').textContent=equivalentDemand>=-1e-9?'Referência de desfoco: '+distance(Math.max(0,equivalentDemand))+' · equivalência didática; feixe fixo':'Plano após o foco de referência · sem correspondência com objeto real próximo';
+    root.querySelector('#orae-mono-focus').textContent = `${number(20)} mm · fixo`;
+    root.querySelector('#orae-ae-focus').textContent = `${number(1000/53)}–${number(20)} mm · fixos`;
+    slider.value = String(planeZ);
+    slider.setAttribute('aria-valuetext',`Plano a ${number(planeZ,3)} milímetros da lente`);
+    const matched = Array.from(preset.options).find(option => option.value !== 'custom' && Math.abs(Number(option.value)-equivalentDemand)<0.00001);
+    preset.value = matched ? matched.value : 'custom';
+    if (announce) root.querySelector('#orae-status').textContent = `Plano de observação a ${number(planeZ,3)} milímetros. A lente e os raios permanecem fixos. A vista frontal mostra o corte desse plano pelo feixe.`;
+  }
+  function draw() {
+    frame = 0;
+    sideSvgs.forEach(drawSide);
+    rangeSvgs.forEach(drawRange);
+    frontSvgs.forEach(drawFront);
+  }
+  function schedule() {
+    if (!frame) frame = requestAnimationFrame(draw);
+  }
+  function save() {
+    if (window.openai && typeof window.openai.setWidgetState === 'function') {
+      const equivalentDemand=1000/planeZ-50;
+      window.openai.setWidgetState({modelContent:{simulador:'plano-movel-feixe-fixo',planoMm:planeZ,feixeFixo:true,referenciaDesfocoCm:equivalentDemand>1e-9?100/equivalentDemand:Math.abs(equivalentDemand)<1e-9?'infinito':null,pupilaMm:6},privateContent:{planoMm:planeZ}}).catch(() => {});
+    }
+  }
+  function apply(value, announce = false, persist = false) {
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed)) return;
+    planeZ = Math.max(18.5,Math.min(20.5,parsed));
+    updateText(announce);
+    schedule();
+    if (persist) save();
+  }
+  preset.addEventListener('change',() => {
+    if (preset.value !== 'custom') apply(1000/(50+Number(preset.value)),true,true);
+  });
+  slider.addEventListener('input',() => apply(slider.value,false,false));
+  slider.addEventListener('change',() => {updateText(true);save();});
+  const restored = window.openai && window.openai.widgetState;
+  const initial = restored && restored.privateContent && restored.privateContent.planoMm;
+  apply(initial === undefined || initial === null ? 20 : initial);
+  window.addEventListener('openai:set_globals',event => {
+    const globals = event.detail && event.detail.globals;
+    const state = globals && globals.widgetState;
+    const value = state && state.privateContent && state.privateContent.planoMm;
+    if (value !== undefined && value !== null) apply(value);
+  });
+  const observer = new ResizeObserver(schedule);
+  sideSvgs.forEach(svg => observer.observe(svg));
+  rangeSvgs.forEach(svg => observer.observe(svg));
+  frontSvgs.forEach(svg => observer.observe(svg));
+})();
+</script>
+</body></html>

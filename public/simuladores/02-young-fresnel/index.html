@@ -1,0 +1,48 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Young e Fresnel no eixo</title><style>
+:root{color-scheme:light;--background:#fff;--foreground:#17212a;--muted-foreground:#586570;--muted:#edf0f3;--border:#ccd3d9;--yellow:#f3b927;--viz-series-1:#1677b5;--viz-series-2:#d59b16;--viz-series-3:#8248ad;--viz-series-4:#178979;--viz-series-5:#ce594d;--viz-series-6:#697583;--viz-series-7:#a5673f;--viz-series-8:#3881a8}
+*{box-sizing:border-box}body{margin:0 auto;max-width:1260px;padding:22px 32px 44px;font-family:Arial,Helvetica,sans-serif;color:var(--foreground);background:var(--background);font-size:16px;line-height:1.45}h1,h2,h3{line-height:1.15}h3{font-size:26px;margin:18px 0}a{color:#146aa0}select,button,input{font:inherit}select{padding:7px;border:1px solid var(--border);background:#fff;color:var(--foreground);border-radius:4px;max-width:100%}button{padding:8px 12px;border:1px solid var(--border);background:#f4f5f6;border-radius:4px;color:var(--foreground);cursor:pointer}.btn-primary{background:#174f74;color:#fff}.viz-controls{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.form-label{display:block;font-size:14px;margin-bottom:5px}.form-range{width:100%;accent-color:#176d9f}.form-check{display:flex;align-items:center;gap:7px}.form-check-input{accent-color:#176d9f}.text-small{font-size:14px}.text-muted{color:var(--muted-foreground)}.tabular-nums{font-variant-numeric:tabular-nums}.aula-voltar{font-size:13px;margin-bottom:16px;display:block}svg text{font-family:Arial,Helvetica,sans-serif}
+</style></head><body><a class="aula-voltar" href="/simuladores/">Voltar ao índice da aula</a><div id="axial-compare">
+<h3>O reforço permanece quando P muda de distância?</h3>
+<label class="form-label" for="ax-distance">Distância até P: <span id="ax-value" class="tabular-nums"></span></label>
+<input id="ax-distance" class="form-range" type="range" min="0.65" max="1.6" step="0.005" value="1">
+<div class="viz-row"><button type="button" class="btn" data-z="0.8">Antes · 0,80 m</button><button type="button" class="btn" data-z="1">Projeto · 1,00 m</button><button type="button" class="btn" data-z="1.25">Depois · 1,25 m</button></div>
+<div class="ax-panels"><div><h3>Dupla fenda de Young</h3><div id="ax-young"></div><div class="text-small">Duas fendas estreitas, simétricas, iluminadas em fase.</div></div><div><h3>Placa de zonas de Fresnel</h3><div id="ax-plate"></div><div class="text-small">Cinco zonas transparentes: disco central + quatro anéis.</div></div></div>
+<div id="ax-status" class="text-small" aria-live="polite"></div>
+<div class="text-small" style="margin-top:10px">Amarelo em P = intensidade · tamanho do ponto ilustrativo · luz monocromática · dimensões transversais ampliadas · intensidade em escala própria para cada sistema · outras ordens fora do intervalo</div>
+</div>
+<style>
+#axial-compare .ax-panels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin-top:14px}
+#axial-compare svg{display:block;width:100%;color:var(--foreground)}
+#axial-compare svg text{fill:var(--foreground);font-size:12px}
+#axial-compare #ax-status{margin-top:14px}
+@media(max-width:620px){#axial-compare .ax-panels{grid-template-columns:1fr}}
+</style>
+<script>
+(()=>{const root=document.getElementById('axial-compare'),slider=root.querySelector('#ax-distance'),tau=2*Math.PI,NS='http://www.w3.org/2000/svg';
+function E(z){let re=0,im=0;for(let j=0;j<5;j++){re+=Math.cos(tau*j/z);im+=Math.sin(tau*j/z);}return Math.sin(Math.PI/(2*z))**2*(re*re+im*im)/25;}
+function el(tag,a={},txt){const n=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(a))n.setAttribute(k,v);if(txt!==undefined)n.textContent=txt;return n;}
+function plot(kind,z){const box=root.querySelector(kind==='young'?'#ax-young':'#ax-plate'),w=Math.max(280,box.getBoundingClientRect().width),h=450,svg=el('svg',{viewBox:`0 0 ${w} ${h}`,height:h,role:'img','aria-label':kind==='young'?'Duas contribuições mantêm fases iguais ao mover P.':'As contribuições integradas das cinco zonas se alinham a um metro e se desencontram fora dessa distância.'});box.replaceChildren(svg);const add=(t,a,txt)=>{const n=el(t,a,txt);svg.append(n);return n;},x0=35,X=q=>x0+q/1.7*(w-x0-16),cy=95,px=X(z),rmax=Math.sqrt(4.5),Y=r=>cy+r/rmax*62;
+add('text',{x:6,y:18},'Luz →');add('line',{x1:x0,y1:cy,x2:w-12,y2:cy,stroke:'var(--border)'});
+for(let py=33;py<158;py++){const r=(py-cy)/62*rmax,open=kind==='young'?Math.abs(Math.abs(r)-1.15)<.12:Math.floor(2*r*r)%2===0;if(!open)add('rect',{x:x0-4,y:py,width:4,height:1,fill:'var(--foreground)'});}
+const ys=kind==='young'?[-1.15,1.15]:[0,...Array.from({length:4},(_,j)=>Math.sqrt(j+1.25))];
+ys.forEach((r,i)=>{const col=`var(--viz-series-${i+1})`,both=kind==='plate'&&r>0?[-r,r]:[r];both.forEach(a=>{add('line',{x1:x0,y1:Y(a),x2:px,y2:cy,stroke:col,'stroke-width':1,'stroke-dasharray':'3 4',opacity:.6});add('circle',{cx:x0,cy:Y(a),r:2.5,fill:col});});});
+add('line',{x1:px,y1:35,x2:px,y2:158,stroke:'var(--foreground)','stroke-width':1});const intensityP=Math.max(0,Math.min(1,kind==='young'?(.65/z)**2:E(z)));
+add('circle',{cx:px,cy,r:17,fill:'var(--yellow)',opacity:.15*intensityP,'data-glow':'outer'});
+add('circle',{cx:px,cy,r:12,fill:'var(--yellow)',opacity:.3*intensityP});
+add('circle',{cx:px,cy,r:7,fill:'var(--background)'});
+const spot=add('circle',{cx:px,cy,r:7,fill:'var(--yellow)','fill-opacity':intensityP,stroke:'var(--muted-foreground)','stroke-width':.6,'data-intensity':intensityP});spot.append(el('title',{},'Intensidade relativa em P: '+Math.round(100*intensityP)+'% da escala deste painel'));
+add('text',{x:px+14,y:cy-15},'P');add('text',{x:w/2,y:180,'text-anchor':'middle'},'Tracejados: caminhos examinados até P');
+add('text',{x:8,y:204},'Luz no eixo · intensidade relativa');
+for(let j=0;j<180;j++){const q=.65+(j+.5)/180*.95,intensity=kind==='young'?(.65/q)**2:E(q);add('rect',{x:X(.65)+j*(X(1.6)-X(.65))/180,y:216,width:(X(1.6)-X(.65))/180+.3,height:14,fill:'var(--viz-series-1)',opacity:Math.max(0,Math.min(1,intensity))});}
+add('line',{x1:px,y1:213,x2:px,y2:233,stroke:'var(--foreground)','stroke-width':2});[.65,1,1.6].forEach(q=>add('text',{x:X(q),y:247,'text-anchor':q===1.6?'end':'middle'},String(q).replace('.',',')+' m'));
+add('text',{x:8,y:273},'Oscilações em P · amplitudes normalizadas');
+const n=kind==='young'?2:5;
+for(let j=0;j<n;j++){const yy=295+j*29,phase=kind==='young'?0:tau*j/z,label=kind==='young'?'Fenda '+(j+1):'Zona '+(2*j+1),col=`var(--viz-series-${j+1})`;add('text',{x:6,y:yy+4},label);add('line',{x1:62,y1:yy,x2:w-10,y2:yy,stroke:'var(--border)'});let d='';for(let k=0;k<=200;k++){const x=66+(w-80)*k/200,y=yy-9*Math.sin(tau*2*k/200-phase);d+=(k?'L':'M')+x.toFixed(2)+','+y.toFixed(2);}add('path',{d,stroke:col,fill:'none','stroke-width':1.7});}
+add('text',{x:w-12,y:447,'text-anchor':'end'},'Tempo →');
+}
+function draw(){const z=+slider.value;root.querySelector('#ax-value').textContent=z.toFixed(2).replace('.',',')+' m';plot('young',z);plot('plate',z);root.querySelector('#ax-status').textContent=Math.abs(z-1)<.006?'Em 1 m: as duas fendas se reforçam; as cinco zonas também se reforçam. Mova P para distinguir os casos.':'Young: fases iguais em todo o eixo. Placa: as diferenças de fase entre zonas mudam com a distância.';}
+function save(){window.openai?.setWidgetState({modelContent:{distancia_m:+slider.value},privateContent:null}).catch(()=>{});}
+slider.addEventListener('input',draw);slider.addEventListener('change',save);root.querySelectorAll('[data-z]').forEach(b=>b.addEventListener('click',()=>{slider.value=b.dataset.z;draw();save();}));function restore(s){const z=s?.modelContent?.distancia_m;if(typeof z==='number'&&z>=.65&&z<=1.6)slider.value=z;draw();}new ResizeObserver(draw).observe(root.querySelector('.ax-panels'));window.addEventListener('openai:set_globals',e=>restore(e.detail?.globals?.widgetState));restore(window.openai?.widgetState);
+})();
+</script>
+</body></html>
