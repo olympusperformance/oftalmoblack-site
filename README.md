@@ -689,6 +689,23 @@ cada nome.
 - Turmas e eventos com data passada viram "Encerrada" sozinhos (horário de
   Brasília). O prazo do trimestre (`PRAZO`) só troca o aviso; não bloqueia o envio.
 
+## Simuladores da aula de lentes
+
+`oftalmoblack.com.br/simuladores/` guarda os 15 simuladores em HTML da aula
+Lentes de Alta Tecnologia do Dr. Alex (Imersão Grau Zero, out/2026), cada um em
+`/simuladores/<nome>/`. Os links da aula (`Aula_Lentes_Alta_Tecnologia_Palco_v6_Perguntas_LINKS_ONLINE.pptx`,
+no Drive dele) apontam para cá. Antes eram relativos (`./Simuladores/...`) e só
+abriam com o PPTX dentro da pasta do pacote.
+
+- Os arquivos são os do Dr. Alex, sem edição: só o botão "Voltar ao índice da aula"
+  passou a levar para `/simuladores/`. O índice é a `Abrir_Simuladores.html` dele,
+  adaptada para a web (sem as instruções de pasta local e sem os botões de PPTX/DOCX).
+- Fora dos buscadores e sempre revalidado (bloco `^~ /simuladores/` no `nginx.conf`).
+- Versão nova dos simuladores: `CLAUDE/simuladores-oftalmoblack/montar_site.py`, fora
+  deste repositório, refaz a pasta a partir da pasta Simuladores baixada, e
+  `trocar_links_pptx.py` troca os links de um PPTX novo. Os endereços ficam em
+  `enderecos.json`; mudar um deles quebra o slide que já aponta para ele.
+
 ## Integrações externas
 
 O site não tem backend, mas depende de quatro serviços de fora:
