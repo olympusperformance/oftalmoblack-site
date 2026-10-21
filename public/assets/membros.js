@@ -28,6 +28,7 @@
     { key:'instagram', label:'Instagram', icon:'instagram' },
     { key:'artifacts', label:'Processos Black', icon:'box' },
     { key:'materials', label:'Materiais', icon:'book-open' },
+    { href:'/simuladores/', label:'Simuladores', icon:'play-circle' },
     { key:'agenda', label:'Agenda', icon:'calendar' },
     { key:'modulos', label:'Fábrica · Íris Black', icon:'brain', group:'Módulos à parte' }
   ];
@@ -564,12 +565,21 @@
 
   /* ── navegação ────────────────────────────────────────────────────────── */
 
+  /* Item que sai da área (os simuladores da aula de lentes moram em
+     /simuladores/, sem login): é link de verdade, abre em outra aba e não tem
+     data-nav, então o clique não passa por go(). A seta avisa que sai. */
+  function linkFora(n, classe, rotulo) {
+    return '<a class="' + classe + '" href="' + esc(n.href) + '" target="_blank" rel="noopener" ' +
+      'style="text-decoration:none">' + ico(n.icon) + rotulo +
+      '<small aria-hidden="true" style="margin-left:auto;font-size:12px;opacity:.7">↗</small></a>';
+  }
+
   function renderNav(ativo) {
     var m = st.membro;
     $('rail').innerHTML =
       NAV.map(function (n) {
-        return (n.group ? '<div class="rail-lbl rail-grupo">' + esc(n.group) + '</div>' : '') + '<button class="nav" role="tab" data-nav="' + n.key + '" aria-selected="' +
-          (n.key === ativo) + '">' + ico(n.icon) + '<span>' + n.label + '</span></button>';
+        return (n.group ? '<div class="rail-lbl rail-grupo">' + esc(n.group) + '</div>' : '') + (n.href ? linkFora(n, 'nav', '<span>' + esc(n.label) + '</span>') : '<button class="nav" role="tab" data-nav="' + n.key + '" aria-selected="' +
+          (n.key === ativo) + '">' + ico(n.icon) + '<span>' + n.label + '</span></button>');
       }).join('') +
       '<div class="rail-foot"><div class="k">' +
       esc(([m.turma, m.fase].filter(Boolean).join(' · ') || 'Mentoria').toUpperCase()) + '</div>' +
@@ -577,8 +587,8 @@
       esc(Club.fmtMesAno(String(m.criado_em || '').slice(0, 10))) + '.</div></div>';
 
     $('navm').innerHTML = NAV.map(function (n) {
-      return (n.group ? '<span class="navm-group">' + esc(n.group) + '</span>' : '') + '<button class="chip" role="tab" data-nav="' + n.key + '" aria-selected="' +
-        (n.key === ativo) + '">' + ico(n.icon) + n.label + '</button>';
+      return (n.group ? '<span class="navm-group">' + esc(n.group) + '</span>' : '') + (n.href ? linkFora(n, 'chip', esc(n.label)) : '<button class="chip" role="tab" data-nav="' + n.key + '" aria-selected="' +
+        (n.key === ativo) + '">' + ico(n.icon) + n.label + '</button>');
     }).join('');
   }
 
