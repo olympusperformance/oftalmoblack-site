@@ -710,6 +710,21 @@ abriam com o PPTX dentro da pasta do pacote.
   `trocar_links_pptx.py` troca os links de um PPTX novo. Os endereços ficam em
   `enderecos.json`; mudar um deles quebra o slide que já aponta para ele.
 
+## Mapa da Jornada do Cliente
+
+`oftalmoblack.com.br/jornada-do-cliente/` é o mapa interativo da aula Máquina de
+Clientes Black do Dr. Alex (Imersão, 22/10/2026), o `Mapa_Jornada_Cliente_Black_Interativo.html`
+que ele mandou no Cérebro Black em 21/10, sem edição. O arquivo é autocontido (fontes e
+imagens embutidas, nada de fora).
+
+- O link do slide 204 da aula (`Aula_Maquina_de_Clientes_Black_Jornada_Integrada_v3_LINKS_ONLINE.pptx`,
+  no Drive dele) aponta para cá; antes abria o HTML no visualizador do Drive.
+- No Cérebro, o menu do mentorado tem o item **Máquina de Clientes**, logo depois de
+  Simuladores, pedido do Dr. Alex no mesmo dia. Funciona igual: link com `href` no `NAV`,
+  abre em outra aba, fora do menu do admin.
+- Fora dos buscadores e sempre revalidado (bloco `^~ /jornada-do-cliente/` no `nginx.conf`).
+  Não confundir com `/jornada-mentorado/`, o resumo do processo do mentorado.
+
 ## Integrações externas
 
 O site não tem backend, mas depende de quatro serviços de fora:

@@ -29,6 +29,7 @@
     { key:'artifacts', label:'Processos Black', icon:'box' },
     { key:'materials', label:'Materiais', icon:'book-open' },
     { href:'/simuladores/', label:'Simuladores', icon:'play-circle' },
+    { href:'/jornada-do-cliente/', label:'Máquina de Clientes', icon:'users' },
     { key:'agenda', label:'Agenda', icon:'calendar' },
     { key:'modulos', label:'Fábrica · Íris Black', icon:'brain', group:'Módulos à parte' }
   ];
@@ -566,8 +567,9 @@
   /* ── navegação ────────────────────────────────────────────────────────── */
 
   /* Item que sai da área (os simuladores da aula de lentes moram em
-     /simuladores/, sem login): é link de verdade, abre em outra aba e não tem
-     data-nav, então o clique não passa por go(). A seta avisa que sai. */
+     /simuladores/ e o mapa da Máquina de Clientes em /jornada-do-cliente/, sem
+     login): é link de verdade, abre em outra aba e não tem data-nav, então o
+     clique não passa por go(). A seta avisa que sai. */
   function linkFora(n, classe, rotulo) {
     return '<a class="' + classe + '" href="' + esc(n.href) + '" target="_blank" rel="noopener" ' +
       'style="text-decoration:none">' + ico(n.icon) + rotulo +
