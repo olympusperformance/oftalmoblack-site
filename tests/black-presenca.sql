@@ -11,7 +11,7 @@ begin
  p=jsonb_set(p,'{id}',to_jsonb(gen_random_uuid()::text));
  r=public.black_presenca_receber(p,'new-request','qa-network');if r<>'existing' then raise exception 'expected email dedup';end if;
  select count(*) into n from public.black_presencas_evento where evento='qa-transaction';if n<>1 then raise exception 'duplicate attendance';end if;
- r=public.black_presenca_receber(p,'new-request','qa-network',gen_random_uuid());if r<>'identity_required' then raise exception 'unknown user accepted';end if;
+ r=public.black_presenca_receber(jsonb_set(p,'{id}',to_jsonb(gen_random_uuid()::text)),'unknown-user-request','qa-network',gen_random_uuid());if r<>'identity_required' then raise exception 'unknown user accepted';end if;
  select id,user_id,email into m from public.members where ativo and user_id is not null limit 1;
  if found then
    original_id=gen_random_uuid();lease=now()+interval '3 minutes';

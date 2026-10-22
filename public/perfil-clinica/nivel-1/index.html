@@ -16,9 +16,6 @@
     @media(max-width:380px){.page{width:calc(100% - 32px)}.card{padding-inline:18px}.navigation{margin-inline:-18px;padding-inline:18px}.cta{font-size:10px;padding-inline:12px;letter-spacing:.06em}h1{font-size:29px}}
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
   </style>
-  <script defer src="/assets/vendor/supabase.js"></script>
-  <script defer src="/config.js"></script>
-  <script defer src="/assets/club-supabase.js"></script>
 </head>
 <body>
   <main class="page">
@@ -26,19 +23,19 @@
     <noscript><p class="noscript">Ative o JavaScript no seu navegador para confirmar sua presença.</p></noscript>
     <div class="card" id="presence-card">
       <section id="member-gate" aria-labelledby="gate-title"><h1 id="gate-title">Você já é membro do Black?</h1><div class="options"><button id="member-yes" class="choice" type="button">Sim, sou membro</button><button id="member-no" class="choice" type="button">Ainda não sou membro</button></div></section>
-      <form id="presence-form" hidden novalidate aria-labelledby="email-title"><h2 id="email-title" tabindex="-1">Confirme sua presença</h2><label class="field-label" for="email">E-mail de cadastro</label><input id="email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="254" required placeholder="voce@exemplo.com.br"><div class="navigation"><button id="back-button" class="secondary" type="button">Voltar</button><button id="confirm-button" class="cta" type="submit">Confirmar minha presença</button></div></form>
+      <form id="presence-form" hidden novalidate aria-labelledby="name-title"><h2 id="name-title" tabindex="-1">Confirme sua presença</h2><label class="field-label" for="nome">Nome completo</label><input id="nome" name="nome" type="text" autocomplete="off" minlength="2" maxlength="160" required placeholder="Seu nome completo"><div class="navigation"><button id="back-button" class="secondary" type="button">Voltar</button><button id="confirm-button" class="cta" type="submit">Confirmar minha presença</button></div></form>
       <p id="presence-message" class="message" role="status" aria-live="polite" tabindex="-1" hidden></p>
     </div>
     <p class="privacy" id="privacy-note"><a href="/politica-de-privacidade/" target="_blank" rel="noopener">Política de privacidade</a></p>
-    <section class="card success" id="success" hidden aria-labelledby="success-title"><div class="success-symbol" aria-hidden="true">✓</div><h2 id="success-title" tabindex="-1">Presença confirmada.</h2><p>Seu registro de presença foi recebido. Aproveite o evento.</p></section>
+    <section class="card success" id="success" hidden aria-labelledby="success-title"><div class="success-symbol" aria-hidden="true">✓</div><h2 id="success-title" tabindex="-1">Presença confirmada.</h2><p id="success-day"></p><button id="new-presence" class="cta" type="button" style="margin-top:26px;width:100%">Registrar outra presença</button></section>
     <footer>Club OftalmoBlack</footer>
   </main>
   <script>
     (() => {
       'use strict';
-      const gate = document.getElementById('member-gate'), form = document.getElementById('presence-form'), email = document.getElementById('email'), message = document.getElementById('presence-message');
+      const gate = document.getElementById('member-gate'), form = document.getElementById('presence-form'), name = document.getElementById('nome'), message = document.getElementById('presence-message');
       const yes = document.getElementById('member-yes'), no = document.getElementById('member-no'), back = document.getElementById('back-button'), confirm = document.getElementById('confirm-button');
-      let memberToken = null, tokenExpiry = 0, pending = null, sending = false, completed = false;
+      let pending = null, sending = false, completed = false;
       const query = new URLSearchParams(location.search);
       const origem = ['stories','presencial','direto'].includes(query.get('origem')) ? query.get('origem') : 'presencial';
       const utm = {};
@@ -47,10 +44,10 @@
         // Do not carry contact details or arbitrary query parameters to the next form.
         if (value && value.length <= 200 && !/@|(?:\d[\s().+-]*){8,}/.test(value)) utm[key] = value;
       }
-      function showEmail() { gate.hidden = true; form.hidden = false; message.hidden = true; document.getElementById('email-title').focus(); }
+      function showName() { gate.hidden = true; form.hidden = false; message.hidden = true; document.getElementById('name-title').focus(); }
       function showMessage(text) { message.textContent = text; message.hidden = false; message.focus(); }
       function setBusy(busy) {
-        sending = busy; for (const control of [yes,no,back,confirm,email]) control.disabled = busy;
+        sending = busy; for (const control of [yes,no,back,confirm,name]) control.disabled = busy;
         document.getElementById('presence-card').setAttribute('aria-busy', String(busy));
         yes.textContent = busy && !gate.hidden ? 'Confirmando presença...' : 'Sim, sou membro';
         confirm.textContent = busy ? 'Confirmando presença...' : 'Confirmar minha presença';
@@ -61,57 +58,48 @@
         const hex = [...bytes].map(b => b.toString(16).padStart(2, '0')).join('');
         return hex.slice(0,8)+'-'+hex.slice(8,12)+'-'+hex.slice(12,16)+'-'+hex.slice(16,20)+'-'+hex.slice(20);
       }
-      async function readExistingMember() {
-        try {
-          const sb = window.Club && window.Club.sb; if (!sb || completed) return;
-          let result = await sb.auth.getSession(); if (result.error) return;
-          let session = result.data && result.data.session; if (!session || !session.access_token) return;
-          if (!session.expires_at || session.expires_at * 1000 < Date.now() + 60000) {
-            result = await sb.auth.refreshSession(); if (result.error) return;
-            session = result.data && result.data.session; if (!session || !session.access_token) return;
-          }
-          const me = await sb.rpc('me');
-          if (!me.error && me.data && me.data.member && me.data.member.ativo === true && !completed) { memberToken = session.access_token; tokenExpiry = session.expires_at * 1000; }
-        } catch { /* A failed lookup leaves the short email form available. */ }
+      function formatDay(value) {
+        if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+        const [year,month,day] = value.split('-').map(Number);
+        const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+        const days = [31,leap ? 29 : 28,31,30,31,30,31,31,30,31,30,31];
+        if (year < 1 || month < 1 || month > 12 || day < 1 || day > days[month - 1]) return null;
+        const parts = value.split('-'); return parts[2] + '/' + parts[1] + '/' + parts[0];
       }
-      async function sendPresence(useMember) {
+      async function sendPresence() {
         if (sending || completed) return;
-        const token = useMember ? memberToken : null;
-        if (useMember && (!token || tokenExpiry < Date.now() + 15000)) { showEmail(); return; }
-        if (!useMember) { email.setCustomValidity(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim()) ? '' : 'Confira o seu e-mail.'); if (!email.reportValidity()) return; }
+        const normalizedName = name.value.normalize('NFKC').trim().replace(/\s+/g, ' ');
+        name.setCustomValidity(normalizedName.length >= 2 && normalizedName.length <= 160 && /[\p{L}].*[\p{L}]/u.test(normalizedName) && !/^(dr|dra)\.?$/i.test(normalizedName) ? '' : 'Informe seu nome completo, de 2 a 160 caracteres.');
+        if (!name.reportValidity()) return;
         const endpointValue = document.querySelector('meta[name="presence-endpoint"]').content.trim(), apiKey = document.querySelector('meta[name="presence-api-key"]').content.trim();
         let endpoint;
         try { endpoint = new URL(endpointValue); if (!apiKey || endpoint.protocol !== 'https:') throw new Error('configuration'); }
         catch { showMessage('A confirmação está indisponível no momento. Tente novamente mais tarde.'); return; }
-        const payload = { ...(useMember ? {} : { email: email.value.trim().toLowerCase() }), origem, utm, pagina: location.pathname };
-        const fingerprint = JSON.stringify({ ...payload, member: useMember ? token : null });
+        const payload = { nome: normalizedName, origem, utm, pagina: location.pathname };
+        const fingerprint = JSON.stringify(payload);
         if (!pending || pending.fingerprint !== fingerprint) pending = { fingerprint, payload: { submission_id: uuid(), ...payload } };
         const attempt = pending;
         setBusy(true); message.hidden = true;
         const controller = new AbortController(), timer = setTimeout(() => controller.abort(), 18000);
         try {
           const headers = { 'Content-Type': 'application/json', apikey: apiKey, Authorization: 'Bearer ' + apiKey };
-          if (useMember) headers['x-member-token'] = token;
           const response = await fetch(endpoint.href, { method:'POST', headers, body:JSON.stringify(attempt.payload), signal:controller.signal, credentials:'omit', referrerPolicy:'no-referrer' });
           let ack; try { ack = await response.json(); } catch { throw new Error('unconfirmed'); }
-          if (response.status === 401 && ack?.code === 'identity_required') {
-            memberToken = null; tokenExpiry = 0; pending = null;
-            showEmail(); showMessage('Informe seu e-mail de cadastro para confirmar a presença.');
-            return;
-          }
-          if (!response.ok || ack?.ok !== true || ack.id !== attempt.payload.submission_id) throw new Error('unconfirmed');
-          completed = true; pending = null; memberToken = null; tokenExpiry = 0; email.value = ''; form.reset();
+          const day = formatDay(ack?.day);
+          if (!response.ok || ack?.ok !== true || ack.id !== attempt.payload.submission_id || !day) throw new Error('unconfirmed');
+          completed = true; pending = null; name.value = ''; form.reset();
           document.getElementById('presence-card').remove(); document.getElementById('privacy-note').hidden = true;
+          document.getElementById('success-day').textContent = 'Sua presença foi registrada em ' + day + '.';
           document.getElementById('success').hidden = false; document.getElementById('success-title').focus();
         } catch { showMessage('Não foi possível confirmar o recebimento. Tente novamente.'); }
         finally { clearTimeout(timer); if (!completed) setBusy(false); }
       }
-      yes.addEventListener('click', () => { if (memberToken && tokenExpiry > Date.now() + 15000) sendPresence(true); else if (!sending) showEmail(); });
+      yes.addEventListener('click', () => { if (!sending) showName(); });
       no.addEventListener('click', () => { if (sending) return; const target = new URL('/perfil-clinica/', location.origin); target.searchParams.set('origem', origem); for (const [key,value] of Object.entries(utm)) target.searchParams.set(key,value); location.assign(target.href); });
       back.addEventListener('click', () => { if (sending) return; form.hidden = true; gate.hidden = false; message.hidden = true; yes.focus(); });
-      email.addEventListener('input', () => email.setCustomValidity(''));
-      form.addEventListener('submit', event => { event.preventDefault(); sendPresence(false); });
-      window.addEventListener('DOMContentLoaded', readExistingMember, { once:true });
+      name.addEventListener('input', () => name.setCustomValidity(''));
+      form.addEventListener('submit', event => { event.preventDefault(); sendPresence(); });
+      document.getElementById('new-presence').addEventListener('click', () => location.reload());
     })();
   </script>
 </body>

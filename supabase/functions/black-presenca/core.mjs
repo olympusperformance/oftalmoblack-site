@@ -3,8 +3,15 @@ export const EVENTO='imersao-marketing-2026-10';
 export function validate(input,authenticated=false){
  if(!input||typeof input!=='object'||Array.isArray(input))throw new InputError('Dados inválidos.');
  if(typeof input.submission_id!=='string'||!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(input.submission_id))throw new InputError('Identificador inválido.');
- const email=authenticated?null:typeof input.email==='string'?input.email.trim().toLowerCase():'';
- if(!authenticated&&(!email||email.length>254||! /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)))throw new InputError('Confira o e-mail de cadastro.');
+ let nome=null,email=null;
+ if(!authenticated&&input.nome!=null){
+  if(typeof input.nome!=='string'||/[\x00-\x1f\x7f]/.test(input.nome))throw new InputError('Confira seu nome completo.');
+  nome=input.nome.normalize('NFKC').trim().replace(/\s+/g,' ');
+  if(nome.length<2||nome.length>160||!/[\p{L}].*[\p{L}]/u.test(nome)||/^(dr|dra)\.?$/i.test(nome))throw new InputError('Confira seu nome completo.');
+ }else if(!authenticated){
+  email=typeof input.email==='string'?input.email.trim().toLowerCase():'';
+  if(!email||email.length>254||! /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))throw new InputError('Confira o e-mail de cadastro.');
+ }
  const utm={};
  for(const key of ['utm_source','utm_medium','utm_campaign','utm_content','utm_term']){
   const v=input.utm?.[key];if(v==null||v==='')continue;
@@ -13,7 +20,8 @@ export function validate(input,authenticated=false){
  }
  const pagina=input.pagina||'/perfil-clinica/nivel-1/';
  if(typeof pagina!=='string'||pagina.length>200||!pagina.startsWith('/')||/[?#\x00-\x1f]/.test(pagina))throw new InputError('Página inválida.');
- return {id:input.submission_id.toLowerCase(),evento:EVENTO,email,origem:['stories','presencial','direto'].includes(input.origem)?input.origem:'presencial',utm,pagina};
+ // Omitir nome nos contratos antigos preserva o hash e os retries já emitidos.
+ return {id:input.submission_id.toLowerCase(),evento:EVENTO,...(nome?{nome}:{}),email,origem:['stories','presencial','direto'].includes(input.origem)?input.origem:'presencial',utm,pagina};
 }
 export async function digest(value){return [...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value)))].map(x=>x.toString(16).padStart(2,'0')).join('');}
 export async function ipHash(ip,secret){
@@ -23,7 +31,10 @@ export async function ipHash(ip,secret){
 export function sheetValues(row){
  const p=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(new Date(row.created_at)).map(x=>[x.type,x.value]));
  const date=Date.UTC(+p.year,+p.month-1,+p.day,+p.hour,+p.minute,+p.second)/86400000+25569;
- return [row.id,date,row.evento,row.nome||'',row.email,row.member_id||'',row.identificacao==='sessao_autenticada'?'Sessão autenticada':'E-mail informado',row.member_id?'Associado ao cadastro':'Conferir cadastro',row.origem,...['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].map(k=>row.utm?.[k]||''),row.pagina];
+ const [year,month,day]=row.dia_presenca.split('-').map(Number);
+ const presenceDay=Date.UTC(year,month-1,day)/86400000+25569;
+ const method={sessao_autenticada:'Sessão autenticada',email_informado:'E-mail informado',nome_informado:'Nome informado'}[row.identificacao];
+ return [row.id,date,row.evento,row.nome||'',row.email||'',row.member_id||'',method,row.member_id?'Associado ao cadastro':'Conferir cadastro',row.origem,...['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].map(k=>row.utm?.[k]||''),row.pagina,presenceDay];
 }
 export async function ensureSheetCapacity(google,token,lastRow){
  const meta=await google('?fields=sheets(properties(sheetId,title,gridProperties(rowCount)))',token);
@@ -61,13 +72,13 @@ export function createHandler({receive,resolveUser,queueSync,sync,env}){
    const hash=await digest(JSON.stringify({...data,userId}));
    const ip=await ipHash((req.headers.get('x-forwarded-for')||'unknown').split(',')[0].trim(),env.hashSecret);
    const result=await receive(data,hash,ip,userId);
-   if(result==='identity_required')return reply(401,{ok:false,code:'identity_required'});
-   if(result==='conflict')return reply(409,{ok:false});
-   if(result==='rate_limit')return reply(429,{ok:false});
-   if(!['created','existing'].includes(result))throw new Error('receipt_unavailable');
+   if(result?.status==='identity_required')return reply(401,{ok:false,code:'identity_required'});
+   if(result?.status==='conflict')return reply(409,{ok:false});
+   if(result?.status==='rate_limit')return reply(429,{ok:false});
+   if(!['created','existing'].includes(result?.status)||!/^\d{4}-\d{2}-\d{2}$/.test(result?.day||''))throw new Error('receipt_unavailable');
    queueSync();
    // Mesmo retorno para e-mails associados e não associados: sem consulta pública da base.
-   return reply(200,{ok:true,id:data.id});
+   return reply(200,{ok:true,id:data.id,day:result.day});
   }catch(error){return reply(error instanceof InputError||error instanceof SyntaxError?400:503,{ok:false});}
  };
 }

@@ -50,13 +50,13 @@ async function sync() {
   for(const row of rows){
     try{
       const token=await googleToken();
-      const range=encodeURIComponent(`Presenças!A${row.sheet_row}:O${row.sheet_row}`);
+      const range=encodeURIComponent(`Presenças!A${row.sheet_row}:P${row.sheet_row}`);
       const current=await google(`values/${range}`,token);
       // A aba é gerenciada e protegida. Nunca sobrescrever outro cadastro
       // caso alguém reorganize linhas manualmente.
       if(current.values?.[0]?.some((v: unknown)=>v!=null&&v!=='')&&current.values[0][0]!==row.id) throw new Error('sheet_row_conflict');
-      const result=await google(`values/${range}?valueInputOption=RAW`,token,{range:`Presenças!A${row.sheet_row}:O${row.sheet_row}`,majorDimension:'ROWS',values:[sheetValues(row)]});
-      if(result.updatedCells!==15) throw new Error('sheet_ack');
+      const result=await google(`values/${range}?valueInputOption=RAW`,token,{range:`Presenças!A${row.sheet_row}:P${row.sheet_row}`,majorDimension:'ROWS',values:[sheetValues(row)]});
+      if(result.updatedCells!==16) throw new Error('sheet_ack');
       await db(`black_presencas_evento?id=eq.${row.id}&revision=eq.${row.revision}`,{synced_at:new Date().toISOString(),sync_lock_until:null,sync_error:null},'PATCH');
       synced++;
     }catch(error){
@@ -78,7 +78,7 @@ const handler=createHandler({
     const user=await res.json();
     return typeof user.id==='string'?user.id:null;
   },
-  receive:(data: unknown,hash: string,ip: string,userId: string|null)=>db('rpc/black_presenca_receber',{p_payload:data,p_hash:hash,p_ip_hash:ip,p_user_id:userId}),
+  receive:(data: unknown,hash: string,ip: string,userId: string|null)=>db('rpc/black_presenca_receber_v2',{p_payload:data,p_hash:hash,p_ip_hash:ip,p_user_id:userId}),
   sync,
   queueSync:()=>EdgeRuntime.waitUntil(sync().catch(()=>{})),
 });
