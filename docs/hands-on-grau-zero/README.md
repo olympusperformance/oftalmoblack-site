@@ -28,4 +28,6 @@ HTML revalidado a cada visita. CSS/JS têm hash na query e assets com cache de 3
 
 ## Validação
 
+Funil e conversão específica configurados em 22/10/2026: [contrato de tracking](tracking.md). O `generate_lead` existente continua sendo a única conversão GA4 desta candidatura; Meta usa `Lead` e uma regra exclusiva da rota. Início, avanço, tentativa e falhas têm eventos de diagnóstico separados, sem dados do candidato.
+
 QA local em cinco larguras e testes de erro, timeout, falta/divergência de recibo, repetição e clique duplo executados antes da publicação. A confirmação de produção exige prova adicional de HTML/assets reais e de candidatura técnica recebida com todos os campos e UTMs na aba correta, seguida da retirada exclusiva do registro de teste. CI verde não substitui essa conferência.

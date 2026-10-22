@@ -35,6 +35,10 @@
   let completed = false;
   let retry = null;
   let currentStep = 1;
+  let started = false;
+  const progressEvent = (action, extra = {}) => {
+    window.dispatchEvent(new CustomEvent('hands-on:progress', { detail: { action, ...extra } }));
+  };
 
   const setStep = (step, focusFirst = true) => {
     currentStep = step;
@@ -66,6 +70,11 @@
     const clearError = () => { field.setCustomValidity(''); field.removeAttribute('aria-invalid'); };
     field.addEventListener('input', clearError);
     field.addEventListener('change', clearError);
+    const start = () => {
+      if (!started) { started = true; progressEvent('start'); }
+    };
+    field.addEventListener('input', start);
+    field.addEventListener('change', start);
   }
   const invalid = (name, message) => {
     const field = form.elements[name];
@@ -108,7 +117,10 @@
     backButton.disabled = value;
   };
   const advance = () => {
-    if (!submitting && !completed && validate(1)) setStep(2);
+    if (!submitting && !completed && validate(1)) {
+      progressEvent('advance');
+      setStep(2);
+    }
   };
   continueButton.addEventListener('click', advance);
   backButton.addEventListener('click', () => { if (!submitting && !completed) setStep(1); });
@@ -174,6 +186,8 @@
     lockFields(true);
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 15000);
+    progressEvent('submit');
+    let errorType = 'network';
     try {
       const response = await fetch(endpointUrl.href, {
         method: 'POST',
@@ -184,7 +198,8 @@
         referrerPolicy: 'no-referrer',
         redirect: 'follow'
       });
-      if (!response.ok) throw new Error('http_error');
+      if (!response.ok) { errorType = 'http'; throw new Error('http_error'); }
+      errorType = 'unconfirmed';
       const receipt = await response.json();
       if (receipt.ok !== true || receipt.request_id !== payload.request_id) throw new Error('unconfirmed');
       completed = true;
@@ -192,6 +207,7 @@
       submit.textContent = 'Candidatura recebida';
       window.dispatchEvent(new CustomEvent('hands-on:receipt', { detail: { ok: true, request_id: receipt.request_id } }));
     } catch {
+      progressEvent('error', { error_type: controller.signal.aborted ? 'timeout' : errorType });
       showStatus('Não foi possível confirmar o envio. Seus dados continuam no formulário. Tente novamente.', 'error');
     } finally {
       window.clearTimeout(timeout);
