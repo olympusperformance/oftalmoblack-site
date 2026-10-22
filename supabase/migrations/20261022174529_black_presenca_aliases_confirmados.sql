@@ -90,4 +90,3 @@ end;
 $$;
 revoke all on function public.black_presenca_receber_v2(jsonb,text,text,uuid) from public,anon,authenticated;
 grant execute on function public.black_presenca_receber_v2(jsonb,text,text,uuid) to service_role;
-
