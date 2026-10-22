@@ -1,7 +1,9 @@
 /* Teste de Arquétipo · Club OftalmoBlack
-   Conteúdo e pontuação idênticos ao teste original (testedearquetipo.netlify.app).
-   Únicas mudanças de texto: travessões trocados por vírgula, dois-pontos ou
-   parênteses, e o nome de cada variação separado da descrição (com acento). */
+   Pontuação idêntica à do teste original (testedearquetipo.netlify.app).
+   Mudanças de texto: travessões trocados por vírgula, dois-pontos ou
+   parênteses; o nome de cada variação separado da descrição (com acento); e,
+   em 22/10/2026, Sábio e Governante deixaram de dizer que podem postar pouco.
+   O arquétipo define o tom do conteúdo, não a frequência. */
 
 window.ARCH = {
   MAGO: {
@@ -22,14 +24,14 @@ window.ARCH = {
   SABIO: {
     nome: 'O Sábio',
     desc: 'Você é a referência técnica. Quando alguém duvida, busca a sua opinião. Sua autoridade não precisa de barulho: vem da profundidade. No Instagram, você ensina, mas com elegância. Sem populismo, sem barateamento.',
-    essencia: 'O Sábio é o arquétipo do <strong>conhecimento</strong>. Você não busca atenção, busca verdade. Suas decisões clínicas são fundamentadas, seu pensamento é estruturado, e o paciente percebe isso na primeira conversa. Você é o oftalmologista que outros oftalmologistas consultam. No Instagram, o Sábio vence pela densidade do conteúdo, não pela frequência. Cada post precisa ensinar algo que ninguém mais está ensinando.',
+    essencia: 'O Sábio é o arquétipo do <strong>conhecimento</strong>. Você não busca atenção, busca verdade. Suas decisões clínicas são fundamentadas, seu pensamento é estruturado, e o paciente percebe isso na primeira conversa. Você é o oftalmologista que outros oftalmologistas consultam. No Instagram, o Sábio vence pela densidade do conteúdo, postando com frequência. Cada post precisa ensinar algo que ninguém mais está ensinando.',
     variacoes: {
       ACADEMICO: { nome: 'Acadêmico', desc: 'Você se posiciona pelo rigor científico. Estudos, literatura, evidência. Audiência: outros médicos e pacientes muito educados.' },
       MENTOR: { nome: 'Mentor', desc: 'Sua força está na experiência vivida. Você ensina pela história, não pelo paper. Audiência: pacientes e médicos que querem direção prática.' },
       COMUNICADOR: { nome: 'Comunicador', desc: 'Você simplifica o complexo. Sua marca é fazer qualquer pessoa entender o que ninguém explica direito. Maior alcance, mensagem mais democrática.' }
     },
     ig: [
-      { t: 'Conteúdo educativo profundo', d: 'Vá fundo onde ninguém vai. Um único tema, exaurido, vale mais que dez temas superficiais.' },
+      { t: 'Conteúdo educativo profundo', d: 'Vá fundo onde ninguém vai. Explore o mesmo tema em uma sequência de posts, em vez de passar por dez temas por cima.' },
       { t: 'Desmistifique o senso comum', d: 'Pegue um mito que todo mundo aceita e prove que está errado. Autoridade vem de quem desafia, não de quem repete.' },
       { t: 'Estudos de caso comentados', d: 'Mostre seu raciocínio passo a passo. O paciente não entende a técnica, mas entende inteligência aplicada.' }
     ]
@@ -96,15 +98,15 @@ window.ARCH = {
   },
   GOVERNANTE: {
     nome: 'O Governante',
-    desc: 'Você lidera. Não pela voz alta, mas pela presença. Sua marca pessoal carrega classe, autoridade e a sensação de tradição que dá segurança. No Instagram, você não corre atrás: as pessoas vêm até você.',
-    essencia: 'O Governante é o arquétipo da <strong>autoridade</strong>. Você define padrão. Sua clínica tem a melhor estrutura, seu time é treinado com rigor, seus pacientes pertencem a um círculo de quem reconhece valor. Sua autoridade não precisa ser anunciada: é sentida. No Instagram, esse arquétipo vence pela escassez bem dosada: pouca postagem, alto valor percebido. O Governante não faz reels todo dia. Ele aparece quando precisa, com peso.',
+    desc: 'Você lidera. Não pela voz alta, mas pela presença. Sua marca pessoal carrega classe, autoridade e a sensação de tradição que dá segurança. No Instagram, você não corre atrás de tendência: mostra o seu padrão com constância, e as pessoas vêm até você.',
+    essencia: 'O Governante é o arquétipo da <strong>autoridade</strong>. Você define padrão. Sua clínica tem a melhor estrutura, seu time é treinado com rigor, seus pacientes pertencem a um círculo de quem reconhece valor. Sua autoridade não precisa ser anunciada: é sentida. No Instagram, o Governante posta com frequência, como qualquer arquétipo. O que muda é o tom: sóbrio, seguro, com o padrão da clínica aparecendo em cada post.',
     variacoes: {
       CLASSICO: { nome: 'Clássico', desc: 'Você lidera pela tradição. Sofisticação discreta, elegância sem ostentação. Marca de prestígio silencioso.' },
       SOBERANO: { nome: 'Soberano', desc: 'Você lidera pela conquista visível. Resultados, números, prêmios. Marca de sucesso explícito e reconhecido.' },
       PATRIARCA: { nome: 'Patriarca', desc: 'Você lidera pela proteção. Sua equipe é família, seus pacientes são tribo. Marca de cuidado firme e legado.' }
     },
     ig: [
-      { t: 'Aparições estratégicas', d: 'Não poste por postar. Cada conteúdo seu precisa carregar peso. Pouco e bom vence muito e mediano.' },
+      { t: 'Presença constante', d: 'Poste com frequência e mantenha o mesmo nível em todos os posts. A autoridade cresce com a constância: o paciente precisa ver você sempre.' },
       { t: 'Padrão de operação', d: 'Mostre a estrutura, o protocolo, o nível de cuidado. Pacientes pagam pela percepção de excelência sistematizada.' },
       { t: 'Equipe como extensão', d: 'Apresente seu time com respeito. Quem lidera bem é reconhecido também pelo que constrói ao redor.' }
     ]
