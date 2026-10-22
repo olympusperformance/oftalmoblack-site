@@ -6,6 +6,8 @@ Revisão do Dr. Alex incorporada com autorização de Felipe em 22/10/2026: uma 
 
 Formulário em duas etapas. A primeira valida identificação sem enviar dados. A segunda qualifica experiência, volume cirúrgico, lentes de alta tecnologia e clínica; envio único ao concluir. Sucesso exige `ok=true` e eco do `request_id`. Retentativa idêntica usa o mesmo UUID; edição cria outro UUID. Não há abertura automática ou mensagem de WhatsApp.
 
+CAPI adicionada por autorização de Felipe em 22/10: cadastro pelo proxy exclusivo do projeto Web, confirmação na mesma planilha e fila durável. Pixel e servidor usam os mesmos IDs. [Contrato e homologação](capi.md).
+
 ## Receptor
 
 Configuração em `receptor.json`; lógica da nova versão em `Code.gs`. Nova implantação versão 2 no projeto Apps Script já autorizado da Olympus, usando aba própria `Candidaturas Hands-on Grau Zero` na planilha de aplicações existente. A implantação antiga da mentoria continua fixada na versão 1 e sua URL não foi alterada. Não apontar o deployment legado para a versão 2 sem tratar a compatibilidade.

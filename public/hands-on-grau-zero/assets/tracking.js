@@ -50,8 +50,11 @@
     try { window.fbq('track', name, extra, ...(options ? [options] : [])); } catch { /* Keep the application usable. */ }
   };
   ga('page_view');
-  meta('PageView');
-  meta('ViewContent', { content_name: 'Hands-on Grau Zero', content_category: 'oftalmoblack_b2b' });
+  const pageId=window.crypto?.randomUUID?.();
+  const eventOptions=name=>pageId?{eventID:'hands-on:'+pageId+':'+name}:undefined;
+  meta('PageView', {}, eventOptions('PageView'));
+  meta('ViewContent', { content_name: 'Hands-on Grau Zero', content_category: 'oftalmoblack_b2b' }, eventOptions('ViewContent'));
+  if(pageId&&window.handsOnCapi)window.setTimeout(()=>window.handsOnCapi.visit(pageId),800);
 
   const once = new Set();
   const emitOnce = (key, name, extra) => {
@@ -79,6 +82,7 @@
   window.addEventListener('hands-on:receipt', (event) => {
     const receipt = event.detail;
     if (!receipt || receipt.ok !== true || typeof receipt.request_id !== 'string'
+      || (receipt.tracking_mode && receipt.tracking_mode !== 'production')
       || !/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(receipt.request_id)
       || receipts.has(receipt.request_id)) return;
     receipts.add(receipt.request_id);

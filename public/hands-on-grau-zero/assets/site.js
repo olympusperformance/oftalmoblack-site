@@ -178,6 +178,14 @@
       retry = { signature, id: window.crypto.randomUUID() };
     }
     payload.request_id = retry.id;
+    const capi = window.handsOnCapi;
+    const useCapi = capi && endpointUrl.href === capi.endpoint;
+    const headers = { 'Content-Type': 'text/plain;charset=UTF-8' };
+    if (useCapi) {
+      headers.apikey = capi.key;
+      payload.tracking = capi.context();
+      payload.qa = capi.qa;
+    }
     submitting = true;
     submit.disabled = true;
     submit.textContent = 'Enviando candidatura…';
@@ -185,13 +193,13 @@
     status.hidden = true;
     lockFields(true);
     const controller = new AbortController();
-    const timeout = window.setTimeout(() => controller.abort(), 15000);
+    const timeout = window.setTimeout(() => controller.abort(), useCapi ? 30000 : 15000);
     progressEvent('submit');
     let errorType = 'network';
     try {
       const response = await fetch(endpointUrl.href, {
         method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+        headers,
         body: JSON.stringify(payload),
         signal: controller.signal,
         credentials: 'omit',
@@ -205,7 +213,7 @@
       completed = true;
       showStatus('Candidatura recebida. Nossa equipe entrará em contato pelo WhatsApp informado para conversar sobre seu perfil e apresentar as informações da turma.', 'success');
       submit.textContent = 'Candidatura recebida';
-      window.dispatchEvent(new CustomEvent('hands-on:receipt', { detail: { ok: true, request_id: receipt.request_id } }));
+      window.dispatchEvent(new CustomEvent('hands-on:receipt', { detail: { ok: true, request_id: receipt.request_id, tracking_mode: receipt.tracking_mode || 'production' } }));
     } catch {
       progressEvent('error', { error_type: controller.signal.aborted ? 'timeout' : errorType });
       showStatus('Não foi possível confirmar o envio. Seus dados continuam no formulário. Tente novamente.', 'error');

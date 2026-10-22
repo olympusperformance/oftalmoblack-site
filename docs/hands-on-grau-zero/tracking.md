@@ -1,6 +1,6 @@
 # Medição do Hands-on Grau Zero
 
-22/10/2026. Frente educacional B2B. GA4 `548406121`, stream `G-5NMXL3LD47`, conta Google Olympus `206790279`; dataset Meta `919253591198015`, conta `act_2202969066909090`, BM `464414978221518`. Não usar os ativos da clínica B2C.
+22/10/2026. Frente educacional B2B. GA4 `548406121`, stream `G-5NMXL3LD47`, conta Google Olympus `206790279`; dataset Meta `919253591198015`, conta `act_2202969066909090`, BM `464414978221518`. Não usar os ativos da clínica B2C. Após a configuração inicial do navegador, Felipe autorizou também CAPI e homologação completa: [backend, fila e operação](capi.md).
 
 ## Funil publicado
 
@@ -24,7 +24,7 @@ Sem nome, telefone, CRM, respostas de qualificação ou texto livre nos eventos.
 
 UTMs/aid/fbclid/gclid da visita continuam no payload do receptor e na planilha, somente ao concluir. Memória limitada à página atual; reload conserva a query, visita direta nova não herda campanha antiga. Links internos não criam UTMs. Links de bio e stories existentes permanecem válidos. O receptor não foi alterado.
 
-O `Lead` do Pixel usa `eventID=hands-on:<request_id>:Lead`. O sinal de sucesso exige `ok=true` e eco do UUID após gravação. Erros, recibo divergente e repetição não geram Lead; o formulário mantém a mesma identidade na retentativa idêntica. A medição desta entrega é pelo navegador. O identificador está preparado para deduplicação futura, mas não representa envio por CAPI.
+O `Lead` do Pixel e da CAPI usa `eventID/event_id=hands-on:<request_id>:Lead`. PageView e ViewContent compartilham o UUID de visita entre os canais. O sinal de sucesso exige `ok=true` e eco do UUID após gravação e persistência da outbox. Erros, recibo divergente e repetição não geram novo Lead; o formulário mantém a mesma identidade na retentativa idêntica. GA4 continua emitido somente pelo navegador.
 
 ## QA e recepção
 
