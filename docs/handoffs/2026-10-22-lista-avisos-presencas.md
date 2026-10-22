@@ -28,4 +28,12 @@ Operação: `systemctl status olympus-presencas.timer`, `journalctl -u olympus-p
 
 ## Validação
 
-Quatro testes Node para autenticação/DTO/CORS/falhas e paginação1200; três testes Python sem envios reais para backfill/dedupe, timeout com entrega e sem recibo, fila presa e rodízio; navegador em360/390/768/1280 para acesso, dia, busca, XSS, erro, revogação e ausência de storage. Verificar publicação por hash, consulta autenticada real e recibos dos dois destinos antes de declarar conclusão.
+Quatro testes Node para autenticação/DTO/CORS/falhas e paginação1200; quatro testes Python sem envios reais para backfill/dedupe, timeout com entrega e sem recibo, fila presa e rodízio; navegador em360/390/768/1280 para acesso, dia, busca, XSS, erro, revogação e ausência de storage. Verificar publicação por hash, consulta autenticada real e recibos dos dois destinos antes de declarar conclusão.
+
+## Operação comprovada em 22/10 às 11h33, horário de Brasília
+
+Function de consulta v2 ativa, chave ausente401 e consulta autorizada200,12 presenças. HTML/JS vivos idênticos à fonte, SHA HTML `091cff0b9479533effdbdc8f156374e4d6c7d5afabc64a3f49842f16945d83b9`, JS `65964f472efe612847b4d9a2df646e6e20b5da6df7bf69b3a8ffe36ee5388de9`. Navegador público390/1280:12 nomes, busca/dia, cópia do link, impressão com dia, sem tracking/overflow/erros. Link sem chave não retorna nomes. Fonte web `aff50e0` + impressão `ae5ef33`, worker `8467a9d` + correção Python3.10 `ad49f8b`. Actions estavam enfileiradas na consulta; publicação comprovada por conteúdo/headers reais, sem atribuir sucesso ao status da fila.
+
+Timer enabled/active,30s, guarda final25/10. Backfill terminou às11h31, horário de Brasília:24 mensagens,12 por destino,24 IDs distintos, todas relidas pela API com autoria/destino/texto conferidos. Novo ciclo manteve24 verificadas e nenhuma pendente, sem repetir mensagens. Aceitação/releitura não prova leitura humana. Worker vivo idêntico à fonte, SHA `d01a3ceca3e1c300d1c31fbb6eacc13cf99e63fd4fe7c72270cdd5b988cb4bd1`.
+
+A ativação encontrou precisão fracionária de cinco dígitos no timestamp do PostgreSQL, incompatível com fromisoformat do Python3.10. Corrigida por parser com %f e teste de regressão. Os ciclos anteriores falharam antes de registrar/enviar mensagens; após a correção, todos os avisos foram conferidos. Revisão independente corrigiu paginação e rodízio da reconciliação antes da ativação. Sem fixtures de presença em produção. Nenhum envio à Glenda foi feito: o link foi preparado para Felipe compartilhar.
