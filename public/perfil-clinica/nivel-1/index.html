@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="robots" content="noindex, nofollow">
+  <meta name="presence-endpoint" content="https://zpyxnkuvircukjlfexrv.supabase.co/functions/v1/black-presenca">
+  <meta name="presence-api-key" content="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpweXhua3V2aXJjdWtqbGZleHJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0MTk4NzksImV4cCI6MjEwMTk5NTg3OX0.YojmkK9fHsJwY1_81JeYdLJkIlI20xSQwqG-WuEZOrk">
+  <meta name="description" content="Confirme sua presença no evento do Club OftalmoBlack.">
+  <title>Presença no evento | Club OftalmoBlack</title>
+  <style>
+    @font-face{font-family:'DM Sans';font-style:normal;font-weight:100 1000;font-display:swap;src:url('../assets/dmsans-latin.woff2') format('woff2')}
+    :root{color-scheme:dark;--black:#0a0a0a;--paper:#f5f0e6;--muted:#b7b3a9;--gold:#d89d4d;--gold-light:#e6bd74;--line:#363024;font-family:'DM Sans',Arial,sans-serif;font-size:16px}*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0;min-height:100svh;color:var(--paper);background:var(--black);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;background-image:radial-gradient(ellipse 680px 650px at 2% 6%,rgba(216,157,77,.12),transparent 74%),radial-gradient(ellipse 550px 650px at 100% 48%,rgba(216,157,77,.08),transparent 75%),linear-gradient(rgba(245,240,230,.024) 1px,transparent 1px),linear-gradient(90deg,rgba(245,240,230,.024) 1px,transparent 1px);background-size:auto,auto,88px 88px,88px 88px}[hidden]{display:none!important}button,input{font:inherit}button,input,a{touch-action:manipulation}button{cursor:pointer}button:disabled{cursor:wait}:focus-visible{outline:2px solid var(--gold-light);outline-offset:5px}a{color:var(--gold-light);text-underline-offset:4px}h1,h2,p{margin:0}h1,h2{font-weight:800;letter-spacing:-.045em;line-height:1.12}.page{width:min(100% - 48px,600px);margin:auto}.brand{padding:32px 0}.brand img{display:block;width:162px;max-width:100%;height:auto;margin:auto}.card{background:linear-gradient(145deg,#1b1812,#11110f 74%);border:1px solid var(--line);border-radius:14px;box-shadow:0 20px 65px #0005;padding:30px;position:relative}.card::before{content:'';height:1px;position:absolute;inset:0 24px auto;background:linear-gradient(90deg,transparent,#9b733d80,transparent)}h1{font-size:32px;margin-bottom:26px;max-width:16ch}h2{font-size:29px;margin-bottom:20px}.options{display:grid;gap:12px}.choice{width:100%;text-align:left;display:flex;align-items:center;min-height:62px;border:1px solid #514432;border-radius:9px;padding:15px 18px;background:#11100e;color:var(--paper);font-size:16px;font-weight:500;line-height:1.4;transition:border-color .15s,background .15s}.choice:hover:not(:disabled){border-color:var(--gold);background:#282116}.choice:disabled{opacity:.65}.field-label{display:block;font-size:13px;font-weight:600;margin-bottom:7px}input{display:block;width:100%;min-height:51px;border-radius:7px;border:1px solid #514432;background:#0c0c0b;padding:12px 13px;font-size:16px;line-height:1.35;color:var(--paper);transition:border-color .16s,box-shadow .16s}input::placeholder{color:#989387;opacity:1}input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px #d89d4d1c}.navigation{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:27px -30px -30px;padding:18px 30px;border-top:1px solid #383127}.secondary{color:var(--muted);background:transparent;padding:9px 3px;border:0;font-size:15px;font-weight:700;min-height:44px}.secondary:hover:not(:disabled){color:var(--paper)}.cta{display:flex;align-items:center;justify-content:center;min-height:49px;padding:14px 21px;text-align:center;color:#0a0a0a;border:0;border-radius:999px;background:linear-gradient(115deg,#d89d4d,#fdf3b5);box-shadow:inset 0 1px 0 rgba(255,255,255,.45);font-size:11px;font-weight:600;line-height:1.4;letter-spacing:.09em;text-transform:uppercase}.cta:disabled{color:#b9b09d;background:#302c24}.message{padding:13px 15px;background:#282116;border:1px solid var(--gold);border-radius:7px;font-size:14px;line-height:1.5;margin-top:20px}.privacy{font-size:11px;line-height:1.6;color:#aca596;margin:19px auto 0;text-align:center;max-width:44ch}.success-symbol{display:grid;place-items:center;width:40px;height:40px;border:1px solid var(--gold);border-radius:50%;color:var(--gold-light);font-size:22px;margin:0 0 22px}.success p{color:var(--muted);font-size:16px}.success h2{outline:none}.noscript{padding:15px;border:1px solid var(--gold);margin-bottom:20px}footer{text-align:center;padding:28px 0;color:#a09a8c;font-size:11px}
+    @media(max-width:760px){.page{width:calc(100% - 40px)}.brand{padding:25px 0 29px}.brand img{width:145px}.card{padding:25px 21px}h1{font-size:30px}h2{font-size:26px}.navigation{margin:25px -21px -25px;padding:16px 21px;gap:12px}.cta{flex:1;font-size:10.5px;padding-inline:15px}.choice{font-size:15px;min-height:60px;padding:14px 15px}}
+    @media(max-width:380px){.page{width:calc(100% - 32px)}.card{padding-inline:18px}.navigation{margin-inline:-18px;padding-inline:18px}.cta{font-size:10px;padding-inline:12px;letter-spacing:.06em}h1{font-size:29px}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+  </style>
+  <script defer src="/assets/vendor/supabase.js"></script>
+  <script defer src="/config.js"></script>
+  <script defer src="/assets/club-supabase.js"></script>
+</head>
+<body>
+  <main class="page">
+    <div class="brand"><img src="../assets/logo-oftalmoblack.png" alt="Club OftalmoBlack" width="620" height="198"></div>
+    <noscript><p class="noscript">Ative o JavaScript no seu navegador para confirmar sua presença.</p></noscript>
+    <div class="card" id="presence-card">
+      <section id="member-gate" aria-labelledby="gate-title"><h1 id="gate-title">Você já é membro do Black?</h1><div class="options"><button id="member-yes" class="choice" type="button">Sim, sou membro</button><button id="member-no" class="choice" type="button">Ainda não sou membro</button></div></section>
+      <form id="presence-form" hidden novalidate aria-labelledby="email-title"><h2 id="email-title" tabindex="-1">Confirme sua presença</h2><label class="field-label" for="email">E-mail de cadastro</label><input id="email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="254" required placeholder="voce@exemplo.com.br"><div class="navigation"><button id="back-button" class="secondary" type="button">Voltar</button><button id="confirm-button" class="cta" type="submit">Confirmar minha presença</button></div></form>
+      <p id="presence-message" class="message" role="status" aria-live="polite" tabindex="-1" hidden></p>
+    </div>
+    <p class="privacy" id="privacy-note"><a href="/politica-de-privacidade/" target="_blank" rel="noopener">Política de privacidade</a></p>
+    <section class="card success" id="success" hidden aria-labelledby="success-title"><div class="success-symbol" aria-hidden="true">✓</div><h2 id="success-title" tabindex="-1">Presença confirmada.</h2><p>Seu registro de presença foi recebido. Aproveite o evento.</p></section>
+    <footer>Club OftalmoBlack</footer>
+  </main>
+  <script>
+    (() => {
+      'use strict';
+      const gate = document.getElementById('member-gate'), form = document.getElementById('presence-form'), email = document.getElementById('email'), message = document.getElementById('presence-message');
+      const yes = document.getElementById('member-yes'), no = document.getElementById('member-no'), back = document.getElementById('back-button'), confirm = document.getElementById('confirm-button');
+      let memberToken = null, tokenExpiry = 0, pending = null, sending = false, completed = false;
+      const query = new URLSearchParams(location.search);
+      const origem = ['stories','presencial','direto'].includes(query.get('origem')) ? query.get('origem') : 'presencial';
+      const utm = {};
+      for (const key of ['utm_source','utm_medium','utm_campaign','utm_content','utm_term']) {
+        const value = (query.get(key) || '').replace(/[\u0000-\u001f\u007f]/g, '').trim();
+        // Do not carry contact details or arbitrary query parameters to the next form.
+        if (value && value.length <= 200 && !/@|(?:\d[\s().+-]*){8,}/.test(value)) utm[key] = value;
+      }
+      function showEmail() { gate.hidden = true; form.hidden = false; message.hidden = true; document.getElementById('email-title').focus(); }
+      function showMessage(text) { message.textContent = text; message.hidden = false; message.focus(); }
+      function setBusy(busy) {
+        sending = busy; for (const control of [yes,no,back,confirm,email]) control.disabled = busy;
+        document.getElementById('presence-card').setAttribute('aria-busy', String(busy));
+        yes.textContent = busy && !gate.hidden ? 'Confirmando presença...' : 'Sim, sou membro';
+        confirm.textContent = busy ? 'Confirmando presença...' : 'Confirmar minha presença';
+      }
+      function uuid() {
+        if (crypto.randomUUID) return crypto.randomUUID();
+        const bytes = crypto.getRandomValues(new Uint8Array(16)); bytes[6] = (bytes[6] & 15) | 64; bytes[8] = (bytes[8] & 63) | 128;
+        const hex = [...bytes].map(b => b.toString(16).padStart(2, '0')).join('');
+        return hex.slice(0,8)+'-'+hex.slice(8,12)+'-'+hex.slice(12,16)+'-'+hex.slice(16,20)+'-'+hex.slice(20);
+      }
+      async function readExistingMember() {
+        try {
+          const sb = window.Club && window.Club.sb; if (!sb || completed) return;
+          let result = await sb.auth.getSession(); if (result.error) return;
+          let session = result.data && result.data.session; if (!session || !session.access_token) return;
+          if (!session.expires_at || session.expires_at * 1000 < Date.now() + 60000) {
+            result = await sb.auth.refreshSession(); if (result.error) return;
+            session = result.data && result.data.session; if (!session || !session.access_token) return;
+          }
+          const me = await sb.rpc('me');
+          if (!me.error && me.data && me.data.member && me.data.member.ativo === true && !completed) { memberToken = session.access_token; tokenExpiry = session.expires_at * 1000; }
+        } catch { /* A failed lookup leaves the short email form available. */ }
+      }
+      async function sendPresence(useMember) {
+        if (sending || completed) return;
+        const token = useMember ? memberToken : null;
+        if (useMember && (!token || tokenExpiry < Date.now() + 15000)) { showEmail(); return; }
+        if (!useMember) { email.setCustomValidity(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim()) ? '' : 'Confira o seu e-mail.'); if (!email.reportValidity()) return; }
+        const endpointValue = document.querySelector('meta[name="presence-endpoint"]').content.trim(), apiKey = document.querySelector('meta[name="presence-api-key"]').content.trim();
+        let endpoint;
+        try { endpoint = new URL(endpointValue); if (!apiKey || endpoint.protocol !== 'https:') throw new Error('configuration'); }
+        catch { showMessage('A confirmação está indisponível no momento. Tente novamente mais tarde.'); return; }
+        const payload = { ...(useMember ? {} : { email: email.value.trim().toLowerCase() }), origem, utm, pagina: location.pathname };
+        const fingerprint = JSON.stringify({ ...payload, member: useMember ? token : null });
+        if (!pending || pending.fingerprint !== fingerprint) pending = { fingerprint, payload: { submission_id: uuid(), ...payload } };
+        const attempt = pending;
+        setBusy(true); message.hidden = true;
+        const controller = new AbortController(), timer = setTimeout(() => controller.abort(), 18000);
+        try {
+          const headers = { 'Content-Type': 'application/json', apikey: apiKey, Authorization: 'Bearer ' + apiKey };
+          if (useMember) headers['x-member-token'] = token;
+          const response = await fetch(endpoint.href, { method:'POST', headers, body:JSON.stringify(attempt.payload), signal:controller.signal, credentials:'omit', referrerPolicy:'no-referrer' });
+          let ack; try { ack = await response.json(); } catch { throw new Error('unconfirmed'); }
+          if (response.status === 401 && ack?.code === 'identity_required') {
+            memberToken = null; tokenExpiry = 0; pending = null;
+            showEmail(); showMessage('Informe seu e-mail de cadastro para confirmar a presença.');
+            return;
+          }
+          if (!response.ok || ack?.ok !== true || ack.id !== attempt.payload.submission_id) throw new Error('unconfirmed');
+          completed = true; pending = null; memberToken = null; tokenExpiry = 0; email.value = ''; form.reset();
+          document.getElementById('presence-card').remove(); document.getElementById('privacy-note').hidden = true;
+          document.getElementById('success').hidden = false; document.getElementById('success-title').focus();
+        } catch { showMessage('Não foi possível confirmar o recebimento. Tente novamente.'); }
+        finally { clearTimeout(timer); if (!completed) setBusy(false); }
+      }
+      yes.addEventListener('click', () => { if (memberToken && tokenExpiry > Date.now() + 15000) sendPresence(true); else if (!sending) showEmail(); });
+      no.addEventListener('click', () => { if (sending) return; const target = new URL('/perfil-clinica/', location.origin); target.searchParams.set('origem', origem); for (const [key,value] of Object.entries(utm)) target.searchParams.set(key,value); location.assign(target.href); });
+      back.addEventListener('click', () => { if (sending) return; form.hidden = true; gate.hidden = false; message.hidden = true; yes.focus(); });
+      email.addEventListener('input', () => email.setCustomValidity(''));
+      form.addEventListener('submit', event => { event.preventDefault(); sendPresence(false); });
+      window.addEventListener('DOMContentLoaded', readExistingMember, { once:true });
+    })();
+  </script>
+</body>
+</html>
