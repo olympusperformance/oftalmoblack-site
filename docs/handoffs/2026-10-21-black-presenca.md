@@ -12,4 +12,6 @@ Planilha privada existente da Olympus, aba **Presenças**, 15 colunas. Mesma SA 
 
 Migração aplicada: `20261022021522_black_presencas_evento.sql`. Function v1. Cron job 5. Código do nível 0 e seu receptor preservados. Testes: `node --test tests/black-presenca.test.mjs`; SQL em `tests/black-presenca.sql` usa rollback, inclusive quando lê um membro existente para exercitar associação autenticada, sem persistir presença dessa pessoa.
 
-Publicação e recibos reais serão registrados após o teste da URL viva. Não houve mensagens ou eventos de marketing.
+Publicado em 21/10/2026: código `b1c15d6`, head de publicação `e311757275a666f9deabcdb68ac9bfeb6d7899e9`, Action `39710602401` concluída. HTML vivo igual à fonte por SHA-256 `046c8e03bb4095b86050e842e6778fc2be551cb3098214d19a0a25a884d22ce1`, HTTP 200 e no-cache. Quatro larguras sem overflow ou erro JS. Nível 0 preservou SHA-256 original `4ffbb28cf87a14d2c6583519601504a14e43a03a5912f28cee19cb9b5c769044`.
+
+Teste sintético pela URL viva teve dois recibos e somente uma presença, ID `28d888d1-457d-4f58-8e39-b2846a8d8383`, com origem/UTM corretos, sincronizada na linha 4 da aba Presenças. Depois, fixture removida por ID e valores da linha limpos sem deslocamento. Zero fixtures e pendências na conferência final. Testes de sessão no navegador usam simulação; o SQL transacional cobre upgrade real da associação sem persistir presença de membro. Uptime registrado e sincronizado. Não houve mensagens ou eventos de marketing.
