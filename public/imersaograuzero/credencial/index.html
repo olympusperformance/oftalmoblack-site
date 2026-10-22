@@ -159,15 +159,15 @@ h1{font-family:'Cinzel',Georgia,serif;font-weight:500;font-size:27px;line-height
   var SEM_UTM = /(^|\.)(wa\.me|whatsapp\.com|goo\.gl|google\.com|instagram\.com|youtube\.com|youtu\.be|drive\.google\.com|photos\.google\.com|photos\.app\.goo\.gl)$/i;
 
   /* O menu de reserva. Aparece se o banco não responder em tempo, se a tabela
-     ainda não existir ou se a lista voltar vazia. O WhatsApp é o mesmo da
-     página da Imersão. */
+     ainda não existir ou se a lista voltar vazia. Repete o menu do banco
+     (livro e Cérebro Black): mudou lá, muda aqui. */
   var PADRAO = [
-    { titulo: 'Falar com a equipe',
-      descricao: 'Dúvida, programação ou qualquer coisa durante o evento.',
-      url: 'https://wa.me/5592914418889', icone: 'whatsapp' },
-    { titulo: 'Imersão Grau Zero',
-      descricao: 'A página oficial do evento.',
-      url: 'https://oftalmoblack.com.br/imersaograuzero/', icone: 'link' }
+    { titulo: 'Livro Presbiopia Cirúrgica',
+      descricao: 'Pré-venda do novo livro do Dr. Alex Sá.',
+      url: 'https://oftalmoblack.com.br/livro/?' + UTM + '&utm_content=livro', icone: 'file-text' },
+    { titulo: 'Cérebro Black',
+      descricao: 'A área do mentorado do OftalmoBlack.',
+      url: 'https://oftalmoblack.com.br/entrar/', icone: 'award' }
   ];
 
   /* Traço Feather, o mesmo do painel. A chave é o que vai na coluna `icone`. */
