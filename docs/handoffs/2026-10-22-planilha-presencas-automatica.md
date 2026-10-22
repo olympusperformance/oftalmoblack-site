@@ -21,3 +21,5 @@ Fonte `supabase/functions/black-presenca/organizacao.mjs`. Conferir o carimbo na
 Não apagar check-ins daBASE como teste, criar presenças fictícias ou reenviar notificações para validar. Testes locais usam transportes simulados e snapshots privados; a primeira execução real reconciliou22registros,22associações,0para conferir,0mudanças desnecessárias nos check-ins já preenchidos. Nova aba preenchida e relida porID/nome/dia. Fórmulas, check-ins anteriores e dias futuros comparados antes/depois.
 
 Treze testes Node de receptor e integração passaram: dias22/23/24, dedupe, rowreorder, aliases, nomes ambíguos, cabeçalhos, preservação de fórmulas/0/false/manual, horárioBrasília, inclusão manual e RAW contra fórmula injetada. Revisão independente corrigiu preservação de0/false no legado e espaços antes deDr./Dra. Sem achados restantes nesses arquivos. Conferência visual no Google Sheets emzoom100% com nomes, filtros e carimbo legíveis.
+
+Execução automática observada às12h10, horário de Brasília: cron ativo, HTTP200,22registros,22associações,0para conferir e0marcações repetidas. Carimbo da aba renovado pelo ciclo agendado.
