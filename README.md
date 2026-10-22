@@ -798,4 +798,4 @@ Nome vigente do projeto e artefato antes chamado SDR IA. A agente do Dr. Alex se
 
 `/admin/#livro` reúne visualizações da página, aberturas do checkout, vendas pagas e faturamento do livro por publicação. Fontes independentes: GA4 e Greenn, com última coleta e cobertura das origens explícitas. Filtros por período, link Instagram, ranking exportável e importação de UTMs por CSV. A API financeira não fornece origens; o webhook está preparado em código, ainda sem emissor ativo. Somente administradores têm acesso por RLS.
 
-Operação, implantação do coletor e definições: [scripts/livro-dashboard/README.md](scripts/livro-dashboard/README.md). Aplicar as migrações `20261022223253_livro_dashboard.sql` e `20261022224037_livro_csv_upsert.sql` antes de publicar a interface.
+Operação, implantação do coletor e definições: [scripts/livro-dashboard/README.md](scripts/livro-dashboard/README.md). Aplicar as migrações `20261022224013_livro_dashboard.sql` e `20261022224105_livro_csv_upsert.sql` antes de publicar a interface.
