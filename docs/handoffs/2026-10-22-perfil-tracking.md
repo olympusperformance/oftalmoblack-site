@@ -37,3 +37,7 @@ Execução: apontar `PLAYWRIGHT_MODULE` para Playwright instalado e `BLACK_BROWS
 ## Operação
 
 Os links de bio/stories e o QR da TV continuam os mesmos. Conferir recepção HTTP real de visita após deploy, hashes dos dois HTMLs e SHA do nível 1 `936e5fa6f3b5d2f34649a0ac1b551b9d24a897feb915ad74fb4f52e8b7215a53`. Validar primeira conversão autêntica quando ocorrer; não gerar cadastro fictício para fazê-la aparecer. O procedimento de confirmação de eventos personalizados do BM continua aplicável; aqui foram usados eventos padrão do Meta, sem novo nome personalizado.
+
+## Publicação comprovada
+
+Head `be216f20dde761cce81c3bc80086aa5c55180d0c`, Action `39773090085` concluída. As duas fichas vivas ficaram idênticas à fonte; nível 1 manteve o SHA anterior. Visitas reais das duas fichas tiveram GA4 HTTP204 e Pixel PageView/ViewContent HTTP200. Nível 1 visitado e formulário de nome aberto sem SDK ou evento de marketing. Nenhum Lead de QA foi entregue. Config pública do Pixel: unverifiedEventNames/restrictedEventNames vazios; isso não substitui eventual análise manual no Gerenciador. Primeira conversão autêntica e atribuição continuam dependentes do uso real.
