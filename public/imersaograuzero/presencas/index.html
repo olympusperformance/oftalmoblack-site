@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="pt-BR" data-presencas-lista="imersao-outubro-2026">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><meta name="theme-color" content="#0a0a0a">
+ <title>Presenças da Imersão | OftalmoBlack</title>
+ <style>
+ @font-face{font-family:DM;src:url('/perfil-clinica/assets/dmsans-latin.woff2') format('woff2');font-weight:100 1000;font-display:swap}
+ :root{color-scheme:dark;--bg:#0a0a0a;--panel:#151410;--text:#f5f0e6;--muted:#b7b3a9;--gold:#e6bd74;--line:#393329;font-family:DM,Arial,sans-serif}*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;background:var(--bg);color:var(--text);font-size:16px;line-height:1.5}.wrap{width:min(1100px,100% - 48px);margin:auto}header{padding:34px 0 28px;border-bottom:1px solid var(--line)}.brand{width:150px;height:auto;margin-bottom:32px}h1{font-size:clamp(30px,5vw,46px);letter-spacing:-.04em;line-height:1.15;margin:0 0 12px}p{margin:0;color:var(--muted)}main{padding:28px 0 50px}.bar{display:flex;gap:20px;align-items:end;flex-wrap:wrap;margin:0 0 26px}.day{display:grid;gap:7px}label{font-size:14px;color:var(--muted)}select,input,button{font:inherit;border:1px solid var(--line);border-radius:7px;padding:11px 14px;background:var(--panel);color:var(--text);min-height:46px}select{min-width:180px}input{width:100%;min-width:0}button{cursor:pointer}button:hover{border-color:var(--gold)}button:disabled{opacity:.6;cursor:wait}:focus-visible{outline:2px solid var(--gold);outline-offset:4px}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-left:auto}.search{display:grid;gap:7px;width:min(320px,100%)}.summary{display:flex;gap:16px;align-items:baseline;margin-bottom:20px}.summary strong{font-size:44px;line-height:1;color:var(--gold);letter-spacing:-.04em}.summary span{color:var(--muted)}#status{font-size:13px;min-height:24px;margin-bottom:18px}.table{border:1px solid var(--line);border-radius:9px;overflow:hidden}table{width:100%;border-collapse:collapse;text-align:left}th{background:#1c1a16;color:var(--muted);font-size:13px;font-weight:500}th,td{padding:16px 20px;border-bottom:1px solid var(--line)}td:first-child{font-size:18px;font-weight:600;overflow-wrap:anywhere}tr:last-child td{border-bottom:0}.time{text-align:right;white-space:nowrap;color:var(--muted);font-variant-numeric:tabular-nums}.empty{padding:32px 20px;text-align:center}footer{margin-top:24px;font-size:13px;color:var(--muted)}.notice{max-width:580px;border:1px solid var(--line);padding:25px;border-radius:9px}.notice h2{margin:0 0 12px;font-size:24px}.notice p{margin-bottom:12px}.error{color:#efb8a8!important}
+ @media(max-width:600px){.wrap{width:calc(100% - 32px)}header{padding:24px 0}.brand{width:130px;margin-bottom:24px}.bar{gap:16px}.actions{margin-left:0;width:100%}.search{width:100%}th,td{padding:15px 13px}td:first-child{font-size:16px}.summary strong{font-size:38px}button{flex:1}}
+ @media print{body{background:#fff;color:#111}.brand,.bar,#status,.notice{display:none!important}header{padding:0 0 18px}.wrap{width:100%}p,footer,.summary span,.time{color:#444}.summary strong{color:#111}th{background:#eee;color:#333}.table{border-color:#ccc}td,th{border-color:#ddd}main{padding-top:20px}}
+ </style>
+</head>
+<body>
+ <header><div class="wrap"><img class="brand" src="/perfil-clinica/assets/logo-oftalmoblack.png" alt="OftalmoBlack" width="150" height="66"><h1>Presenças da Imersão</h1><p>22 a 24 de outubro de 2026 · Acompanhamento da equipe</p></div></header>
+ <main class="wrap">
+  <section id="locked" class="notice"><h2>Acesso reservado</h2><p>Abra o link completo compartilhado pela organização para consultar a lista.</p><p>Os nomes dos participantes aparecem somente após validar o acesso.</p></section>
+  <section id="dashboard" hidden>
+   <div class="bar"><div class="day"><label for="day">Dia da presença</label><select id="day"><option value="2026-10-22">22 de outubro</option><option value="2026-10-23">23 de outubro</option><option value="2026-10-24">24 de outubro</option></select></div><div class="search"><label for="search">Buscar participante</label><input id="search" type="search" placeholder="Digite um nome" autocomplete="off"></div><div class="actions"><button id="refresh" type="button">Atualizar</button><button id="share" type="button">Copiar link</button><button id="print" type="button">Imprimir</button></div></div>
+   <div class="summary"><strong id="total">0</strong><span id="total-label">presenças no dia</span></div>
+   <p id="status" role="status" aria-live="polite"></p>
+   <div class="table"><table><thead><tr><th scope="col">Nome informado</th><th class="time" scope="col">Horário de Brasília</th></tr></thead><tbody id="rows"></tbody></table><p id="empty" class="empty" hidden>Nenhuma presença registrada neste dia.</p></div>
+   <footer>Presenças informadas pelos participantes. Atualização automática a cada 30 segundos. Uma presença por pessoa em cada dia.</footer>
+  </section>
+ </main>
+ <script src="./lista.js"></script>
+</body>
+</html>
