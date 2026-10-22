@@ -1,8 +1,10 @@
 # Hands-on Grau Zero
 
-Página B2B em `/hands-on-grau-zero/`, publicada a pedido de Felipe em 21/10/2026. Benefício central: segurança para indicar lentes premium, com Protocolo Grau Zero e vivência de três dias com o Dr. Alex Sá. Público: oftalmologistas que já operam catarata.
+Página B2B em `/hands-on-grau-zero/`, publicada a pedido de Felipe em 21/10/2026. Benefício central: segurança para indicar lentes de alta tecnologia, com Protocolo Grau Zero e vivência de três dias com o Dr. Alex Sá. Público: oftalmologistas, inclusive quem ainda não opera catarata e quer se habilitar a indicar essas lentes.
 
-Formulário em duas etapas. A primeira valida identificação sem enviar dados. A segunda qualifica experiência, volume cirúrgico, lentes premium e clínica; envio único ao concluir. Sucesso exige `ok=true` e eco do `request_id`. Retentativa idêntica usa o mesmo UUID; edição cria outro UUID. Não há abertura automática ou mensagem de WhatsApp.
+Revisão do Dr. Alex incorporada com autorização de Felipe em 22/10/2026: uma cirurgia por participante, dez cirurgias ao todo; todos participam do planejamento premium de todos os casos. Experiência cirúrgica prévia e clínica própria não são requisitos. O formulário aceita `ainda_nao_opero` e volume cirúrgico zero, mantendo as perguntas para conhecer o perfil.
+
+Formulário em duas etapas. A primeira valida identificação sem enviar dados. A segunda qualifica experiência, volume cirúrgico, lentes de alta tecnologia e clínica; envio único ao concluir. Sucesso exige `ok=true` e eco do `request_id`. Retentativa idêntica usa o mesmo UUID; edição cria outro UUID. Não há abertura automática ou mensagem de WhatsApp.
 
 ## Receptor
 
