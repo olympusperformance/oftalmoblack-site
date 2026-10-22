@@ -64,7 +64,7 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
    assert.equal(await page.evaluate(()=>getComputedStyle(document.documentElement).getPropertyValue('--panel').trim()),'#0B0910');
    assert.equal(await page.evaluate(()=>getComputedStyle(document.documentElement).getPropertyValue('--gold').trim()),'#E8C07A');
    await page.screenshot({path:path.join(out,(isAdmin?'admin':'member')+'-farol-black-gold.png'),fullPage:true});
-   const mentoria=['Visão Geral','Subida: Rumo ao Olympus','Pendências','Protocolo Grau Zero','Graduação','Ranking Black','Vitrine Black','Instagram','Processos Black','Materiais',...(isAdmin?[]:['Simuladores','Máquina de Clientes']),'Agenda'];
+   const mentoria=['Visão Geral','Subida: Rumo ao Olympus','Pendências','Protocolo Grau Zero','Graduação','Ranking Black','Vitrine Black','Instagram','Processos Black','Materiais','Simuladores',...(isAdmin?[]:['Máquina de Clientes']),'Agenda'];
    const menu=await page.locator('#rail .nav>span:not(.cb-badge)').allTextContents();
    assert.deepEqual(menu.slice(0,mentoria.length+1),[...mentoria,'Fábrica · Íris Black']);
    assert.deepEqual(await page.locator('#rail .rail-grupo').allTextContents(),isAdmin?['Mentoria','Módulos à parte','Administração','Operação da equipe']:['Mentoria','Módulos à parte']);
@@ -72,7 +72,7 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
    else assert.equal(await page.locator('[data-view=rede]').count(),0);
    for(const key of ['home','encontro','iris','cerebro','profile'])assert.equal(await page.locator('#rail [data-nav="'+key+'"]').count(),0);
    assert.deepEqual(await page.locator('#navm [data-nav]').evaluateAll(nodes=>nodes.map(n=>n.dataset.nav)),await page.locator('#rail [data-nav]').evaluateAll(nodes=>nodes.map(n=>n.dataset.nav)));
-   for(const nav of ['#rail','#navm'])assert.equal(await page.locator(nav+' a[href="/simuladores/"][target="_blank"]:not([data-nav])').count(),isAdmin?0:1,'Simuladores: link para /simuladores/ em outra aba, só no menu do mentorado');
+   for(const nav of ['#rail','#navm'])assert.equal(await page.locator(nav+' a[href="/simuladores/"][target="_blank"]:not([data-nav])').count(),1,'Simuladores: link para /simuladores/ em outra aba nos menus do mentorado e do admin');
    for(const nav of ['#rail','#navm'])assert.equal(await page.locator(nav+' a[href="/jornada-do-cliente/"][target="_blank"]:not([data-nav])').count(),isAdmin?0:1,'Máquina de Clientes: link para /jornada-do-cliente/ em outra aba, só no menu do mentorado');
    await page.locator('#rail [data-nav="subida"]').click();await page.locator('#black-subida .cb-card[data-cb-step]').last().waitFor().catch(async e=>{console.error(await page.locator('body').innerText());console.error(await page.evaluate(()=>({hash:location.hash,stages:Club.methodStages,items:Club.stepChecklist?.length,selected:Club.black.selected()})));throw e;});
    for(const selector of ['#black-subida h1','#black-subida h2','#black-subida .cb-number']){

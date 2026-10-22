@@ -52,6 +52,7 @@
       { key:'igMetricas', label:'Instagram', icon:'instagram' },
       { key:'artifacts', label:'Processos Black', icon:'box' },
       { key:'materials', label:'Materiais', icon:'book-open' },
+      { href:'/simuladores/', label:'Simuladores', icon:'play-circle' },
       { key:'agenda', label:'Agenda', icon:'calendar' }
     ] },
     { grupo:'Módulos à parte', itens: [
@@ -344,6 +345,12 @@
   /* ── navegação ────────────────────────────────────────────────────────── */
 
   function renderNav() {
+    function linkFora(n, classe, rotulo) {
+      return '<a class="' + classe + '" href="' + esc(n.href) + '" target="_blank" rel="noopener" ' +
+        'style="text-decoration:none">' + ico(n.icon) + rotulo +
+        '<small aria-hidden="true" style="margin-left:auto;font-size:12px;opacity:.7">↗</small></a>';
+    }
+
     function botao(n, filho) {
       return '<button class="nav' + (filho ? ' nav-filho' : '') + '" role="tab" data-nav="' +
         n.key + '" aria-selected="' + (n.key === st.view) + '">' +
@@ -354,7 +361,9 @@
       NAV.map(function (n) {
         if (!n.itens) return botao(n, false);
         return '<div class="rail-lbl rail-grupo">' + esc(n.grupo) + '</div>' +
-          n.itens.map(function (f) { return botao(f, false); }).join('');
+          n.itens.map(function (f) {
+            return f.href ? linkFora(f, 'nav', '<span>' + esc(f.label) + '</span>') : botao(f, false);
+          }).join('');
       }).join('') +
       '<div class="rail-foot"><div class="k">' + st.members.length + ' MEMBROS</div>' +
       '<div class="v">' + st.demands.filter(function (d) { return Club.DEM_ABERTOS.indexOf(d.status) !== -1; }).length +
@@ -362,7 +371,7 @@
 
     $('navm').innerHTML = NAV.map(function (group) {
       return '<span class="navm-group">' + esc(group.grupo) + '</span>' + group.itens.map(function (n) {
-        return '<button class="chip" role="tab" data-nav="' + n.key + '" aria-selected="' +
+        return n.href ? linkFora(n, 'chip', esc(n.label)) : '<button class="chip" role="tab" data-nav="' + n.key + '" aria-selected="' +
           (n.key === st.view) + '">' + ico(n.icon) + esc(n.label) + '</button>';
       }).join('');
     }).join('');

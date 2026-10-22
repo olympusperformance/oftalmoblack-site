@@ -712,10 +712,10 @@ seção "Introdução ao MGZ"), que o slide 19 da Introdução ao MGZ chama pelo
   passou a levar para `/simuladores/`. O índice é a `Abrir_Simuladores.html` dele,
   adaptada para a web (sem as instruções de pasta local e sem os botões de PPTX/DOCX).
 - Fora dos buscadores e sempre revalidado (bloco `^~ /simuladores/` no `nginx.conf`).
-- No Cérebro, o menu do mentorado tem o item **Simuladores** (grupo Mentoria, depois
-  de Materiais), pedido do Dr. Alex em 21/10/2026 "para o cara brincar". É link, não
-  aba: abre `/simuladores/` em outra aba (`NAV` com `href` em `membros.js`). O menu do
-  admin não tem o item; a equipe confere pelo `/membros/?membro=<id>`.
+- No Cérebro, os menus do mentorado e do admin têm o item **Simuladores** (grupo
+  Mentoria, depois de Materiais), pedido do Dr. Alex em 21/10/2026 "para o cara
+  brincar". É link, não aba: abre `/simuladores/` em outra aba (`NAV` com `href` em
+  `membros.js` e `admin.js`).
 - Versão nova dos simuladores: `CLAUDE/simuladores-oftalmoblack/montar_site.py`, fora
   deste repositório, refaz a pasta a partir da pasta Simuladores baixada (e, como
   terceiro argumento, da pasta com os 2 de aberrometria), e `trocar_links_pptx.py`
