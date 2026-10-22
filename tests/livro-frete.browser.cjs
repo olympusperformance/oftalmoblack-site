@@ -21,7 +21,7 @@ const {pathToFileURL}=require('url');
   const checkoutUrl=new URL(checkoutRequest.url());assert.equal(checkoutUrl.searchParams.get('ch_id'),'144678');assert.equal(checkoutUrl.searchParams.get('utm_source'),'credencial');assert.equal(checkoutUrl.searchParams.get('src'),'lp-livro');
   await page.goto((base?new URL('livro/obrigado/',base).href:pathToFileURL(path.resolve('public/livro/obrigado/index.html')).href)+'?email=nao-repassar%40example.com&phone=000');
   const contact=page.getByRole('link',{name:'Calcular frete no WhatsApp'});assert.ok(await contact.isVisible());
-  const u=new URL(await contact.getAttribute('href'));assert.equal(u.pathname,'/559284654390');
+  const u=new URL(await contact.getAttribute('href'));assert.equal(u.pathname,'/5511993436267');
   assert.match(u.searchParams.get('text'),/confirmar a entrega e calcular o frete/);assert.ok(!u.toString().includes('example'));
   assert.equal(await page.locator('.frete li').count(),3);
   const conversions=await page.evaluate(()=>({meta:window.fbq?.queue?.filter(x=>x[1]==='CompraLivro')||[],ga:(window.dataLayer||[]).filter(x=>x[1]==='compra_livro')}));
