@@ -17,4 +17,8 @@ UTMs seguem o contrato Olympus. Bio mantém `origem=direto` para preservar o enu
 
 QA local em quatro larguras, revisão visual e de código. Perguntas e JS comparados ao nível 0, com apenas o texto do CTA dos contatos mudando no JS. Uptime usa o marcador exclusivo `data-variant="nivel-2"`.
 
-Felipe pediu envio direto ao Dr. Alex pela Evolution para revisar abertura e perguntas, contextualizando a finalidade. Encaminhamento à Larissa fica com Felipe. Recibos de publicação, submit e mensagem serão registrados no fechamento.
+Publicado em 21/10: código `9b896d2`, head `ec89bba19b07b60a98a65971299f0e8863644a83`, Action `39713513588` concluída. HTTP 200 e no-cache, HTML vivo igual à fonte por SHA-256 `c372c344b70e8d81492d295ccb280be398a88912ea3eae793a706ec266709066`. Quatro larguras sem overflow/erro JS, revisão independente sem achados. Níveis 0 e 1 byte-idênticos.
+
+Dois links testados com endpoint interceptado: origem e UTMs específicos chegam ao payload junto de `/perfil-clinica/nivel-2/`. Submit real com UTMs qa/qa confirmou dois desafios, volume e origem no banco e na linha 7 da aba Cadastros, ID `f48ac20a-524f-48ff-97f1-8a69469b5485`, sincronizado sem erro. Fixture removida por ID e células da linha limpas sem deslocamento, preservando as demais. Uptime registrado com marcador próprio da variante.
+
+Felipe pediu envio direto ao Dr. Alex pela Evolution para revisar abertura e perguntas, contextualizando a finalidade. Mensagem aceita HTTP 201 e relida com autoria/destino/texto idênticos, ID `3EB0877E26940BB7DACEDC`; não comprova leitura pelo destinatário. Encaminhamento dos links à Larissa fica com Felipe. Sem publicação no Instagram ou alteração no Quadro.
