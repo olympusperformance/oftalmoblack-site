@@ -24,4 +24,8 @@ Function `black-presenca` v2 com JWT ativo. Aba privada Presenças mantém as 15
 
 Sete testes Node, SQL transacional legado e diário com rollback passaram, incluindo recibo alternativo através da meia-noite, case/acentos e upgrade de identificação. QA de navegador em quatro larguras confirma ausência de uso da sessão, payload só com nome, ACK com data válida, falha/retry e limpeza. QR avulso e QR da arte final decodificados por OpenCV.
 
-Publicação, recibo vivo e envio direto ao João Felipe serão registrados após a validação final. Nenhuma publicação automática em TV/Instagram ou alteração no Quadro.
+Publicado em 22/10: entrega `8a07c38`, head `dcb1d66ef65f59dba627be864a84956629665272`, Action `39766988157` concluída. HTML vivo igual à fonte por SHA-256 `936e5fa6f3b5d2f34649a0ac1b551b9d24a897feb915ad74fb4f52e8b7215a53`, HTTP 200 e no-cache. Arte/QR com hash igual aos arquivos fonte; níveis 0 e 2 preservados.
+
+Dois envios sintéticos pela página viva geraram uma presença em 22/10/2026, com nome informado e sem e-mail, dois recibos e uma linha sincronizada na planilha. ID `6f8853e9-4470-4578-80ee-074050b0b9df`, linha 10. Depois, fixture e recibos removidos por ID e somente A10:P10 limpo sem deslocamento. Testes SQL também passaram com rollback, sem registrar presença real de membro.
+
+João Felipe recebeu link e instruções por mensagem `3EB020016CC27A27E9216B`, e PNG 1920×1080 como documento `3EB0BB4CD00DA99F85A5EC`, pela Evolution do Felipe. Ambos relidos no destino correto; nome/caption e SHA-256 do documento conferidos. Não comprova leitura humana ou instalação na TV. Nenhuma publicação automática em TV/Instagram ou alteração no Quadro.
