@@ -63,6 +63,7 @@
       { key:'members', label:'Progressão', icon:'trending-up' }
     ] },
     { grupo:'Operação da equipe', itens: [
+      { key:'livro', label:'Livro', icon:'book-open' },
       { key:'demands', label:'Demandas', icon:'check-circle' },
       { key:'botFila',     label:'O bot respondeu', icon:'bell' },
       { key:'botExemplos', label:'Voz do bot', icon:'edit' },
@@ -401,6 +402,7 @@
     if (painel) painel.hidden = key !== 'demands' || !st.painel;
     if (Club.black) Club.black.enter(key);
     if (key === 'igMetricas') Club.branding.enter();
+    if (key === 'livro' && Club.livro) Club.livro.enter();
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 

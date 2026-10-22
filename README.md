@@ -793,3 +793,9 @@ Testes de regressão: `node --test tests/graduacao.test.mjs tests/progress-notes
 ## Íris Black (26/09/2026)
 
 Nome vigente do projeto e artefato antes chamado SDR IA. A agente do Dr. Alex se apresenta como Íris (antes Marina). Aplicar `supabase/iris-black.sql` após os scripts históricos de catálogo e frentes. A renomeação preserva IDs, etapas, demandas e progresso; a UI lê o nome do banco. O repositório técnico permanece `sdr-ia`.
+
+# Painel do livro no Admin
+
+`/admin/#livro` reúne visualizações da página, aberturas do checkout, vendas pagas e faturamento do livro por publicação. Fontes independentes: GA4 e Greenn, com última coleta e cobertura das origens explícitas. Filtros por período, link Instagram, ranking exportável e importação de UTMs por CSV. A API financeira não fornece origens; o webhook está preparado em código, ainda sem emissor ativo. Somente administradores têm acesso por RLS.
+
+Operação, implantação do coletor e definições: [scripts/livro-dashboard/README.md](scripts/livro-dashboard/README.md). Aplicar as migrações `20261022223253_livro_dashboard.sql` e `20261022224037_livro_csv_upsert.sql` antes de publicar a interface.

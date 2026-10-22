@@ -3,6 +3,8 @@
 .env
 .env.*
 node_modules/
+__pycache__/
+*.pyc
 
 # Credenciais locais — nunca versionar. Sem barra, para valer tanto para o
 # arquivo solto quanto para a pasta.
