@@ -697,6 +697,12 @@ Lentes de Alta Tecnologia do Dr. Alex (Imersão Grau Zero, out/2026), cada um em
 no Drive dele) apontam para cá. Antes eram relativos (`./Simuladores/...`) e só
 abriam com o PPTX dentro da pasta do pacote.
 
+Desde 21/10/2026 a página também tem os 2 da aula de aberrometria
+(`/simuladores/aberrometria-laboratorio/`, com `#mapa`, `#rms`, `#imagem` e `#mtf`, e
+`/simuladores/aberrometria-disfotopsias/`). Essa aula continua com links relativos:
+abre os simuladores da pasta `Simuladores` ao lado dela no Drive (e no pen drive), e o
+site é a cópia para abrir de qualquer lugar.
+
 - Os arquivos são os do Dr. Alex, sem edição: só o botão "Voltar ao índice da aula"
   passou a levar para `/simuladores/`. O índice é a `Abrir_Simuladores.html` dele,
   adaptada para a web (sem as instruções de pasta local e sem os botões de PPTX/DOCX).
@@ -706,9 +712,10 @@ abriam com o PPTX dentro da pasta do pacote.
   aba: abre `/simuladores/` em outra aba (`NAV` com `href` em `membros.js`). O menu do
   admin não tem o item; a equipe confere pelo `/membros/?membro=<id>`.
 - Versão nova dos simuladores: `CLAUDE/simuladores-oftalmoblack/montar_site.py`, fora
-  deste repositório, refaz a pasta a partir da pasta Simuladores baixada, e
-  `trocar_links_pptx.py` troca os links de um PPTX novo. Os endereços ficam em
-  `enderecos.json`; mudar um deles quebra o slide que já aponta para ele.
+  deste repositório, refaz a pasta a partir da pasta Simuladores baixada (e, como
+  terceiro argumento, da pasta com os 2 de aberrometria), e `trocar_links_pptx.py`
+  troca os links de um PPTX novo. Os endereços ficam em `enderecos.json` e
+  `enderecos_aberrometria.json`; mudar um deles quebra o slide que já aponta para ele.
 
 ## Mapa da Jornada do Cliente
 

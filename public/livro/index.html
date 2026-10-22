@@ -523,6 +523,47 @@ html.lb-on{overflow:hidden}
 }
 @media(prefers-reduced-motion:reduce){.reading-progress{display:none}}
 
+
+/* Sumário fiel à obra: texto fluido e paginação sempre alinhada à direita. */
+.hero__scope{margin-top:24px;padding-left:16px;border-left:2px solid var(--cobre);max-width:44ch}
+.hero__scope strong{display:block;font:700 clamp(24px,4vw,32px)/1.15 var(--fd);color:var(--cobre);letter-spacing:-.02em}
+.hero__scope span{display:block;margin-top:9px;font-size:15px;line-height:1.5;color:var(--claro)}
+.toc-nav{display:flex;flex-wrap:wrap;gap:8px;margin-top:30px}
+.toc-nav a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:9px 16px;border:1px solid #A3B2AF;border-radius:var(--r);color:var(--tinta);font-size:14px;text-decoration:none}
+.toc-nav a:hover{background:var(--pet);border-color:var(--pet);color:var(--branco)}
+.toc-original{margin-top:36px}
+.toc-original ol{list-style:none;margin:0;padding:0}
+.toc-row{display:grid;grid-template-columns:minmax(0,1fr) 3ch;align-items:baseline;column-gap:20px}
+.toc-row>span:first-child{min-width:0;overflow-wrap:anywhere}
+.toc-page{white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums;font-size:14px;color:var(--terra)}
+.toc-opening{padding:0 0 28px}
+.toc-opening h3{font:600 22px/1.3 var(--fd);margin-bottom:20px}
+.toc-opening ol{display:grid;gap:14px;font-size:16px}
+.toc-part{padding:32px 0;border-top:1px solid #B7C2BF;scroll-margin-top:90px}
+.toc-part__heading{margin-bottom:28px}
+.toc-part__heading>p{display:flex;align-items:baseline;justify-content:space-between;gap:12px;color:var(--terra);font-size:14px}
+.toc-part__heading>p span{font-variant-numeric:tabular-nums;white-space:nowrap}
+.toc-part__heading h3{font:700 23px/1.25 var(--fd);color:var(--terra);margin-top:10px;letter-spacing:-.02em;max-width:26ch}
+.toc-chapter+.toc-chapter{border-top:1px solid #D3DAD5;padding-top:28px;margin-top:28px}
+.toc-chapter__number{display:block;font:500 13px/1.4 var(--fb);color:var(--terra);margin-bottom:7px}
+.toc-chapter__heading h4{font:600 18px/1.4 var(--fd);color:var(--tinta);margin:0;letter-spacing:-.015em;overflow-wrap:anywhere}
+.toc-chapter__heading>.toc-page{font-weight:600;font-size:15px}
+.toc-author{font-size:14px;color:var(--tinta2);margin-top:8px}
+.toc-original .toc-topics{display:grid;gap:15px;margin-top:20px;font-size:15px;line-height:1.6;color:var(--tinta2)}
+.toc-closing{padding:28px 0;border-top:1px solid #B7C2BF;font-size:18px;font-weight:600}
+.toc-back{display:inline-flex;align-items:center;min-height:44px;color:var(--terra);font-size:14px;text-underline-offset:5px}
+@media(min-width:960px){
+ .hero__scope{margin-top:28px}.hero__scope span{font-size:16px}
+ .toc-original{margin-top:48px}
+ .toc-opening{display:grid;grid-template-columns:240px minmax(0,1fr);gap:56px}
+ .toc-part{display:grid;grid-template-columns:240px minmax(0,1fr);gap:56px;padding:44px 0}
+ .toc-part__heading{position:sticky;top:96px;align-self:start;margin:0}
+ .toc-part__heading h3{font-size:25px}.toc-part__heading>p{justify-content:flex-start;gap:24px}
+ .toc-chapter__heading h4{font-size:20px}
+ .toc-original .toc-topics{font-size:16px;gap:14px}
+ .toc-closing{padding-left:296px}
+}
+@media(max-width:359px){.toc-row{column-gap:12px}.toc-nav a{padding-inline:12px}.toc-part__heading h3{font-size:21px}.toc-chapter__heading h4{font-size:17px}}
 </style>
 
 <script>
@@ -601,6 +642,7 @@ gtag('event','view_item',{currency:'BRL',value:1050,items:[{item_id:'livro_presb
       <p class="kicker">Novo livro do Dr. Alex Sá</p>
       <h1 id="h1">Da lente premium ao planejamento premium.</h1>
       <p class="hero__sub">Não simplesmente escolher uma lente, mas construir uma estratégia visual personalizada para cada olho e cada paciente.</p>
+      <p class="hero__scope"><strong>Mais de 600 páginas.</strong><span>13 capítulos, dos fundamentos ópticos aos 10 casos clínicos.</span></p>
     </div>
     <div class="hero__stage">
       <svg class="engr engr--c" viewBox="0 0 1000 1000" aria-hidden="true" focusable="false"><use href="#engr"/></svg>
@@ -617,7 +659,7 @@ gtag('event','view_item',{currency:'BRL',value:1050,items:[{item_id:'livro_presb
     <div class="hero__cta">
       <a class="btn btn--cta" href="#oferta">Garantir meu exemplar <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15"/><path d="m13 6 6 6-6 6"/></svg></a>
     </div>
-    <p class="proof">Prefácio de Renato Ambrósio Jr. · mais de 600 páginas</p>
+    <p class="proof">Prefácio de Renato Ambrósio Jr. · 39 colaboradores</p>
   </div>
 </section>
 
@@ -682,47 +724,167 @@ gtag('event','view_item',{currency:'BRL',value:1050,items:[{item_id:'livro_presb
 
 <section class="sum papel" id="sumario" aria-labelledby="sum-t">
   <div class="wrap">
-    <div class="themes__heading"><h2 id="sum-t">Índice do livro.</h2><p>Cinco partes, 13 capítulos. Dos fundamentos ópticos à aplicação do Mecanismo Grau Zero em casos clínicos.</p></div>
-    <ol class="partes">
-      <li class="pt">
-        <div><span class="pt__n">Parte I</span><h3>A Revolução do Grau Zero</h3></div>
-        <ol class="caps">
-          <li><span class="caps__n">Cap. 1</span><span>O novo paciente e o nascimento do Mecanismo Grau Zero</span></li>
-        </ol>
-      </li>
-      <li class="pt">
-        <div><span class="pt__n">Parte II</span><h3>Óptica Cirúrgica</h3></div>
-        <ol class="caps">
-          <li><span class="caps__n">Cap. 2</span><span>Fundamentos das lentes de alta tecnologia</span></li>
-          <li><span class="caps__n">Cap. 3</span><span>Avaliação pós-operatória e desempenho funcional</span></li>
-          <li><span class="caps__n">Cap. 4</span><span>Aberrometria: entender a luz antes de escolher a lente</span></li>
-        </ol>
-      </li>
-      <li class="pt">
-        <div><span class="pt__n">Parte III</span><h3>Exames e fundamentos diagnósticos do Grau Zero</h3></div>
-        <ol class="caps">
-          <li><span class="caps__n">Cap. 5</span><span>Biometria, fórmulas e casos desafiadores: ceratocone, pós-laser e pós-RK</span></li>
-          <li><span class="caps__n">Cap. 6</span><span>Topografia e tomografia corneana</span></li>
-          <li><span class="caps__n">Cap. 7</span><span>Microscopia especular e segurança endotelial</span></li>
-        </ol>
-      </li>
-      <li class="pt">
-        <div><span class="pt__n">Parte IV</span><h3>Lentes de Alta Tecnologia</h3></div>
-        <ol class="caps">
-          <li><span class="caps__n">Cap. 8</span><span>Full Range: difrativas e não difrativas</span></li>
-          <li><span class="caps__n">Cap. 9</span><span>Extend (EDOF) e Enhanced</span></li>
-          <li><span class="caps__n">Cap. 10</span><span>Lentes tóricas</span></li>
-        </ol>
-      </li>
-      <li class="pt pt--mgz">
-        <div><span class="pt__n">Parte V</span><h3>Mecanismo Grau Zero</h3></div>
-        <ol class="caps">
-          <li><span class="caps__n">Cap. 11</span><span>Equilíbrio óptico funcional e lógica de decisão</span></li>
-          <li><span class="caps__n">Cap. 12</span><span>Os 7 critérios para indicar e os 7 passos para customizar</span></li>
-          <li><span class="caps__n">Cap. 13</span><span>O protocolo na prática, em 10 casos clínicos</span></li>
-        </ol>
-      </li>
-    </ol>
+    <div class="themes__heading"><h2 id="sum-t">Mais de 600 páginas.<br>Conheça o conteúdo.</h2><p>O sumário da obra, com as cinco partes, os 13 capítulos, os tópicos de estudo e a página de cada conteúdo.</p></div>
+    <nav class="toc-nav" aria-label="Navegue pelas partes do livro"><a href="#parte-i" aria-label="Parte I: A Revolução do Grau Zero">Parte I</a><a href="#parte-ii" aria-label="Parte II: Óptica Cirúrgica">Parte II</a><a href="#parte-iii" aria-label="Parte III: Exames e fundamentos diagnósticos do Grau Zero">Parte III</a><a href="#parte-iv" aria-label="Parte IV: Lentes de Alta Tecnologia">Parte IV</a><a href="#parte-v" aria-label="Parte V: Mecanismo Grau Zero (MGZ)">Parte V</a></nav>
+    <div class="toc-original">
+      <div class="toc-opening"><h3>Sumário</h3><ol><li class="toc-row"><span>Prefácio</span><span class="toc-page"><span class="sr">Página </span>14</span></li>
+<li class="toc-row"><span>Prólogo</span><span class="toc-page"><span class="sr">Página </span>18</span></li>
+<li class="toc-row"><span>Apresentação do autor</span><span class="toc-page"><span class="sr">Página </span>25</span></li></ol></div>
+      <section class="toc-part" id="parte-i" aria-labelledby="parte-i-t">
+      <header class="toc-part__heading"><p>Parte I<span>p. 27</span></p><h3 id="parte-i-t">A Revolução do Grau Zero</h3></header>
+      <div class="toc-part__body"><article class="toc-chapter" aria-labelledby="cap-1">
+          <div class="toc-row toc-chapter__heading"><h4 id="cap-1"><span class="toc-chapter__number">Capítulo 1</span>Introdução: o novo paciente e o nascimento do Mecanismo Grau Zero</h4><span class="toc-page"><span class="sr">Página </span>28</span></div>
+
+          <ol class="toc-topics"><li class="toc-row"><span>Por que o paciente mudou</span><span class="toc-page"><span class="sr">Página </span>30</span></li>
+<li class="toc-row"><span>Quando a cirurgia do cristalino virou cirurgia refrativa</span><span class="toc-page"><span class="sr">Página </span>31</span></li>
+<li class="toc-row"><span>Síndrome do cristalino disfuncional: quando a transparência não significa função</span><span class="toc-page"><span class="sr">Página </span>32</span></li>
+<li class="toc-row"><span>O sistema equilibrado da aberração esférica</span><span class="toc-page"><span class="sr">Página </span>35</span></li></ol>
+        </article></div>
+    </section><section class="toc-part" id="parte-ii" aria-labelledby="parte-ii-t">
+      <header class="toc-part__heading"><p>Parte II<span>p. 44</span></p><h3 id="parte-ii-t">Óptica Cirúrgica</h3></header>
+      <div class="toc-part__body"><article class="toc-chapter" aria-labelledby="cap-2">
+          <div class="toc-row toc-chapter__heading"><h4 id="cap-2"><span class="toc-chapter__number">Capítulo 2</span>Óptica Cirúrgica I: fundamentos das lentes de alta tecnologia</h4><span class="toc-page"><span class="sr">Página </span>45</span></div>
+
+          <ol class="toc-topics"><li class="toc-row"><span>2.1 O que muda quando deixamos de trabalhar com um único foco</span><span class="toc-page"><span class="sr">Página </span>46</span></li>
+<li class="toc-row"><span>2.2 O relevo transparente modifica a fase da luz</span><span class="toc-page"><span class="sr">Página </span>47</span></li>
+<li class="toc-row"><span>2.3 Young mostra o que acontece quando as contribuições se encontram</span><span class="toc-page"><span class="sr">Página </span>49</span></li>
+<li class="toc-row"><span>2.4 Fresnel nos ajuda a escolher onde haverá reforço</span><span class="toc-page"><span class="sr">Página </span>50</span></li>
+<li class="toc-row"><span>2.5 Como esse raciocínio produz uma lente difrativa fina</span><span class="toc-page"><span class="sr">Página </span>53</span></li>
+<li class="toc-row"><span>2.6 Por que a grade uniforme não faz o mesmo foco</span><span class="toc-page"><span class="sr">Página </span>55</span></li>
+<li class="toc-row"><span>2.7 O que são a primeira e a segunda ordens</span><span class="toc-page"><span class="sr">Página </span>57</span></li>
+<li class="toc-row"><span>2.8 Da lente difrativa isolada à LIO de maior alcance</span><span class="toc-page"><span class="sr">Página </span>59</span></li>
+<li class="toc-row"><span>2.9 Da bifocalidade à trifocalidade</span><span class="toc-page"><span class="sr">Página </span>63</span></li>
+<li class="toc-row"><span>2.10 Várias ordens podem contribuir para um alcance mais contínuo</span><span class="toc-page"><span class="sr">Página </span>65</span></li>
+<li class="toc-row"><span>2.11 Pupila e cor da luz modificam o resultado</span><span class="toc-page"><span class="sr">Página </span>67</span></li>
+<li class="toc-row"><span>2.12 A evolução também ocorre fora da multifocalidade difrativa</span><span class="toc-page"><span class="sr">Página </span>69</span></li>
+<li class="toc-row"><span>2.13 Energia transmitida não é sinônimo de qualidade da imagem</span><span class="toc-page"><span class="sr">Página </span>71</span></li>
+<li class="toc-row"><span>2.14 Da física ao equilíbrio óptico</span><span class="toc-page"><span class="sr">Página </span>73</span></li></ol>
+        </article><article class="toc-chapter" aria-labelledby="cap-3">
+          <div class="toc-row toc-chapter__heading"><h4 id="cap-3"><span class="toc-chapter__number">Capítulo 3</span>Óptica Cirúrgica II: avaliação pós-operatória e desempenho funcional</h4><span class="toc-page"><span class="sr">Página </span>76</span></div>
+
+          <ol class="toc-topics"><li class="toc-row"><span>3.1 O que é curva de defocus e por que ela mudou o jogo</span><span class="toc-page"><span class="sr">Página </span>77</span></li>
+<li class="toc-row"><span>3.2 Conceitos fundamentais: foco, desfoque e relação dioptria-distância</span><span class="toc-page"><span class="sr">Página </span>77</span></li>
+<li class="toc-row"><span>3.3 Os quatro elementos que eu procuro na curva: pico, largura, plateau e landing zone</span><span class="toc-page"><span class="sr">Página </span>82</span></li>
+<li class="toc-row"><span>3.4 Cut-off funcional: o que significa dizer que o paciente &quot;ainda enxerga&quot;</span><span class="toc-page"><span class="sr">Página </span>85</span></li>
+<li class="toc-row"><span>3.5 Como construir a curva de defocus no consultório: do zero ao gráfico</span><span class="toc-page"><span class="sr">Página </span>86</span></li>
+<li class="toc-row"><span>3.6 Passo a passo prático: da refração final à curva de defocus</span><span class="toc-page"><span class="sr">Página </span>87</span></li>
+<li class="toc-row"><span>3.7 Leitura clínica: como eu traduzo o gráfico em decisão</span><span class="toc-page"><span class="sr">Página </span>93</span></li>
+<li class="toc-row"><span>3.8 Aplicação no Mecanismo Grau Zero: por que eu uso a curva sem correção</span><span class="toc-page"><span class="sr">Página </span>94</span></li>
+<li class="toc-row"><span>3.9 Erros comuns e como evitar (sem complicar o exame)</span><span class="toc-page"><span class="sr">Página </span>95</span></li></ol>
+        </article><article class="toc-chapter" aria-labelledby="cap-4">
+          <div class="toc-row toc-chapter__heading"><h4 id="cap-4"><span class="toc-chapter__number">Capítulo 4</span>Aberrometria: entender a luz antes de escolher a lente</h4><span class="toc-page"><span class="sr">Página </span>100</span></div>
+
+          <ol class="toc-topics"><li class="toc-row"><span>4.1 Frente de onda (wavefront): a luz como &quot;superfície&quot;</span><span class="toc-page"><span class="sr">Página </span>100</span></li>
+<li class="toc-row"><span>4.2 Sistema perfeito versus sistema real</span><span class="toc-page"><span class="sr">Página </span>102</span></li>
+<li class="toc-row"><span>4.3 OPD (Optical Path Difference): a diferença de caminho óptico em micra</span><span class="toc-page"><span class="sr">Página </span>103</span></li>
+<li class="toc-row"><span>4.4 O que é aberração, de fato. E por que na oftalmologia a gente &quot;usa&quot; aberração</span><span class="toc-page"><span class="sr">Página </span>104</span></li>
+<li class="toc-row"><span>4.5 Zernike: por que existe e como ler</span><span class="toc-page"><span class="sr">Página </span>107</span></li>
+<li class="toc-row"><span>4.6 Coeficiente e RMS (Root Mean Square): forma versus magnitude</span><span class="toc-page"><span class="sr">Página </span>111</span></li>
+<li class="toc-row"><span>4.7 A tríade prática: número, gráfico e imagem</span><span class="toc-page"><span class="sr">Página </span>116</span></li>
+<li class="toc-row"><span>4.8 Aberração esférica e asfericidade corneana: parentes, não gêmeas</span><span class="toc-page"><span class="sr">Página </span>120</span></li>
+<li class="toc-row"><span>5. Qualidade da imagem no pós-operatório do primeiro olho</span><span class="toc-page"><span class="sr">Página </span>127</span></li>
+<li class="toc-row"><span>6. Tecnologias de aberrometria: princípios de aquisição</span><span class="toc-page"><span class="sr">Página </span>138</span></li>
+<li class="toc-row"><span>7. Fluxo rápido para leitura: do exame à decisão</span><span class="toc-page"><span class="sr">Página </span>140</span></li>
+<li class="toc-row"><span>8. Fechamento: aberrometria como parte do tratamento premium</span><span class="toc-page"><span class="sr">Página </span>141</span></li></ol>
+        </article></div>
+    </section><section class="toc-part" id="parte-iii" aria-labelledby="parte-iii-t">
+      <header class="toc-part__heading"><p>Parte III<span>p. 144</span></p><h3 id="parte-iii-t">Exames e fundamentos diagnósticos do Grau Zero</h3></header>
+      <div class="toc-part__body"><article class="toc-chapter" aria-labelledby="cap-5">
+          <div class="toc-row toc-chapter__heading"><h4 id="cap-5"><span class="toc-chapter__number">Capítulo 5</span>Biometria</h4><span class="toc-page"><span class="sr">Página </span>145</span></div>
+
+          <ol class="toc-topics"><li class="toc-row"><span>5.1 Por que pequenos erros viram grandes consequências</span><span class="toc-page"><span class="sr">Página </span>146</span></li>
+<li class="toc-row"><span>5.2 Fórmulas: dos dados ao cálculo</span><span class="toc-page"><span class="sr">Página </span>170</span></li>
+<li class="toc-row"><span>5.3 Cálculo em casos desafiadores: ceratocone, pós-laser em refrativa, pós-ceratotomia radial</span><span class="toc-page"><span class="sr">Página </span>188</span></li></ol>
+        </article><article class="toc-chapter" aria-labelledby="cap-6">
+          <div class="toc-row toc-chapter__heading"><h4 id="cap-6"><span class="toc-chapter__number">Capítulo 6</span>Topografia e tomografia corneana: regularidade, simetria, congruência e aplicabilidade clínica</h4><span class="toc-page"><span class="sr">Página </span>217</span></div>
+
+          <ol class="toc-topics"><li class="toc-row"><span>6.1 Topografia e tomografia: o que muda na decisão</span><span class="toc-page"><span class="sr">Página </span>218</span></li>
+<li class="toc-row"><span>6.2 Como a imagem é formada e onde cada método falha</span><span class="toc-page"><span class="sr">Página </span>218</span></li>
+<li class="toc-row"><span>6.3 Antes de interpretar: qualidade, superfície, repetibilidade e escala</span><span class="toc-page"><span class="sr">Página </span>220</span></li>
+<li class="toc-row"><span>6.4 Fundamentos: curvatura, elevação e espessura. O que cada mapa é e o que ele não é</span><span class="toc-page"><span class="sr">Página </span>222</span></li>
+<li class="toc-row"><span>6.5 O display dos quatro mapas refrativos: leitura caixa a caixa</span><span class="toc-page"><span class="sr">Página </span>232</span></li>
+<li class="toc-row"><span>6.6 Mapa topométrico e estadiamento do ceratocone: os índices que quantificam a irregularidade</span><span class="toc-page"><span class="sr">Página </span>241</span></li>
+<li class="toc-row"><span>6.7 Display de Belin Ambrósio (BAD): o raciocínio por trás do número</span><span class="toc-page"><span class="sr">Página </span>246</span></li>
+<li class="toc-row"><span>6.8 Índices baseados em localização do cone e ferramentas de inteligência artificial</span><span class="toc-page"><span class="sr">Página </span>255</span></li>
+<li class="toc-row"><span>6.9 Tomografia no rastreio para cirurgia refrativa corneana</span><span class="toc-page"><span class="sr">Página </span>256</span></li>
+<li class="toc-row"><span>6.10 Astigmatismo anterior, posterior e total: qual K entregar a cada cálculo</span><span class="toc-page"><span class="sr">Página </span>260</span></li>
+<li class="toc-row"><span>6.11 O cataract pré-op display: leitura em sete critérios</span><span class="toc-page"><span class="sr">Página </span>266</span></li>
+<li class="toc-row"><span>6.12 Da tela à conduta: a tabela de decisão</span><span class="toc-page"><span class="sr">Página </span>271</span></li>
+<li class="toc-row"><span>6.13 Registro estruturado: o que documentar antes de indicar</span><span class="toc-page"><span class="sr">Página </span>273</span></li>
+<li class="toc-row"><span>6.14 Pentacam e Galilei lado a lado: diferenças que mudam decisão</span><span class="toc-page"><span class="sr">Página </span>275</span></li>
+<li class="toc-row"><span>6.15 Fechamento: transformar mapa em conduta</span><span class="toc-page"><span class="sr">Página </span>276</span></li></ol>
+        </article><article class="toc-chapter" aria-labelledby="cap-7">
+          <div class="toc-row toc-chapter__heading"><h4 id="cap-7"><span class="toc-chapter__number">Capítulo 7</span>Microscopia especular: segurança endotelial na catarata refrativa e na correção da presbiopia</h4><span class="toc-page"><span class="sr">Página </span>280</span></div>
+          <p class="toc-author">Anderson Camargo</p>
+          <ol class="toc-topics"><li class="toc-row"><span>Introdução</span><span class="toc-page"><span class="sr">Página </span>280</span></li>
+<li class="toc-row"><span>O que a microscopia especular mede</span><span class="toc-page"><span class="sr">Página </span>281</span></li>
+<li class="toc-row"><span>Antes do número, a imagem: como julgar a qualidade do exame</span><span class="toc-page"><span class="sr">Página </span>281</span></li>
+<li class="toc-row"><span>Parâmetros principais e faixas de referência na prática</span><span class="toc-page"><span class="sr">Página </span>283</span></li>
+<li class="toc-row"><span>Leitura passo a passo: uma sequência fixa para evitar armadilhas</span><span class="toc-page"><span class="sr">Página </span>284</span></li>
+<li class="toc-row"><span>Síndrome de Fuchs: o que procurar na microscopia e por que isso muda a indicação</span><span class="toc-page"><span class="sr">Página </span>284</span></li>
+<li class="toc-row"><span>Critério endotélio no Protocolo Mecanismo Grau Zero</span><span class="toc-page"><span class="sr">Página </span>285</span></li>
+<li class="toc-row"><span>Fatores que aumentam a preocupação com o endotélio</span><span class="toc-page"><span class="sr">Página </span>286</span></li>
+<li class="toc-row"><span>Conclusão</span><span class="toc-page"><span class="sr">Página </span>289</span></li></ol>
+        </article></div>
+    </section><section class="toc-part" id="parte-iv" aria-labelledby="parte-iv-t">
+      <header class="toc-part__heading"><p>Parte IV<span>p. 290</span></p><h3 id="parte-iv-t">Lentes de Alta Tecnologia</h3></header>
+      <div class="toc-part__body"><article class="toc-chapter" aria-labelledby="cap-8">
+          <div class="toc-row toc-chapter__heading"><h4 id="cap-8"><span class="toc-chapter__number">Capítulo 8</span>Lentes de alta tecnologia: Full Range</h4><span class="toc-page"><span class="sr">Página </span>291</span></div>
+
+          <ol class="toc-topics"><li class="toc-row"><span>Introdução: tecnologia que amplia alcance, exige método</span><span class="toc-page"><span class="sr">Página </span>291</span></li>
+<li class="toc-row"><span>Como ler os parâmetros na prática (MGZ)</span><span class="toc-page"><span class="sr">Página </span>294</span></li>
+<li class="toc-row"><span>Parte I: Full Range difrativas: independência com custo óptico</span><span class="toc-page"><span class="sr">Página </span>301</span></li>
+<li class="toc-row"><span>Parte II: Full Range não difrativas: múltiplos focos sem difração</span><span class="toc-page"><span class="sr">Página </span>328</span></li>
+<li class="toc-row"><span>Conclusão: a lente é só metade do resultado</span><span class="toc-page"><span class="sr">Página </span>335</span></li></ol>
+        </article><article class="toc-chapter" aria-labelledby="cap-9">
+          <div class="toc-row toc-chapter__heading"><h4 id="cap-9"><span class="toc-chapter__number">Capítulo 9</span>Lentes de alta tecnologia: Extend (EDOF) e Enhanced</h4><span class="toc-page"><span class="sr">Página </span>342</span></div>
+
+          <ol class="toc-topics"><li class="toc-row"><span>Por que separar Extend e Enhanced</span><span class="toc-page"><span class="sr">Página </span>342</span></li>
+<li class="toc-row"><span>Equilíbrio óptico: a balança que atravessa o livro</span><span class="toc-page"><span class="sr">Página </span>342</span></li>
+<li class="toc-row"><span>Parte I: Extend, lente a lente</span><span class="toc-page"><span class="sr">Página </span>352</span></li>
+<li class="toc-row"><span>Parte II: Enhanced, lente a lente</span><span class="toc-page"><span class="sr">Página </span>359</span></li>
+<li class="toc-row"><span>Fechamento: a escolha correta parece simples no pós, mas é feita no pré</span><span class="toc-page"><span class="sr">Página </span>366</span></li></ol>
+        </article><article class="toc-chapter" aria-labelledby="cap-10">
+          <div class="toc-row toc-chapter__heading"><h4 id="cap-10"><span class="toc-chapter__number">Capítulo 10</span>Lentes tóricas</h4><span class="toc-page"><span class="sr">Página </span>371</span></div>
+
+          <ol class="toc-topics"><li class="toc-row"><span>Lente tórica é para todo mundo</span><span class="toc-page"><span class="sr">Página </span>371</span></li>
+<li class="toc-row"><span>Astigmatismo na prática: corneano, refracional, total e o que realmente interessa na programação</span><span class="toc-page"><span class="sr">Página </span>372</span></li>
+<li class="toc-row"><span>Conclusão</span><span class="toc-page"><span class="sr">Página </span>390</span></li></ol>
+        </article></div>
+    </section><section class="toc-part" id="parte-v" aria-labelledby="parte-v-t">
+      <header class="toc-part__heading"><p>Parte V<span>p. 393</span></p><h3 id="parte-v-t">Mecanismo Grau Zero (MGZ)</h3></header>
+      <div class="toc-part__body"><article class="toc-chapter" aria-labelledby="cap-11">
+          <div class="toc-row toc-chapter__heading"><h4 id="cap-11"><span class="toc-chapter__number">Capítulo 11</span>Os fundamentos do Mecanismo Grau Zero: equilíbrio óptico funcional e lógica de decisão</h4><span class="toc-page"><span class="sr">Página </span>394</span></div>
+
+          <ol class="toc-topics"><li class="toc-row"><span>Antes de tudo: o que é, e o que não é, um protocolo</span><span class="toc-page"><span class="sr">Página </span>394</span></li>
+<li class="toc-row"><span>Introdução: qual é a melhor lente do mundo</span><span class="toc-page"><span class="sr">Página </span>395</span></li></ol>
+        </article><article class="toc-chapter" aria-labelledby="cap-12">
+          <div class="toc-row toc-chapter__heading"><h4 id="cap-12"><span class="toc-chapter__number">Capítulo 12</span>Protocolo Mecanismo Grau Zero: os 7 critérios para indicar e os 7 passos para customizar</h4><span class="toc-page"><span class="sr">Página </span>425</span></div>
+
+          <ol class="toc-topics"><li class="toc-row"><span>O que este capítulo é</span><span class="toc-page"><span class="sr">Página </span>425</span></li>
+<li class="toc-row"><span>Parte 1: os 7 critérios para indicar ou contraindicar</span><span class="toc-page"><span class="sr">Página </span>426</span></li>
+<li class="toc-row"><span>Parte 2: os 7 passos para customizar</span><span class="toc-page"><span class="sr">Página </span>447</span></li>
+<li class="toc-row"><span>Conclusão</span><span class="toc-page"><span class="sr">Página </span>466</span></li></ol>
+        </article><article class="toc-chapter" aria-labelledby="cap-13">
+          <div class="toc-row toc-chapter__heading"><h4 id="cap-13"><span class="toc-chapter__number">Capítulo 13</span>Protocolo Mecanismo Grau Zero na prática</h4><span class="toc-page"><span class="sr">Página </span>470</span></div>
+
+          <ol class="toc-topics"><li class="toc-row"><span>Por que este capítulo existe</span><span class="toc-page"><span class="sr">Página </span>470</span></li>
+<li class="toc-row"><span>Como ler cada caso</span><span class="toc-page"><span class="sr">Página </span>471</span></li>
+<li class="toc-row"><span>Caso 1 · Ferrageador que nunca usou óculos: buscar o máximo equilíbrio</span><span class="toc-page"><span class="sr">Página </span>472</span></li>
+<li class="toc-row"><span>Caso 2 · Piloto e atirador: alcance no primeiro olho, qualidade no dominante</span><span class="toc-page"><span class="sr">Página </span>487</span></li>
+<li class="toc-row"><span>Caso 3 · Costureira e empresária: o perto como prioridade</span><span class="toc-page"><span class="sr">Página </span>500</span></li>
+<li class="toc-row"><span>Caso 4 · Professor de jiu-jitsu: perto sem operar o olho saudável</span><span class="toc-page"><span class="sr">Página </span>510</span></li>
+<li class="toc-row"><span>Caso 5 · Abandonar os óculos: equilíbrio com pupila pequena</span><span class="toc-page"><span class="sr">Página </span>520</span></li>
+<li class="toc-row"><span>Caso 6 · Direção noturna como prioridade na alta miopia</span><span class="toc-page"><span class="sr">Página </span>534</span></li>
+<li class="toc-row"><span>Caso 7 · Âncora de televisão: alcance e qualidade após LASIK</span><span class="toc-page"><span class="sr">Página </span>544</span></li>
+<li class="toc-row"><span>Caso 8 · O oftalmologista diante da escolha para os próprios olhos</span><span class="toc-page"><span class="sr">Página </span>556</span></li>
+<li class="toc-row"><span>Caso 9 · Óculos em tempo integral, trinta anos após RK</span><span class="toc-page"><span class="sr">Página </span>573</span></li>
+<li class="toc-row"><span>Caso 10 · Direção noturna: quando 20/20 e J1 não bastam</span><span class="toc-page"><span class="sr">Página </span>585</span></li></ol>
+        </article></div>
+    </section>
+      <div class="toc-closing"><ol><li class="toc-row"><span>Referências</span><span class="toc-page"><span class="sr">Página </span>597</span></li></ol></div>
+    </div>
+    <a class="toc-back" href="#sumario">Voltar ao início do sumário ↑</a>
   </div>
 </section>
 
