@@ -1,0 +1,12 @@
+{
+  "project_id": "1LzVoLTJsm6-wCIuKnwKx-q9R9aXS6nmv_1unb7ml4uLq1viR3NGB1Rvz",
+  "deployment_id": "AKfycbwwTDU5mfdmcJH5c1AS1eN1Rlj5ibkR7Bh2Hl5v1l-zhV6r_WwLfeQAE5qAlvEaicuP",
+  "version": 2,
+  "endpoint": "https://script.google.com/macros/s/AKfycbwwTDU5mfdmcJH5c1AS1eN1Rlj5ibkR7Bh2Hl5v1l-zhV6r_WwLfeQAE5qAlvEaicuP/exec",
+  "spreadsheet_id": "1F5KdFbuHM99pgqBcdNtqsccqpDxEzK8FwPrY5NvUSwI",
+  "sheet": "Candidaturas Hands-on Grau Zero",
+  "source_sha256": "c7b335b68f6a0fe16a90e4db992f14fd4bb6d8745b2e6b904d3bf05b1f3d7f67",
+  "get_verified": {"ok":true,"produto":"hands_on_grau_zero","schema_version":1,"configured":true},
+  "legacy_endpoint_unchanged": true,
+  "note": "Nova implantação no projeto já autorizado. Deployment legado permanece na versão 1. A nova versão usa aba própria e não modifica o esquema legado."
+}
