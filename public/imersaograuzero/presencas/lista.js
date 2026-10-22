@@ -10,7 +10,7 @@
  function render(){
   const day=$('day').value,term=$('search').value.trim().toLocaleLowerCase('pt-BR');
   const all=data.filter(r=>r.dia===day),rows=all.filter(r=>r.nome.toLocaleLowerCase('pt-BR').includes(term));
-  $('total').textContent=String(all.length);$('total-label').textContent=all.length===1?'presença no dia':'presenças no dia';$('rows').replaceChildren();
+  $('total').textContent=String(all.length);$('total-label').textContent=(all.length===1?'presença em ':'presenças em ')+day.slice(8,10)+'/'+day.slice(5,7);$('rows').replaceChildren();
   for(const r of rows){const tr=document.createElement('tr'),nome=document.createElement('td'),time=document.createElement('td');nome.textContent=r.nome;time.className='time';time.textContent=clock.format(new Date(r.registrada_em));tr.append(nome,time);$('rows').append(tr);}
   $('empty').hidden=rows.length>0;$('empty').textContent=term?'Nenhum participante encontrado.':'Nenhuma presença registrada neste dia.';
  }
