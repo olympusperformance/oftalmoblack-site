@@ -1,4 +1,5 @@
 import { createHandler, sheetValues, ensureSheetCapacity } from './core.mjs';
+import { ORG_SHEET, syncOrganization } from './organizacao.mjs';
 
 const env = (key: string) => Deno.env.get(key) || '';
 const dbUrl = env('SUPABASE_URL');
@@ -33,19 +34,29 @@ async function googleToken() {
   return googleCache.token;
 }
 
-async function google(path: string, token: string, body?: unknown, method?: string) {
+async function google(path: string, token: string, body?: unknown, method?: string, target=sheetId) {
   const separator=path.startsWith('?')||path.startsWith(':')?'':'/';
-  const res=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}${separator}${path}`,{method:method||(body?'PUT':'GET'),headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},...(body?{body:JSON.stringify(body)}:{}),signal:AbortSignal.timeout(15000)});
+  const res=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${target}${separator}${path}`,{method:method||(body?'PUT':'GET'),headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},...(body?{body:JSON.stringify(body)}:{}),signal:AbortSignal.timeout(15000)});
   if(!res.ok) throw new Error(res.status===403?'sheet_access':'sheet_unavailable');
   return res.json();
 }
 
-async function sync() {
+async function readAttendance() {
+  const rows=[];
+  for(let offset=0;offset<5000;offset+=500){
+    const res=await fetch(`${dbUrl}/rest/v1/black_presencas_evento?evento=eq.imersao-marketing-2026-10&select=id,nome,created_at,dia_presenca,utm,member:members!member_id(nome)&order=sheet_row.asc&limit=500&offset=${offset}`,{headers:dbHeaders,signal:AbortSignal.timeout(12000)});
+    if(!res.ok)throw new Error('database_unavailable');
+    const page=await res.json();rows.push(...page);
+    if(page.length<500)return rows;
+  }
+  throw new Error('org_attendance_limit');
+}
+
+async function sync(organization=false) {
   if(!sheetId||!sheetSa) throw new Error('sheet_not_configured');
   const rows=await db('rpc/black_presenca_sync_claim',{});
-  if(!rows.length) return {synced:0,pending:0};
   const batchToken=await googleToken();
-  await ensureSheetCapacity(google,batchToken,Math.max(...rows.map((r: {sheet_row: number})=>Number(r.sheet_row))));
+  if(rows.length)await ensureSheetCapacity(google,batchToken,Math.max(...rows.map((r: {sheet_row: number})=>Number(r.sheet_row))));
   let synced=0,pending=0;
   for(const row of rows){
     try{
@@ -66,7 +77,10 @@ async function sync() {
       pending++;
     }
   }
-  return {synced,pending};
+  // A reconciliação completa roda no cron autenticado, inclusive sem pendências
+  // na planilha técnica. Não bloqueia a confirmação de presença do formulário.
+  const organizacao=organization?await syncOrganization({readAttendance,token:batchToken,google:(path,token,body,method)=>google(path,token,body,method,ORG_SHEET)}):undefined;
+  return {synced,pending,...(organizacao?{organizacao}:{})};
 }
 
 const handler=createHandler({
@@ -79,7 +93,7 @@ const handler=createHandler({
     return typeof user.id==='string'?user.id:null;
   },
   receive:(data: unknown,hash: string,ip: string,userId: string|null)=>db('rpc/black_presenca_receber_v2',{p_payload:data,p_hash:hash,p_ip_hash:ip,p_user_id:userId}),
-  sync,
+  sync:()=>sync(true),
   queueSync:()=>EdgeRuntime.waitUntil(sync().catch(()=>{})),
 });
 Deno.serve(handler);
