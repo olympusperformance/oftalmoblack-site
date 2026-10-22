@@ -703,6 +703,11 @@ Desde 21/10/2026 a página também tem os 2 da aula de aberrometria
 abre os simuladores da pasta `Simuladores` ao lado dela no Drive (e no pen drive), e o
 site é a cópia para abrir de qualquer lugar.
 
+Desde 22/10/2026 também o `Simulador_Grau_Zero.html` (`/simuladores/simulador-grau-zero/`,
+seção "Introdução ao MGZ"), que o slide 19 da Introdução ao MGZ chama pelo nome
+`Simuladores/comparador_cenarios.html`: no Drive e no pen drive há uma cópia com esse nome.
+É um app num arquivo só (D3 embutido, CSP própria, nada de fora).
+
 - Os arquivos são os do Dr. Alex, sem edição: só o botão "Voltar ao índice da aula"
   passou a levar para `/simuladores/`. O índice é a `Abrir_Simuladores.html` dele,
   adaptada para a web (sem as instruções de pasta local e sem os botões de PPTX/DOCX).
