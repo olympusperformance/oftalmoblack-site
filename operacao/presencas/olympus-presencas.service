@@ -1,0 +1,16 @@
+[Unit]
+Description=Avisos autorizados de presenca da Imersao Black
+After=network-online.target
+OnFailure=olympus-presencas-falha.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/olympus-presencas/notificar.py
+TimeoutStartSec=300
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/olympus-presencas
+ProtectHome=read-only
+

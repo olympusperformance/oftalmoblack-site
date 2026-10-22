@@ -1,0 +1,11 @@
+[Unit]
+Description=Conferir presencas durante a Imersao Black de outubro de 2026
+
+[Timer]
+OnCalendar=2026-10-22..24 *:*:00/30 America/Sao_Paulo
+AccuracySec=1s
+Persistent=true
+Unit=olympus-presencas.service
+
+[Install]
+WantedBy=timers.target

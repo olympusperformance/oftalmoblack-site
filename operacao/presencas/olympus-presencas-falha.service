@@ -1,0 +1,6 @@
+[Unit]
+Description=Aviso de falha da fila de presencas, limitado a um por hora
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/olympus-presencas/notificar.py --failure-alert
