@@ -9,13 +9,16 @@ const {pathToFileURL}=require('url');
   page.on('pageerror',e=>errors.push(e.message));
   const base=process.env.BOOK_BASE;
   await context.route(/^https?:/,route=>base&&new URL(route.request().url()).origin===new URL(base).origin?route.continue():route.abort()); // Nenhum evento, WhatsApp ou compra real.
-  await page.goto(base?new URL('livro/',base).href:pathToFileURL(path.resolve('public/livro/index.html')).href);
+  const mainUrl=base?new URL('livro/',base).href:pathToFileURL(path.resolve('public/livro/index.html')).href;
+  await page.goto(mainUrl+'?utm_source=credencial&utm_medium=qrcode&utm_campaign=imersao_grau_zero_out26&utm_content=livro');
   await page.locator('#oferta').scrollIntoViewIfNeeded();
   assert.match(await page.locator('.card__log').innerText(),/calcula o frete manualmente/);
   assert.match(await page.locator('.card__safe').innerText(),/não está incluído neste pagamento/);
   for(const a of await page.locator('a.js-checkout').all()){const u=new URL(await a.getAttribute('href'));assert.equal(u.pathname,'/199173');assert.equal(u.searchParams.get('ch_id'),'144678');}
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
   await page.screenshot({path:path.join(out,`${width}-oferta.png`)});
+  const [checkoutRequest]=await Promise.all([context.waitForEvent('request',{predicate:r=>r.url().startsWith('https://payfast.greenn.com.br/199173?')}),page.locator('a.js-checkout').first().click()]);
+  const checkoutUrl=new URL(checkoutRequest.url());assert.equal(checkoutUrl.searchParams.get('ch_id'),'144678');assert.equal(checkoutUrl.searchParams.get('utm_source'),'credencial');assert.equal(checkoutUrl.searchParams.get('src'),'lp-livro');
   await page.goto((base?new URL('livro/obrigado/',base).href:pathToFileURL(path.resolve('public/livro/obrigado/index.html')).href)+'?email=nao-repassar%40example.com&phone=000');
   const contact=page.getByRole('link',{name:'Calcular frete no WhatsApp'});assert.ok(await contact.isVisible());
   const u=new URL(await contact.getAttribute('href'));assert.equal(u.pathname,'/559284654390');
