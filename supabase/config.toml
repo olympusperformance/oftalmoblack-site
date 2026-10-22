@@ -1,0 +1,4 @@
+
+# Public application key + origin; private dispatcher/test authorization in the handler.
+[functions.hands-on-capi]
+verify_jwt = false
