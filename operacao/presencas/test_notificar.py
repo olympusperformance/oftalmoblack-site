@@ -5,6 +5,9 @@ import unittest
 spec=importlib.util.spec_from_file_location('notify',Path(__file__).with_name('notificar.py'));n=importlib.util.module_from_spec(spec);spec.loader.exec_module(n)
 n.time.sleep=lambda _:None
 class Notifications(unittest.TestCase):
+ def test_manual_presence_never_invents_arrival_time(self):
+  message=n.text({'nome':'Nome','dia':'2026-10-22','registrada_em':'2026-10-22T14:00:00Z','manual':True})
+  self.assertIn('incluída manualmente',message);self.assertIn('Horário de chegada não informado',message);self.assertNotIn('11h00',message);self.assertNotIn('feita pelo participante',message)
  def test_postgres_fractional_timestamp_on_python310(self):
   row={'nome':'Nome','dia':'2026-10-22','registrada_em':'2026-10-22T11:31:11.46823+00:00'}
   self.assertIn('08h31',n.text(row))

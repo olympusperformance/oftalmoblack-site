@@ -8,8 +8,8 @@ test('lista exige chave valida e origem permitida antes da leitura',async()=>{
  assert.equal((await createHandler({read:async()=>[]})(req())).status,401);
 });
 test('DTO minimo, dias restritos, sem contatos ou dados da base de membros',async()=>{
- const h=createHandler({keyHash:hash,read:async()=>[{id:'uuid',nome:'Nome informado',dia_presenca:'2026-10-22',created_at:'2026-10-22T12:00:00Z',email:'private@invalid',member_id:'private',request_hash:'private'},{nome:'Fora',dia_presenca:'2026-11-01'}]});
- const r=await h(req()),data=await r.json();assert.equal(r.status,200);assert.equal(r.headers.get('cache-control'),'no-store');assert.equal(data.presencas.length,1);assert.deepEqual(Object.keys(data.presencas[0]).sort(),['id','nome','dia','registrada_em'].sort());assert(!JSON.stringify(data).includes('private'));
+ const h=createHandler({keyHash:hash,read:async()=>[{id:'uuid',nome:'Nome informado',dia_presenca:'2026-10-22',created_at:'2026-10-22T12:00:00Z',utm:{utm_source:'operacao_manual'},email:'private@invalid',member_id:'private',request_hash:'private'},{nome:'Fora',dia_presenca:'2026-11-01'}]});
+ const r=await h(req()),data=await r.json();assert.equal(r.status,200);assert.equal(r.headers.get('cache-control'),'no-store');assert.equal(data.presencas.length,1);assert.deepEqual(Object.keys(data.presencas[0]).sort(),['id','nome','dia','registrada_em','manual'].sort());assert.equal(data.presencas[0].manual,true);assert(!JSON.stringify(data).includes('private'));
 });
 test('CORS, metodo e falha de leitura nao vazam dados',async()=>{
  const h=createHandler({keyHash:hash,read:async()=>{throw Error('secret');}});

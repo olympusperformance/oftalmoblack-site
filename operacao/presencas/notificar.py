@@ -27,6 +27,8 @@ def text(row):
     stamp=row['registrada_em'].replace('Z','+00:00')
     pattern='%Y-%m-%dT%H:%M:%S.%f%z' if '.' in stamp else '%Y-%m-%dT%H:%M:%S%z'
     hour=datetime.strptime(stamp,pattern).astimezone(ZoneInfo('America/Sao_Paulo')).strftime('%Hh%M')
+    if row.get('manual'):
+        return 'Presença incluída manualmente · Imersão Black\n\nNome: '+row['nome']+'\nDia: '+day+'\n\nInclusão solicitada por Felipe: participante já estava no evento antes da divulgação do link. Horário de chegada não informado.'
     return 'Presença registrada · Imersão Black\n\nNome informado: '+row['nome']+'\nDia: '+day+'\nHorário: '+hour+', horário de Brasília.\n\nConfirmação feita pelo participante na ficha do evento.'
 
 def records(value):

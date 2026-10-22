@@ -26,7 +26,7 @@ export function createHandler({keyHash,read,now=()=>new Date()}){
   if(!/^[a-f0-9]{64}$/.test(keyHash||'')||!/^[A-Za-z0-9_-]{40,80}$/.test(key)||await sha256(key)!==keyHash)return reply(401,{ok:false});
   try{
    const rows=await read();
-   const presencas=rows.filter(r=>DIAS.includes(r.dia_presenca)).map(r=>({id:r.id,nome:r.nome||'Nome não informado',dia:r.dia_presenca,registrada_em:r.created_at}));
+   const presencas=rows.filter(r=>DIAS.includes(r.dia_presenca)).map(r=>({id:r.id,nome:r.nome||'Nome não informado',dia:r.dia_presenca,registrada_em:r.created_at,manual:r.utm?.utm_source==='operacao_manual'}));
    return reply(200,{ok:true,evento:'Imersão Black · Outubro 2026',fuso:'America/Sao_Paulo',dias:DIAS,atualizado_em:now().toISOString(),presencas});
   }catch{return reply(503,{ok:false});}
  };
