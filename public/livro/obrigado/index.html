@@ -81,6 +81,11 @@ p{margin:0}
 .ok__txt{margin-top:18px;max-width:46ch;font-size:18px;line-height:1.55;color:var(--claro)}
 .ok__nota{display:flex;gap:12px;align-items:flex-start;margin-top:22px;max-width:46ch;padding:14px 16px;border:1px solid rgba(232,187,121,.22);background:rgba(232,187,121,.06);border-radius:var(--r);font-size:15.5px;line-height:1.5;color:var(--claro)}
 .ok__nota svg{flex:none;margin-top:2px;color:var(--cobre)}
+.frete{margin-top:22px;max-width:46ch;padding:18px;border:1px solid rgba(232,187,121,.3);background:rgba(232,187,121,.06);border-radius:var(--r)}
+.frete h2{font:700 21px/1.25 var(--fd);margin:0 0 12px;color:var(--cobre)}
+.frete ol{margin:0;padding-left:22px;font-size:16px;line-height:1.6}
+.frete li+li{margin-top:9px}
+.frete__contato{margin-top:14px;font-size:15px;color:var(--claro2)}
 .acoes{display:grid;gap:12px;margin-top:30px;width:100%;max-width:420px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font:700 16px/1 var(--fd);text-decoration:none;border-radius:var(--r);padding:17px 22px;min-height:54px;white-space:nowrap;transition:background-color .25s var(--ease),border-color .25s var(--ease),transform .25s var(--ease)}
 .btn svg{flex:none;transition:transform .3s var(--ease)}
@@ -126,8 +131,7 @@ if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createEl
 s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
 fbq('init','919253591198015');
 fbq('track','PageView');
-fbq('trackCustom','CompraLivro',{content_name:'livro_presbiopia_cirurgica',content_category:'oftalmoblack_b2b',value:1050,currency:'BRL'});
-gtag('event','compra_livro',{currency:'BRL',value:1050,items:[{item_id:'livro_presbiopia_cirurgica',item_name:'Livro Presbiopia Cirúrgica',price:1050}]});
+/* O acesso a esta página não comprova pagamento. A Greenn registra a venda real. */
 </script>
 <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=919253591198015&ev=PageView&noscript=1" alt=""></noscript>
 </head>
@@ -155,11 +159,20 @@ gtag('event','compra_livro',{currency:'BRL',value:1050,items:[{item_id:'livro_pr
     <div class="ok__copy">
       <p class="selo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="m7.5 12.3 3 3 6-6.3"/></svg>Presbiopia Cirúrgica · pré-venda</p>
       <h1 data-rv>Pedido recebido.</h1>
-      <p class="ok__txt">Seu exemplar está em pré-venda, com prazo de 45 dias. Nossa equipe acompanha seu pedido pelo WhatsApp informado no checkout.</p>
+      <p class="ok__txt">Seu exemplar está em pré-venda, com prazo de 45 dias. A confirmação do pagamento é enviada pela Greenn para o e-mail usado na compra.</p>
+      <section class="frete" aria-labelledby="frete-titulo">
+        <h2 id="frete-titulo">Agora vamos combinar a entrega.</h2>
+        <ol>
+          <li>Toque no botão abaixo para falar com nossa equipe pelo WhatsApp.</li>
+          <li>Informe o e-mail da compra e seu CEP. A equipe confere o pedido, confirma o endereço e calcula o frete manualmente.</li>
+          <li>Você recebe o valor e as orientações para pagar o frete separadamente, antes do envio.</li>
+        </ol>
+        <p class="frete__contato">WhatsApp comercial da equipe: (92) 8465-4390.</p>
+      </section>
       <p class="ok__nota"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="m3.5 7 8.5 6 8.5-6"/></svg><span>Guarde o e-mail de confirmação da Greenn.</span></p>
       <div class="acoes">
-        <a class="btn btn--cta" href="../">Voltar à página do livro</a>
-        <a class="btn btn--ghost" href="https://www.instagram.com/oftalmoblack/" target="_blank" rel="noopener">Instagram @oftalmoblack</a>
+        <a class="btn btn--cta" href="https://wa.me/559284654390?text=Ol%C3%A1%21%20Fiz%20um%20pedido%20do%20livro%20Presbiopia%20Cir%C3%BArgica%20pela%20Greenn%20e%20quero%20confirmar%20a%20entrega%20e%20calcular%20o%20frete." target="_blank" rel="noopener">Calcular frete no WhatsApp</a>
+        <a class="btn btn--ghost" href="../">Voltar à página do livro</a>
       </div>
     </div>
   </div>
