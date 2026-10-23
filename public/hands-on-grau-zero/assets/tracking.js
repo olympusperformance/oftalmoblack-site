@@ -10,9 +10,8 @@
   window.handsOnTrackingLoaded = true;
 
   const PRODUCT = 'hands_on_grau_zero';
-  const FORM = 'candidatura-form';
   const PIXEL = '919253591198015';
-  const base = { produto: PRODUCT, form_id: FORM };
+  const base = { produto: PRODUCT, page_version: 'checkout_v1' };
   // Never read form values, free text or contact identifiers for analytics.
   const cleanUrl = (value, acquisition = false) => {
     try {
@@ -56,39 +55,19 @@
   meta('ViewContent', { content_name: 'Hands-on Grau Zero', content_category: 'oftalmoblack_b2b' }, eventOptions('ViewContent'));
   if(pageId&&window.handsOnCapi)window.setTimeout(()=>window.handsOnCapi.visit(pageId),800);
 
-  const once = new Set();
-  const emitOnce = (key, name, extra) => {
-    if (once.has(key)) return;
-    once.add(key);
-    ga(name, extra);
-  };
-  document.querySelectorAll('a[href="#candidatura"]').forEach((button) => {
-    const ctaLocation = button.closest('.hero-copy') ? 'hero' : 'faq';
-    button.addEventListener('click', () => ga('hands_on_cta_click', { cta_location: ctaLocation }));
-  });
-  window.addEventListener('hands-on:progress', (event) => {
+  let checkoutStarted = false;
+  window.addEventListener('hands-on:checkout', (event) => {
     const detail = event.detail || {};
-    if (detail.action === 'start') emitOnce('start', 'hands_on_form_start', { form_step: 1 });
-    if (detail.action === 'advance') {
-      emitOnce('start', 'hands_on_form_start', { form_step: 1 });
-      emitOnce('step1', 'hands_on_step_complete', { form_step: 1 });
-    }
-    if (detail.action === 'submit') ga('hands_on_submit_attempt', { form_step: 2 });
-    if (detail.action === 'error' && ['http','network','timeout','unconfirmed'].includes(detail.error_type)) {
-      ga('hands_on_form_error', { form_step: 2, error_type: detail.error_type });
-    }
+    const ctaLocation = ['hero', 'card', 'faq'].includes(detail.cta_location) ? detail.cta_location : 'unknown';
+    ga('hands_on_cta_click', { cta_location: ctaLocation });
+    if (checkoutStarted) return;
+    checkoutStarted = true;
+    ga('begin_checkout', { cta_location: ctaLocation });
+    // A click records checkout intent only. Payment belongs to the provider.
+    meta('InitiateCheckout', { content_name: 'Hands-on Grau Zero', content_category: 'oftalmoblack_b2b' }, eventOptions('InitiateCheckout'));
   });
-  const receipts = new Set();
-  window.addEventListener('hands-on:receipt', (event) => {
-    const receipt = event.detail;
-    if (!receipt || receipt.ok !== true || typeof receipt.request_id !== 'string'
-      || (receipt.tracking_mode && receipt.tracking_mode !== 'production')
-      || !/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(receipt.request_id)
-      || receipts.has(receipt.request_id)) return;
-    receipts.add(receipt.request_id);
-    // This signal is produced only after the receiver echoes the saved request_id.
-    ga('generate_lead');
-    meta('Lead', { content_name: 'Hands-on Grau Zero', content_category: 'oftalmoblack_b2b' },
-      { eventID: 'hands-on:' + receipt.request_id + ':Lead' });
+  window.addEventListener('hands-on:contact', () => {
+    ga('hands_on_whatsapp_click', { cta_location: 'floating' });
+    meta('Contact', { content_name: 'Hands-on Grau Zero' });
   });
 })();
