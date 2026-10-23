@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Club OftalmoBlack | Mentoria com o Dr. Alex Sá</title>
+  <meta name="description" content="Conheça a mentoria do Dr. Alex Sá para oftalmologistas donos de clínica. Método, equipe e uma mesa de pares. Cadastre-se e fale com o Jean.">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="page-version" content="club-oftalmoblack-curto-20261023">
+  <link rel="icon" href="/assets/favicon.png" type="image/png">
+  <link rel="canonical" href="https://oftalmoblack.com.br/club/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:title" content="Club OftalmoBlack | Sua clínica particular, com método e direção.">
+  <meta property="og:description" content="Mentoria com o Dr. Alex Sá para oftalmologistas donos de clínica. Conheça o Black e converse com o Jean.">
+  <meta property="og:url" content="https://oftalmoblack.com.br/club/">
+  <meta property="og:image" content="https://oftalmoblack.com.br/club/assets/encontro-black.webp">
+  <meta property="og:image:alt" content="Dr. Alex Sá conversando com oftalmologistas em um encontro do Club OftalmoBlack.">
+  <link rel="preload" href="assets/cinzel-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/site.css?v=83246924b9e3">
+  <script src="assets/form.js?v=4c8a47c870f7" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+  <header class="site-header page-width">
+    <a class="brand" href="#conteudo" aria-label="Club OftalmoBlack, início">
+      <img src="assets/logo-oftalmoblack.webp" width="480" height="166" alt="OftalmoBlack">
+    </a>
+    <a class="header-link" href="#o-club">Conhecer o Club</a>
+  </header>
+
+  <main id="conteudo">
+    <section class="hero page-width" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow">Club OftalmoBlack</p>
+        <h1 id="hero-title">Sua clínica particular, com método e direção.</h1>
+        <p class="hero-description">Mentoria com o Dr. Alex Sá para oftalmologistas donos de clínica. Orientação para conectar decisões clínicas, marketing e vendas, com a sua equipe aprendendo junto.</p>
+        <p class="hero-principle">Você decide. Sua equipe executa.<br>O Black acompanha.</p>
+      </div>
+
+      <div class="registration" id="cadastro">
+        <form id="club-form" method="post" action="/club/" novalidate aria-labelledby="form-title">
+          <h2 id="form-title">Conheça o Black de perto.</h2>
+          <p class="form-intro">Deixe seu contato para conversar com o Jean sobre a mentoria.</p>
+          <div class="field">
+            <label for="full-name">Nome completo</label>
+            <input id="full-name" name="full_name" type="text" autocomplete="name" required maxlength="120" aria-describedby="name-error" placeholder="Seu nome completo">
+            <span id="name-error" class="field-error" hidden></span>
+          </div>
+          <div class="field">
+            <label for="phone">Telefone com DDD <span>(WhatsApp)</span></label>
+            <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required maxlength="22" aria-describedby="phone-error" placeholder="(00) 00000-0000">
+            <span id="phone-error" class="field-error" hidden></span>
+          </div>
+          <p id="form-error" class="form-error" role="alert" hidden></p>
+          <button id="club-submit" class="button button-primary" type="submit" disabled>Continuar para falar com o Jean</button>
+          <p class="privacy-note">Ao continuar, você autoriza o contato da equipe do Club OftalmoBlack. Veja a <a href="/politica-de-privacidade/">Política de Privacidade</a>.</p>
+          <noscript><p class="form-error">Ative o JavaScript do navegador para enviar seu cadastro.</p></noscript>
+        </form>
+
+        <div id="club-success" class="success-state" tabindex="-1" hidden>
+          <svg class="success-icon" width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true"><circle cx="24" cy="24" r="22" stroke="currentColor" stroke-width="1.5"/><path d="m14 24 7 7 14-14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h2>Cadastro recebido.</h2>
+          <p>Agora fale com o Jean para entender como o Black pode acompanhar sua clínica.</p>
+          <a id="jean-whatsapp" class="button button-primary" target="_blank" rel="noopener noreferrer">Falar com o Jean no WhatsApp</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="o-club" class="club-section page-width" aria-labelledby="club-title">
+      <h2 id="club-title">O que você encontra no Black.</h2>
+      <div class="club-layout">
+        <figure class="meeting-photo">
+          <img src="assets/encontro-black.webp" width="1200" height="800" alt="Dr. Alex Sá à frente de uma mesa de oftalmologistas em um encontro do Club OftalmoBlack." loading="lazy" decoding="async">
+        </figure>
+        <div class="benefits">
+          <article class="benefit">
+            <h3>Mentoria com o Dr. Alex</h3>
+            <p>Encontros recorrentes para discutir casos clínicos, posicionamento e decisões da clínica.</p>
+          </article>
+          <article class="benefit">
+            <h3>Sua equipe no processo</h3>
+            <p>Treinamento de atendimento e vendas para aplicar o método na rotina.</p>
+          </article>
+          <article class="benefit">
+            <h3>Uma mesa de pares</h3>
+            <p>Troca e acompanhamento com oftalmologistas que também lideram suas clínicas.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="audience-section" aria-labelledby="audience-title">
+      <div class="audience-layout page-width">
+        <div class="audience-copy">
+          <h2 id="audience-title">Para quem quer desenvolver a clínica junto com a medicina.</h2>
+          <ul class="audience-list">
+            <li>É oftalmologista e já tem clínica própria.</li>
+            <li>Quer fortalecer sua atuação no particular.</li>
+            <li>Busca organizar marketing, atendimento e vendas com sua equipe.</li>
+            <li>Está disposto a colocar as orientações em prática.</li>
+          </ul>
+        </div>
+        <aside class="mentor" aria-labelledby="mentor-name">
+          <img src="assets/dr-alex-sa.webp" width="480" height="720" alt="Dr. Alex Sá, fundador do Club OftalmoBlack." loading="lazy" decoding="async">
+          <div class="mentor-copy">
+            <h3 id="mentor-name">Dr. Alex Sá</h3>
+            <p>Cirurgião oftalmologista e fundador do Club. Mais de 30 mil cirurgias e seis anos como professor da UFAM.</p>
+            <p class="medical-registration">CRM-AM 7516 · RQE 3514</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="closing page-width" aria-label="Dúvidas sobre a mentoria">
+      <div class="faq">
+        <details>
+          <summary>Como funciona a entrada?</summary>
+          <p>A conversa com o Jean apresenta a mentoria e avalia se o Black faz sentido para o momento da sua clínica. O cadastro não confirma a entrada no Club.</p>
+        </details>
+        <details>
+          <summary>O Black vai operar minha clínica?</summary>
+          <p>A mentoria orienta o médico e capacita a equipe. As decisões e a execução continuam com você e seu time.</p>
+        </details>
+      </div>
+      <a class="button button-outline" href="#cadastro">Quero conhecer o Black</a>
+    </section>
+  </main>
+
+  <footer class="site-footer page-width">
+    <p>Club OftalmoBlack</p>
+    <p>Dr. Alex Sá · CRM-AM 7516 · RQE 3514</p>
+    <a href="/politica-de-privacidade/">Política de Privacidade</a>
+  </footer>
+</body>
+</html>
