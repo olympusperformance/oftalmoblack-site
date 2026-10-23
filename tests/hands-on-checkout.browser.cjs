@@ -46,7 +46,7 @@ const rows=[];
    await page.screenshot({path:path.join(out,'hero-'+width+'.png')});
    if([390,1440].includes(width))await page.screenshot({path:path.join(out,'page-'+width+'.png'),fullPage:true});
    for(const button of await page.locator('[data-checkout]').all()){
-    const u=new URL(await button.getAttribute('href'));assert.equal(u.origin+u.pathname,'https://payfast.greenn.com.br/200090/offer/PVDlbA');assert.equal(u.searchParams.get('cupom'),'HANDSONIMERSAO');
+    const u=new URL(await button.getAttribute('href'));assert.equal(u.origin+u.pathname,'https://payfast.greenn.com.br/200090/offer/Cl5O1F');assert.equal(u.searchParams.get('cupom'),'HANDSONIMERSAO');
     await button.click();
    }
    const wa=new URL(await page.locator('[data-whatsapp]').getAttribute('href'));
@@ -81,7 +81,7 @@ const rows=[];
    assert(!JSON.stringify({ga:sent.ga,meta:sent.meta,capi:t.calls}).includes('private@example.test'));assert.deepEqual(t.errors,[]);
    rows.push({scenario,checkoutOnce:true,leadOrPurchase:false,utmPreserved:true,couponPinned:true,queryPIIExcluded:true,qaSuppressed:qa});await t.context.close();
   }
-  const nojs=await setup(390,false);await nojs.page.goto(base);assert.equal(await nojs.page.locator('[data-checkout][href*="PVDlbA"]').count(),3);assert.equal(await nojs.page.locator('form').count(),0);await nojs.context.close();
+  const nojs=await setup(390,false);await nojs.page.goto(base);assert.equal(await nojs.page.locator('[data-checkout][href*="Cl5O1F"]').count(),3);assert.equal(await nojs.page.locator('form').count(),0);await nojs.context.close();
   const old=await setup(390);await old.page.goto(base+'v0/?qa=1');assert.equal(await old.page.locator('form#candidatura-form').count(),1);assert.equal(await old.page.locator('meta[name=robots]').getAttribute('content'),'noindex, follow');assert.equal(await old.page.locator('link[rel=canonical]').getAttribute('href'),base+'v0/');await old.page.screenshot({path:path.join(out,'v0-390.png'),fullPage:true});assert.deepEqual(old.errors,[]);await old.context.close();
   fs.writeFileSync(path.join(out,'report.json'),JSON.stringify({rows,noJavaScriptCheckout:true,v0FormPreserved:true,transport:'all external writes/navigation intercepted'},null,2));console.log(JSON.stringify({passed:rows.length+2,out}));
  }finally{await browser.close();}
