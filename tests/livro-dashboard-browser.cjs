@@ -45,6 +45,10 @@ const server=http.createServer((req,res)=>{let name=decodeURIComponent(new URL(r
   }
   await page.getByText('Origem automática conectada',{exact:true}).waitFor();
   await page.evaluate(()=>{fixtures.book_dashboard_snapshots=fixtures.book_dashboard_snapshots.filter(s=>s.source!=='ga4');});await page.locator('[data-book=refresh]').click();await page.getByText('Ainda sem coleta confirmada').waitFor();assert.equal(await page.locator('#livroPanel .book-kpi strong').first().innerText(),'Indisponível');
+  await page.evaluate(()=>fixtures.book_dashboard_snapshots.find(s=>s.source==='greenn').payload.rows.push({date:'2026-10-22',key:'story:123456',story_id:'123456',paid_sales:1,revenue_cents:105000}));await page.locator('[data-book=refresh]').click();
+  await page.locator('.book-mobile-card').filter({hasText:'Story do Instagram · 123456'}).waitFor();
+  assert.match(await page.locator('[data-book=coverage]').innerText(),/2 de 4 vendas/);
+  assert.equal(await page.locator('.book-table tr').filter({hasText:'Story do Instagram · 123456'}).getByText('Resposta ao story · origem identificada',{exact:true}).count(),1);
   assert.deepEqual(errors,[]);console.log(JSON.stringify({admin_navigation:'ok',financial_display:'ok',source_failure:'ok',csv_privacy:'ok',responsive:'ok',screenshots:out}));
  }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);server.close();process.exitCode=1;});

@@ -5,6 +5,13 @@ def sale(**kw):
     return dict(id=1,product_id=199893,status='paid',paid_at='2026-10-23T02:30:00+00:00',refunded_at=None,currency='BRL',amount=1050,total=1074,**kw)
 
 class ModelTests(unittest.TestCase):
+    def test_stories_have_own_identity_and_sales_separate_from_feed(self):
+        from model import origin
+        s=origin({'utm_source':'ig','utm_medium':'stories','utm_content':'direct-story-18000000000000123'})
+        p=origin({'utm_source':'ig','utm_content':'direct-post-18000000000000123'})
+        self.assertEqual(s['key'],'story:18000000000000123');self.assertEqual(s['story_id'],'18000000000000123');self.assertIsNone(s['media_id']);self.assertNotEqual(s['key'],p['key'])
+        out=aggregate_sales([sale()],{1:{'utm_source':'ig','utm_medium':'stories','utm_content':'direct-story-18000000000000123'}},'America/Manaus')
+        self.assertEqual(out[0]['attributed_sales'],1)
     def test_traffic_uses_event_url_and_keeps_posts_separate(self):
         rows=[{'date':'20261022','page_location':'https://oftalmoblack.com.br/livro/?utm_source=ig&utm_medium=social&utm_campaign=livro-presbiopia&utm_content=direct-post-18141996646620907&email=private@example.com','event':'page_view','count':3},
               {'date':'20261022','page_location':'https://oftalmoblack.com.br/livro/?utm_source=ig&utm_medium=social&utm_content=direct-post-18000000000000002','event':'begin_checkout','count':2},

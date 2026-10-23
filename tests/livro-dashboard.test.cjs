@@ -3,6 +3,11 @@ const assert=require('node:assert/strict');
 const M=require('../public/assets/club-livro-model.js');
 const traffic={source:'ga4',last_success_at:'2026-10-22T22:00:00Z',payload:{start_date:'2026-10-19',end_date:'2026-10-22',time_zone:'America/Manaus',rows:[{date:'2026-10-22',key:'post:123456',media_id:'123456',views:8,checkout_clicks:3},{date:'2026-10-21',key:'unattributed',views:2,checkout_clicks:0}]}};
 const sales={source:'greenn',last_success_at:'2026-10-22T22:00:00Z',payload:{start_date:'2026-10-19',end_date:'2026-10-22',rows:[{date:'2026-10-22',key:'post:123456',media_id:'123456',paid_sales:1,revenue_cents:105000,attributed_sales:1},{date:'2026-10-22',key:'unattributed',paid_sales:2,revenue_cents:105000,attributed_sales:0}]}};
+test('story appears separately from feed with its own identity and attribution',()=>{
+ const r=M.report([{...sales,payload:{rows:[{date:'2026-10-22',key:'story:123456',story_id:'123456',paid_sales:1,revenue_cents:105000}]}}],[],'2026-10-22','2026-10-22');
+ assert.equal(r.attributed,1);assert.equal(r.rows[0].story_id,'123456');assert.equal(r.rows[0].title,'Story do Instagram · 123456');
+ assert.equal(r.rows[0].permalink,null);
+});
 test('report joins sources by publication, applies dates and distinguishes untracked sales',()=>{
  const r=M.report([traffic,sales],[], '2026-10-22','2026-10-22');
  assert.equal(r.totals.views,8); assert.equal(r.totals.paid_sales,3);assert.equal(r.totals.revenue_cents,210000);assert.equal(r.attributed,1);assert.equal(r.rows.length,2);

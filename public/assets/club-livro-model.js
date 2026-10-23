@@ -14,12 +14,12 @@
    sources[source].payload.rows.forEach(function(r){if(r.date<start||r.date>end)return;
     var target=by[r.key];if(!target){
      var p=pubs[r.media_id]||{};
-     target=by[r.key]={key:r.key,media_id:r.media_id||null,title:r.media_id?(p.title||'Publicação '+r.media_id):r.key==='unattributed'?'Sem publicação identificada':('Outra origem: '+[r.source,r.medium,r.content||r.campaign].filter(Boolean).join(' · ')),permalink:permalink(p.permalink)};
+     target=by[r.key]={key:r.key,media_id:r.media_id||null,story_id:r.story_id||null,title:r.story_id?'Story do Instagram · '+r.story_id:r.media_id?(p.title||'Publicação '+r.media_id):r.key==='unattributed'?'Sem publicação identificada':('Outra origem: '+[r.source,r.medium,r.content||r.campaign].filter(Boolean).join(' · ')),permalink:r.story_id?null:permalink(p.permalink)};
      fields.forEach(function(f){target[f]=totals[f]===null?null:0;});
     }
     var sourceFields=source==='ga4'?fields.slice(0,2):fields.slice(2);
     sourceFields.forEach(function(f){var n=r[f];if(!Number.isSafeInteger(n)||n<0)throw Error('A fonte devolveu valores inválidos.');target[f]+=n;totals[f]+=n;});
-    if(source==='greenn'&&r.media_id)attributed+=r.paid_sales;
+    if(source==='greenn'&&(r.media_id||r.story_id))attributed+=r.paid_sales;
    });
   });
   return {rows:Object.keys(by).map(function(k){return by[k];}),totals:totals,attributed:attributed,sources:sources,time_zone:(sources.ga4&&sources.ga4.payload.time_zone)||(sources.greenn&&sources.greenn.payload.time_zone)||'America/Manaus'};

@@ -14,8 +14,10 @@ def origin(raw):
     clean={k:v if re.fullmatch(r'[a-zA-Z0-9_-]{0,180}',v) else '' for k,v in clean.items()}
     match=re.fullmatch(r'direct-post-(\d{5,25})',clean['utm_content'])
     media=match.group(1) if match and clean['utm_source']=='ig' else None
-    key='post:'+media if media else 'origin:'+'|'.join(clean.values()) if any(clean.values()) else 'unattributed'
-    return {'key':key,'media_id':media,**{k.removeprefix('utm_'):v for k,v in clean.items()}}
+    story_match=re.fullmatch(r'direct-story-(\d{5,25})',clean['utm_content'])
+    story=story_match.group(1) if story_match and clean['utm_source']=='ig' else None
+    key='post:'+media if media else 'story:'+story if story else 'origin:'+'|'.join(clean.values()) if any(clean.values()) else 'unattributed'
+    return {'key':key,'media_id':media,'story_id':story,**{k.removeprefix('utm_'):v for k,v in clean.items()}}
 
 def aggregate_traffic(rows):
     grouped={}
@@ -58,5 +60,5 @@ def aggregate_sales(sales,attributions,time_zone):
         row=grouped.setdefault(key,{'date':day,**attribution,'paid_sales':0,'revenue_cents':0,'attributed_sales':0})
         row['paid_sales']+=1
         row['revenue_cents']+=int(amount*100)
-        row['attributed_sales']+=int(bool(attribution['media_id']))
+        row['attributed_sales']+=int(bool(attribution['media_id'] or attribution['story_id']))
     return sorted(grouped.values(),key=lambda r:(r['date'],r['key']))

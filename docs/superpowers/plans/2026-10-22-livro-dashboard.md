@@ -53,3 +53,9 @@ Coletor agora lê o SQLite existente em modo somente leitura e só sincroniza ID
 Celular: cartões por publicação com as quatro métricas sem rolagem lateral, controles de toque44px, campos16px e retorno específico `/admin/#livro` depois do login, com negação de destinos externos e proteção de função mantida.
 
 Validação:174 testes Node,17 Python, SQL reversível de mesclagem/permissões, QA headless320/390/430px. Testes nativos da Greenn nos dois produtos retornaram200 e recibo accepted. Revisão independente encontrou corrida entre webhook e correção CSV; reprodução falhou antes, passou com RPC atômica e estado efetivamente salvo retornado ao coletor. Nenhum outro achado relevante.
+
+## Extensão autorizada: respostas aos stories, 23/10
+
+Felipe autorizou ativar PRESBIOPIA em respostas aos stories. O bot entrega diretamente o botão da página do livro e identifica story em UTMs próprias. O painel agrupa por `story:<id>`, independente do feed, com as quatro métricas e cobertura de atribuição; story sem ID válido permanece genérico. Não fabrica permalink de mídia expirada nem consulta metadados de story como publicação do feed.
+
+Validação: teste de identidade/atribuição separado para feed e story, leitura mobile e desktop com fixture sintética, suítes Node/Python e revisão independente. Publicação exige readback dos arquivos servidos e coleta real saudável. O transporte novo por resposta real a story depende do teste do usuário após ativação.
