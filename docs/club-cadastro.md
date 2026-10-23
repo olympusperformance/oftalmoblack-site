@@ -4,7 +4,9 @@ Pedido de Felipe em 23/10/2026: resumir a apresentação do Club, deixar claro o
 
 ## Página
 
-Rota nova `/club/`, home existente preservada. Hero, três entregas, perfil do médico, mentor compacto e duas dúvidas. Identidade Black, Cinzel local e fotos reais. A copy resume a apresentação pública e o contexto atual: mentoria para oftalmologistas donos de clínica, orientação com Dr. Alex, treinamento da equipe e mesa de pares. Não importa ofertas avulsas, preços, datas, descontos ou promessas de resultado.
+Rota `/club/`, home existente preservada. Hero, três entregas, perfil do médico, mentor compacto e duas dúvidas. Identidade Black, Cinzel local e fotos reais. Revisão autorizada por Felipe em 23/10: “Sua clínica particular, com método e execução.” O Black orienta, treina e também pode executar frentes combinadas conforme o diagnóstico e o plano da clínica. A home antiga não é fonte atual da oferta.
+
+A fala da imersão informa a jornada de captação, chamada consultiva, vendas, encantamento e recorrência. Cérebro Black é apresentado como a área do mentorado com planos, roteiros, materiais e acompanhamento das entregas; não confundir com o agente clínico homônimo. Mentoria com Dr. Alex e troca entre donos de clínica permanecem. Sem ofertas avulsas, preços, datas, descontos, execução ilimitada ou promessas de resultado.
 
 Fonte: `public/club/`. Somente dois campos visíveis. Sem JavaScript, o botão permanece desabilitado e o formulário usa POST como proteção contra dados na query. O script habilita o envio após instalar a validação e o listener. Dados pessoais ficam somente na memória da página e no receptor privado; nenhum rascunho em localStorage.
 

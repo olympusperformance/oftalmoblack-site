@@ -73,6 +73,7 @@ h1 { font-size: clamp(32px, 8.7vw, 42px); line-height: 1.18; letter-spacing: -.0
 .success-state .button { width: 100%; }
 .club-section { padding-block: 0 48px; }
 .club-section > h2 { font-size: 29px; line-height: 1.3; max-width: 23ch; margin-bottom: 25px; }
+.club-intro { max-width: 72ch; margin: -9px 0 28px; color: var(--muted); font-size: 14px; line-height: 1.65; }
 .club-layout { display: grid; gap: 26px; }
 .meeting-photo { overflow: hidden; border-radius: 5px; }
 .meeting-photo img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
