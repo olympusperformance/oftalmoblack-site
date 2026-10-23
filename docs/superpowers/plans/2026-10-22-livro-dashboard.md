@@ -43,3 +43,13 @@
 - Tarefa3 concluída: UI integrada, filtros/ranking/export/CSV. QA headless isolado passou na navegação real do Admin, temas claro/escuro, celular390px, escape de título, privacidade do CSV e indisponibilidade de fonte.
 - Revisão independente final: dois achados corrigidos. UPDATE(sale_id) exigido pelo upsert: testeSQL falhou antes, passou apósgrant específico. IDs42/042 escapavam da deduplicação: testeNode falhou antes, passou apóscanonicização.
 - Decisão operacional: importação CSV/origem já conferida cobre as UTMs ausentes na API financeira; webhook não será indicado como ativo antes da configuração e teste do emissor na Greenn. Risco explícito: atribuições novas ficam pendentes até importar as origens.
+
+## Extensão autorizada: webhook e celular
+
+Felipe pediu conectar origens automaticamente e melhorar leitura no celular. Inspeção atual encontrou webhook já configurado por outra frente para Venda Paga em todas as ofertas dos dois produtos, apontando ao workflow exclusivo de origens. Decisão: reutilizar esse receptor/cache privado, sem duplicar endpoint ou enviar dados para outro serviço.
+
+Coletor agora lê o SQLite existente em modo somente leitura e só sincroniza IDs/produtos reconhecidos na API financeira. RPC de mesclagem compara e grava atomicamente, complementa campos vazios e preserva correção manual concorrente. CSV fica opcional para histórico. Falha do cache conserva origens persistidas e não interrompe pagamentos.
+
+Celular: cartões por publicação com as quatro métricas sem rolagem lateral, controles de toque44px, campos16px e retorno específico `/admin/#livro` depois do login, com negação de destinos externos e proteção de função mantida.
+
+Validação:174 testes Node,17 Python, SQL reversível de mesclagem/permissões, QA headless320/390/430px. Testes nativos da Greenn nos dois produtos retornaram200 e recibo accepted. Revisão independente encontrou corrida entre webhook e correção CSV; reprodução falhou antes, passou com RPC atômica e estado efetivamente salvo retornado ao coletor. Nenhum outro achado relevante.

@@ -95,7 +95,8 @@
     require: function (role) {
       return auth.ready().then(function (s) {
         if (!s) {
-          var back = encodeURIComponent(location.pathname + location.search);
+          var livro = location.pathname === '/admin/' && location.hash === '#livro' ? '#livro' : '';
+          var back = encodeURIComponent(location.pathname + location.search + livro);
           location.replace('/entrar/?de=' + back);
           return null;
         }

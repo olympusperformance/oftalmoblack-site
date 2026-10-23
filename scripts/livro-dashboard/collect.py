@@ -1,9 +1,9 @@
 """Coleta read-only de GA4/Greenn; publica somente agregados no Admin."""
-import json, os, subprocess, urllib.request, urllib.parse, urllib.error
+import json, os, re, sqlite3, subprocess, urllib.request, urllib.parse, urllib.error
 from pathlib import Path
 from datetime import datetime,timezone
 from zoneinfo import ZoneInfo
-from model import aggregate_traffic,aggregate_sales,PRODUCTS
+from model import aggregate_traffic,aggregate_sales,PRODUCTS,UTMS
 
 ROOT=Path(os.environ.get('BOOK_DASHBOARD_STATE','/var/lib/olympus-book-dashboard'))
 START='2026-10-19'
@@ -18,7 +18,7 @@ def request(url,headers=None,body=None,method=None):
 def sb(path,body=None,method=None):
     key=os.environ['SUPABASE_SERVICE_ROLE_KEY']
     return request(os.environ['SUPABASE_URL'].rstrip('/')+'/rest/v1/'+path,
-      {'apikey':key,'Authorization':'Bearer '+key,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates,return=minimal'},body,method)
+      {'apikey':key,'Authorization':'Bearer '+key,'Content-Type':'application/json','Prefer':'return=representation' if path.startswith('rpc/') else 'resolution=merge-duplicates,return=minimal'},body,method)
 
 def all_rows(table,select='*'):
     rows=[]
@@ -60,6 +60,44 @@ def ga4():
     if not zone:raise ValueError('ga4_missing_timezone')
     return {'rows':aggregate_traffic(rows),'time_zone':zone,'start_date':START,'end_date':datetime.now(ZoneInfo(zone)).date().isoformat(),'definition':'page_view and begin_checkout on /livro/'}
 
+def sync_origins(sales,attrs,db_path=None,configured=None):
+    """Read-only do receptor existente. Nunca cria cache ou importa venda de teste."""
+    connected=configured if configured is not None else os.environ.get('BOOK_ORIGIN_CONNECTED')=='1'
+    health={'webhook_active':False,'origin_conflicts':0,'origin_invalid':0}
+    if not connected:return health
+    path=Path(db_path or os.environ.get('BOOK_ORIGIN_DB_FILE','/var/lib/olympus-livro-notify/origins.sqlite3'))
+    eligible={int(s['id']):int(s['product_id']) for s in sales if int(s['product_id']) in PRODUCTS}
+    pending=[];latest=None
+    db=sqlite3.connect(path.resolve().as_uri()+'?mode=ro',uri=True,timeout=5)
+    try:
+        for sid,pid,raw,received in db.execute('SELECT sale_id,product_id,metas,received_at FROM origins ORDER BY sale_id'):
+            if sid not in eligible:continue
+            if pid!=eligible[sid]:health['origin_invalid']+=1;continue
+            try:
+                meta=json.loads(raw)
+                if not isinstance(meta,dict):raise ValueError('invalid_origin')
+                clean={k:meta.get(k,'') for k in UTMS}
+                if any(not isinstance(v,str) or not re.fullmatch(r'[A-Za-z0-9_-]{0,180}',v) for v in clean.values()):raise ValueError('invalid_origin')
+            except (ValueError,TypeError):health['origin_invalid']+=1;continue
+            if not any(clean.values()):continue
+            old=attrs.get(sid) or {}
+            if old.get('product_id') and int(old['product_id'])!=pid or any(old.get(k) and clean[k] and old[k]!=clean[k] for k in UTMS):
+                health['origin_conflicts']+=1;continue
+            latest=max(latest or '',received or '') or None
+            # Complementar campos ausentes sem apagar origem já conferida.
+            merged={k:clean[k] or old.get(k,'') for k in UTMS}
+            if old and all(old.get(k,'')==merged[k] for k in UTMS):continue
+            pending.append({'sale_id':sid,'product_id':pid,'origin_mode':'greenn_webhook',**merged})
+    finally:db.close()
+    for i in range(0,len(pending),100):
+        batch=pending[i:i+100];stored=sb('rpc/book_merge_webhook_origins',{'p_rows':batch},'POST')
+        if not isinstance(stored,list) or {int(r['sale_id']) for r in stored}!={r['sale_id'] for r in batch}:raise ValueError('invalid_origin_receipt')
+        for row in stored:
+            health['origin_conflicts']+=int(row.get('outcome')=='conflict')
+            attrs[int(row['sale_id'])]={k:v for k,v in row.items() if k!='outcome'}
+    health.update(webhook_active=True,origin_received_at=latest)
+    return health
+
 def greenn(zone):
     pat=Path(os.environ['GREENN_PAT_FILE']).read_text().strip()
     sales=[]
@@ -75,8 +113,10 @@ def greenn(zone):
             if page>=int(last):break
         else:raise ValueError('greenn_page_limit')
     attrs={int(a['sale_id']):a for a in all_rows('book_sale_attributions')}
+    try:origin_health=sync_origins(sales,attrs)
+    except Exception as e:origin_health={'webhook_active':False,'origin_error':'origins_'+type(e).__name__}
     return {'rows':aggregate_sales(sales,attrs,zone),'time_zone':zone,'start_date':START,
-      'end_date':datetime.now(ZoneInfo(zone)).date().isoformat(),'definition':'paid, no refund, amount excluding shipping','attribution_mode':'greenn_csv_or_verified_record','webhook_active':False}
+      'end_date':datetime.now(ZoneInfo(zone)).date().isoformat(),'definition':'paid, no refund, amount excluding shipping','attribution_mode':'greenn_webhook_with_verified_fallback',**origin_health}
 
 def metadata(media_ids):
     existing={p['media_id'] for p in all_rows('book_publications')}
