@@ -79,7 +79,7 @@
     },
 
     logout: function () {
-      return C.sb.auth.signOut().then(function () {
+      return C.sb.auth.signOut({ scope: 'local' }).then(function () {
         sessao = null;
         pronto = null;
         location.href = '/entrar/';
