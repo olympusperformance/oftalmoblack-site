@@ -60,7 +60,7 @@ function lista(v, max, re = CHAVE_RE) {
 function notas(v) {
   const o = {};
   if (!v || typeof v !== 'object' || Array.isArray(v)) return o;
-  for (const [k, x] of Object.entries(v).slice(0, 30)) {
+  for (const [k, x] of Object.entries(v).slice(0, 40)) {
     const n = inteiro(x, 1, 5);
     if (CHAVE_RE.test(k) && n !== null) o[k] = n;
   }
@@ -82,7 +82,8 @@ function limpar(b) {
     dias: lista(b.dias, 3, /^(22|23|24)$/),
     nps_evento: inteiro(b.nps_evento, 0, 10),
     notas_evento: notas(b.notas_evento),
-    aulas_top: lista(b.aulas_top, 3),
+    notas_aulas: notas(b.notas_aulas),
+    aulas_top: lista(b.aulas_top, 3), // versão de antes das estrelas por palestra (aba aberta antes de 24/10 à tarde)
     preparo_mgz: inteiro(b.preparo_mgz, 1, 5),
     ponto_alto: texto(b.ponto_alto, 2000),
     melhorar_evento: texto(b.melhorar_evento, 2000),
@@ -91,9 +92,8 @@ function limpar(b) {
     notas_club: notas(b.notas_club),
     valoriza_club: texto(b.valoriza_club, 2000),
     melhorar_club: texto(b.melhorar_club, 2000),
-    contato: lista(b.contato, 6),
-    nome: texto(b.nome, 120),
-    whatsapp: texto(b.whatsapp, 40).replace(/[^\d+()\s-]/g, ''),
+    /* Anônima desde 24/10: nome, WhatsApp e pedido de contato não são gravados
+       nem se uma aba antiga da página ainda os mandar. */
     utm,
     ref: texto(b.ref, 200),
     versao: texto(b.versao, 20),
@@ -194,7 +194,6 @@ async function rotear(req, res) {
     const extra = {
       recebido_em: agora.toISOString(),
       recebido_sp: horaSP.format(agora),
-      ua: texto(req.headers['user-agent'] || '', 300),
     };
 
     /* Campo-isca invisível: gente não preenche, robô preenche. */

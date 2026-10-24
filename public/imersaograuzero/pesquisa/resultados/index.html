@@ -170,8 +170,14 @@ td small{color:var(--dim)}
       </section>
 
       <section class="cartao">
+        <h2>Notas por palestra</h2>
+        <p class="sub">Média das estrelas (1 a 5) e quantas pessoas deram nota a cada palestra.</p>
+        <div id="palestras"></div>
+      </section>
+
+      <section class="cartao" id="cartaoAulasAntigas" hidden>
         <h2>Aulas que mais fizeram diferença</h2>
-        <p class="sub">Cada pessoa marca até 3. Percentual sobre quem respondeu a etapa.</p>
+        <p class="sub">Só das respostas da primeira versão da pesquisa (escolha de até 3 aulas).</p>
         <div id="aulas"></div>
       </section>
 
@@ -193,9 +199,9 @@ td small{color:var(--dim)}
         <div id="patro"></div>
       </section>
 
-      <section class="cartao larga">
-        <h2>Pedidos de contato</h2>
-        <p class="sub">Quem pediu para a equipe falar com ele.</p>
+      <section class="cartao larga" id="cartaoContatos" hidden>
+        <h2>Pedidos de contato (primeira versão)</h2>
+        <p class="sub">A pesquisa é anônima desde 24/10 à tarde; estes vieram antes, quando ela ainda perguntava.</p>
         <div id="contatos"></div>
       </section>
 
@@ -241,6 +247,21 @@ td small{color:var(--dim)}
     trafego: 'Tráfego e captação', sistema: 'Sistema Black e SDR de IA',
     graduacao: 'Graduação e benefícios', resultados: 'Resultados na clínica'
   };
+  /* Mesmas chaves da página (notas_aulas), com o dia na frente. */
+  var PALESTRA_ROT = {
+    faixa_preta: 'Qui · Os 12 degraus do Método Faixa Preta', branding: 'Qui · Branding e posicionamento',
+    fotofobia: 'Qui · Fotofobia Social: o primeiro passo', eng_conteudo: 'Qui · Engenharia de Conteúdo',
+    maquina_trafego: 'Qui · Máquina de Tráfego', maquina_clientes: 'Qui · Máquina de Clientes e Jornada do Cliente',
+    plano_execucao: 'Qui · Plano de execução', in_the_bag: 'Qui · Método In The Bag',
+    abertura: 'Sex · Abertura: as regras do jogo', intro_mgz: 'Sex · Introdução ao MGZ',
+    aberrometria: 'Sex · Aberrometria', optica: 'Sex · Óptica das lentes de alta tecnologia',
+    defocus: 'Sex · Curva de defocus', clinica_premium: 'Sex · Clínica Oftalmológica Premium',
+    milhas: 'Sáb · Milhas e viagens (Gustavo Monteiro)', refrativa: 'Sáb · Refrativa para presbiopia (Renato Ambrósio Jr.)',
+    biometria: 'Sáb · Cálculo e biometria', protocolo: 'Sáb · Protocolo MGZ: 7 critérios e 7 passos',
+    casos_1: 'Sáb · Casos clínicos ao vivo, Bloco I', casos_2: 'Sáb · Casos clínicos ao vivo, Bloco II',
+    insatisfeito: 'Sáb · Paciente insatisfeito', poder_visao: 'Sáb · O poder da visão'
+  };
+  /* Primeira versão (até 3 aulas marcadas), que algumas respostas ainda trazem. */
   var AULAS_ROT = {
     intro_mgz: 'Introdução ao MGZ', aberrometria: 'Aberrometria', optica: 'Óptica das lentes de alta tecnologia',
     defocus: 'Curva de defocus', clinica_premium: 'Clínica Oftalmológica Premium',
@@ -418,11 +439,15 @@ td small{color:var(--dim)}
     var me = medias(l, 'notas_evento', EVENTO_ROT).map(function (x) { x.v = x.media; return x; });
     $('notasEvento').innerHTML = barras(me, 5, function (it) { return '<b>' + num(it.media, 1) + '</b> · ' + it.n; });
 
+    var mp = medias(l, 'notas_aulas', PALESTRA_ROT).map(function (x) { x.v = x.media; return x; });
+    $('palestras').innerHTML = barras(mp, 5, function (it) { return '<b>' + num(it.media, 1) + '</b> · ' + it.n; });
+
     var comAulas = l.filter(function (r) { return (r.aulas_top || []).length; });
     var cont = {};
     comAulas.forEach(function (r) { r.aulas_top.forEach(function (a) { cont[a] = (cont[a] || 0) + 1; }); });
     var au = Object.keys(cont).map(function (k) { return { id: k, t: AULAS_ROT[k] || k, v: cont[k] }; })
       .sort(function (a, b) { return b.v - a.v; });
+    $('cartaoAulasAntigas').hidden = !comAulas.length;
     $('aulas').innerHTML = barras(au, comAulas.length || 1, function (it) {
       return '<b>' + it.v + '</b> · ' + pct(it.v, comAulas.length) + '%';
     });
@@ -451,6 +476,7 @@ td small{color:var(--dim)}
       : '<p class="vazio">Nenhum patrocinador respondeu ainda.</p>';
 
     var ct = l.filter(function (r) { return (r.contato || []).length; });
+    $('cartaoContatos').hidden = !ct.length;
     $('contatos').innerHTML = ct.length
       ? '<div class="tabela"><table><thead><tr><th>Nome</th><th>WhatsApp</th><th>Sobre</th><th>Perfil</th><th>Quando</th></tr></thead><tbody>' +
         ct.map(function (r) {
@@ -476,7 +502,7 @@ td small{color:var(--dim)}
     var notaDe = aba.indexOf('club') >= 0 ? 'nps_club' : 'nps_evento';
     $('coments').innerHTML = lista.length ? lista.map(function (r) {
       var nota = typeof r[notaDe] === 'number' ? ' · deu ' + r[notaDe] + ' de 10' : '';
-      return '<div class="com"><p>' + esc(r[aba]) + '</p><small>' + esc(r.nome || 'Sem nome') + ' · ' +
+      return '<div class="com"><p>' + esc(r[aba]) + '</p><small>' +
         esc(PERFIL_ROT[r.perfil] || r.perfil) + nota + ' · ' + esc(r.recebido_sp || '') + '</small></div>';
     }).join('') : '<p class="vazio">Nenhum comentário aqui ainda.</p>';
   }
@@ -485,23 +511,25 @@ td small{color:var(--dim)}
 
   function csv() {
     var l = filtradas();
-    var ev = Object.keys(EVENTO_ROT), cl = Object.keys(CLUB_ROT);
+    /* Sem nome, WhatsApp nem pedido de contato: a planilha sai anônima. */
+    var ev = Object.keys(EVENTO_ROT), pa = Object.keys(PALESTRA_ROT), cl = Object.keys(CLUB_ROT);
     var cab = ['Recebido (horário de SP)', 'Perfil', 'Dias', 'Imersão 0 a 10']
       .concat(ev.map(function (k) { return 'Imersão: ' + EVENTO_ROT[k]; }))
-      .concat(['Aulas que mais fizeram diferença', 'Preparo MGZ (1 a 5)', 'Ponto alto', 'Melhorar na imersão',
+      .concat(pa.map(function (k) { return 'Palestra: ' + PALESTRA_ROT[k]; }))
+      .concat(['Aulas marcadas (1ª versão)', 'Preparo MGZ (1 a 5)', 'Ponto alto', 'Melhorar na imersão',
                'Patrocinaria', 'Club 0 a 10'])
       .concat(cl.map(function (k) { return 'Club: ' + CLUB_ROT[k]; }))
-      .concat(['Valoriza no Black', 'Melhorar no Black', 'Pediu contato sobre', 'Nome', 'WhatsApp',
+      .concat(['Valoriza no Black', 'Melhorar no Black',
                'utm_source', 'utm_medium', 'utm_campaign', 'Duração (s)', 'resposta_id']);
     var linhas = l.slice().reverse().map(function (r) {
-      var ne = r.notas_evento || {}, nc = r.notas_club || {}, u = r.utm || {};
+      var ne = r.notas_evento || {}, na = r.notas_aulas || {}, nc = r.notas_club || {}, u = r.utm || {};
       return [r.recebido_sp, PERFIL_ROT[r.perfil] || r.perfil, (r.dias || []).join(' '), r.nps_evento]
         .concat(ev.map(function (k) { return ne[k]; }))
+        .concat(pa.map(function (k) { return na[k]; }))
         .concat([(r.aulas_top || []).map(function (a) { return AULAS_ROT[a] || a; }).join(' | '), r.preparo_mgz,
                  r.ponto_alto, r.melhorar_evento, r.patrocinaria, r.nps_club])
         .concat(cl.map(function (k) { return nc[k]; }))
-        .concat([r.valoriza_club, r.melhorar_club, (r.contato || []).map(function (c) { return CONTATO_ROT[c] || c; }).join(' | '),
-                 r.nome, r.whatsapp, u.source, u.medium, u.campaign, r.duracao_s, r.resposta_id]);
+        .concat([r.valoriza_club, r.melhorar_club, u.source, u.medium, u.campaign, r.duracao_s, r.resposta_id]);
     });
     var cel = function (v) {
       if (v == null) return '';

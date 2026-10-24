@@ -15,6 +15,8 @@
    em /admin/ → QR da credencial). Um caminho só para todo mundo: o perfil
    escolhido na primeira etapa decide o resto. Mestre e equipe do Black avaliam
    a imersão e o Club; participante, acompanhante e patrocinador, só a imersão.
+   Desde 24/10 à tarde (pedido do usuário) é anônima, sem nome, WhatsApp nem
+   pedido de contato, e cada palestra dos dias marcados ganha de 1 a 5 estrelas.
 
    As respostas vão para /api/pesquisa/respostas (serviço próprio na VPS, ver
    operacao/pesquisa-satisfacao/) e o painel fica em ./resultados/. O progresso
@@ -122,7 +124,7 @@ h2:focus,h1:focus{outline:none}
 .dia-rot{font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin:16px 0 -2px}
 .contador{font-size:13px;color:var(--muted);margin-top:10px;font-variant-numeric:tabular-nums}
 
-/* chips (dias, contato, patrocinaria, preparo) */
+/* chips (dias, patrocinaria, preparo) */
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 .chip{position:relative;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:9px 15px;border-radius:999px;
   background:var(--vidro);border:1px solid var(--line);cursor:pointer;font-size:14.5px;line-height:1.25;
@@ -239,7 +241,7 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
       <button class="btn" type="button" data-acao="seguir">Começar
         <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
     </div>
-    <p class="anon">Você pode responder sem se identificar.</p>
+    <p class="anon">A pesquisa é anônima: não pedimos nome nem contato.</p>
   </section>
 
   <!-- perfil e dias -->
@@ -286,12 +288,11 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
 
   <!-- aulas e preparo -->
   <section class="etapa" data-etapa="aulas" hidden>
-    <div class="q" data-campo="aulas_top">
-      <div class="eyebrow">As aulas</div>
-      <h2 tabindex="-1">Quais aulas mais fizeram diferença para você?</h2>
-      <p class="q-s">Marque até 3.</p>
+    <div class="q" data-campo="notas_aulas">
+      <div class="eyebrow">As palestras</div>
+      <h2 tabindex="-1">Quantas estrelas cada palestra merece?</h2>
+      <p class="q-s">De 1 a 5 estrelas. Pule as que você não assistiu.</p>
       <div id="aulas"></div>
-      <p class="contador" id="contaAulas">0 de 3</p>
     </div>
     <div class="q" data-campo="preparo_mgz" id="blocoPreparo" hidden>
       <p class="q-t">Depois da imersão, quão preparado você se sente para aplicar o Protocolo MGZ na sua clínica?</p>
@@ -373,36 +374,11 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
     </div>
   </section>
 
-  <!-- fechamento: contato e envio -->
-  <section class="etapa" data-etapa="fim" hidden>
-    <div class="q" data-campo="contato">
-      <div class="eyebrow">Para fechar</div>
-      <h2 tabindex="-1">Quer que a equipe fale com você?</h2>
-      <p class="q-s">Opcional. Marque o que fizer sentido.</p>
-      <div class="chips coluna" id="contato"></div>
-    </div>
-    <div class="q" data-campo="identificacao">
-      <label class="rot" for="nome">Seu nome <span class="opc" id="nomeOpc">(opcional)</span></label>
-      <input class="entrada" id="nome" name="nome" maxlength="120" autocomplete="name" enterkeyhint="done"
-        placeholder="Como você prefere ser chamado">
-      <div id="blocoZap" hidden>
-        <label class="rot" for="whatsapp">WhatsApp com DDD</label>
-        <input class="entrada" id="whatsapp" name="whatsapp" type="tel" inputmode="tel" maxlength="20"
-          autocomplete="tel" enterkeyhint="done" placeholder="(11) 91234-5678">
-      </div>
-      <p class="q-erro" hidden></p>
-      <div class="isca" aria-hidden="true"><label>Site <input name="site" tabindex="-1" autocomplete="off"></label></div>
-    </div>
-    <p class="aviso">As respostas ficam com a equipe Olympus e servem para melhorar os próximos encontros.
-      Nome e WhatsApp só são usados para o contato que você pedir.</p>
-    <div class="falha" id="falha" hidden>Não conseguimos enviar agora, talvez pela conexão. Suas respostas
-      estão guardadas neste celular: toque em enviar de novo em instantes.</div>
-    <div class="acoes">
-      <button class="btn" type="button" data-acao="enviar" id="btnEnviar">Enviar respostas
-        <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
-      <button class="voltar" type="button" data-acao="voltar">Voltar</button>
-    </div>
-  </section>
+  <!-- Sem etapa de identificação (pedido de 24/10: a pesquisa é anônima). Quem envia é o botão da
+       última etapa que vale para o perfil; o aviso de falha fica aqui fora para aparecer em qualquer uma. -->
+  <div class="falha" id="falha" hidden>Não conseguimos enviar agora, talvez pela conexão. Suas respostas
+    estão guardadas neste celular: toque em enviar de novo em instantes.</div>
+  <div class="isca" aria-hidden="true"><label>Site <input name="site" tabindex="-1" autocomplete="off"></label></div>
 
   <!-- obrigado -->
   <section class="etapa fim" data-etapa="obrigado" hidden>
@@ -457,7 +433,6 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
     if (VE_AULAS[p]) {
       l.push({ id: 'conteudo', t: 'Conteúdo das aulas' });
       l.push({ id: 'didatica', t: 'Clareza e didática' });
-      if (dias.indexOf('24') >= 0) l.push({ id: 'casos', t: 'Casos clínicos ao vivo' });
       l.push({ id: 'aplicacao', t: 'O quanto dá para aplicar na clínica' });
     }
     if (p === 'patrocinador') {
@@ -490,8 +465,23 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
     return l;
   }
 
+  /* Uma nota de 1 a 5 por palestra (pedido de 24/10), na ordem da programação
+     (pen-drive-imersao-out26/telas.py). O dia 22 só aparece para quem é do
+     Black, porque só o Black marca esse dia. As chaves vão para notas_aulas e
+     não se repetem entre os dias. */
   var AULAS = [
+    { dia: '22', rot: 'Quinta, 22 · Dia exclusivo Black', itens: [
+      { id: 'faixa_preta', t: 'Os 12 degraus do Método Faixa Preta' },
+      { id: 'branding', t: 'Branding e posicionamento' },
+      { id: 'fotofobia', t: 'Fotofobia Social: o primeiro passo' },
+      { id: 'eng_conteudo', t: 'Engenharia de Conteúdo', s: 'Roteiros e gravação de vídeos' },
+      { id: 'maquina_trafego', t: 'Máquina de Tráfego', s: 'Estratégia para o Turbinar' },
+      { id: 'maquina_clientes', t: 'Máquina de Clientes e Jornada do Cliente' },
+      { id: 'plano_execucao', t: 'Plano de execução' },
+      { id: 'in_the_bag', t: 'Método In The Bag', s: 'Ensino, demonstração e prática ao vivo' }
+    ] },
     { dia: '23', rot: 'Sexta, 23', itens: [
+      { id: 'abertura', t: 'Abertura: as regras do jogo' },
       { id: 'intro_mgz', t: 'Introdução ao MGZ: o problema nunca é a lente' },
       { id: 'aberrometria', t: 'Aberrometria para as lentes de alta tecnologia' },
       { id: 'optica', t: 'Óptica das lentes de alta tecnologia' },
@@ -503,12 +493,12 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
       { id: 'refrativa', t: 'Cirurgia refrativa para presbiopia', s: 'Dr. Renato Ambrósio Jr.' },
       { id: 'biometria', t: 'Cálculo e biometria: assuma o controle' },
       { id: 'protocolo', t: 'Protocolo MGZ: 7 critérios e 7 passos' },
-      { id: 'casos', t: 'MGZ na prática: casos clínicos ao vivo' },
+      { id: 'casos_1', t: 'MGZ na prática: casos clínicos ao vivo', s: 'Bloco I' },
+      { id: 'casos_2', t: 'MGZ na prática: casos clínicos ao vivo', s: 'Bloco II' },
       { id: 'insatisfeito', t: 'Paciente insatisfeito: como conduzir' },
       { id: 'poder_visao', t: 'O poder da visão', s: 'Mentalidade e encerramento' }
     ] }
   ];
-  var MAX_AULAS = 3;
 
   var PREPARO = [
     { v: 5, t: 'Totalmente preparado' },
@@ -517,20 +507,6 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
     { v: 2, t: 'Pouco preparado' },
     { v: 1, t: 'Nada preparado' }
   ];
-
-  function opcoesContato(p) {
-    if (BLACK[p]) return [{ id: 'ponto', t: 'Sim, sobre algo que apontei aqui' }];
-    if (p === 'patrocinador') return [
-      { id: 'patrocinio', t: 'Patrocínio da próxima edição' },
-      { id: 'ponto', t: 'Algo que apontei aqui' }
-    ];
-    return [
-      { id: 'mgz', t: 'Mentoria Grau Zero' },
-      { id: 'club', t: 'Club OftalmoBlack' },
-      { id: 'imersao', t: 'Próxima Imersão' },
-      { id: 'ponto', t: 'Algo que apontei aqui' }
-    ];
-  }
 
   /* ---------- estado (fica no aparelho) ---------- */
 
@@ -560,9 +536,9 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
     return {
       resposta_id: uuid(), iniciado_em: Date.now(), etapa: 'capa', enviado_em: null, pendente: null,
       utm: lerUtm(), ref: lerRef(),
-      d: { perfil: '', dias: [], nps_evento: null, notas_evento: {}, aulas_top: [], preparo_mgz: null,
+      d: { perfil: '', dias: [], nps_evento: null, notas_evento: {}, notas_aulas: {}, preparo_mgz: null,
            ponto_alto: '', melhorar_evento: '', patrocinaria: null, nps_club: null, notas_club: {},
-           valoriza_club: '', melhorar_club: '', contato: [], nome: '', whatsapp: '' }
+           valoriza_club: '', melhorar_club: '' }
     };
   }
 
@@ -572,6 +548,10 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
       if (s && s.resposta_id && s.d) {
         var u = lerUtm();
         if (Object.keys(u).length) s.utm = u;
+        /* progresso guardado pela versão com identificação: some o que identificava */
+        ['nome', 'whatsapp', 'contato', 'aulas_top'].forEach(function (k) { delete s.d[k]; });
+        if (s.pendente) ['nome', 'whatsapp', 'contato', 'aulas_top'].forEach(function (k) { delete s.pendente[k]; });
+        s.d.notas_aulas = s.d.notas_aulas || {};
         return s;
       }
     } catch (e) {}
@@ -670,20 +650,17 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
     return AULAS.filter(function (g) { return d.dias.indexOf(g.dia) >= 0; });
   }
 
+  /* Estrelas por palestra, só dos dias marcados. Cada dia é um bloco com
+     data-grupo, que é o que o clique nas estrelas usa para achar onde gravar. */
   function montarAulas() {
     var grupos = aulasVisiveis();
-    var validos = {};
-    grupos.forEach(function (g) { g.itens.forEach(function (it) { validos[it.id] = 1; }); });
-    d.aulas_top = d.aulas_top.filter(function (id) { return validos[id]; }).slice(0, MAX_AULAS);
+    var todas = [];
+    grupos.forEach(function (g) { todas = todas.concat(g.itens); });
+    podar('notas_aulas', todas);
     $('#aulas').innerHTML = grupos.map(function (g) {
-      return '<p class="dia-rot">' + esc(g.rot) + '</p><div class="lista">' + g.itens.map(function (it) {
-        return '<label class="op quadrado"><input type="checkbox" name="aulas_top" value="' + it.id + '"' +
-          (d.aulas_top.indexOf(it.id) >= 0 ? ' checked' : '') + '><span class="op-marca"></span>' +
-          '<span class="op-tx"><b>' + esc(it.t) + '</b>' + (it.s ? '<small>' + esc(it.s) + '</small>' : '') +
-          '</span></label>';
-      }).join('') + '</div>';
+      return '<p class="dia-rot">' + esc(g.rot) + '</p><div class="notas" data-grupo="notas_aulas">' +
+        g.itens.map(function (it) { return linhaNota('notas_aulas', it); }).join('') + '</div>';
     }).join('');
-    travarAulas();
 
     $('#blocoPreparo').hidden = !VE_PREPARO[d.perfil];
     if (!VE_PREPARO[d.perfil]) d.preparo_mgz = null;
@@ -693,59 +670,48 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
     }).join('');
   }
 
-  function travarAulas() {
-    var cheio = d.aulas_top.length >= MAX_AULAS;
-    $$('input[name="aulas_top"]').forEach(function (i) {
-      var travar = cheio && !i.checked;
-      i.disabled = travar;
-      i.closest('.op').classList.toggle('travado', travar);
-    });
-    $('#contaAulas').textContent = d.aulas_top.length + ' de ' + MAX_AULAS;
-  }
-
-  function montarContato() {
-    var ops = opcoesContato(d.perfil);
-    d.contato = d.contato.filter(function (id) { return ops.some(function (o) { return o.id === id; }); });
-    $('#contato').innerHTML = ops.map(function (o) {
-      return '<label class="chip"><input type="checkbox" name="contato" value="' + o.id + '"' +
-        (d.contato.indexOf(o.id) >= 0 ? ' checked' : '') + '>' + esc(o.t) + '</label>';
-    }).join('');
-    atualizarContato();
-  }
-
-  function atualizarContato() {
-    var quer = d.contato.length > 0;
-    $('#blocoZap').hidden = !quer;
-    $('#nomeOpc').hidden = quer;
-  }
-
   function montarTudo() {
     montarDias();
     montarNotas();
     montarAulas();
-    montarContato();
     $('#blocoPatrocinaria').hidden = d.perfil !== 'patrocinador';
     if (d.perfil !== 'patrocinador') d.patrocinaria = null;
     $$('input[name="patrocinaria"]').forEach(function (i) { i.checked = d.patrocinaria === i.value; });
     ['ponto_alto', 'melhorar_evento', 'valoriza_club', 'melhorar_club'].forEach(function (k) {
       $('textarea[name="' + k + '"]').value = d[k] || '';
     });
-    $('#nome').value = d.nome || '';
-    $('#whatsapp').value = d.whatsapp || '';
     marcar();
   }
 
   /* ---------- etapas ---------- */
 
-  var ORDEM = ['capa', 'perfil', 'evento', 'aulas', 'comentarios', 'club', 'club_texto', 'fim', 'obrigado'];
+  var ORDEM = ['capa', 'perfil', 'evento', 'aulas', 'comentarios', 'club', 'club_texto', 'obrigado'];
 
   function aplica(id) {
-    if (id === 'aulas') return !!VE_AULAS[d.perfil] && aulasVisiveis().length > 0;
+    if (id === 'aulas') return aulasVisiveis().length > 0;
     if (id === 'club' || id === 'club_texto') return !!BLACK[d.perfil];
     return true;
   }
 
   function visiveis() { return ORDEM.filter(aplica); }
+
+  /* A última etapa que vale para o perfil é a que envia. */
+  function ultimaEtapa() {
+    var v = visiveis();
+    return v[v.length - 2];
+  }
+
+  var ICONE_SEGUIR = '<svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>';
+  var ICONE_ENVIAR = '<svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
+
+  function ajustarBotao(id) {
+    if (id === 'capa' || id === 'obrigado') return;
+    var b = $('[data-etapa="' + id + '"] .acoes .btn');
+    if (!b) return;
+    var envia = id === ultimaEtapa();
+    b.setAttribute('data-acao', envia ? 'enviar' : 'seguir');
+    b.innerHTML = envia ? 'Enviar respostas ' + ICONE_ENVIAR : 'Continuar ' + ICONE_SEGUIR;
+  }
 
   /* O total muda com o perfil e os dias (o Black tem duas etapas a mais). */
   function progresso() {
@@ -762,6 +728,8 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
     S.etapa = id;
     salvar();
     $$('.etapa').forEach(function (s) { s.hidden = s.getAttribute('data-etapa') !== id; });
+    $('#falha').hidden = true;
+    ajustarBotao(id);
     progresso();
     if (id === 'obrigado') montarObrigado();
     window.scrollTo(0, 0);
@@ -788,7 +756,7 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
 
   function proxima(id) {
     var v = visiveis();
-    return v[v.indexOf(id) + 1] || 'fim';
+    return v[v.indexOf(id) + 1] || 'obrigado';
   }
 
   function anterior(id) {
@@ -821,8 +789,6 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
     $$('.com-erro').forEach(function (q) { q.classList.remove('com-erro'); });
   }
 
-  function digitos(s) { return String(s || '').replace(/\D/g, ''); }
-
   function valida(id) {
     limparErros();
     if (id === 'perfil') {
@@ -831,11 +797,6 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
     }
     if (id === 'evento' && d.nps_evento == null) return erro('nps_evento');
     if (id === 'club' && d.nps_club == null) return erro('nps_club');
-    if (id === 'fim' && d.contato.length) {
-      if (!d.nome.trim()) return erro('identificacao', 'Para a equipe falar com você, deixe seu nome.');
-      var n = digitos(d.whatsapp).length;
-      if (n < 10 || n > 13) return erro('identificacao', 'Confira o WhatsApp: DDD e número, como (11) 91234-5678.');
-    }
     return true;
   }
 
@@ -849,7 +810,7 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
       dias: d.dias,
       nps_evento: d.nps_evento,
       notas_evento: d.notas_evento,
-      aulas_top: aplica('aulas') ? d.aulas_top : [],
+      notas_aulas: aplica('aulas') ? d.notas_aulas : {},
       preparo_mgz: aplica('aulas') && VE_PREPARO[d.perfil] ? d.preparo_mgz : null,
       ponto_alto: d.ponto_alto,
       melhorar_evento: d.melhorar_evento,
@@ -858,9 +819,6 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
       notas_club: black ? d.notas_club : {},
       valoriza_club: black ? d.valoriza_club : '',
       melhorar_club: black ? d.melhorar_club : '',
-      contato: d.contato,
-      nome: d.nome,
-      whatsapp: d.contato.length ? d.whatsapp : '',
       utm: S.utm,
       ref: S.ref,
       versao: VERSAO,
@@ -887,10 +845,9 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
   }
 
   var enviando = false;
-  function enviar() {
-    if (enviando || !valida('fim')) return;
+  function enviar(btn) {
+    if (enviando || !valida(S.etapa)) return;
     enviando = true;
-    var btn = $('#btnEnviar');
     btn.disabled = true;
     $('#falha').hidden = true;
     var corpo = montarEnvio();
@@ -918,16 +875,14 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
       S.pendente = null;
       if (!S.enviado_em) S.enviado_em = Date.now();
       salvar();
-      if (S.etapa === 'fim') ir('obrigado');
+      if (S.etapa === ultimaEtapa()) ir('obrigado');
     }).catch(function () {}).then(function () { enviando = false; });
   }
   window.addEventListener('online', reenviarPendente);
 
   function montarObrigado() {
     $('#obrigadoT').textContent = d.perfil === 'mestre' ? 'Obrigado, mestre!' : 'Obrigado!';
-    var s = 'Suas respostas chegaram à equipe. Obrigado por estar com a gente nesta imersão.';
-    if (d.contato.length) s += ' Vamos falar com você pelo WhatsApp que você deixou.';
-    $('#obrigadoS').textContent = s;
+    $('#obrigadoS').textContent = 'Suas respostas chegaram à equipe. Obrigado por estar com a gente nesta imersão.';
   }
 
   /* ---------- eventos ---------- */
@@ -938,7 +893,7 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
       var a = b.getAttribute('data-acao');
       if (a === 'seguir') { if (valida(S.etapa)) ir(proxima(S.etapa)); }
       else if (a === 'voltar') voltar();
-      else if (a === 'enviar') enviar();
+      else if (a === 'enviar') enviar(b);
       else if (a === 'corrigir') ir('perfil');
       else if (a === 'outra') {
         var utm = S.utm, ref = S.ref;
@@ -985,11 +940,10 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
       d.perfil = i.value;
       montarTudo();
       var q = i.closest('.q'); q.classList.remove('com-erro'); $('.q-erro', q).hidden = true;
-    } else if (i.name === 'dias' || i.name === 'aulas_top' || i.name === 'contato') {
-      d[i.name] = $$('input[name="' + i.name + '"]:checked').map(function (x) { return x.value; });
-      if (i.name === 'dias') { montarNotas(); montarAulas(); }
-      if (i.name === 'aulas_top') travarAulas();
-      if (i.name === 'contato') { atualizarContato(); limparErros(); }
+    } else if (i.name === 'dias') {
+      d.dias = $$('input[name="dias"]:checked').map(function (x) { return x.value; });
+      montarNotas();
+      montarAulas();
     } else if (i.name === 'preparo_mgz') {
       d.preparo_mgz = Number(i.value);
     } else if (i.name === 'patrocinaria') {
@@ -1002,17 +956,9 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
 
   document.addEventListener('input', function (e) {
     var i = e.target;
-    if (i.tagName === 'TEXTAREA' || i.id === 'nome' || i.id === 'whatsapp') {
+    if (i.tagName === 'TEXTAREA') {
       d[i.name] = i.value;
       salvar();
-    }
-  });
-
-  /* Enter no nome ou no WhatsApp envia, como num formulário comum. */
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter' && (e.target.id === 'nome' || e.target.id === 'whatsapp')) {
-      e.preventDefault();
-      enviar();
     }
   });
 
