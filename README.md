@@ -522,6 +522,11 @@ mentorado ativo. Trocar de mentorado recarrega a página e limpa a conversa.
 O erro aparece como fala do Cérebro, e não como aviso que passa: quem perguntou
 precisa entender por que não teve resposta.
 
+O botão Sair encerra apenas a sessão do navegador atual. Se o chat receber 401,
+tenta renovar a sessão uma vez; sessão encerrada oferece Entrar novamente. Erros
+de permissão não repetem a pergunta, e uma troca de usuário durante a renovação
+não envia o histórico para a nova conta.
+
 ### O grupo de Operação na área do mentorado
 
 Cada mentorado tem um grupo de WhatsApp com a equipe — é onde a mentoria

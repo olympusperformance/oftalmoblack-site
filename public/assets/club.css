@@ -152,7 +152,7 @@ button{font-family:inherit;color:inherit}
 .who-txt .n{font-weight:600;font-size:13px;line-height:1.25;white-space:nowrap}
 .who-txt .t{font-size:10.5px;color:var(--gold);letter-spacing:.8px}
 @media(max-width:620px){.who-txt{display:none}.who{padding-left:10px}}
-/* No celular a barra é disputada: logo, tema, notificação, quem sou eu e sair.
+/* No celular a barra é disputada: logo, tema, quem sou eu e sair.
    Aperta-se o espaço entre eles e o subtítulo da marca sai — sem isso o último
    botão da direita cai fora da tela. */
 @media(max-width:560px){

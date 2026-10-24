@@ -153,7 +153,10 @@
         '</div></div>';
       return;
     }
-    fluxo.innerHTML = chat.falas.map(function (f) { return bolha(f.quem, f.texto); }).join('') +
+    fluxo.innerHTML = chat.falas.map(function (f) {
+      return bolha(f.quem, f.texto) + (f.relogin
+        ? '<button class="btn btn-primary" type="button" data-sair>Entrar novamente</button>' : '');
+    }).join('') +
       (chat.pensando ? '<div class="fala ele"><span class="fala-de">CÉREBRO</span>' +
         '<div class="fala-tx pensando"><span class="pulso"><i></i><i></i><i></i></span>' +
         'procurando nas conversas</div></div>' : '');
@@ -175,7 +178,8 @@
     }).catch(function (err) {
       /* O erro entra como fala do Cérebro: um toast desapareceria e a pessoa
          ficaria olhando a pergunta sem resposta, sem saber por quê. */
-      chat.falas.push({ quem:'ele erro', texto: err.message || 'Não consegui responder agora.' });
+      chat.falas.push({ quem:'ele erro', texto: err.message || 'Não consegui responder agora.',
+        relogin: err.code === 'AUTH_REQUIRED' });
     }).then(function () {
       chat.pensando = false;
       $('chatInput').disabled = false;

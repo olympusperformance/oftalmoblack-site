@@ -562,21 +562,48 @@
      alvo. Ver docs/cerebro/chat-function.ts no repositório do CRM. */
   C.data.cerebro = {
     perguntar: function (pergunta, historico, memberId) {
-      return C.sb.auth.getSession().then(function (r) {
-        var token = r.data && r.data.session && r.data.session.access_token;
-        if (!token) throw new Error('Sua sessão expirou. Entre de novo.');
+      function pedirLogin() {
+        var erro = new Error('Sua sessão foi encerrada. Entre novamente para conversar com o Cérebro.');
+        erro.code = 'AUTH_REQUIRED';
+        return erro;
+      }
+      function sessaoEncerrada(erro) {
+        return erro && ([400, 401, 403].indexOf(erro.status) !== -1 ||
+          /^(session_not_found|refresh_token_not_found|refresh_token_already_used)$/.test(erro.code || ''));
+      }
+      var body = JSON.stringify({ pergunta: pergunta, historico: historico || [], member_id: memberId });
+      function enviar(session, repetiu) {
         return fetch(C.cfg.supabaseUrl + '/functions/v1/cerebro-chat', {
           method: 'POST',
-          headers: { 'Content-Type':'application/json', Authorization: 'Bearer ' + token },
-          body: JSON.stringify({ pergunta: pergunta, historico: historico || [], member_id: memberId })
+          headers: { 'Content-Type':'application/json', Authorization: 'Bearer ' + session.access_token },
+          body: body
+        }).then(function (resp) {
+          if (resp.status === 401) {
+            if (repetiu) throw pedirLogin();
+            return C.sb.auth.refreshSession().then(function (r) {
+              if (r.error) {
+                if (sessaoEncerrada(r.error)) throw pedirLogin();
+                throw new Error('Não consegui renovar sua sessão agora. Tente novamente.');
+              }
+              var nova = r.data && r.data.session;
+              if (!nova || !nova.access_token ||
+                  (session.user && (!nova.user || session.user.id !== nova.user.id))) throw pedirLogin();
+              return enviar(nova, true);
+            });
+          }
+          return resp.json().catch(function () {
+            throw new Error('O Cérebro respondeu algo que não entendi.');
+          }).then(function (d) {
+            if (!resp.ok || d.erro) throw new Error(d.erro || 'O Cérebro não respondeu.');
+            return d;
+          });
         });
-      }).then(function (resp) {
-        return resp.json().catch(function () {
-          throw new Error('O Cérebro respondeu algo que não entendi.');
-        }).then(function (d) {
-          if (!resp.ok || d.erro) throw new Error(d.erro || 'O Cérebro não respondeu.');
-          return d;
-        });
+      }
+      return C.sb.auth.getSession().then(function (r) {
+        if (r.error) throw sessaoEncerrada(r.error) ? pedirLogin() : r.error;
+        var session = r.data && r.data.session;
+        if (!session || !session.access_token) throw pedirLogin();
+        return enviar(session, false);
       });
     }
   };
