@@ -19,7 +19,7 @@
 
   var NAV = [
     { key:'farol', label:'Visão Geral', icon:'eye', group:'Mentoria' },
-    { key:'subida', label:'Subida: Rumo ao Olympus', icon:'home' },
+    { key:'subida', label:'Subida: Rumo Olympus', icon:'home' },
     { key:'pendencias', label:'Pendências', icon:'check-square' },
     { key:'casos', label:'Protocolo Grau Zero', icon:'folder' },
     { key:'graduacao', label:'Graduação', icon:'award' },
