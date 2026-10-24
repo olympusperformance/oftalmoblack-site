@@ -42,7 +42,8 @@ end$$;
 update public.cb_missions set status='submitted',evidence='Link da entrega' where id='20000000-0000-0000-0000-000000000002';
 do $$begin
  if (select total from public.cb_scores where member_id='10000000-0000-0000-0000-000000000001')<>55 then raise exception 'Evidência pontuou sem verificação'; end if;
- if public.cb_ranking('2026-T2')::text like '%Mestre B%' then raise exception 'Ranking expôs identidade sem opt-in'; end if;
+ if exists(select 1 from jsonb_array_elements(public.cb_ranking('2026-T2')) r
+   where r->>'member_id'='10000000-0000-0000-0000-000000000002') then raise exception 'Ranking expôs ID privado de outro membro'; end if;
 end$$;
 insert into public.cb_cases(id,member_id,code,initials,age,sex,form,question,consent)
 values('30000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000001','MGZ-TEST','AB',55,'NI','{}','Hipótese para análise',true);

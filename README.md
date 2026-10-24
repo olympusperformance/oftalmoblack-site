@@ -211,7 +211,9 @@ reverter o front-end não exige remover dados.
   a hierarquia das faixas. Aplicar `20261015212703_ranking_prioridade_graduacao.sql`
   antes do front-end. Referências semanais usam a mesma ordem e só comparam
   registros da mesma regra; referências antigas ficam preservadas.
-  Pseudônimos para outros membros; administração vê os nomes.
+  Membros ativos e administração veem os nomes de todos os participantes.
+  Aplicar `20261024135050_ranking_nomes_para_mentorados.sql`. O ranking continua
+  restrito a usuários autorizados; cadastros de outros membros permanecem privados.
   Usa os mesmos pontos trimestrais da Graduação quando não existe placar v2.2
   para o membro/período. A origem e a marcação de prévia (`is_demo`) são visíveis;
   períodos futuros e sem pontuação não entram. A apuração nova, inclusive zero,
