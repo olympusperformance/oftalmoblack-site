@@ -1,0 +1,1032 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0a0a0a">
+<title>Pesquisa de satisfação · Imersão Grau Zero</title>
+<link rel="icon" href="/assets/favicon.png">
+<style>
+/* ============================================================================
+   Pesquisa de satisfação · Imersão Grau Zero e Club OftalmoBlack (out/2026)
+
+   Aberta pelo QR da credencial (/imersaograuzero/credencial, destino trocado
+   em /admin/ → QR da credencial). Um caminho só para todo mundo: o perfil
+   escolhido na primeira etapa decide o resto. Mestre e equipe do Black avaliam
+   a imersão e o Club; participante, acompanhante e patrocinador, só a imersão.
+
+   As respostas vão para /api/pesquisa/respostas (serviço próprio na VPS, ver
+   operacao/pesquisa-satisfacao/) e o painel fica em ./resultados/. O progresso
+   fica guardado no aparelho: recarregar ou cair a rede não perde nada.
+   ?teste=1 manda a resposta para o arquivo de testes, fora do resultado.
+
+   Paleta, fontes e fundo são os da página da Imersão; as fontes vêm de
+   /imersaograuzero/assets/fonts/, sem CDN, porque o 4G do evento é ruim.
+   ========================================================================= */
+@font-face{font-family:'Cinzel';font-style:normal;font-weight:400 600;font-display:swap;
+  src:url("/imersaograuzero/assets/fonts/cinzel-latin.woff2") format('woff2')}
+@font-face{font-family:'DM Sans';font-style:normal;font-weight:300 700;font-display:swap;
+  src:url("/imersaograuzero/assets/fonts/dmsans-latin.woff2") format('woff2')}
+
+:root{
+  --gold:#d89d4d;--gold-deep:#c78039;--gold-light:#e6bd74;
+  --ink:#0a0a0a;--paper:#f5f0e6;--muted:rgba(245,240,230,.66);--dim:rgba(245,240,230,.44);
+  --line:rgba(216,157,77,.22);--line-strong:rgba(216,157,77,.6);
+  /* vidro quase opaco: as caixas translúcidas deixavam a grade do fundo
+     atrapalhar a leitura (lição da /vitrine/) */
+  --vidro:rgba(20,18,15,.9);--vidro-sel:rgba(48,36,20,.94);
+  --erro:#ff9b8a;
+  --sans:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  --serif:'Cinzel',Georgia,serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;min-height:100dvh;background:var(--ink);color:var(--paper);
+  font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+[hidden]{display:none !important}
+
+.orb{position:fixed;border-radius:50%;filter:blur(70px);pointer-events:none;z-index:0;opacity:.5}
+.orb-a{width:60vmax;height:60vmax;left:-25vmax;top:-30vmax;
+  background:radial-gradient(circle,rgba(216,157,77,.32),transparent 60%);animation:drift1 22s ease-in-out infinite}
+.orb-b{width:50vmax;height:50vmax;right:-22vmax;bottom:-26vmax;
+  background:radial-gradient(circle,rgba(199,128,57,.24),transparent 60%);animation:drift2 26s ease-in-out infinite}
+.grid{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.3;
+  background-image:linear-gradient(rgba(245,240,230,.05) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(245,240,230,.05) 1px,transparent 1px);
+  background-size:56px 56px;
+  mask-image:radial-gradient(ellipse at 50% 30%,#000 30%,transparent 75%);
+  -webkit-mask-image:radial-gradient(ellipse at 50% 30%,#000 30%,transparent 75%)}
+
+/* barra de progresso: some na capa e no obrigado */
+.topo{position:sticky;top:0;z-index:5;padding:calc(10px + env(safe-area-inset-top)) 20px 10px;
+  background:linear-gradient(rgba(10,10,10,.96),rgba(10,10,10,.82));
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid rgba(216,157,77,.12)}
+.topo-in{max-width:520px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.trilho{flex:1;height:3px;border-radius:3px;background:rgba(245,240,230,.1);overflow:hidden}
+.trilho i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold-deep),var(--gold-light));
+  transition:width .35s ease}
+.passo{font-size:12px;letter-spacing:.08em;color:var(--dim);white-space:nowrap;font-variant-numeric:tabular-nums}
+
+.wrap{position:relative;z-index:1;max-width:520px;margin:0 auto;
+  padding:22px 20px calc(36px + env(safe-area-inset-bottom))}
+
+.etapa{animation:entra .45s cubic-bezier(.16,.7,.2,1)}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.28em;
+  color:var(--gold);font-weight:600;text-transform:uppercase;margin:4px 0 12px}
+.eyebrow::before{content:"";width:20px;height:1px;background:var(--gold);opacity:.7}
+h1,h2{font-family:var(--serif);font-weight:500;letter-spacing:.01em;margin:0;line-height:1.2}
+h1{font-size:30px}
+h2{font-size:22px}
+h2:focus,h1:focus{outline:none}
+.q + .q{margin-top:34px}
+.q-t{font-size:17px;font-weight:600;line-height:1.35;margin:0}
+.q-s{color:var(--muted);font-size:14px;margin:6px 0 0}
+.q-erro{color:var(--erro);font-size:14px;font-weight:500;margin:10px 0 0}
+.q.com-erro .q-t,.q.com-erro h2{color:var(--erro)}
+.opc{color:var(--dim);font-weight:400;font-size:.85em}
+
+/* capa */
+.capa{text-align:center;padding-top:6vh}
+.capa-logo{display:block;width:min(64vw,260px);height:auto;margin:0 auto 30px}
+.capa h1{font-size:32px}
+.capa .q-s{font-size:15.5px;max-width:34ch;margin:14px auto 0}
+.capa .anon{color:var(--dim);font-size:13px;margin-top:14px}
+.selo-teste{display:inline-block;margin:0 auto 18px;padding:6px 12px;border-radius:999px;font-size:12px;
+  letter-spacing:.06em;color:#1b1206;background:#f0c27a;font-weight:600}
+
+/* cartões de opção (perfil, aulas) */
+.lista{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.op{position:relative;display:flex;align-items:center;gap:14px;padding:15px 16px;border-radius:16px;
+  background:var(--vidro);border:1px solid var(--line);cursor:pointer;
+  transition:border-color .18s,background .18s;-webkit-tap-highlight-color:transparent}
+.op input{position:absolute;opacity:0;pointer-events:none}
+.op-marca{flex:0 0 22px;width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(245,240,230,.35);
+  display:grid;place-items:center;transition:border-color .18s,background .18s}
+.op.quadrado .op-marca{border-radius:7px}
+.op-marca::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--ink);transform:scale(0);transition:transform .18s}
+.op.quadrado .op-marca::after{width:11px;height:6px;border-radius:0;background:none;border:2px solid var(--ink);
+  border-top:0;border-right:0;transform:rotate(-45deg) scale(0);margin-top:-3px}
+.op-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.op-tx b{font-weight:600;font-size:15.5px;line-height:1.35}
+.op-tx small{color:var(--muted);font-size:13px;line-height:1.4}
+/* .sel vem do script (marcar), não de :has(), para valer também em celular antigo */
+.op.sel{border-color:var(--line-strong);background:var(--vidro-sel)}
+.op.sel .op-marca{border-color:var(--gold);background:var(--gold)}
+.op.sel .op-marca::after{transform:scale(1)}
+.op.quadrado.sel .op-marca::after{transform:rotate(-45deg) scale(1)}
+.op:has(input:focus-visible){outline:2px solid var(--gold-light);outline-offset:2px}
+.op.travado{opacity:.45}
+.dia-rot{font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin:16px 0 -2px}
+.contador{font-size:13px;color:var(--muted);margin-top:10px;font-variant-numeric:tabular-nums}
+
+/* chips (dias, contato, patrocinaria, preparo) */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{position:relative;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:9px 15px;border-radius:999px;
+  background:var(--vidro);border:1px solid var(--line);cursor:pointer;font-size:14.5px;line-height:1.25;
+  -webkit-tap-highlight-color:transparent;transition:border-color .18s,background .18s}
+.chip input{position:absolute;opacity:0;pointer-events:none}
+.chip small{color:var(--muted);font-size:12.5px}
+.chip.sel{border-color:var(--gold);background:var(--vidro-sel);color:var(--gold-light)}
+.chip.sel small{color:rgba(230,189,116,.8)}
+.chip:has(input:focus-visible){outline:2px solid var(--gold-light);outline-offset:2px}
+.chips.coluna{flex-direction:column}
+.chips.coluna .chip{border-radius:14px}
+
+/* 0 a 10 */
+.nps{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:16px}
+.nps button{height:48px;border-radius:12px;border:1px solid var(--line);background:var(--vidro);
+  font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;transition:background .15s,border-color .15s,color .15s;
+  -webkit-tap-highlight-color:transparent}
+.nps button[aria-checked="true"]{background:linear-gradient(160deg,var(--gold-light),var(--gold-deep));
+  border-color:var(--gold);color:#1a1206}
+.nps button:focus-visible,.estrelas button:focus-visible{outline:2px solid var(--gold-light);outline-offset:2px}
+.nps-leg{display:flex;justify-content:space-between;gap:12px;font-size:12.5px;color:var(--dim);margin-top:8px}
+
+/* notas de 1 a 5 */
+.notas{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.nota{padding:13px 14px 11px;border-radius:16px;background:var(--vidro);border:1px solid var(--line)}
+.nota.feita{border-color:rgba(216,157,77,.4)}
+.nota-t{font-size:15px;font-weight:600;line-height:1.35}
+.nota-t small{display:block;color:var(--muted);font-weight:400;font-size:13px;margin-top:1px}
+.nota-l{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:6px}
+.estrelas{display:flex;gap:2px;margin-left:-6px}
+.estrelas button{width:44px;height:44px;border:0;background:none;padding:0;display:grid;place-items:center;
+  -webkit-tap-highlight-color:transparent;border-radius:10px}
+.estrelas svg{width:29px;height:29px;fill:none;stroke:rgba(245,240,230,.38);stroke-width:1.5;stroke-linejoin:round;
+  transition:fill .15s,stroke .15s,transform .15s}
+.estrelas button.on svg{fill:var(--gold);stroke:var(--gold)}
+.estrelas button:active svg{transform:scale(.9)}
+.nota-v{font-size:13px;color:var(--gold-light);min-width:76px;text-align:right}
+
+/* textos */
+.campo{display:block;margin-top:14px}
+textarea,.entrada{width:100%;border-radius:14px;border:1px solid var(--line);background:var(--vidro);
+  padding:13px 14px;font-size:16px;line-height:1.45;color:var(--paper);outline:none;
+  transition:border-color .18s}
+textarea{min-height:110px;resize:vertical}
+textarea:focus,.entrada:focus{border-color:var(--gold)}
+textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
+.rot{display:block;font-size:14px;font-weight:600;margin:16px 0 8px}
+.aviso{color:var(--dim);font-size:12.5px;line-height:1.5;margin-top:18px}
+.isca{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+
+/* botões */
+.acoes{display:flex;flex-direction:column;align-items:stretch;gap:10px;margin-top:34px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;padding:0 26px;border-radius:999px;
+  border:0;font-weight:600;font-size:16px;letter-spacing:.02em;text-decoration:none;
+  background:linear-gradient(160deg,var(--gold-light),var(--gold) 45%,var(--gold-deep));color:#1a1206;
+  box-shadow:0 10px 30px rgba(216,157,77,.22);-webkit-tap-highlight-color:transparent;transition:transform .15s,filter .15s}
+.btn:active{transform:translateY(1px);filter:brightness(.95)}
+.btn:disabled{filter:grayscale(.4) brightness(.8);cursor:progress}
+.btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.btn-2{min-height:46px;background:none;border:1px solid var(--line);color:var(--paper);box-shadow:none;font-weight:500}
+.voltar{align-self:center;background:none;border:0;color:var(--muted);font-size:14.5px;padding:10px 14px;
+  text-decoration:underline;text-underline-offset:3px}
+.falha{margin-top:18px;padding:14px 16px;border-radius:14px;border:1px solid rgba(255,155,138,.45);
+  background:rgba(60,22,16,.85);font-size:14.5px;line-height:1.5}
+
+/* obrigado */
+.fim{text-align:center;padding-top:8vh}
+.fim-ic{width:76px;height:76px;margin:0 auto 26px;border-radius:50%;display:grid;place-items:center;
+  background:radial-gradient(circle at 35% 30%,var(--gold-light),var(--gold-deep) 70%);box-shadow:0 0 40px rgba(216,157,77,.35)}
+.fim-ic svg{width:32px;height:32px;stroke:#1a1206;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.fim .q-s{font-size:15.5px;max-width:34ch;margin:14px auto 0}
+
+.rodape{position:relative;z-index:1;text-align:center;padding:10px 0 calc(26px + env(safe-area-inset-bottom));
+  display:flex;flex-direction:column;gap:5px}
+.marca{font-family:var(--serif);font-size:12.5px;letter-spacing:.3em;opacity:.8}
+.marca b{font-weight:600;color:var(--gold)}
+.rodape small{font-size:11px;letter-spacing:.14em;color:rgba(245,240,230,.38);text-transform:uppercase}
+
+@keyframes entra{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes drift1{0%,100%{transform:translate(0,0)}50%{transform:translate(6%,8%)}}
+@keyframes drift2{0%,100%{transform:translate(0,0)}50%{transform:translate(-7%,-6%)}}
+@media (prefers-reduced-motion:reduce){.orb,.etapa{animation:none}}
+@media (min-width:600px){
+  h1{font-size:34px} h2{font-size:24px}
+  .wrap{padding-top:34px}
+  .nps{grid-template-columns:repeat(11,1fr);gap:6px}
+  .nps button{height:46px;font-size:16px}
+}
+</style>
+</head>
+<body>
+
+<div class="orb orb-a"></div>
+<div class="orb orb-b"></div>
+<div class="grid"></div>
+
+<header class="topo" id="topo" hidden>
+  <div class="topo-in">
+    <div class="trilho"><i id="trilho"></i></div>
+    <span class="passo" id="passo"></span>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- capa -->
+  <section class="etapa capa" data-etapa="capa" hidden>
+    <img class="capa-logo" src="/imersaograuzero/assets/logo-stacked.svg" alt="Imersão Grau Zero" width="260" height="141">
+    <span class="selo-teste" id="seloTeste" hidden>Modo teste · fora do resultado</span>
+    <div class="eyebrow">Pesquisa de satisfação</div>
+    <h1 tabindex="-1">Como foi a sua imersão?</h1>
+    <p class="q-s">São uns 3 minutos. A equipe lê cada resposta, e é com elas que a próxima edição começa a ser desenhada.</p>
+    <div class="acoes">
+      <button class="btn" type="button" data-acao="seguir">Começar
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+    </div>
+    <p class="anon">Você pode responder sem se identificar.</p>
+  </section>
+
+  <!-- perfil e dias -->
+  <section class="etapa" data-etapa="perfil" hidden>
+    <div class="q" data-campo="perfil">
+      <div class="eyebrow">Para começar</div>
+      <h2 tabindex="-1">Como você participou da imersão?</h2>
+      <div class="lista" id="perfis"></div>
+      <p class="q-erro" hidden>Escolha uma opção para continuar.</p>
+    </div>
+    <div class="q" data-campo="dias" id="blocoDias" hidden>
+      <p class="q-t">Em quais dias você esteve lá?</p>
+      <p class="q-s">Marque todos.</p>
+      <div class="chips" id="dias"></div>
+      <p class="q-erro" hidden>Marque pelo menos um dia.</p>
+    </div>
+    <div class="acoes">
+      <button class="btn" type="button" data-acao="seguir">Continuar
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      <button class="voltar" type="button" data-acao="voltar">Voltar</button>
+    </div>
+  </section>
+
+  <!-- a imersão: 0 a 10 e notas -->
+  <section class="etapa" data-etapa="evento" hidden>
+    <div class="q" data-campo="nps_evento">
+      <div class="eyebrow">A imersão</div>
+      <h2 tabindex="-1">De 0 a 10, o quanto você indicaria a Imersão Grau Zero a um colega?</h2>
+      <div class="nps" role="radiogroup" aria-label="Nota de 0 a 10 para a Imersão" data-nps="nps_evento"></div>
+      <div class="nps-leg"><span>0 · nada provável</span><span>10 · com certeza</span></div>
+      <p class="q-erro" hidden>Escolha uma nota de 0 a 10 para continuar.</p>
+    </div>
+    <div class="q">
+      <p class="q-t">Agora, uma nota de 1 a 5 para cada ponto</p>
+      <p class="q-s">Toque nas estrelas. Pule o que você não viu.</p>
+      <div class="notas" id="notasEvento" data-grupo="notas_evento"></div>
+    </div>
+    <div class="acoes">
+      <button class="btn" type="button" data-acao="seguir">Continuar
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      <button class="voltar" type="button" data-acao="voltar">Voltar</button>
+    </div>
+  </section>
+
+  <!-- aulas e preparo -->
+  <section class="etapa" data-etapa="aulas" hidden>
+    <div class="q" data-campo="aulas_top">
+      <div class="eyebrow">As aulas</div>
+      <h2 tabindex="-1">Quais aulas mais fizeram diferença para você?</h2>
+      <p class="q-s">Marque até 3.</p>
+      <div id="aulas"></div>
+      <p class="contador" id="contaAulas">0 de 3</p>
+    </div>
+    <div class="q" data-campo="preparo_mgz" id="blocoPreparo" hidden>
+      <p class="q-t">Depois da imersão, quão preparado você se sente para aplicar o Protocolo MGZ na sua clínica?</p>
+      <div class="chips coluna" id="preparo"></div>
+    </div>
+    <div class="acoes">
+      <button class="btn" type="button" data-acao="seguir">Continuar
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      <button class="voltar" type="button" data-acao="voltar">Voltar</button>
+    </div>
+  </section>
+
+  <!-- comentários da imersão -->
+  <section class="etapa" data-etapa="comentarios" hidden>
+    <div class="q">
+      <div class="eyebrow">Em suas palavras</div>
+      <h2 tabindex="-1">Qual foi o ponto alto para você?</h2>
+      <label class="campo"><textarea name="ponto_alto" maxlength="2000" rows="4"
+        placeholder="Uma aula, um caso, uma conversa…"></textarea></label>
+    </div>
+    <div class="q">
+      <p class="q-t">O que faria a próxima edição ser ainda melhor?</p>
+      <label class="campo"><textarea name="melhorar_evento" maxlength="2000" rows="4"
+        placeholder="Pode ser franco: é isso que mais ajuda."></textarea></label>
+    </div>
+    <div class="q" data-campo="patrocinaria" id="blocoPatrocinaria" hidden>
+      <p class="q-t">Você patrocinaria a próxima edição?</p>
+      <div class="chips">
+        <label class="chip"><input type="radio" name="patrocinaria" value="sim">Sim</label>
+        <label class="chip"><input type="radio" name="patrocinaria" value="talvez">Talvez</label>
+        <label class="chip"><input type="radio" name="patrocinaria" value="nao">Não</label>
+      </div>
+    </div>
+    <div class="acoes">
+      <button class="btn" type="button" data-acao="seguir">Continuar
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      <button class="voltar" type="button" data-acao="voltar">Voltar</button>
+    </div>
+  </section>
+
+  <!-- Club: 0 a 10 e notas -->
+  <section class="etapa" data-etapa="club" hidden>
+    <div class="q" data-campo="nps_club">
+      <div class="eyebrow">Club OftalmoBlack</div>
+      <h2 tabindex="-1">De 0 a 10, o quanto você indicaria o Club OftalmoBlack a um colega?</h2>
+      <div class="nps" role="radiogroup" aria-label="Nota de 0 a 10 para o Club OftalmoBlack" data-nps="nps_club"></div>
+      <div class="nps-leg"><span>0 · nada provável</span><span>10 · com certeza</span></div>
+      <p class="q-erro" hidden>Escolha uma nota de 0 a 10 para continuar.</p>
+    </div>
+    <div class="q">
+      <p class="q-t">Uma nota de 1 a 5 para cada parte do Black</p>
+      <p class="q-s">Pule o que você ainda não usa.</p>
+      <div class="notas" id="notasClub" data-grupo="notas_club"></div>
+    </div>
+    <div class="acoes">
+      <button class="btn" type="button" data-acao="seguir">Continuar
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      <button class="voltar" type="button" data-acao="voltar">Voltar</button>
+    </div>
+  </section>
+
+  <!-- Club: comentários -->
+  <section class="etapa" data-etapa="club_texto" hidden>
+    <div class="q">
+      <div class="eyebrow">Club OftalmoBlack</div>
+      <h2 tabindex="-1">O que você mais valoriza no Black hoje?</h2>
+      <label class="campo"><textarea name="valoriza_club" maxlength="2000" rows="4"
+        placeholder="O que faz o Black valer a pena para você…"></textarea></label>
+    </div>
+    <div class="q">
+      <p class="q-t">O que o Black precisa melhorar ou passar a ter?</p>
+      <label class="campo"><textarea name="melhorar_club" maxlength="2000" rows="4"
+        placeholder="Uma entrega, um ajuste, uma ideia…"></textarea></label>
+    </div>
+    <div class="acoes">
+      <button class="btn" type="button" data-acao="seguir">Continuar
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      <button class="voltar" type="button" data-acao="voltar">Voltar</button>
+    </div>
+  </section>
+
+  <!-- fechamento: contato e envio -->
+  <section class="etapa" data-etapa="fim" hidden>
+    <div class="q" data-campo="contato">
+      <div class="eyebrow">Para fechar</div>
+      <h2 tabindex="-1">Quer que a equipe fale com você?</h2>
+      <p class="q-s">Opcional. Marque o que fizer sentido.</p>
+      <div class="chips coluna" id="contato"></div>
+    </div>
+    <div class="q" data-campo="identificacao">
+      <label class="rot" for="nome">Seu nome <span class="opc" id="nomeOpc">(opcional)</span></label>
+      <input class="entrada" id="nome" name="nome" maxlength="120" autocomplete="name" enterkeyhint="done"
+        placeholder="Como você prefere ser chamado">
+      <div id="blocoZap" hidden>
+        <label class="rot" for="whatsapp">WhatsApp com DDD</label>
+        <input class="entrada" id="whatsapp" name="whatsapp" type="tel" inputmode="tel" maxlength="20"
+          autocomplete="tel" enterkeyhint="done" placeholder="(11) 91234-5678">
+      </div>
+      <p class="q-erro" hidden></p>
+      <div class="isca" aria-hidden="true"><label>Site <input name="site" tabindex="-1" autocomplete="off"></label></div>
+    </div>
+    <p class="aviso">As respostas ficam com a equipe Olympus e servem para melhorar os próximos encontros.
+      Nome e WhatsApp só são usados para o contato que você pedir.</p>
+    <div class="falha" id="falha" hidden>Não conseguimos enviar agora, talvez pela conexão. Suas respostas
+      estão guardadas neste celular: toque em enviar de novo em instantes.</div>
+    <div class="acoes">
+      <button class="btn" type="button" data-acao="enviar" id="btnEnviar">Enviar respostas
+        <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+      <button class="voltar" type="button" data-acao="voltar">Voltar</button>
+    </div>
+  </section>
+
+  <!-- obrigado -->
+  <section class="etapa fim" data-etapa="obrigado" hidden>
+    <div class="fim-ic"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <h1 tabindex="-1" id="obrigadoT">Obrigado!</h1>
+    <p class="q-s" id="obrigadoS">Suas respostas chegaram à equipe.</p>
+    <div class="acoes">
+      <button class="btn btn-2" type="button" data-acao="corrigir">Corrigir minhas respostas</button>
+      <button class="btn btn-2" type="button" data-acao="outra">Responder por outra pessoa neste celular</button>
+    </div>
+  </section>
+
+</main>
+
+<footer class="rodape">
+  <span class="marca">OFTALMO <b>BLACK</b></span>
+  <small>Imersão Grau Zero · outubro de 2026</small>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var VERSAO = '2026-10-24';
+  var API = '/api/pesquisa/respostas';
+  var TESTE = /[?&]teste=1(&|$)/.test(location.search);
+  var LS = TESTE ? 'pesquisa-imersao-out26-teste' : 'pesquisa-imersao-out26';
+
+  /* ---------- conteúdo ---------- */
+
+  var PERFIS = [
+    { id: 'mestre', t: 'Mestre do Club OftalmoBlack', s: 'Membro do Black' },
+    { id: 'equipe', t: '2ª cadeira ou equipe de um mestre', s: 'Veio junto com um mestre do Black' },
+    { id: 'participante', t: 'Participante da imersão', s: 'Inscrito na Imersão Grau Zero' },
+    { id: 'acompanhante', t: 'Acompanhante', s: 'Veio acompanhando um participante' },
+    { id: 'patrocinador', t: 'Patrocinador ou expositor', s: 'Representante de marca no evento' }
+  ];
+  var BLACK = { mestre: 1, equipe: 1 };
+  var VE_AULAS = { mestre: 1, equipe: 1, participante: 1 };
+  var VE_PREPARO = { mestre: 1, participante: 1 };
+
+  var DIAS = [
+    { id: '22', t: 'Qui 22', s: 'Dia exclusivo Black', soBlack: true },
+    { id: '23', t: 'Sex 23', s: 'Imersão, dia 1' },
+    { id: '24', t: 'Sáb 24', s: 'Imersão, dia 2' }
+  ];
+
+  var NOTA_PALAVRA = ['', 'Ruim', 'Regular', 'Bom', 'Muito bom', 'Excelente'];
+
+  function itensEvento(p, dias) {
+    var l = [];
+    if (VE_AULAS[p]) {
+      l.push({ id: 'conteudo', t: 'Conteúdo das aulas' });
+      l.push({ id: 'didatica', t: 'Clareza e didática' });
+      if (dias.indexOf('24') >= 0) l.push({ id: 'casos', t: 'Casos clínicos ao vivo' });
+      l.push({ id: 'aplicacao', t: 'O quanto dá para aplicar na clínica' });
+    }
+    if (p === 'patrocinador') {
+      l.push({ id: 'marca', t: 'Visibilidade da sua marca' });
+      l.push({ id: 'espaco', t: 'Movimento no seu espaço' });
+      l.push({ id: 'suporte_patrocinio', t: 'Suporte da organização aos patrocinadores' });
+    }
+    l.push({ id: 'organizacao', t: 'Organização e horários' });
+    l.push({ id: 'estrutura', t: 'Local, sala, som e telão' });
+    l.push({ id: 'alimentacao', t: BLACK[p] ? 'Alimentação' : 'Café da manhã e coffee break',
+             s: BLACK[p] ? 'Café, coffee break e almoço' : '' });
+    l.push({ id: 'atendimento', t: 'Atendimento da equipe', s: 'Credenciamento e suporte no evento' });
+    return l;
+  }
+
+  function itensClub(p, dias) {
+    var l = [];
+    if (dias.indexOf('22') >= 0) l.push({ id: 'dia_black', t: 'Dia exclusivo do Black', s: 'Quinta, 22 de outubro' });
+    if (p === 'mestre') l.push({ id: 'encontros', t: 'Encontros de Mestres', s: 'Quintas, às 20h' });
+    l.push({ id: 'treinamento', t: 'Treinamento para Equipes', s: 'Sábados' });
+    l.push({ id: 'cerebro', t: 'Cérebro Black', s: 'A área do mentorado' });
+    l.push({ id: 'atendimento_black', t: 'Atendimento da equipe Black', s: 'WhatsApp e suporte do dia a dia' });
+    if (p === 'mestre') {
+      l.push({ id: 'conteudo_ig', t: 'Conteúdo e Instagram', s: 'Acompanhamento, roteiros e linha editorial' });
+      l.push({ id: 'trafego', t: 'Tráfego e captação de pacientes', s: 'Se você já usa' });
+    }
+    l.push({ id: 'sistema', t: 'Sistema Black e SDR de IA', s: 'Se você já usa' });
+    if (p === 'mestre') l.push({ id: 'graduacao', t: 'Graduação e benefícios', s: 'Pontos, broches e Vitrine' });
+    l.push({ id: 'resultados', t: 'Resultados na clínica até aqui' });
+    return l;
+  }
+
+  var AULAS = [
+    { dia: '23', rot: 'Sexta, 23', itens: [
+      { id: 'intro_mgz', t: 'Introdução ao MGZ: o problema nunca é a lente' },
+      { id: 'aberrometria', t: 'Aberrometria para as lentes de alta tecnologia' },
+      { id: 'optica', t: 'Óptica das lentes de alta tecnologia' },
+      { id: 'defocus', t: 'Curva de defocus' },
+      { id: 'clinica_premium', t: 'Clínica Oftalmológica Premium', s: 'Captação, tráfego, conteúdo e Cérebro Black' }
+    ] },
+    { dia: '24', rot: 'Sábado, 24', itens: [
+      { id: 'milhas', t: 'Gestão estratégica de milhas e viagens', s: 'Gustavo Monteiro, Bora Destinos' },
+      { id: 'refrativa', t: 'Cirurgia refrativa para presbiopia', s: 'Dr. Renato Ambrósio Jr.' },
+      { id: 'biometria', t: 'Cálculo e biometria: assuma o controle' },
+      { id: 'protocolo', t: 'Protocolo MGZ: 7 critérios e 7 passos' },
+      { id: 'casos', t: 'MGZ na prática: casos clínicos ao vivo' },
+      { id: 'insatisfeito', t: 'Paciente insatisfeito: como conduzir' },
+      { id: 'poder_visao', t: 'O poder da visão', s: 'Mentalidade e encerramento' }
+    ] }
+  ];
+  var MAX_AULAS = 3;
+
+  var PREPARO = [
+    { v: 5, t: 'Totalmente preparado' },
+    { v: 4, t: 'Bem preparado' },
+    { v: 3, t: 'Em parte' },
+    { v: 2, t: 'Pouco preparado' },
+    { v: 1, t: 'Nada preparado' }
+  ];
+
+  function opcoesContato(p) {
+    if (BLACK[p]) return [{ id: 'ponto', t: 'Sim, sobre algo que apontei aqui' }];
+    if (p === 'patrocinador') return [
+      { id: 'patrocinio', t: 'Patrocínio da próxima edição' },
+      { id: 'ponto', t: 'Algo que apontei aqui' }
+    ];
+    return [
+      { id: 'mgz', t: 'Mentoria Grau Zero' },
+      { id: 'club', t: 'Club OftalmoBlack' },
+      { id: 'imersao', t: 'Próxima Imersão' },
+      { id: 'ponto', t: 'Algo que apontei aqui' }
+    ];
+  }
+
+  /* ---------- estado (fica no aparelho) ---------- */
+
+  function uuid() {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return 'r-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 12);
+  }
+
+  function lerUtm() {
+    var q = new URLSearchParams(location.search), o = {};
+    ['source', 'medium', 'campaign', 'content', 'term'].forEach(function (k) {
+      var v = q.get('utm_' + k);
+      if (v) o[k] = v.slice(0, 80);
+    });
+    return o;
+  }
+
+  function lerRef() {
+    try {
+      var r = new URL(document.referrer);
+      if (r.host !== location.host) return r.host;
+      return r.pathname.indexOf('/imersaograuzero/pesquisa') === 0 ? '' : r.pathname;
+    } catch (e) { return ''; }
+  }
+
+  function novo() {
+    return {
+      resposta_id: uuid(), iniciado_em: Date.now(), etapa: 'capa', enviado_em: null, pendente: null,
+      utm: lerUtm(), ref: lerRef(),
+      d: { perfil: '', dias: [], nps_evento: null, notas_evento: {}, aulas_top: [], preparo_mgz: null,
+           ponto_alto: '', melhorar_evento: '', patrocinaria: null, nps_club: null, notas_club: {},
+           valoriza_club: '', melhorar_club: '', contato: [], nome: '', whatsapp: '' }
+    };
+  }
+
+  function carregar() {
+    try {
+      var s = JSON.parse(localStorage.getItem(LS) || 'null');
+      if (s && s.resposta_id && s.d) {
+        var u = lerUtm();
+        if (Object.keys(u).length) s.utm = u;
+        return s;
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  var S = carregar() || novo();
+  var d = S.d;
+
+  function salvar() {
+    try { localStorage.setItem(LS, JSON.stringify(S)); } catch (e) {}
+  }
+
+  /* ---------- utilidades ---------- */
+
+  var $ = function (s, el) { return (el || document).querySelector(s); };
+  var $$ = function (s, el) { return Array.prototype.slice.call((el || document).querySelectorAll(s)); };
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  /* Pinta o rótulo de cada opção marcada. */
+  function marcar() {
+    $$('.op input, .chip input').forEach(function (i) {
+      i.parentNode.classList.toggle('sel', i.checked);
+    });
+  }
+
+  var ESTRELA = '<svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2.6 14.9 8.6 21.5 9.5 16.7 14.1 17.9 20.6 12 17.5 6.1 20.6 7.3 14.1 2.5 9.5 9.1 8.6 12 2.6"/></svg>';
+
+  /* ---------- montagem conforme o perfil ---------- */
+
+  function montarPerfis() {
+    $('#perfis').innerHTML = PERFIS.map(function (p) {
+      return '<label class="op"><input type="radio" name="perfil" value="' + p.id + '"' +
+        (d.perfil === p.id ? ' checked' : '') + '><span class="op-marca"></span>' +
+        '<span class="op-tx"><b>' + esc(p.t) + '</b><small>' + esc(p.s) + '</small></span></label>';
+    }).join('');
+  }
+
+  function montarDias() {
+    var vis = DIAS.filter(function (x) { return !x.soBlack || BLACK[d.perfil]; });
+    d.dias = d.dias.filter(function (id) { return vis.some(function (x) { return x.id === id; }); });
+    $('#dias').innerHTML = vis.map(function (x) {
+      return '<label class="chip"><input type="checkbox" name="dias" value="' + x.id + '"' +
+        (d.dias.indexOf(x.id) >= 0 ? ' checked' : '') + '>' + esc(x.t) + ' <small>' + esc(x.s) + '</small></label>';
+    }).join('');
+    $('#blocoDias').hidden = !d.perfil;
+  }
+
+  function montarNps() {
+    $$('.nps').forEach(function (g) {
+      var campo = g.getAttribute('data-nps');
+      var html = '';
+      for (var i = 0; i <= 10; i++) {
+        html += '<button type="button" role="radio" data-v="' + i + '" aria-checked="' + (d[campo] === i) + '">' + i + '</button>';
+      }
+      g.innerHTML = html;
+    });
+  }
+
+  function linhaNota(grupo, it) {
+    var v = (d[grupo] || {})[it.id] || 0;
+    var b = '';
+    for (var i = 1; i <= 5; i++) {
+      b += '<button type="button" role="radio" aria-checked="' + (v === i) + '" aria-label="' + i + ' de 5, ' +
+        NOTA_PALAVRA[i] + '" data-v="' + i + '"' + (i <= v ? ' class="on"' : '') + '>' + ESTRELA + '</button>';
+    }
+    return '<div class="nota' + (v ? ' feita' : '') + '" data-item="' + it.id + '">' +
+      '<div class="nota-t">' + esc(it.t) + (it.s ? '<small>' + esc(it.s) + '</small>' : '') + '</div>' +
+      '<div class="nota-l"><div class="estrelas" role="radiogroup" aria-label="' + esc(it.t) + '">' + b + '</div>' +
+      '<span class="nota-v">' + (v ? NOTA_PALAVRA[v] : '') + '</span></div></div>';
+  }
+
+  /* Só guarda nota de item que existe para o perfil atual: quem troca de
+     perfil no meio do caminho não leva nota de pergunta que não viu. */
+  function podar(grupo, itens) {
+    var ok = {}, atual = d[grupo] || {};
+    itens.forEach(function (it) { if (atual[it.id]) ok[it.id] = atual[it.id]; });
+    d[grupo] = ok;
+  }
+
+  function montarNotas() {
+    var ev = itensEvento(d.perfil, d.dias);
+    podar('notas_evento', ev);
+    $('#notasEvento').innerHTML = ev.map(function (it) { return linhaNota('notas_evento', it); }).join('');
+    var cl = BLACK[d.perfil] ? itensClub(d.perfil, d.dias) : [];
+    podar('notas_club', cl);
+    $('#notasClub').innerHTML = cl.map(function (it) { return linhaNota('notas_club', it); }).join('');
+  }
+
+  function aulasVisiveis() {
+    return AULAS.filter(function (g) { return d.dias.indexOf(g.dia) >= 0; });
+  }
+
+  function montarAulas() {
+    var grupos = aulasVisiveis();
+    var validos = {};
+    grupos.forEach(function (g) { g.itens.forEach(function (it) { validos[it.id] = 1; }); });
+    d.aulas_top = d.aulas_top.filter(function (id) { return validos[id]; }).slice(0, MAX_AULAS);
+    $('#aulas').innerHTML = grupos.map(function (g) {
+      return '<p class="dia-rot">' + esc(g.rot) + '</p><div class="lista">' + g.itens.map(function (it) {
+        return '<label class="op quadrado"><input type="checkbox" name="aulas_top" value="' + it.id + '"' +
+          (d.aulas_top.indexOf(it.id) >= 0 ? ' checked' : '') + '><span class="op-marca"></span>' +
+          '<span class="op-tx"><b>' + esc(it.t) + '</b>' + (it.s ? '<small>' + esc(it.s) + '</small>' : '') +
+          '</span></label>';
+      }).join('') + '</div>';
+    }).join('');
+    travarAulas();
+
+    $('#blocoPreparo').hidden = !VE_PREPARO[d.perfil];
+    if (!VE_PREPARO[d.perfil]) d.preparo_mgz = null;
+    $('#preparo').innerHTML = PREPARO.map(function (o) {
+      return '<label class="chip"><input type="radio" name="preparo_mgz" value="' + o.v + '"' +
+        (d.preparo_mgz === o.v ? ' checked' : '') + '>' + esc(o.t) + '</label>';
+    }).join('');
+  }
+
+  function travarAulas() {
+    var cheio = d.aulas_top.length >= MAX_AULAS;
+    $$('input[name="aulas_top"]').forEach(function (i) {
+      var travar = cheio && !i.checked;
+      i.disabled = travar;
+      i.closest('.op').classList.toggle('travado', travar);
+    });
+    $('#contaAulas').textContent = d.aulas_top.length + ' de ' + MAX_AULAS;
+  }
+
+  function montarContato() {
+    var ops = opcoesContato(d.perfil);
+    d.contato = d.contato.filter(function (id) { return ops.some(function (o) { return o.id === id; }); });
+    $('#contato').innerHTML = ops.map(function (o) {
+      return '<label class="chip"><input type="checkbox" name="contato" value="' + o.id + '"' +
+        (d.contato.indexOf(o.id) >= 0 ? ' checked' : '') + '>' + esc(o.t) + '</label>';
+    }).join('');
+    atualizarContato();
+  }
+
+  function atualizarContato() {
+    var quer = d.contato.length > 0;
+    $('#blocoZap').hidden = !quer;
+    $('#nomeOpc').hidden = quer;
+  }
+
+  function montarTudo() {
+    montarDias();
+    montarNotas();
+    montarAulas();
+    montarContato();
+    $('#blocoPatrocinaria').hidden = d.perfil !== 'patrocinador';
+    if (d.perfil !== 'patrocinador') d.patrocinaria = null;
+    $$('input[name="patrocinaria"]').forEach(function (i) { i.checked = d.patrocinaria === i.value; });
+    ['ponto_alto', 'melhorar_evento', 'valoriza_club', 'melhorar_club'].forEach(function (k) {
+      $('textarea[name="' + k + '"]').value = d[k] || '';
+    });
+    $('#nome').value = d.nome || '';
+    $('#whatsapp').value = d.whatsapp || '';
+    marcar();
+  }
+
+  /* ---------- etapas ---------- */
+
+  var ORDEM = ['capa', 'perfil', 'evento', 'aulas', 'comentarios', 'club', 'club_texto', 'fim', 'obrigado'];
+
+  function aplica(id) {
+    if (id === 'aulas') return !!VE_AULAS[d.perfil] && aulasVisiveis().length > 0;
+    if (id === 'club' || id === 'club_texto') return !!BLACK[d.perfil];
+    return true;
+  }
+
+  function visiveis() { return ORDEM.filter(aplica); }
+
+  /* O total muda com o perfil e os dias (o Black tem duas etapas a mais). */
+  function progresso() {
+    var meio = visiveis().filter(function (x) { return x !== 'capa' && x !== 'obrigado'; });
+    var pos = meio.indexOf(S.etapa);
+    $('#topo').hidden = pos < 0;
+    if (pos < 0) return;
+    $('#trilho').style.width = Math.round(((pos + 1) / meio.length) * 100) + '%';
+    $('#passo').textContent = (pos + 1) + ' de ' + meio.length;
+  }
+
+  function mostrar(id) {
+    if (ORDEM.indexOf(id) < 0 || !aplica(id)) id = d.perfil ? 'perfil' : 'capa';
+    S.etapa = id;
+    salvar();
+    $$('.etapa').forEach(function (s) { s.hidden = s.getAttribute('data-etapa') !== id; });
+    progresso();
+    if (id === 'obrigado') montarObrigado();
+    window.scrollTo(0, 0);
+    var h = $('[data-etapa="' + id + '"] [tabindex="-1"]');
+    if (h) { try { h.focus({ preventScroll: true }); } catch (e) {} }
+  }
+
+  /* Quantas etapas esta visita empilhou no histórico. Voltar só usa o
+     history.back() quando há etapa nossa para desempilhar; senão sairia da
+     pesquisa para a página anterior (a credencial). */
+  var pilha = 0;
+
+  function ir(id) {
+    mostrar(id);
+    try { history.pushState({ e: id }, ''); pilha++; } catch (e) {}
+  }
+
+  function voltar() {
+    if (pilha > 0) { history.back(); return; }
+    var a = anterior(S.etapa);
+    mostrar(a);
+    try { history.replaceState({ e: a }, ''); } catch (e) {}
+  }
+
+  function proxima(id) {
+    var v = visiveis();
+    return v[v.indexOf(id) + 1] || 'fim';
+  }
+
+  function anterior(id) {
+    var v = visiveis();
+    return v[Math.max(0, v.indexOf(id) - 1)];
+  }
+
+  /* O botão Voltar do celular volta uma etapa em vez de sair da pesquisa. */
+  window.addEventListener('popstate', function (ev) {
+    if (pilha > 0) pilha--;
+    var e = ev.state && ev.state.e;
+    mostrar(e || 'capa');
+  });
+
+  /* ---------- validação ---------- */
+
+  function erro(campo, msg) {
+    var q = $('[data-etapa="' + S.etapa + '"] [data-campo="' + campo + '"]');
+    if (!q) return false;
+    var p = $('.q-erro', q);
+    if (msg) p.textContent = msg;
+    p.hidden = false;
+    q.classList.add('com-erro');
+    q.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return false;
+  }
+
+  function limparErros() {
+    $$('.q-erro').forEach(function (p) { p.hidden = true; });
+    $$('.com-erro').forEach(function (q) { q.classList.remove('com-erro'); });
+  }
+
+  function digitos(s) { return String(s || '').replace(/\D/g, ''); }
+
+  function valida(id) {
+    limparErros();
+    if (id === 'perfil') {
+      if (!d.perfil) return erro('perfil');
+      if (!d.dias.length) return erro('dias');
+    }
+    if (id === 'evento' && d.nps_evento == null) return erro('nps_evento');
+    if (id === 'club' && d.nps_club == null) return erro('nps_club');
+    if (id === 'fim' && d.contato.length) {
+      if (!d.nome.trim()) return erro('identificacao', 'Para a equipe falar com você, deixe seu nome.');
+      var n = digitos(d.whatsapp).length;
+      if (n < 10 || n > 13) return erro('identificacao', 'Confira o WhatsApp: DDD e número, como (11) 91234-5678.');
+    }
+    return true;
+  }
+
+  /* ---------- envio ---------- */
+
+  function montarEnvio() {
+    var black = !!BLACK[d.perfil];
+    return {
+      resposta_id: S.resposta_id,
+      perfil: d.perfil,
+      dias: d.dias,
+      nps_evento: d.nps_evento,
+      notas_evento: d.notas_evento,
+      aulas_top: aplica('aulas') ? d.aulas_top : [],
+      preparo_mgz: aplica('aulas') && VE_PREPARO[d.perfil] ? d.preparo_mgz : null,
+      ponto_alto: d.ponto_alto,
+      melhorar_evento: d.melhorar_evento,
+      patrocinaria: d.perfil === 'patrocinador' ? d.patrocinaria : null,
+      nps_club: black ? d.nps_club : null,
+      notas_club: black ? d.notas_club : {},
+      valoriza_club: black ? d.valoriza_club : '',
+      melhorar_club: black ? d.melhorar_club : '',
+      contato: d.contato,
+      nome: d.nome,
+      whatsapp: d.contato.length ? d.whatsapp : '',
+      utm: S.utm,
+      ref: S.ref,
+      versao: VERSAO,
+      duracao_s: Math.round((Date.now() - S.iniciado_em) / 1000),
+      teste: TESTE || undefined,
+      site: $('input[name="site"]').value
+    };
+  }
+
+  function postar(corpo) {
+    var ctl = ('AbortController' in window) ? new AbortController() : null;
+    var t = setTimeout(function () { if (ctl) ctl.abort(); }, 15000);
+    return fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(corpo),
+      credentials: 'omit',
+      signal: ctl && ctl.signal
+    }).then(function (r) {
+      clearTimeout(t);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }, function (e) { clearTimeout(t); throw e; });
+  }
+
+  var enviando = false;
+  function enviar() {
+    if (enviando || !valida('fim')) return;
+    enviando = true;
+    var btn = $('#btnEnviar');
+    btn.disabled = true;
+    $('#falha').hidden = true;
+    var corpo = montarEnvio();
+    S.pendente = corpo;
+    salvar();
+    postar(corpo).then(function () {
+      S.pendente = null;
+      S.enviado_em = Date.now();
+      salvar();
+      ir('obrigado');
+    }).catch(function () {
+      $('#falha').hidden = false;
+      $('#falha').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }).then(function () {
+      enviando = false;
+      btn.disabled = false;
+    });
+  }
+
+  /* Resposta que ficou presa sem rede sai sozinha quando a conexão volta. */
+  function reenviarPendente() {
+    if (!S.pendente || enviando) return;
+    enviando = true;
+    postar(S.pendente).then(function () {
+      S.pendente = null;
+      if (!S.enviado_em) S.enviado_em = Date.now();
+      salvar();
+      if (S.etapa === 'fim') ir('obrigado');
+    }).catch(function () {}).then(function () { enviando = false; });
+  }
+  window.addEventListener('online', reenviarPendente);
+
+  function montarObrigado() {
+    $('#obrigadoT').textContent = d.perfil === 'mestre' ? 'Obrigado, mestre!' : 'Obrigado!';
+    var s = 'Suas respostas chegaram à equipe. Obrigado por estar com a gente nesta imersão.';
+    if (d.contato.length) s += ' Vamos falar com você pelo WhatsApp que você deixou.';
+    $('#obrigadoS').textContent = s;
+  }
+
+  /* ---------- eventos ---------- */
+
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-acao]');
+    if (b) {
+      var a = b.getAttribute('data-acao');
+      if (a === 'seguir') { if (valida(S.etapa)) ir(proxima(S.etapa)); }
+      else if (a === 'voltar') voltar();
+      else if (a === 'enviar') enviar();
+      else if (a === 'corrigir') ir('perfil');
+      else if (a === 'outra') {
+        var utm = S.utm, ref = S.ref;
+        S = novo(); S.utm = utm; S.ref = ref; d = S.d;
+        montarPerfis(); montarNps(); montarTudo(); ir('perfil');
+      }
+      return;
+    }
+
+    var n = e.target.closest('.nps button');
+    if (n) {
+      var campo = n.parentNode.getAttribute('data-nps');
+      d[campo] = Number(n.getAttribute('data-v'));
+      $$('button', n.parentNode).forEach(function (x) { x.setAttribute('aria-checked', String(x === n)); });
+      var q = n.closest('.q'); q.classList.remove('com-erro'); $('.q-erro', q).hidden = true;
+      salvar();
+      return;
+    }
+
+    var s = e.target.closest('.estrelas button');
+    if (s) {
+      var linha = s.closest('.nota');
+      var grupo = linha.parentNode.getAttribute('data-grupo');
+      var item = linha.getAttribute('data-item');
+      var v = Number(s.getAttribute('data-v'));
+      /* tocar de novo na mesma estrela apaga a nota */
+      if (d[grupo][item] === v) delete d[grupo][item]; else d[grupo][item] = v;
+      var atual = d[grupo][item] || 0;
+      $$('button', linha).forEach(function (x) {
+        var xv = Number(x.getAttribute('data-v'));
+        x.classList.toggle('on', xv <= atual);
+        x.setAttribute('aria-checked', String(xv === atual));
+      });
+      $('.nota-v', linha).textContent = atual ? NOTA_PALAVRA[atual] : '';
+      linha.classList.toggle('feita', !!atual);
+      salvar();
+    }
+  });
+
+  document.addEventListener('change', function (e) {
+    var i = e.target;
+    if (!i.name) return;
+    if (i.name === 'perfil') {
+      d.perfil = i.value;
+      montarTudo();
+      var q = i.closest('.q'); q.classList.remove('com-erro'); $('.q-erro', q).hidden = true;
+    } else if (i.name === 'dias' || i.name === 'aulas_top' || i.name === 'contato') {
+      d[i.name] = $$('input[name="' + i.name + '"]:checked').map(function (x) { return x.value; });
+      if (i.name === 'dias') { montarNotas(); montarAulas(); }
+      if (i.name === 'aulas_top') travarAulas();
+      if (i.name === 'contato') { atualizarContato(); limparErros(); }
+    } else if (i.name === 'preparo_mgz') {
+      d.preparo_mgz = Number(i.value);
+    } else if (i.name === 'patrocinaria') {
+      d.patrocinaria = i.value;
+    }
+    marcar();
+    progresso();
+    salvar();
+  });
+
+  document.addEventListener('input', function (e) {
+    var i = e.target;
+    if (i.tagName === 'TEXTAREA' || i.id === 'nome' || i.id === 'whatsapp') {
+      d[i.name] = i.value;
+      salvar();
+    }
+  });
+
+  /* Enter no nome ou no WhatsApp envia, como num formulário comum. */
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && (e.target.id === 'nome' || e.target.id === 'whatsapp')) {
+      e.preventDefault();
+      enviar();
+    }
+  });
+
+  /* ---------- início ---------- */
+
+  if (TESTE) $('#seloTeste').hidden = false;
+  montarPerfis();
+  montarNps();
+  montarTudo();
+  var inicio = S.enviado_em ? 'obrigado' : (S.etapa || 'capa');
+  try { history.replaceState({ e: inicio }, ''); } catch (e) {}
+  mostrar(inicio);
+  reenviarPendente();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0a0a0a">
+<title>Resultados · Pesquisa da Imersão Grau Zero</title>
+<link rel="icon" href="/assets/favicon.png">
+<style>
+/* ============================================================================
+   Painel da pesquisa de satisfação (Imersão Grau Zero e Club OftalmoBlack)
+
+   Lê /api/pesquisa/resultados com a chave do painel, que vem no endereço
+   depois do # (#k=...): o # nunca vai ao servidor nem ao Referer, e o código
+   desta página é público no repositório, então a chave não mora aqui.
+   Vale a última versão de cada resposta (resposta_id): quem corrige não conta
+   duas vezes. ?testes=1 mostra as respostas de teste em vez das reais.
+
+   Cores do 0 a 10: divergente, frio (detratores) x neutro x dourado
+   (promotores), conferido no validador do dataviz contra o fundo do cartão;
+   todo segmento leva rótulo com número, então a cor nunca fala sozinha.
+   ========================================================================= */
+@font-face{font-family:'Cinzel';font-style:normal;font-weight:400 600;font-display:swap;
+  src:url("/imersaograuzero/assets/fonts/cinzel-latin.woff2") format('woff2')}
+@font-face{font-family:'DM Sans';font-style:normal;font-weight:300 700;font-display:swap;
+  src:url("/imersaograuzero/assets/fonts/dmsans-latin.woff2") format('woff2')}
+
+:root{
+  --gold:#d89d4d;--gold-light:#e6bd74;--ink:#0a0a0a;--card:#14120f;--card-2:#1b1814;
+  --paper:#f5f0e6;--muted:rgba(245,240,230,.66);--dim:rgba(245,240,230,.44);
+  --line:rgba(216,157,77,.2);--track:rgba(245,240,230,.08);
+  --bar:#bf8537;
+  --det:#5f86d9;--neu:#66615a;--pro:#bf8537;
+  --sans:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  --serif:'Cinzel',Georgia,serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ink);color:var(--paper);font-family:var(--sans);font-size:15px;line-height:1.5;
+  -webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+[hidden]{display:none !important}
+a{color:var(--gold-light)}
+
+.wrap{max-width:1080px;margin:0 auto;padding:calc(18px + env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom))}
+header.cab{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:18px}
+.eyebrow{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:600}
+h1{font-family:var(--serif);font-weight:500;font-size:26px;margin:6px 0 2px;line-height:1.2}
+.cab p{margin:0;color:var(--muted);font-size:13.5px}
+.cab-acoes{display:flex;gap:8px;flex-wrap:wrap}
+.btn{min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);
+  font-size:13.5px;font-weight:500;display:inline-flex;align-items:center;gap:8px}
+.btn:hover{border-color:var(--gold)}
+.btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.selo{display:inline-block;padding:4px 10px;border-radius:999px;background:#f0c27a;color:#1b1206;font-size:12px;font-weight:600}
+
+.filtros{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}
+.filtro{min-height:38px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:13.5px}
+.filtro[aria-pressed="true"]{border-color:var(--gold);color:var(--gold-light);background:#2a2116}
+.filtro .n{color:var(--dim);margin-left:4px;font-variant-numeric:tabular-nums}
+
+.grade{display:grid;gap:14px;grid-template-columns:1fr}
+.kpis{display:grid;gap:10px;grid-template-columns:repeat(2,1fr);margin-bottom:14px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 14px 12px}
+.kpi-r{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.kpi-v{font-size:32px;font-weight:600;line-height:1.1;margin-top:6px;font-variant-numeric:tabular-nums}
+.kpi-s{font-size:12.5px;color:var(--dim);margin-top:4px}
+
+.cartao{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 16px 14px}
+.cartao h2{font-family:var(--serif);font-weight:500;font-size:17px;margin:0;line-height:1.3}
+.cartao .sub{color:var(--dim);font-size:12.5px;margin:3px 0 0}
+.vazio{color:var(--dim);font-size:13.5px;margin:14px 0 4px}
+
+/* 0 a 10 empilhado */
+.nps-bloco + .nps-bloco{margin-top:18px}
+.nps-topo{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-top:12px}
+.nps-topo b{font-size:14px;font-weight:600}
+.nps-topo span{font-size:12.5px;color:var(--dim)}
+.pilha{display:flex;height:14px;border-radius:4px;overflow:hidden;margin-top:8px;gap:2px;background:var(--card)}
+.pilha i{display:block;height:100%}
+.pilha i:first-child{border-radius:4px 0 0 4px}
+.pilha i:last-child{border-radius:0 4px 4px 0}
+.leg{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:8px;font-size:12.5px;color:var(--muted)}
+.leg span{display:inline-flex;align-items:center;gap:6px;font-variant-numeric:tabular-nums}
+.leg i{width:10px;height:10px;border-radius:3px;display:inline-block}
+
+/* listas de barras (rótulo, barra, valor): servem de tabela também */
+.barras{display:flex;flex-direction:column;gap:11px;margin-top:14px}
+.barra-l{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;line-height:1.35}
+.barra-l span:last-child{color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.barra-l b{font-weight:600;color:var(--paper)}
+.trilho{height:8px;border-radius:4px;background:var(--track);margin-top:5px;overflow:hidden}
+.trilho i{display:block;height:100%;border-radius:4px;background:var(--bar);min-width:2px}
+
+/* comentários */
+.abas{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.aba{min-height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--card-2);font-size:12.5px}
+.aba[aria-selected="true"]{border-color:var(--gold);color:var(--gold-light)}
+.coments{display:flex;flex-direction:column;gap:10px;margin-top:12px;max-height:620px;overflow:auto;padding-right:2px}
+.com{background:var(--card-2);border:1px solid rgba(245,240,230,.06);border-radius:14px;padding:12px 13px}
+.com p{margin:0;white-space:pre-wrap;word-wrap:break-word}
+.com small{display:block;color:var(--dim);font-size:12px;margin-top:7px}
+
+/* contatos */
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:12px}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid rgba(245,240,230,.07);vertical-align:top}
+th{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);font-weight:600}
+td small{color:var(--dim)}
+.tabela{overflow-x:auto}
+
+.chave{max-width:420px;margin:12vh auto 0;text-align:center}
+.chave input{width:100%;min-height:48px;border-radius:12px;border:1px solid var(--line);background:var(--card);
+  padding:0 14px;margin:16px 0 10px;font-size:16px}
+.erro{color:#ff9b8a;font-size:13.5px}
+.rodape{color:var(--dim);font-size:12px;margin-top:22px;line-height:1.6}
+
+@media (min-width:760px){
+  h1{font-size:30px}
+  .kpis{grid-template-columns:repeat(4,1fr)}
+  .grade{grid-template-columns:1fr 1fr}
+  .larga{grid-column:1 / -1}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <section class="chave" id="telaChave" hidden>
+    <div class="eyebrow">Pesquisa de satisfação</div>
+    <h1>Painel de resultados</h1>
+    <p class="cab-p" style="color:var(--muted)">Cole a chave do painel para ver as respostas.</p>
+    <form id="formChave"><input id="campoChave" autocomplete="off" placeholder="Chave do painel" aria-label="Chave do painel">
+      <button class="btn" type="submit">Abrir painel</button></form>
+    <p class="erro" id="erroChave" hidden>Chave não aceita. Confira e tente de novo.</p>
+  </section>
+
+  <div id="painel" hidden>
+    <header class="cab">
+      <div>
+        <div class="eyebrow">Imersão Grau Zero · Club OftalmoBlack</div>
+        <h1>Pesquisa de satisfação</h1>
+        <p id="atualizado">Carregando…</p>
+      </div>
+      <div class="cab-acoes">
+        <span class="selo" id="seloTeste" hidden>Respostas de teste</span>
+        <button class="btn" type="button" id="btnAtualizar"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>Atualizar</button>
+        <button class="btn" type="button" id="btnCsv"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Baixar CSV</button>
+      </div>
+    </header>
+
+    <nav class="filtros" id="filtros" aria-label="Filtrar por público"></nav>
+
+    <div class="kpis" id="kpis"></div>
+
+    <div class="grade">
+      <section class="cartao">
+        <h2>De 0 a 10, indicaria a um colega?</h2>
+        <p class="sub">NPS = % de promotores (9 e 10) menos % de detratores (0 a 6).</p>
+        <div id="nps"></div>
+      </section>
+
+      <section class="cartao">
+        <h2>Notas da imersão</h2>
+        <p class="sub">Média de 1 a 5 por ponto, com quantas pessoas deram nota.</p>
+        <div id="notasEvento"></div>
+      </section>
+
+      <section class="cartao">
+        <h2>Aulas que mais fizeram diferença</h2>
+        <p class="sub">Cada pessoa marca até 3. Percentual sobre quem respondeu a etapa.</p>
+        <div id="aulas"></div>
+      </section>
+
+      <section class="cartao">
+        <h2>Preparo para aplicar o Protocolo MGZ</h2>
+        <p class="sub">Mestres e participantes, depois da imersão.</p>
+        <div id="preparo"></div>
+      </section>
+
+      <section class="cartao" id="cartaoClub">
+        <h2>Notas do Club OftalmoBlack</h2>
+        <p class="sub">Só mestres e equipe do Black. Média de 1 a 5.</p>
+        <div id="notasClub"></div>
+      </section>
+
+      <section class="cartao" id="cartaoPatro">
+        <h2>Patrocinadores</h2>
+        <p class="sub">Patrocinaria a próxima edição?</p>
+        <div id="patro"></div>
+      </section>
+
+      <section class="cartao larga">
+        <h2>Pedidos de contato</h2>
+        <p class="sub">Quem pediu para a equipe falar com ele.</p>
+        <div id="contatos"></div>
+      </section>
+
+      <section class="cartao larga">
+        <h2>Comentários</h2>
+        <div class="abas" id="abas" role="tablist"></div>
+        <div class="coments" id="coments"></div>
+      </section>
+    </div>
+
+    <p class="rodape" id="rodape">Atualiza sozinho a cada minuto enquanto a aba está aberta. Vale a última versão de cada resposta.</p>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var API = '/api/pesquisa/resultados';
+  var TESTES = /[?&]testes=1(&|$)/.test(location.search);
+  var LS_CHAVE = 'pesquisa-imersao-painel-chave';
+
+  var PERFIL_ROT = { mestre: 'Mestre Black', equipe: 'Equipe do Black', participante: 'Participante',
+                     acompanhante: 'Acompanhante', patrocinador: 'Patrocinador' };
+  var FILTROS = [
+    { id: 'todos', t: 'Todos', p: null },
+    { id: 'black', t: 'Black', p: { mestre: 1, equipe: 1 } },
+    { id: 'imersao', t: 'Imersão', p: { participante: 1, acompanhante: 1 } },
+    { id: 'patro', t: 'Patrocinadores', p: { patrocinador: 1 } }
+  ];
+  var EVENTO_ROT = {
+    conteudo: 'Conteúdo das aulas', didatica: 'Clareza e didática', casos: 'Casos clínicos ao vivo',
+    aplicacao: 'Aplicável na clínica', marca: 'Visibilidade da marca (patrocinador)',
+    espaco: 'Movimento no espaço (patrocinador)', suporte_patrocinio: 'Suporte aos patrocinadores',
+    organizacao: 'Organização e horários', estrutura: 'Local, sala, som e telão',
+    alimentacao: 'Alimentação', atendimento: 'Atendimento da equipe'
+  };
+  var CLUB_ROT = {
+    dia_black: 'Dia exclusivo do Black (22/10)', encontros: 'Encontros de Mestres',
+    treinamento: 'Treinamento para Equipes', cerebro: 'Cérebro Black',
+    atendimento_black: 'Atendimento da equipe Black', conteudo_ig: 'Conteúdo e Instagram',
+    trafego: 'Tráfego e captação', sistema: 'Sistema Black e SDR de IA',
+    graduacao: 'Graduação e benefícios', resultados: 'Resultados na clínica'
+  };
+  var AULAS_ROT = {
+    intro_mgz: 'Introdução ao MGZ', aberrometria: 'Aberrometria', optica: 'Óptica das lentes de alta tecnologia',
+    defocus: 'Curva de defocus', clinica_premium: 'Clínica Oftalmológica Premium',
+    milhas: 'Milhas e viagens (Gustavo Monteiro)', refrativa: 'Refrativa para presbiopia (Renato Ambrósio Jr.)',
+    biometria: 'Cálculo e biometria', protocolo: 'Protocolo MGZ: 7 critérios e 7 passos',
+    casos: 'Casos clínicos ao vivo', insatisfeito: 'Paciente insatisfeito', poder_visao: 'O poder da visão'
+  };
+  var PREPARO_ROT = { 5: 'Totalmente preparado', 4: 'Bem preparado', 3: 'Em parte', 2: 'Pouco preparado', 1: 'Nada preparado' };
+  var CONTATO_ROT = { mgz: 'Mentoria Grau Zero', club: 'Club OftalmoBlack', imersao: 'Próxima Imersão',
+                      ponto: 'Algo que apontou', patrocinio: 'Patrocínio' };
+  var COMENT = [
+    { id: 'ponto_alto', t: 'Ponto alto' },
+    { id: 'melhorar_evento', t: 'Melhorar na imersão' },
+    { id: 'valoriza_club', t: 'Valorizam no Black' },
+    { id: 'melhorar_club', t: 'Melhorar no Black' }
+  ];
+
+  var $ = function (id) { return document.getElementById(id); };
+  var chave = '';
+  var todas = [];
+  var filtro = 'todos';
+  var aba = 'ponto_alto';
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function num(n, casas) { return Number(n).toLocaleString('pt-BR', { minimumFractionDigits: casas || 0, maximumFractionDigits: casas || 0 }); }
+  function pct(a, b) { return b ? Math.round((a / b) * 100) : 0; }
+
+  /* ---------- chave ---------- */
+
+  function lerChave() {
+    var m = /(?:^|[#&])k=([^&]+)/.exec(location.hash);
+    if (m) { try { localStorage.setItem(LS_CHAVE, decodeURIComponent(m[1])); } catch (e) {} return decodeURIComponent(m[1]); }
+    try { return localStorage.getItem(LS_CHAVE) || ''; } catch (e) { return ''; }
+  }
+
+  $('formChave').addEventListener('submit', function (e) {
+    e.preventDefault();
+    chave = $('campoChave').value.trim();
+    try { localStorage.setItem(LS_CHAVE, chave); } catch (x) {}
+    carregar();
+  });
+
+  /* ---------- dados ---------- */
+
+  function carregar() {
+    if (!chave) { $('telaChave').hidden = false; $('painel').hidden = true; return; }
+    fetch(API + (TESTES ? '?fonte=testes' : ''), { headers: { Authorization: 'Bearer ' + chave }, cache: 'no-store' })
+      .then(function (r) {
+        if (r.status === 401) { var e = new Error('chave'); e.chave = true; throw e; }
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function (j) {
+        todas = ultimaVersao(j.respostas || []);
+        $('telaChave').hidden = true;
+        $('painel').hidden = false;
+        $('seloTeste').hidden = !TESTES;
+        $('atualizado').textContent = 'Atualizado às ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) +
+          ' · ' + todas.length + (todas.length === 1 ? ' resposta' : ' respostas');
+        desenhar();
+      })
+      .catch(function (e) {
+        if (e.chave) {
+          try { localStorage.removeItem(LS_CHAVE); } catch (x) {}
+          $('telaChave').hidden = false; $('painel').hidden = true; $('erroChave').hidden = false;
+        } else if (!$('painel').hidden) {
+          $('atualizado').textContent = 'Sem conexão agora; mostrando os dados da última leitura.';
+        } else {
+          $('telaChave').hidden = false; $('erroChave').hidden = false;
+          $('erroChave').textContent = 'Não foi possível ler os dados agora. Tente de novo em instantes.';
+        }
+      });
+  }
+
+  /* Quem corrige a resposta manda de novo com o mesmo resposta_id: vale a última. */
+  function ultimaVersao(lista) {
+    var por = {};
+    lista.forEach(function (r) {
+      var a = por[r.resposta_id];
+      if (!a || String(r.recebido_em) >= String(a.recebido_em)) por[r.resposta_id] = r;
+    });
+    return Object.keys(por).map(function (k) { return por[k]; })
+      .sort(function (a, b) { return String(b.recebido_em).localeCompare(String(a.recebido_em)); });
+  }
+
+  function filtradas() {
+    var f = FILTROS.filter(function (x) { return x.id === filtro; })[0];
+    return todas.filter(function (r) { return !f.p || f.p[r.perfil]; });
+  }
+
+  /* ---------- contas ---------- */
+
+  function nps(lista, campo) {
+    var v = lista.map(function (r) { return r[campo]; }).filter(function (x) { return typeof x === 'number'; });
+    var pro = v.filter(function (x) { return x >= 9; }).length;
+    var det = v.filter(function (x) { return x <= 6; }).length;
+    return { n: v.length, pro: pro, det: det, neu: v.length - pro - det,
+             score: v.length ? Math.round(((pro - det) / v.length) * 100) : null,
+             media: v.length ? v.reduce(function (a, b) { return a + b; }, 0) / v.length : null };
+  }
+
+  function medias(lista, grupo, rot) {
+    var soma = {}, n = {};
+    lista.forEach(function (r) {
+      var o = r[grupo] || {};
+      Object.keys(o).forEach(function (k) { soma[k] = (soma[k] || 0) + o[k]; n[k] = (n[k] || 0) + 1; });
+    });
+    return Object.keys(soma).map(function (k) { return { id: k, t: rot[k] || k, media: soma[k] / n[k], n: n[k] }; })
+      .sort(function (a, b) { return b.media - a.media || b.n - a.n; });
+  }
+
+  /* ---------- desenho ---------- */
+
+  function desenharFiltros() {
+    $('filtros').innerHTML = FILTROS.map(function (f) {
+      var n = todas.filter(function (r) { return !f.p || f.p[r.perfil]; }).length;
+      return '<button class="filtro" type="button" data-f="' + f.id + '" aria-pressed="' + (filtro === f.id) + '">' +
+        esc(f.t) + '<span class="n">' + n + '</span></button>';
+    }).join('');
+  }
+
+  function desenharKpis(l) {
+    var ev = nps(l, 'nps_evento'), cl = nps(l, 'nps_club');
+    var notas = [];
+    l.forEach(function (r) { var o = r.notas_evento || {}; Object.keys(o).forEach(function (k) { notas.push(o[k]); }); });
+    var media = notas.length ? notas.reduce(function (a, b) { return a + b; }, 0) / notas.length : null;
+    var porPerfil = Object.keys(PERFIL_ROT).map(function (p) {
+      var n = l.filter(function (r) { return r.perfil === p; }).length;
+      return n ? n + ' ' + PERFIL_ROT[p].toLowerCase() : '';
+    }).filter(Boolean).join(' · ');
+    var kpi = function (rot, v, s) {
+      return '<div class="kpi"><div class="kpi-r">' + rot + '</div><div class="kpi-v">' + v + '</div><div class="kpi-s">' + s + '</div></div>';
+    };
+    $('kpis').innerHTML =
+      kpi('Respostas', num(l.length), porPerfil || 'Nenhuma ainda') +
+      kpi('NPS da imersão', ev.score == null ? '-' : num(ev.score), ev.n ? 'média ' + num(ev.media, 1) + ' em ' + ev.n : 'sem notas') +
+      kpi('NPS do Club', cl.score == null ? '-' : num(cl.score), cl.n ? 'média ' + num(cl.media, 1) + ' em ' + cl.n + ' do Black' : 'sem notas do Black') +
+      kpi('Nota média da imersão', media == null ? '-' : num(media, 1), media == null ? 'sem notas' : 'de 1 a 5, em ' + notas.length + ' notas');
+  }
+
+  function blocoNps(titulo, x) {
+    if (!x.n) return '<div class="nps-bloco"><div class="nps-topo"><b>' + titulo + '</b><span>sem notas</span></div></div>';
+    var seg = function (cor, n, rot) {
+      return n ? '<i style="width:' + (n / x.n * 100) + '%;background:' + cor + '" title="' + rot + ': ' + n + '"></i>' : '';
+    };
+    return '<div class="nps-bloco"><div class="nps-topo"><b>' + titulo + ' · NPS ' + num(x.score) + '</b><span>' + x.n + ' notas</span></div>' +
+      '<div class="pilha" role="img" aria-label="' + titulo + ': ' + x.det + ' detratores, ' + x.neu + ' neutros, ' + x.pro + ' promotores">' +
+      seg('var(--det)', x.det, 'Detratores') + seg('var(--neu)', x.neu, 'Neutros') + seg('var(--pro)', x.pro, 'Promotores') + '</div>' +
+      '<div class="leg"><span><i style="background:var(--det)"></i>Detratores (0 a 6): ' + x.det + ' · ' + pct(x.det, x.n) + '%</span>' +
+      '<span><i style="background:var(--neu)"></i>Neutros (7 e 8): ' + x.neu + ' · ' + pct(x.neu, x.n) + '%</span>' +
+      '<span><i style="background:var(--pro)"></i>Promotores (9 e 10): ' + x.pro + ' · ' + pct(x.pro, x.n) + '%</span></div></div>';
+  }
+
+  function barras(itens, max, valor) {
+    if (!itens.length) return '<p class="vazio">Ainda sem dados neste recorte.</p>';
+    return '<div class="barras">' + itens.map(function (it) {
+      return '<div title="' + esc(it.t) + ': ' + esc(valor(it)) + '"><div class="barra-l"><span>' + esc(it.t) + '</span><span>' + valor(it) + '</span></div>' +
+        '<div class="trilho"><i style="width:' + Math.max(0, Math.min(100, (it.v / max) * 100)) + '%"></i></div></div>';
+    }).join('') + '</div>';
+  }
+
+  function desenhar() {
+    desenharFiltros();
+    var l = filtradas();
+    desenharKpis(l);
+
+    var black = l.filter(function (r) { return r.perfil === 'mestre' || r.perfil === 'equipe'; });
+    $('nps').innerHTML = blocoNps('Imersão Grau Zero', nps(l, 'nps_evento')) +
+      (filtro === 'imersao' || filtro === 'patro' ? '' : blocoNps('Club OftalmoBlack', nps(black, 'nps_club')));
+
+    var me = medias(l, 'notas_evento', EVENTO_ROT).map(function (x) { x.v = x.media; return x; });
+    $('notasEvento').innerHTML = barras(me, 5, function (it) { return '<b>' + num(it.media, 1) + '</b> · ' + it.n; });
+
+    var comAulas = l.filter(function (r) { return (r.aulas_top || []).length; });
+    var cont = {};
+    comAulas.forEach(function (r) { r.aulas_top.forEach(function (a) { cont[a] = (cont[a] || 0) + 1; }); });
+    var au = Object.keys(cont).map(function (k) { return { id: k, t: AULAS_ROT[k] || k, v: cont[k] }; })
+      .sort(function (a, b) { return b.v - a.v; });
+    $('aulas').innerHTML = barras(au, comAulas.length || 1, function (it) {
+      return '<b>' + it.v + '</b> · ' + pct(it.v, comAulas.length) + '%';
+    });
+
+    var prep = l.map(function (r) { return r.preparo_mgz; }).filter(function (x) { return typeof x === 'number'; });
+    var pi = [5, 4, 3, 2, 1].map(function (v) {
+      return { id: String(v), t: PREPARO_ROT[v], v: prep.filter(function (x) { return x === v; }).length };
+    });
+    $('preparo').innerHTML = prep.length
+      ? barras(pi, prep.length, function (it) { return '<b>' + it.v + '</b> · ' + pct(it.v, prep.length) + '%'; }) +
+        '<p class="vazio">Média ' + num(prep.reduce(function (a, b) { return a + b; }, 0) / prep.length, 1) + ' de 5, em ' + prep.length + ' respostas.</p>'
+      : '<p class="vazio">Ainda sem dados neste recorte.</p>';
+
+    var mc = medias(black, 'notas_club', CLUB_ROT).map(function (x) { x.v = x.media; return x; });
+    $('cartaoClub').hidden = filtro === 'imersao' || filtro === 'patro';
+    $('notasClub').innerHTML = barras(mc, 5, function (it) { return '<b>' + num(it.media, 1) + '</b> · ' + it.n; });
+
+    var patros = l.filter(function (r) { return r.perfil === 'patrocinador'; });
+    $('cartaoPatro').hidden = filtro === 'black' || filtro === 'imersao';
+    var pc = { sim: 0, talvez: 0, nao: 0 };
+    patros.forEach(function (r) { if (r.patrocinaria) pc[r.patrocinaria]++; });
+    var pn = pc.sim + pc.talvez + pc.nao;
+    $('patro').innerHTML = pn
+      ? barras([{ t: 'Sim', v: pc.sim }, { t: 'Talvez', v: pc.talvez }, { t: 'Não', v: pc.nao }], pn,
+          function (it) { return '<b>' + it.v + '</b> · ' + pct(it.v, pn) + '%'; })
+      : '<p class="vazio">Nenhum patrocinador respondeu ainda.</p>';
+
+    var ct = l.filter(function (r) { return (r.contato || []).length; });
+    $('contatos').innerHTML = ct.length
+      ? '<div class="tabela"><table><thead><tr><th>Nome</th><th>WhatsApp</th><th>Sobre</th><th>Perfil</th><th>Quando</th></tr></thead><tbody>' +
+        ct.map(function (r) {
+          var dig = String(r.whatsapp || '').replace(/\D/g, '');
+          if (dig.length === 10 || dig.length === 11) dig = '55' + dig;
+          var zap = dig ? '<a href="https://wa.me/' + dig + '" target="_blank" rel="noopener">' + esc(r.whatsapp) + '</a>' : '<small>sem número</small>';
+          return '<tr><td>' + (esc(r.nome) || '<small>sem nome</small>') + '</td><td>' + zap + '</td><td>' +
+            esc(r.contato.map(function (c) { return CONTATO_ROT[c] || c; }).join(', ')) + '</td><td>' +
+            esc(PERFIL_ROT[r.perfil] || r.perfil) + '</td><td><small>' + esc(r.recebido_sp || '') + '</small></td></tr>';
+        }).join('') + '</tbody></table></div>'
+      : '<p class="vazio">Ninguém pediu contato ainda.</p>';
+
+    desenharComentarios(l);
+  }
+
+  function desenharComentarios(l) {
+    $('abas').innerHTML = COMENT.map(function (c) {
+      var n = l.filter(function (r) { return r[c.id]; }).length;
+      return '<button class="aba" type="button" role="tab" data-aba="' + c.id + '" aria-selected="' + (aba === c.id) + '">' +
+        esc(c.t) + ' · ' + n + '</button>';
+    }).join('');
+    var lista = l.filter(function (r) { return r[aba]; });
+    var notaDe = aba.indexOf('club') >= 0 ? 'nps_club' : 'nps_evento';
+    $('coments').innerHTML = lista.length ? lista.map(function (r) {
+      var nota = typeof r[notaDe] === 'number' ? ' · deu ' + r[notaDe] + ' de 10' : '';
+      return '<div class="com"><p>' + esc(r[aba]) + '</p><small>' + esc(r.nome || 'Sem nome') + ' · ' +
+        esc(PERFIL_ROT[r.perfil] || r.perfil) + nota + ' · ' + esc(r.recebido_sp || '') + '</small></div>';
+    }).join('') : '<p class="vazio">Nenhum comentário aqui ainda.</p>';
+  }
+
+  /* ---------- CSV (Google Planilhas abre direto) ---------- */
+
+  function csv() {
+    var l = filtradas();
+    var ev = Object.keys(EVENTO_ROT), cl = Object.keys(CLUB_ROT);
+    var cab = ['Recebido (horário de SP)', 'Perfil', 'Dias', 'Imersão 0 a 10']
+      .concat(ev.map(function (k) { return 'Imersão: ' + EVENTO_ROT[k]; }))
+      .concat(['Aulas que mais fizeram diferença', 'Preparo MGZ (1 a 5)', 'Ponto alto', 'Melhorar na imersão',
+               'Patrocinaria', 'Club 0 a 10'])
+      .concat(cl.map(function (k) { return 'Club: ' + CLUB_ROT[k]; }))
+      .concat(['Valoriza no Black', 'Melhorar no Black', 'Pediu contato sobre', 'Nome', 'WhatsApp',
+               'utm_source', 'utm_medium', 'utm_campaign', 'Duração (s)', 'resposta_id']);
+    var linhas = l.slice().reverse().map(function (r) {
+      var ne = r.notas_evento || {}, nc = r.notas_club || {}, u = r.utm || {};
+      return [r.recebido_sp, PERFIL_ROT[r.perfil] || r.perfil, (r.dias || []).join(' '), r.nps_evento]
+        .concat(ev.map(function (k) { return ne[k]; }))
+        .concat([(r.aulas_top || []).map(function (a) { return AULAS_ROT[a] || a; }).join(' | '), r.preparo_mgz,
+                 r.ponto_alto, r.melhorar_evento, r.patrocinaria, r.nps_club])
+        .concat(cl.map(function (k) { return nc[k]; }))
+        .concat([r.valoriza_club, r.melhorar_club, (r.contato || []).map(function (c) { return CONTATO_ROT[c] || c; }).join(' | '),
+                 r.nome, r.whatsapp, u.source, u.medium, u.campaign, r.duracao_s, r.resposta_id]);
+    });
+    var cel = function (v) {
+      if (v == null) return '';
+      var s = String(v);
+      return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    };
+    var txt = '﻿' + [cab].concat(linhas).map(function (ln) { return ln.map(cel).join(','); }).join('\r\n');
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([txt], { type: 'text/csv;charset=utf-8' }));
+    a.download = 'pesquisa-imersao-grau-zero-' + new Date().toISOString().slice(0, 10) + (TESTES ? '-testes' : '') + '.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+  }
+
+  /* ---------- eventos ---------- */
+
+  document.addEventListener('click', function (e) {
+    var f = e.target.closest('[data-f]');
+    if (f) { filtro = f.getAttribute('data-f'); desenhar(); return; }
+    var a = e.target.closest('[data-aba]');
+    if (a) { aba = a.getAttribute('data-aba'); desenharComentarios(filtradas()); }
+  });
+  $('btnAtualizar').addEventListener('click', carregar);
+  $('btnCsv').addEventListener('click', csv);
+
+  setInterval(function () { if (document.visibilityState === 'visible' && chave && !$('painel').hidden) carregar(); }, 60000);
+
+  chave = lerChave();
+  carregar();
+})();
+</script>
+</body>
+</html>

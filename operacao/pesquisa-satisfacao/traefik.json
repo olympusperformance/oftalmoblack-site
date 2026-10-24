@@ -1,0 +1,18 @@
+{
+  "http": {
+    "routers": {
+      "pesquisa-satisfacao": {
+        "rule": "(Host(`oftalmoblack.com.br`) || Host(`www.oftalmoblack.com.br`)) && PathPrefix(`/api/pesquisa/`)",
+        "priority": 150,
+        "service": "pesquisa-satisfacao",
+        "entryPoints": ["https"],
+        "tls": {"certResolver": "letsencrypt"}
+      }
+    },
+    "services": {
+      "pesquisa-satisfacao": {
+        "loadBalancer": {"servers": [{"url": "http://pesquisa-satisfacao:8080"}]}
+      }
+    }
+  }
+}
