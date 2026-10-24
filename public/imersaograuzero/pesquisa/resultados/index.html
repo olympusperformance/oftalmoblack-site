@@ -61,7 +61,9 @@ h1{font-family:var(--serif);font-weight:500;font-size:26px;margin:6px 0 2px;line
 .filtro[aria-pressed="true"]{border-color:var(--gold);color:var(--gold-light);background:#2a2116}
 .filtro .n{color:var(--dim);margin-left:4px;font-variant-numeric:tabular-nums}
 
-.grade{display:grid;gap:14px;grid-template-columns:1fr}
+/* minmax(0,...) e min-width:0: sem isso a tabela de contatos alarga a coluna além da tela */
+.grade{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
+.grade > *{min-width:0}
 .kpis{display:grid;gap:10px;grid-template-columns:repeat(2,1fr);margin-bottom:14px}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 14px 12px}
 .kpi-r{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
@@ -119,7 +121,7 @@ td small{color:var(--dim)}
 @media (min-width:760px){
   h1{font-size:30px}
   .kpis{grid-template-columns:repeat(4,1fr)}
-  .grade{grid-template-columns:1fr 1fr}
+  .grade{grid-template-columns:repeat(2,minmax(0,1fr))}
   .larga{grid-column:1 / -1}
 }
 </style>
@@ -371,7 +373,7 @@ td small{color:var(--dim)}
     var media = notas.length ? notas.reduce(function (a, b) { return a + b; }, 0) / notas.length : null;
     var porPerfil = Object.keys(PERFIL_ROT).map(function (p) {
       var n = l.filter(function (r) { return r.perfil === p; }).length;
-      return n ? n + ' ' + PERFIL_ROT[p].toLowerCase() : '';
+      return n ? PERFIL_ROT[p] + ': ' + n : '';
     }).filter(Boolean).join(' · ');
     var kpi = function (rot, v, s) {
       return '<div class="kpi"><div class="kpi-r">' + rot + '</div><div class="kpi-v">' + v + '</div><div class="kpi-s">' + s + '</div></div>';
@@ -380,7 +382,7 @@ td small{color:var(--dim)}
       kpi('Respostas', num(l.length), porPerfil || 'Nenhuma ainda') +
       kpi('NPS da imersão', ev.score == null ? '-' : num(ev.score), ev.n ? 'média ' + num(ev.media, 1) + ' em ' + ev.n : 'sem notas') +
       kpi('NPS do Club', cl.score == null ? '-' : num(cl.score), cl.n ? 'média ' + num(cl.media, 1) + ' em ' + cl.n + ' do Black' : 'sem notas do Black') +
-      kpi('Nota média da imersão', media == null ? '-' : num(media, 1), media == null ? 'sem notas' : 'de 1 a 5, em ' + notas.length + ' notas');
+      kpi('Nota média da imersão', media == null ? '-' : num(media, 1), media == null ? 'sem notas' : 'de 1 a 5, em ' + notas.length + (notas.length === 1 ? ' nota' : ' notas'));
   }
 
   function blocoNps(titulo, x) {
@@ -388,7 +390,7 @@ td small{color:var(--dim)}
     var seg = function (cor, n, rot) {
       return n ? '<i style="width:' + (n / x.n * 100) + '%;background:' + cor + '" title="' + rot + ': ' + n + '"></i>' : '';
     };
-    return '<div class="nps-bloco"><div class="nps-topo"><b>' + titulo + ' · NPS ' + num(x.score) + '</b><span>' + x.n + ' notas</span></div>' +
+    return '<div class="nps-bloco"><div class="nps-topo"><b>' + titulo + ' · NPS ' + num(x.score) + '</b><span>' + x.n + (x.n === 1 ? ' nota' : ' notas') + '</span></div>' +
       '<div class="pilha" role="img" aria-label="' + titulo + ': ' + x.det + ' detratores, ' + x.neu + ' neutros, ' + x.pro + ' promotores">' +
       seg('var(--det)', x.det, 'Detratores') + seg('var(--neu)', x.neu, 'Neutros') + seg('var(--pro)', x.pro, 'Promotores') + '</div>' +
       '<div class="leg"><span><i style="background:var(--det)"></i>Detratores (0 a 6): ' + x.det + ' · ' + pct(x.det, x.n) + '%</span>' +
