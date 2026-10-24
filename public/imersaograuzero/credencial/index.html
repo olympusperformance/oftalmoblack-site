@@ -160,8 +160,13 @@ h1{font-family:'Cinzel',Georgia,serif;font-weight:500;font-size:27px;line-height
 
   /* O menu de reserva. Aparece se o banco não responder em tempo, se a tabela
      ainda não existir ou se a lista voltar vazia. Repete o menu do banco
-     (livro, Mentoria Grau Zero e Club): mudou lá, muda aqui. */
+     (pesquisa de satisfação, livro, Mentoria Grau Zero e Club): mudou lá,
+     muda aqui. A pesquisa vai sem UTM própria, como no banco: comUtm() põe a
+     da credencial. */
   var PADRAO = [
+    { titulo: 'Pesquisa de satisfação',
+      descricao: 'Conte como foi a imersão. Leva 3 minutos.',
+      url: 'https://oftalmoblack.com.br/imersaograuzero/pesquisa/', icone: 'star' },
     { titulo: 'Livro Presbiopia Cirúrgica',
       descricao: 'Pré-venda do novo livro do Dr. Alex Sá.',
       url: 'https://oftalmoblack.com.br/livro/?' + UTM + '&utm_content=livro', icone: 'file-text' },
