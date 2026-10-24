@@ -2,6 +2,11 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {validate,createHandler,sheetValues,digest,ensureSheetCapacity} from '../supabase/functions/perfil-clinica/core.mjs';
 const base={submission_id:'21b241f0-9a57-4df0-b951-cf31d975e645',nome:'Dra. Teste Ção',email:'teste@example.invalid',whatsapp:'+5592999990000',lentes_premium:true,volume_lentes:'6_10',faturamento:'100_200',desafios:['equipe_processos','atrair_particulares'],origem:'stories',utm:{utm_source:'ig',utm_medium:'stories'},pagina:'/perfil-clinica/'};
+test('ficha na home preserva a página real e o aid sem alterar a grade da planilha',()=>{
+ const data=validate({...base,pagina:'/',origem:'direto',utm:{...base.utm,aid:'123456789'}});
+ assert.equal(data.pagina,'/');assert.equal(data.utm.aid,'123456789');
+ assert.equal(sheetValues({...data,created_at:'2026-10-24T15:00:00Z'}).length,17);
+});
 test('preserva múltiplos desafios e normaliza hash para mesma seleção',async()=>{
  const a=validate(base),b=validate({...base,desafios:base.desafios.toReversed()});
  assert.deepEqual(a.desafios,['atrair_particulares','equipe_processos']);

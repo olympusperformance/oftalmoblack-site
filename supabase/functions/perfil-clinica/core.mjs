@@ -22,7 +22,7 @@ export function validate(input){
   const outro=desafios.includes('outro')?text(input.outro_desafio,500):null;
   const origem=['stories','presencial','direto'].includes(input.origem)?input.origem:'direto';
   const utm={};
-  for(const key of ['utm_source','utm_medium','utm_campaign','utm_content','utm_term']){
+  for(const key of ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','aid']){
     const val=input.utm?.[key];if(val!=null&&val!=='')utm[key]=text(val,250);
   }
   const pagina=text(input.pagina||'/perfil-clinica/',200);
