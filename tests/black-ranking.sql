@@ -27,7 +27,8 @@ end$$;
 set local request.jwt.claim.sub='00000000-0000-4000-8000-000000000002';
 do $$declare ranking jsonb:=public.cb_ranking('2026-T3');begin
  if ranking->0->>'member_id'<>'10000000-0000-4000-8000-000000000001' then raise exception 'Linha própria ausente'; end if;
- if ranking->1->>'member_id' is not null or ranking->1->>'alias'='Mestre B' then raise exception 'Identidade de outro membro exposta'; end if;
+ if ranking->1->>'alias'<>'Mestre B' then raise exception 'Ranking deve mostrar os nomes dos outros membros'; end if;
+ if ranking->1->>'member_id' is not null then raise exception 'ID privado de outro membro exposto'; end if;
  begin perform * from cerebro_private.ranking_standings;raise exception 'RAW_STANDINGS_EXPOSED';exception when insufficient_privilege then null;end;
  begin perform public.cb_snapshot_ranking('2026-T3');raise exception 'MEMBER_SNAPSHOT';exception when raise_exception then if sqlerrm<>'Sem acesso' then raise; end if;end;
  begin perform * from cerebro_private.ranking_points;raise exception 'RAW_RANKING_EXPOSED';exception when insufficient_privilege then null;end;
