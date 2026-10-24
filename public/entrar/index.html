@@ -16,6 +16,11 @@ if (retornoAuth.get('type') === 'recovery' || retornoAuth.has('error')) {
 <title>Entrar — Cérebro Black</title>
 <link rel="icon" href="/assets/favicon.png">
 <link rel="stylesheet" href="/assets/club.css">
+<style>
+.auth-password{display:flex;gap:8px}
+.auth-password .inp{flex:1;min-width:0}
+.auth-password .btn{min-height:44px}
+</style>
 <script src="/assets/club-tema.js"></script>
 </head>
 <body>
@@ -45,8 +50,12 @@ if (retornoAuth.get('type') === 'recovery' || retornoAuth.has('error')) {
       </div>
       <div class="fld">
         <label for="senha">Senha</label>
-        <input class="inp" type="password" id="senha" name="senha"
-               autocomplete="current-password" placeholder="••••••••" required>
+        <div class="auth-password">
+          <input class="inp" type="password" id="senha" name="senha"
+                 autocomplete="current-password" placeholder="••••••••" required>
+          <button class="btn" type="button" id="mostrarSenha" aria-controls="senha"
+                  aria-label="Mostrar senha">Mostrar</button>
+        </div>
       </div>
       <p class="err" id="erro" hidden></p>
       <button class="btn btn-primary btn-block" type="submit" id="submit">Entrar</button>
@@ -67,6 +76,19 @@ if (retornoAuth.get('type') === 'recovery' || retornoAuth.has('error')) {
 <script src="/assets/club-ui.js"></script>
 <script src="/assets/club-supabase.js"></script>
 <script src="/assets/club-auth.js?v=20261022-livro-mobile"></script>
+<script>
+(function () {
+  'use strict';
+  var campo = document.getElementById('senha');
+  var alternar = document.getElementById('mostrarSenha');
+  alternar.addEventListener('click', function () {
+    var mostrar = campo.type === 'password';
+    campo.type = mostrar ? 'text' : 'password';
+    alternar.textContent = mostrar ? 'Ocultar' : 'Mostrar';
+    alternar.setAttribute('aria-label', mostrar ? 'Ocultar senha' : 'Mostrar senha');
+  });
+})();
+</script>
 <script>
 (function () {
   'use strict';
