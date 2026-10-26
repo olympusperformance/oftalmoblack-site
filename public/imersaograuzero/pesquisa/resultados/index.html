@@ -153,6 +153,10 @@ td small{color:var(--dim)}
     </header>
 
     <nav class="filtros" id="filtros" aria-label="Filtrar por público"></nav>
+    <label for="filtroVersao">Versão do formulário</label>
+    <select id="filtroVersao" class="filtro" style="margin:0 0 18px 8px;background:#1b1814;color:#f5f0e6;max-width:100%">
+      <option value="">Todas, última revisão por resposta</option>
+    </select>
 
     <div class="kpis" id="kpis"></div>
 
@@ -182,7 +186,7 @@ td small{color:var(--dim)}
       </section>
 
       <section class="cartao">
-        <h2>Preparo para aplicar o Protocolo MGZ</h2>
+        <h2>Preparo para aplicar o Protocolo Grau Zero</h2>
         <p class="sub">Mestres e participantes, depois da imersão.</p>
         <div id="preparo"></div>
       </section>
@@ -191,6 +195,7 @@ td small{color:var(--dim)}
         <h2>Notas do Club OftalmoBlack</h2>
         <p class="sub">Só mestres e equipe do Black. Média de 1 a 5.</p>
         <div id="notasClub"></div>
+        <div id="naoUsaClub"></div>
       </section>
 
       <section class="cartao" id="cartaoPatro">
@@ -212,7 +217,7 @@ td small{color:var(--dim)}
       </section>
     </div>
 
-    <p class="rodape" id="rodape">Atualiza sozinho a cada minuto enquanto a aba está aberta. Vale a última versão de cada resposta.</p>
+    <p class="rodape" id="rodape">Atualiza sozinho a cada minuto enquanto a aba está aberta. Sem filtro de versão, vale a última revisão de cada resposta. Ao escolher uma versão, vale a última revisão dentro daquela versão. Dias em branco na versão nova significam que não foram perguntados.</p>
   </div>
 
 </div>
@@ -273,15 +278,19 @@ td small{color:var(--dim)}
   var CONTATO_ROT = { mgz: 'Mentoria Grau Zero', club: 'Club OftalmoBlack', imersao: 'Próxima Imersão',
                       ponto: 'Algo que apontou', patrocinio: 'Patrocínio' };
   var COMENT = [
+    { id: 'comentarios_aulas', t: 'Por aula' },
     { id: 'ponto_alto', t: 'Ponto alto' },
     { id: 'melhorar_evento', t: 'Melhorar na imersão' },
     { id: 'valoriza_club', t: 'Valorizam no Black' },
-    { id: 'melhorar_club', t: 'Melhorar no Black' }
+    { id: 'melhorar_club', t: 'Melhorar no Black' },
+    { id: 'barreira_aplicacao', t: 'Aplicação na clínica' }
   ];
 
   var $ = function (id) { return document.getElementById(id); };
   var chave = '';
   var todas = [];
+  var historico = [];
+  var versao = '';
   var filtro = 'todos';
   var aba = 'ponto_alto';
 
@@ -319,7 +328,12 @@ td small{color:var(--dim)}
         return r.json();
       })
       .then(function (j) {
-        todas = ultimaVersao(j.respostas || []);
+        historico = j.respostas || [];
+        todas = ultimaVersao(historico);
+        var versoes = historico.map(function(r) { return r.versao || 'sem-versao'; }).filter(function(v, i, a) { return a.indexOf(v) === i; }).sort().reverse();
+        $('filtroVersao').innerHTML = '<option value="">Todas, última revisão por resposta</option>' + versoes.map(function(v) { return '<option value="' + esc(v) + '">' + esc(v) + '</option>'; }).join('');
+        if (versao && versoes.indexOf(versao) < 0) versao = '';
+        $('filtroVersao').value = versao;
         $('telaChave').hidden = true;
         $('painel').hidden = false;
         $('seloTeste').hidden = !TESTES;
@@ -351,9 +365,13 @@ td small{color:var(--dim)}
       .sort(function (a, b) { return String(b.recebido_em).localeCompare(String(a.recebido_em)); });
   }
 
+  function baseVersao() {
+    return ultimaVersao(historico.filter(function(r) { return !versao || (r.versao || 'sem-versao') === versao; }));
+  }
+
   function filtradas() {
     var f = FILTROS.filter(function (x) { return x.id === filtro; })[0];
-    return todas.filter(function (r) { return !f.p || f.p[r.perfil]; });
+    return baseVersao().filter(function (r) { return !f.p || f.p[r.perfil]; });
   }
 
   /* ---------- contas ---------- */
@@ -381,7 +399,7 @@ td small{color:var(--dim)}
 
   function desenharFiltros() {
     $('filtros').innerHTML = FILTROS.map(function (f) {
-      var n = todas.filter(function (r) { return !f.p || f.p[r.perfil]; }).length;
+      var n = baseVersao().filter(function (r) { return !f.p || f.p[r.perfil]; }).length;
       return '<button class="filtro" type="button" data-f="' + f.id + '" aria-pressed="' + (filtro === f.id) + '">' +
         esc(f.t) + '<span class="n">' + n + '</span></button>';
     }).join('');
@@ -464,6 +482,9 @@ td small{color:var(--dim)}
     var mc = medias(black, 'notas_club', CLUB_ROT).map(function (x) { x.v = x.media; return x; });
     $('cartaoClub').hidden = filtro === 'imersao' || filtro === 'patro';
     $('notasClub').innerHTML = barras(mc, 5, function (it) { return '<b>' + num(it.media, 1) + '</b> · ' + it.n; });
+    var naoUsa = {};
+    black.forEach(function(r) { (r.nao_usa_club || []).forEach(function(k) { naoUsa[k] = (naoUsa[k] || 0) + 1; }); });
+    $('naoUsaClub').innerHTML = Object.keys(naoUsa).length ? '<p class="sub" style="margin-top:18px">Ainda não usam, fora das médias de notas:</p>' + Object.keys(naoUsa).map(function(k) { return '<p class="sub">' + esc(CLUB_ROT[k] || k) + ': ' + naoUsa[k] + '</p>'; }).join('') : '';
 
     var patros = l.filter(function (r) { return r.perfil === 'patrocinador'; });
     $('cartaoPatro').hidden = filtro === 'black' || filtro === 'imersao';
@@ -494,10 +515,18 @@ td small{color:var(--dim)}
 
   function desenharComentarios(l) {
     $('abas').innerHTML = COMENT.map(function (c) {
-      var n = l.filter(function (r) { return r[c.id]; }).length;
+      var n = c.id === 'comentarios_aulas' ? l.reduce(function(n,r) { return n + Object.keys(r.comentarios_aulas || {}).length; }, 0) : l.filter(function (r) { return r[c.id]; }).length;
       return '<button class="aba" type="button" role="tab" data-aba="' + c.id + '" aria-selected="' + (aba === c.id) + '">' +
         esc(c.t) + ' · ' + n + '</button>';
     }).join('');
+    if (aba === 'comentarios_aulas') {
+      var aulas = [];
+      l.forEach(function(r) { Object.keys(r.comentarios_aulas || {}).forEach(function(k) { aulas.push({r:r, k:k, texto:r.comentarios_aulas[k]}); }); });
+      $('coments').innerHTML = aulas.length ? aulas.map(function(c) {
+        return '<div class="com"><strong>' + esc(PALESTRA_ROT[c.k] || c.k) + '</strong><p style="margin-top:8px">' + esc(c.texto) + '</p><small>' + esc(PERFIL_ROT[c.r.perfil] || c.r.perfil) + ' · ' + esc(c.r.versao || '') + '</small></div>';
+      }).join('') : '<p class="vazio">Nenhum comentário por aula neste recorte.</p>';
+      return;
+    }
     var lista = l.filter(function (r) { return r[aba]; });
     var notaDe = aba.indexOf('club') >= 0 ? 'nps_club' : 'nps_evento';
     $('coments').innerHTML = lista.length ? lista.map(function (r) {
@@ -520,7 +549,8 @@ td small{color:var(--dim)}
                'Patrocinaria', 'Club 0 a 10'])
       .concat(cl.map(function (k) { return 'Club: ' + CLUB_ROT[k]; }))
       .concat(['Valoriza no Black', 'Melhorar no Black',
-               'utm_source', 'utm_medium', 'utm_campaign', 'Duração (s)', 'resposta_id']);
+               'utm_source', 'utm_medium', 'utm_campaign', 'Duração (s)', 'resposta_id',
+               'Versão do formulário', 'Comentários por aula', 'Barreira de aplicação', 'Ainda não usa no Club']);
     var linhas = l.slice().reverse().map(function (r) {
       var ne = r.notas_evento || {}, na = r.notas_aulas || {}, nc = r.notas_club || {}, u = r.utm || {};
       return [r.recebido_sp, PERFIL_ROT[r.perfil] || r.perfil, (r.dias || []).join(' '), r.nps_evento]
@@ -529,11 +559,14 @@ td small{color:var(--dim)}
         .concat([(r.aulas_top || []).map(function (a) { return AULAS_ROT[a] || a; }).join(' | '), r.preparo_mgz,
                  r.ponto_alto, r.melhorar_evento, r.patrocinaria, r.nps_club])
         .concat(cl.map(function (k) { return nc[k]; }))
-        .concat([r.valoriza_club, r.melhorar_club, u.source, u.medium, u.campaign, r.duracao_s, r.resposta_id]);
+        .concat([r.valoriza_club, r.melhorar_club, u.source, u.medium, u.campaign, r.duracao_s, r.resposta_id,
+          r.versao, Object.keys(r.comentarios_aulas || {}).map(function(k) { return (PALESTRA_ROT[k] || k) + ': ' + r.comentarios_aulas[k]; }).join('\n'),
+          r.barreira_aplicacao, (r.nao_usa_club || []).map(function(k) { return CLUB_ROT[k] || k; }).join(' | ')]);
     });
     var cel = function (v) {
       if (v == null) return '';
       var s = String(v);
+      if (typeof v === 'string' && /^[\s]*[=+@-]/.test(s)) s = "'" + s;
       return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
     };
     var txt = '﻿' + [cab].concat(linhas).map(function (ln) { return ln.map(cel).join(','); }).join('\r\n');
@@ -553,6 +586,7 @@ td small{color:var(--dim)}
     if (a) { aba = a.getAttribute('data-aba'); desenharComentarios(filtradas()); }
   });
   $('btnAtualizar').addEventListener('click', carregar);
+  $('filtroVersao').addEventListener('change', function() { versao = this.value; desenhar(); });
   $('btnCsv').addEventListener('click', csv);
 
   setInterval(function () { if (document.visibilityState === 'visible' && chave && !$('painel').hidden) carregar(); }, 60000);

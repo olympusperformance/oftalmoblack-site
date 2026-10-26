@@ -16,7 +16,8 @@
    escolhido na primeira etapa decide o resto. Mestre e equipe do Black avaliam
    a imersão e o Club; participante, acompanhante e patrocinador, só a imersão.
    Desde 24/10 à tarde (pedido do usuário) é anônima, sem nome, WhatsApp nem
-   pedido de contato, e cada palestra dos dias marcados ganha de 1 a 5 estrelas.
+   pedido de contato. Desde 26/10 os dias não são perguntados; cada palestra
+   do catálogo do perfil tem estrelas e comentário opcional.
 
    As respostas vão para /api/pesquisa/respostas (serviço próprio na VPS, ver
    operacao/pesquisa-satisfacao/) e o painel fica em ./resultados/. O progresso
@@ -214,6 +215,19 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
   .nps button{height:46px;font-size:16px}
 }
 </style>
+<style>
+.optional{font:400 12px/1.4 'DM Sans',sans-serif;color:#c6b89e;border:1px solid #55442e;border-radius:20px;padding:3px 9px;display:inline-block;vertical-align:middle;margin-left:5px;letter-spacing:0;text-transform:none}
+.scale-help{color:#c5b9a9;font-size:13px;margin:8px 0 21px}.feedback-tip{font-size:12px;color:#b7ad9d;margin:9px 0 0}.q-optional{margin-top:26px}
+.skip-rating{border:0;background:none;color:#bdb4a7;text-decoration:underline;text-underline-offset:3px;cursor:pointer;font:12px 'DM Sans',sans-serif;min-height:32px;padding:5px 0;display:block;margin-left:auto}.skip-rating[aria-pressed=true]{color:#e6bd74;text-decoration:none}.nota.skipped .estrelas{opacity:.4}
+button:focus-visible,textarea:focus-visible{outline:2px solid #e6bd74;outline-offset:4px}
+
+.lecture-comment{display:block;margin:13px 0 0 auto;padding:7px 0;background:none;border:0;color:#e6bd74;font:13px/1.5 'DM Sans',sans-serif;min-height:36px;cursor:pointer;text-align:right;text-decoration:underline;text-underline-offset:4px}
+.lecture-comment.has-comment{text-decoration:none}.lecture-comment.has-comment:before{content:'✓ ';font-weight:600}
+#lectureDialog{box-sizing:border-box;width:min(510px,calc(100% - 28px));max-height:calc(100dvh - 32px);overflow:auto;border:1px solid #755837;border-radius:19px;background:#17140f;color:#f5f0e6;padding:26px;box-shadow:0 24px 100px #0009;font-family:'DM Sans',sans-serif}
+#lectureDialog::backdrop{background:#000b;backdrop-filter:blur(3px)}.dialog-top{display:flex;gap:16px;justify-content:space-between;align-items:flex-start}.dialog-top h2{font-family:'DM Sans',sans-serif;font-size:20px;line-height:1.4;font-weight:500;margin:0;letter-spacing:0;text-transform:none}.dialog-close{flex-shrink:0;font-size:25px;line-height:1;border:0;background:none;color:#c8bca9;width:32px;height:32px;cursor:pointer}.dialog-close:hover{color:#fff}
+#lectureDialogLesson{color:#e6bd74;font-size:14px;line-height:1.5;margin:12px 0 24px}#lectureDialog label{display:block;font-size:15px;line-height:1.5;margin-bottom:10px}#lectureMessage{box-sizing:border-box;width:100%;min-height:140px;resize:vertical;font:16px/1.5 'DM Sans',sans-serif;background:#0e0d0b;color:#f5f0e6;border:1px solid #6c5638;border-radius:10px;padding:13px}.dialog-actions{display:flex;align-items:center;justify-content:flex-end;gap:14px;flex-wrap:wrap;margin-top:23px}.dialog-actions .btn{min-height:44px;font-size:14px;padding:12px 20px}.dialog-remove{background:none;border:0;color:#c8bca9;text-decoration:underline;text-underline-offset:4px;font:13px 'DM Sans',sans-serif;cursor:pointer;min-height:40px}
+@media(max-width:520px){#lectureDialog{padding:20px}.dialog-top h2{font-size:19px}.dialog-actions{gap:8px;justify-content:space-between}.dialog-actions .btn{padding:11px 16px}.lecture-comment{font-size:13px;text-align:left;margin-left:0}}
+</style>
 </head>
 <body>
 
@@ -244,7 +258,7 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
     <p class="anon">A pesquisa é anônima: não pedimos nome nem contato.</p>
   </section>
 
-  <!-- perfil e dias -->
+  <!-- perfil -->
   <section class="etapa" data-etapa="perfil" hidden>
     <div class="q" data-campo="perfil">
       <div class="eyebrow">Para começar</div>
@@ -252,12 +266,7 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
       <div class="lista" id="perfis"></div>
       <p class="q-erro" hidden>Escolha uma opção para continuar.</p>
     </div>
-    <div class="q" data-campo="dias" id="blocoDias" hidden>
-      <p class="q-t">Em quais dias você esteve lá?</p>
-      <p class="q-s">Marque todos.</p>
-      <div class="chips" id="dias"></div>
-      <p class="q-erro" hidden>Marque pelo menos um dia.</p>
-    </div>
+
     <div class="acoes">
       <button class="btn" type="button" data-acao="seguir">Continuar
         <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
@@ -292,10 +301,10 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
       <div class="eyebrow">As palestras</div>
       <h2 tabindex="-1">Quantas estrelas cada palestra merece?</h2>
       <p class="q-s">De 1 a 5 estrelas. Pule as que você não assistiu.</p>
-      <div id="aulas"></div>
+      <div class="scale-help">1 Ruim · 2 Regular · 3 Bom · 4 Muito bom · 5 Excelente</div><div id="aulas"></div>
     </div>
     <div class="q" data-campo="preparo_mgz" id="blocoPreparo" hidden>
-      <p class="q-t">Depois da imersão, quão preparado você se sente para aplicar o Protocolo MGZ na sua clínica?</p>
+      <p class="q-t">Depois da imersão, quão preparado você se sente para aplicar o Protocolo Grau Zero na sua clínica?</p>
       <div class="chips coluna" id="preparo"></div>
     </div>
     <div class="acoes">
@@ -309,15 +318,19 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
   <section class="etapa" data-etapa="comentarios" hidden>
     <div class="q">
       <div class="eyebrow">Em suas palavras</div>
-      <h2 tabindex="-1">Qual foi o ponto alto para você?</h2>
+      <h2 tabindex="-1">Qual foi o ponto alto para você? <span class="optional">Opcional</span></h2>
       <label class="campo"><textarea name="ponto_alto" maxlength="2000" rows="4"
         placeholder="Uma aula, um caso, uma conversa…"></textarea></label>
     </div>
     <div class="q">
-      <p class="q-t">O que faria a próxima edição ser ainda melhor?</p>
+      <p class="q-t">O que faria a próxima edição ser ainda melhor? <span class="optional">Opcional</span></p>
       <label class="campo"><textarea name="melhorar_evento" maxlength="2000" rows="4"
         placeholder="Pode ser franco: é isso que mais ajuda."></textarea></label>
     </div>
+<div class="q q-optional" id="blocoBarreira">
+  <label class="q-t" for="barreiraAplicacao">O que falta para você colocar em prática o que aprendeu? <span class="optional">Opcional</span></label>
+  <div class="campo"><textarea id="barreiraAplicacao" name="barreira_aplicacao" rows="3" maxlength="2000" placeholder="Um material de apoio, mais prática, acompanhamento…"></textarea></div>
+</div>
     <div class="q" data-campo="patrocinaria" id="blocoPatrocinaria" hidden>
       <p class="q-t">Você patrocinaria a próxima edição?</p>
       <div class="chips">
@@ -398,11 +411,19 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
   <small>Imersão Grau Zero · outubro de 2026</small>
 </footer>
 
+<dialog id="lectureDialog" aria-labelledby="lectureDialogTitle" aria-describedby="lectureDialogLesson">
+  <div class="dialog-top"><h2 id="lectureDialogTitle">Comentário sobre a aula</h2><button type="button" id="closeComment" class="dialog-close" aria-label="Fechar comentário">×</button></div>
+  <p id="lectureDialogLesson"></p>
+  <label for="lectureMessage">O que funcionou bem e o que poderia melhorar?</label>
+  <textarea id="lectureMessage" rows="4" maxlength="2000" placeholder="Conte o que achou do conteúdo, da explicação ou dos exemplos."></textarea>
+  <p class="feedback-tip">Opcional. Evite citar nomes de pacientes ou dados pessoais.</p>
+  <div class="dialog-actions"><button type="button" class="dialog-remove" id="removeComment" hidden>Remover comentário</button><button type="button" class="btn" id="saveComment">Salvar comentário</button></div>
+</dialog>
 <script>
 (function () {
   'use strict';
 
-  var VERSAO = '2026-10-24';
+  var VERSAO = '2026-10-26-r1';
   var API = '/api/pesquisa/respostas';
   var TESTE = /[?&]teste=1(&|$)/.test(location.search);
   var LS = TESTE ? 'pesquisa-imersao-out26-teste' : 'pesquisa-imersao-out26';
@@ -419,12 +440,6 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
   var BLACK = { mestre: 1, equipe: 1 };
   var VE_AULAS = { mestre: 1, equipe: 1, participante: 1 };
   var VE_PREPARO = { mestre: 1, participante: 1 };
-
-  var DIAS = [
-    { id: '22', t: 'Qui 22', s: 'Dia exclusivo Black', soBlack: true },
-    { id: '23', t: 'Sex 23', s: 'Imersão, dia 1' },
-    { id: '24', t: 'Sáb 24', s: 'Imersão, dia 2' }
-  ];
 
   var NOTA_PALAVRA = ['', 'Ruim', 'Regular', 'Bom', 'Muito bom', 'Excelente'];
 
@@ -450,7 +465,7 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
 
   function itensClub(p, dias) {
     var l = [];
-    if (dias.indexOf('22') >= 0) l.push({ id: 'dia_black', t: 'Dia exclusivo do Black', s: 'Quinta, 22 de outubro' });
+    if (BLACK[p]) l.push({ id: 'dia_black', t: 'Dia exclusivo do Black', s: 'Quinta, 22 de outubro' });
     if (p === 'mestre') l.push({ id: 'encontros', t: 'Encontros de Mestres', s: 'Quintas, às 20h' });
     l.push({ id: 'treinamento', t: 'Treinamento para Equipes', s: 'Sábados' });
     l.push({ id: 'cerebro', t: 'Cérebro Black', s: 'A área do mentorado' });
@@ -467,7 +482,7 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
 
   /* Uma nota de 1 a 5 por palestra (pedido de 24/10), na ordem da programação
      (pen-drive-imersao-out26/telas.py). O dia 22 só aparece para quem é do
-     Black, porque só o Black marca esse dia. As chaves vão para notas_aulas e
+     Black, pois este dia é exclusivo desse público. As chaves vão para notas_aulas e
      não se repetem entre os dias. */
   var AULAS = [
     { dia: '22', rot: 'Quinta, 22 · Dia exclusivo Black', itens: [
@@ -490,7 +505,7 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
     ] },
     { dia: '24', rot: 'Sábado, 24', itens: [
       { id: 'milhas', t: 'Gestão estratégica de milhas e viagens', s: 'Gustavo Monteiro, Bora Destinos' },
-      { id: 'refrativa', t: 'Cirurgia refrativa para presbiopia', s: 'Dr. Renato Ambrósio Jr.' },
+      { id: 'refrativa', t: 'Cirurgia refrativa para presbiopia · Dr. Renato Ambrósio Jr.' },
       { id: 'biometria', t: 'Cálculo e biometria: assuma o controle' },
       { id: 'protocolo', t: 'Protocolo MGZ: 7 critérios e 7 passos' },
       { id: 'casos_1', t: 'MGZ na prática: casos clínicos ao vivo', s: 'Bloco I' },
@@ -534,10 +549,10 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
 
   function novo() {
     return {
-      resposta_id: uuid(), iniciado_em: Date.now(), etapa: 'capa', enviado_em: null, pendente: null,
+      resposta_id: uuid(), iniciado_em: Date.now(), versao_estado: VERSAO, etapa: 'capa', enviado_em: null, pendente: null,
       utm: lerUtm(), ref: lerRef(),
-      d: { perfil: '', dias: [], nps_evento: null, notas_evento: {}, notas_aulas: {}, preparo_mgz: null,
-           ponto_alto: '', melhorar_evento: '', patrocinaria: null, nps_club: null, notas_club: {},
+      d: { perfil: '', dias: [], nps_evento: null, notas_evento: {}, notas_aulas: {}, comentarios_aulas: {}, preparo_mgz: null, barreira_aplicacao: '',
+           ponto_alto: '', melhorar_evento: '', patrocinaria: null, nps_club: null, notas_club: {}, nao_usa_club: {},
            valoriza_club: '', melhorar_club: '' }
     };
   }
@@ -552,6 +567,11 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
         ['nome', 'whatsapp', 'contato', 'aulas_top'].forEach(function (k) { delete s.d[k]; });
         if (s.pendente) ['nome', 'whatsapp', 'contato', 'aulas_top'].forEach(function (k) { delete s.pendente[k]; });
         s.d.notas_aulas = s.d.notas_aulas || {};
+        s.d.comentarios_aulas = s.d.comentarios_aulas || {};
+        s.d.nao_usa_club = s.d.nao_usa_club || {};
+        s.d.barreira_aplicacao = s.d.barreira_aplicacao || '';
+        s.versao_estado = VERSAO;
+        // O payload pendente mantém sua versão original e seu resposta_id.
         return s;
       }
     } catch (e) {}
@@ -560,6 +580,8 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
 
   var S = carregar() || novo();
   var d = S.d;
+  var activeLecture = null;
+  var commentTrigger = null;
 
   function salvar() {
     try { localStorage.setItem(LS, JSON.stringify(S)); } catch (e) {}
@@ -595,16 +617,6 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
     }).join('');
   }
 
-  function montarDias() {
-    var vis = DIAS.filter(function (x) { return !x.soBlack || BLACK[d.perfil]; });
-    d.dias = d.dias.filter(function (id) { return vis.some(function (x) { return x.id === id; }); });
-    $('#dias').innerHTML = vis.map(function (x) {
-      return '<label class="chip"><input type="checkbox" name="dias" value="' + x.id + '"' +
-        (d.dias.indexOf(x.id) >= 0 ? ' checked' : '') + '>' + esc(x.t) + ' <small>' + esc(x.s) + '</small></label>';
-    }).join('');
-    $('#blocoDias').hidden = !d.perfil;
-  }
-
   function montarNps() {
     $$('.nps').forEach(function (g) {
       var campo = g.getAttribute('data-nps');
@@ -626,7 +638,7 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
     return '<div class="nota' + (v ? ' feita' : '') + '" data-item="' + it.id + '">' +
       '<div class="nota-t">' + esc(it.t) + (it.s ? '<small>' + esc(it.s) + '</small>' : '') + '</div>' +
       '<div class="nota-l"><div class="estrelas" role="radiogroup" aria-label="' + esc(it.t) + '">' + b + '</div>' +
-      '<span class="nota-v">' + (v ? NOTA_PALAVRA[v] : '') + '</span></div></div>';
+      '<span class="nota-v">' + (v ? NOTA_PALAVRA[v] : '') + '</span></div>' + (grupo === 'notas_aulas' ? '<button type="button" class="lecture-comment" data-comment-aula="' + it.id + '" aria-haspopup="dialog">Adicionar comentário sobre a aula</button>' : (grupo === 'notas_club' ? '<button type="button" class="skip-rating" aria-pressed="false">Ainda não uso</button>' : '')) + '</div>';
   }
 
   /* Só guarda nota de item que existe para o perfil atual: quem troca de
@@ -643,20 +655,28 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
     $('#notasEvento').innerHTML = ev.map(function (it) { return linhaNota('notas_evento', it); }).join('');
     var cl = BLACK[d.perfil] ? itensClub(d.perfil, d.dias) : [];
     podar('notas_club', cl);
+    var naoUsa = {};
+    cl.forEach(function(it) { if (d.nao_usa_club[it.id]) naoUsa[it.id] = true; });
+    d.nao_usa_club = naoUsa;
     $('#notasClub').innerHTML = cl.map(function (it) { return linhaNota('notas_club', it); }).join('');
   }
 
   function aulasVisiveis() {
-    return AULAS.filter(function (g) { return d.dias.indexOf(g.dia) >= 0; });
+    return AULAS.filter(function (g) { return !!BLACK[d.perfil] || g.dia !== '22'; });
   }
 
-  /* Estrelas por palestra, só dos dias marcados. Cada dia é um bloco com
+  /* Estrelas por palestra, conforme o perfil. Cada dia é um bloco com
      data-grupo, que é o que o clique nas estrelas usa para achar onde gravar. */
   function montarAulas() {
     var grupos = aulasVisiveis();
     var todas = [];
     grupos.forEach(function (g) { todas = todas.concat(g.itens); });
     podar('notas_aulas', todas);
+    var comentariosAtuais = {};
+    if (VE_AULAS[d.perfil]) todas.forEach(function (it) {
+      if (d.comentarios_aulas[it.id]) comentariosAtuais[it.id] = d.comentarios_aulas[it.id];
+    });
+    d.comentarios_aulas = comentariosAtuais;
     $('#aulas').innerHTML = grupos.map(function (g) {
       return '<p class="dia-rot">' + esc(g.rot) + '</p><div class="notas" data-grupo="notas_aulas">' +
         g.itens.map(function (it) { return linhaNota('notas_aulas', it); }).join('') + '</div>';
@@ -671,7 +691,6 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
   }
 
   function montarTudo() {
-    montarDias();
     montarNotas();
     montarAulas();
     $('#blocoPatrocinaria').hidden = d.perfil !== 'patrocinador';
@@ -681,6 +700,11 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
       $('textarea[name="' + k + '"]').value = d[k] || '';
     });
     marcar();
+    updateComments();
+    updateSkips();
+    $('#blocoBarreira').hidden = !VE_PREPARO[d.perfil];
+    if (!VE_PREPARO[d.perfil]) d.barreira_aplicacao = '';
+    $('#barreiraAplicacao').value = d.barreira_aplicacao;
   }
 
   /* ---------- etapas ---------- */
@@ -688,7 +712,7 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
   var ORDEM = ['capa', 'perfil', 'evento', 'aulas', 'comentarios', 'club', 'club_texto', 'obrigado'];
 
   function aplica(id) {
-    if (id === 'aulas') return aulasVisiveis().length > 0;
+    if (id === 'aulas') return !!VE_AULAS[d.perfil] && aulasVisiveis().length > 0;
     if (id === 'club' || id === 'club_texto') return !!BLACK[d.perfil];
     return true;
   }
@@ -713,7 +737,7 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
     b.innerHTML = envia ? 'Enviar respostas ' + ICONE_ENVIAR : 'Continuar ' + ICONE_SEGUIR;
   }
 
-  /* O total muda com o perfil e os dias (o Black tem duas etapas a mais). */
+  /* O total muda com o perfil (o Black tem duas etapas a mais). */
   function progresso() {
     var meio = visiveis().filter(function (x) { return x !== 'capa' && x !== 'obrigado'; });
     var pos = meio.indexOf(S.etapa);
@@ -793,7 +817,6 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
     limparErros();
     if (id === 'perfil') {
       if (!d.perfil) return erro('perfil');
-      if (!d.dias.length) return erro('dias');
     }
     if (id === 'evento' && d.nps_evento == null) return erro('nps_evento');
     if (id === 'club' && d.nps_club == null) return erro('nps_club');
@@ -807,16 +830,19 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
     return {
       resposta_id: S.resposta_id,
       perfil: d.perfil,
-      dias: d.dias,
+      dias: [], // Não coletado nesta versão; não inferir presença.
       nps_evento: d.nps_evento,
       notas_evento: d.notas_evento,
       notas_aulas: aplica('aulas') ? d.notas_aulas : {},
+      comentarios_aulas: aplica('aulas') ? d.comentarios_aulas : {},
       preparo_mgz: aplica('aulas') && VE_PREPARO[d.perfil] ? d.preparo_mgz : null,
+      barreira_aplicacao: VE_PREPARO[d.perfil] ? d.barreira_aplicacao : '',
       ponto_alto: d.ponto_alto,
       melhorar_evento: d.melhorar_evento,
       patrocinaria: d.perfil === 'patrocinador' ? d.patrocinaria : null,
       nps_club: black ? d.nps_club : null,
       notas_club: black ? d.notas_club : {},
+      nao_usa_club: black ? Object.keys(d.nao_usa_club).filter(function (k) { return d.nao_usa_club[k]; }) : [],
       valoriza_club: black ? d.valoriza_club : '',
       melhorar_club: black ? d.melhorar_club : '',
       utm: S.utm,
@@ -940,10 +966,6 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
       d.perfil = i.value;
       montarTudo();
       var q = i.closest('.q'); q.classList.remove('com-erro'); $('.q-erro', q).hidden = true;
-    } else if (i.name === 'dias') {
-      d.dias = $$('input[name="dias"]:checked').map(function (x) { return x.value; });
-      montarNotas();
-      montarAulas();
     } else if (i.name === 'preparo_mgz') {
       d.preparo_mgz = Number(i.value);
     } else if (i.name === 'patrocinaria') {
@@ -961,6 +983,48 @@ textarea::placeholder,.entrada::placeholder{color:rgba(245,240,230,.36)}
       salvar();
     }
   });
+
+  function updateSkips() {
+    $$('.skip-rating').forEach(function(skip){
+      var row=skip.closest('.nota'), key=row.getAttribute('data-item'), active=!!d.nao_usa_club[key];
+      row.classList.toggle('skipped',active);skip.setAttribute('aria-pressed',String(active));skip.textContent=active?'Ainda não uso · desfazer':'Ainda não uso';
+    });
+  }
+  function updateComments() {
+    $$('[data-comment-aula]').forEach(function(button){
+      var saved=!!d.comentarios_aulas[button.getAttribute('data-comment-aula')];
+      button.classList.toggle('has-comment',saved);
+      button.textContent=saved?'Editar comentário sobre a aula':'Adicionar comentário sobre a aula';
+    });
+  }
+  function closeLectureComment() {
+    $('#lectureDialog').close();
+    if(commentTrigger && document.contains(commentTrigger))commentTrigger.focus();
+  }
+  $('#closeComment').addEventListener('click',closeLectureComment);
+  $('#lectureDialog').addEventListener('close',function(){if(commentTrigger && document.contains(commentTrigger))commentTrigger.focus();});
+  $('#saveComment').addEventListener('click',function(){
+    var value=$('#lectureMessage').value.trim();
+    if(value)d.comentarios_aulas[activeLecture]=value;else delete d.comentarios_aulas[activeLecture];
+    updateComments();salvar();closeLectureComment();
+  });
+  $('#removeComment').addEventListener('click',function(){delete d.comentarios_aulas[activeLecture];updateComments();salvar();closeLectureComment();});
+  document.addEventListener('click',function(e){
+    var trigger=e.target.closest('[data-comment-aula]');
+    if(trigger){
+      activeLecture=trigger.getAttribute('data-comment-aula');commentTrigger=trigger;
+      var lesson;AULAS.forEach(function(group){group.itens.forEach(function(item){if(item.id===activeLecture)lesson=item;});});
+      $('#lectureDialogLesson').textContent=lesson.t+(lesson.s?' · '+lesson.s:'');
+      $('#lectureMessage').value=d.comentarios_aulas[activeLecture]||'';
+      $('#removeComment').hidden=!d.comentarios_aulas[activeLecture];
+      $('#lectureDialog').showModal();$('#lectureMessage').focus();
+    }
+    var skip=e.target.closest('.skip-rating');
+    if(skip){var row=skip.closest('.nota'),item=row.getAttribute('data-item');d.nao_usa_club[item]=!d.nao_usa_club[item];if(d.nao_usa_club[item]){delete d.notas_club[item];$$('.estrelas button',row).forEach(function(b){b.classList.remove('on');b.setAttribute('aria-checked','false');});$('.nota-v',row).textContent='';row.classList.remove('feita');}updateSkips();salvar();}
+    var star=e.target.closest('.estrelas button');
+    if(star){var r=star.closest('.nota');delete d.nao_usa_club[r.getAttribute('data-item')];updateSkips();salvar();}
+  });
+
 
   /* ---------- início ---------- */
 

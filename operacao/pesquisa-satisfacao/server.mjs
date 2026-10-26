@@ -23,7 +23,8 @@ const ORIGENS = new Set(
   (process.env.ORIGENS || 'https://oftalmoblack.com.br,https://www.oftalmoblack.com.br')
     .split(',').map((s) => s.trim()).filter(Boolean)
 );
-const LIMITE_CORPO = 32 * 1024;
+// 22 comentários opcionais de até 2.000 caracteres, inclusive texto Unicode.
+const LIMITE_CORPO = 256 * 1024;
 
 const ARQ = {
   respostas: path.join(DATA_DIR, 'respostas.jsonl'),
@@ -33,6 +34,13 @@ const ARQ = {
 
 const PERFIS = new Set(['mestre', 'equipe', 'participante', 'acompanhante', 'patrocinador']);
 const CHAVE_RE = /^[a-z0-9_]{1,40}$/;
+const AULAS = new Set(['faixa_preta', 'branding', 'fotofobia', 'eng_conteudo',
+  'maquina_trafego', 'maquina_clientes', 'plano_execucao', 'in_the_bag',
+  'abertura', 'intro_mgz', 'aberrometria', 'optica', 'defocus', 'clinica_premium',
+  'milhas', 'refrativa', 'biometria', 'protocolo', 'casos_1', 'casos_2',
+  'insatisfeito', 'poder_visao']);
+const ITENS_CLUB = new Set(['dia_black', 'encontros', 'treinamento', 'cerebro',
+  'atendimento_black', 'conteudo_ig', 'trafego', 'sistema', 'graduacao', 'resultados']);
 
 const horaSP = new Intl.DateTimeFormat('pt-BR', {
   timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'medium',
@@ -67,6 +75,17 @@ function notas(v) {
   return o;
 }
 
+function comentarios(v) {
+  const o = {};
+  if (!v || typeof v !== 'object' || Array.isArray(v)) return o;
+  for (const k of AULAS) {
+    if (!Object.hasOwn(v, k)) continue;
+    const s = texto(v[k], 2000);
+    if (s) o[k] = s;
+  }
+  return o;
+}
+
 function limpar(b) {
   if (!b || typeof b !== 'object' || !PERFIS.has(b.perfil)) return null;
   const utm = {};
@@ -83,13 +102,16 @@ function limpar(b) {
     nps_evento: inteiro(b.nps_evento, 0, 10),
     notas_evento: notas(b.notas_evento),
     notas_aulas: notas(b.notas_aulas),
+    comentarios_aulas: comentarios(b.comentarios_aulas),
     aulas_top: lista(b.aulas_top, 3), // versão de antes das estrelas por palestra (aba aberta antes de 24/10 à tarde)
     preparo_mgz: inteiro(b.preparo_mgz, 1, 5),
+    barreira_aplicacao: texto(b.barreira_aplicacao, 2000),
     ponto_alto: texto(b.ponto_alto, 2000),
     melhorar_evento: texto(b.melhorar_evento, 2000),
     patrocinaria: ['sim', 'talvez', 'nao'].includes(b.patrocinaria) ? b.patrocinaria : null,
     nps_club: inteiro(b.nps_club, 0, 10),
     notas_club: notas(b.notas_club),
+    nao_usa_club: lista(b.nao_usa_club, 10).filter((k) => ITENS_CLUB.has(k)),
     valoriza_club: texto(b.valoriza_club, 2000),
     melhorar_club: texto(b.melhorar_club, 2000),
     /* Anônima desde 24/10: nome, WhatsApp e pedido de contato não são gravados
