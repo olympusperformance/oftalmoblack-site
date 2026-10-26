@@ -56,7 +56,9 @@
       { key:'agenda', label:'Agenda', icon:'calendar' }
     ] },
     { grupo:'Módulos à parte', itens: [
-      { key:'modulos', label:'Fábrica · Íris Black', icon:'brain' }
+      { key:'modulos', label:'Fábrica · Íris Black', icon:'brain' },
+      { key:'botFila',     label:'O bot respondeu', icon:'bell' },
+      { key:'botExemplos', label:'Voz do bot', icon:'edit' }
     ] },
     { grupo:'Administração', itens: [
       { key:'rede', label:'A Rede', icon:'users' },
@@ -65,8 +67,6 @@
     { grupo:'Operação da equipe', itens: [
       { key:'livro', label:'Livro', icon:'book-open' },
       { key:'demands', label:'Demandas', icon:'check-circle' },
-      { key:'botFila',     label:'O bot respondeu', icon:'bell' },
-      { key:'botExemplos', label:'Voz do bot', icon:'edit' },
       { key:'qr',        label:'QR da credencial', icon:'link' }
     ] }
   ];
