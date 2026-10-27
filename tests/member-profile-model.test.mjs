@@ -55,3 +55,22 @@ test('campos de conflito fabricados são rejeitados',()=>{
  const normalize=use('normalizePatch');
  assert.throws(()=>normalize({'equipe.papel_sdr':{...info('eu'),alternativas:[{campo_inventado:'x'}]}}));
 });
+test('período do indicador prevalece sobre documento recuperado depois',()=>{
+ const k='baseline.indicadores.consultas_mensais.atual',periodo=inicio=>({inicio,fim:null,precisao:'mes',natureza:'fato'});
+ const p=M.buildProfile(member,[patch({[k]:info({tipo_valor:'numero',numero:300,periodo:periodo('2026-09')},s1.id)},1),patch({[k]:info({tipo_valor:'numero',numero:100,periodo:periodo('2026-05')},s2.id)},2)],[s1,s2]);assert.equal(p.campos[k].valor.numero,300);
+});
+test('lista recuperada depois não reativa pessoa com evidência interna antiga',()=>{
+ const k='equipe.pessoas_parceiros',ref={inicio:'2026-09-01',fim:null,precisao:'dia',natureza:'fato'};
+ const p=M.buildProfile(member,[patch({[k]:info([{id:'p1',estado:'historico',nome:'Pessoa'}],s1.id)},1),patch({[k]:info([{id:'p1',estado:'atual',campos:{nome:{...info('Pessoa',s2.id),data_referencia:ref}}}],s2.id)},2)],[s1,s2]);assert.equal(p.campos[k].valor.length,0);assert.equal(p.campos[k].historicos[0].id,'p1');
+});
+test('fonte própria antiga de pessoa prevalece sobre fonte nova da lista',()=>{
+ const k='equipe.pessoas_parceiros',s3={...s2,id:'10000000-0000-4000-8000-000000000003',source_at:'2026-10-27T00:00:00Z'};
+ const p=M.buildProfile(member,[patch({[k]:info([{id:'p1',estado:'historico',nome:'Pessoa'}],s2.id)},1),patch({[k]:info([{id:'p1',estado:'atual',campos:{nome:info('Pessoa',s1.id)}}],s3.id)},2)],[s1,s2,s3]);assert.equal(p.campos[k].valor.length,0);
+});
+test('Instagram compara somente a mesma dimensão e vínculo confirmado',()=>{
+ for(const alter of [{vinculo_id:'b'},{unidade:'publicacoes'},{escopo:'nao_definido'}]){
+  const metric={tipo_valor:'numero',numero:100,precisao:'exata',unidade:'seguidores',escopo:'vinculo',vinculo_id:'a'};
+  const first={...info(metric),data_referencia:{inicio:'2026-09-01',precisao:'dia',natureza:'fato'}},last={...info({...metric,numero:200,...alter},s2.id),data_referencia:{inicio:'2026-10-01',precisao:'dia',natureza:'fato'}};
+  const p=M.buildProfile(member,[patch({'baseline.indicadores.seguidores_instagram.referencia_inicial':first,'baseline.indicadores.seguidores_instagram.atual':last})],[s1,s2]);assert.equal(p.campos['instagram.comparacao'].valor,null);
+ }
+});

@@ -97,11 +97,28 @@ export function intakeToPatch(source){
 }
 function walk(field,fn){fn(field);const v=field.valor;if(Array.isArray(v))for(const r of v)if(r?.campos)for(const f of Object.values(r.campos))walk(f,fn);if(object(v)&&v.campos)for(const f of Object.values(v.campos))walk(f,fn);}
 function evidenceTime(field,sources){
+ const period=field.valor?.periodo;if(period?.inicio)return Date.parse(period.fim||period.inicio)||0;
  const ref=field.data_referencia;if(ref.inicio&&ref.natureza!=='documento')return Date.parse(ref.inicio)||0;
  return Math.max(0,...field.fontes_refs.map(id=>Date.parse(sources.get(id)?.source_at||'')||0));
 }
+function recordTime(record,parent,sources){
+ const known=Object.values(record.campos).filter(f=>f.valor!==null || f.situacao==='nao_aplicavel');
+ const dated=known.filter(f=>f.data_referencia?.inicio&&f.data_referencia.natureza!=='documento');
+ if(dated.length)return Math.max(...dated.map(f=>evidenceTime(f,sources)));
+ const own=known.filter(f=>f.fontes_refs.some(id=>!parent.fontes_refs.includes(id)));
+ return own.length?Math.max(...own.map(f=>evidenceTime(f,sources))):Math.max(evidenceTime(parent,sources),...known.map(f=>evidenceTime(f,sources)));
+}
 function mergeCandidate(previous,next,sources,mode){
  if(mode==='corrigir'||previous.situacao==='nao_informado'&&!previous.fontes_refs.length)return next;
+ if(Array.isArray(previous.valor)&&Array.isArray(next.valor)&&[...previous.valor,...next.valor].every(r=>r?.campos)){
+  const records=new Map(previous.valor.map(r=>[r.id,r]));
+  for(const r of next.valor){const old=records.get(r.id);if(!old){records.set(r.id,r);continue;}
+   const a=recordTime(old,previous,sources),b=recordTime(r,next,sources);if(b<a)continue;
+   const merged=copy(r);for(const [key,f] of Object.entries(r.campos))merged.campos[key]=f.situacao==='nao_informado'&&!f.fontes_refs.length?old.campos[key]:mergeCandidate(old.campos[key],f,sources,mode);
+   if(a===b&&old.estado!==r.estado)merged.estado='a_confirmar';records.set(r.id,merged);
+  }
+  return {...(evidenceTime(next,sources)>=evidenceTime(previous,sources)?next:previous),valor:[...records.values()],fontes_refs:[...new Set([...previous.fontes_refs,...next.fontes_refs])]};
+ }
  const a=evidenceTime(previous,sources),b=evidenceTime(next,sources);if(b<a)return previous;if(b>a)return next;
  if(JSON.stringify(previous.valor)===JSON.stringify(next.valor)&&previous.situacao===next.situacao)return {...next,fontes_refs:[...new Set([...previous.fontes_refs,...next.fontes_refs])]};
  const alternatives=previous.alternativas.length?previous.alternativas:[{valor:previous.valor,fontes_refs:previous.fontes_refs,data_referencia:previous.data_referencia}];
@@ -139,7 +156,7 @@ export function buildProfile(member,patches=[],sources=[],connections=null){
   if(connections.instagram_metricas>0)out.campos['instagram.situacao_coleta'].valor='com_dados';
  }else out.campos['instagram.situacao_coleta']={...blankField(),situacao:'a_confirmar',justificativa:'Vínculo de coleta ainda não verificado nesta leitura.'};
  const first=out.campos['instagram.primeira_leitura'],last=out.campos['instagram.ultima_leitura'];
- if(first.valor?.tipo_valor==='numero'&&last.valor?.tipo_valor==='numero'&&first.valor.precisao==='exata'&&last.valor.precisao==='exata'&&first.data_referencia.inicio&&last.data_referencia.inicio&&first.data_referencia.inicio<last.data_referencia.inicio&&first.valor.escopo===last.valor.escopo){
+ if(first.valor?.tipo_valor==='numero'&&last.valor?.tipo_valor==='numero'&&first.valor.precisao==='exata'&&last.valor.precisao==='exata'&&first.data_referencia.inicio&&last.data_referencia.inicio&&first.data_referencia.inicio<last.data_referencia.inicio&&first.valor.unidade==='seguidores'&&last.valor.unidade==='seguidores'&&first.valor.escopo!=='nao_definido'&&first.valor.escopo===last.valor.escopo&&first.valor.vinculo_id===last.valor.vinculo_id){
   out.campos['instagram.comparacao']={...copy(last),valor:String(last.valor.numero-first.valor.numero)+' seguidores no período',fontes_refs:[...new Set([...first.fontes_refs,...last.fontes_refs])]};
  }
  const confirmations=out.campos['confirmacoes.pontos'].valor||[];

@@ -54,3 +54,10 @@ test('SQL: metadados fora do contrato e datas impossíveis não envenenam o perf
 test('SQL: autoria precisa de tipo e identificação válidos',async()=>{
  await assert.rejects(role('service_role',false,tx=>tx.query("select public.member_profile_apply($1,'2.0',1,$2::jsonb,'actor-bad','registrar','{\"id\":\"fixture\"}','Motivo')",[A,JSON.stringify(patch)])));
 });
+test('SQL: rejeita métricas que o leitor não aceita antes de persistir',async()=>{
+ const base={tipo_valor:'numero',numero:123};
+ for(const change of [{precisao:'inventada'},{precisao:null},{escopo:'inventado'},{unidade:123},{vinculo_id:42},{escopo:'vinculo',vinculo_id:null},{periodo:{inicio:'2026-02-31',fim:null,precisao:'dia',natureza:'fato'}},{texto_original:123}]){
+  await assert.rejects(role('service_role',false,tx=>apply(tx,A,crypto.randomUUID(),1,{'baseline.indicadores.consultas_mensais.atual':{...value,valor:{...base,...change}}})),/invalid profile field/);
+ }
+ for(const justificativa of [123,'a'.repeat(12001)])await assert.rejects(role('service_role',false,tx=>apply(tx,A,crypto.randomUUID(),1,{'equipe.papel_sdr':{...value,justificativa}})),/invalid profile field/);
+});

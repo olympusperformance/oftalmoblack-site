@@ -78,6 +78,7 @@ begin
  if exists(select 1 from jsonb_array_elements(f->'fontes_refs') a where jsonb_typeof(a)<>'string') then return false; end if;
  if f->>'situacao'='informado' and jsonb_array_length(f->'fontes_refs')=0 then return false; end if;
  if f->>'situacao'='nao_aplicavel' and coalesce(f->>'justificativa','')='' then return false; end if;
+ if f ? 'justificativa' and f->'justificativa'<>'null'::jsonb and (jsonb_typeof(f->'justificativa')<>'string' or length(f->>'justificativa')>12000) then return false;end if;
  v=f->'valor';kind=d->>'kind';
  if f->>'situacao' in ('nao_informado','nao_aplicavel') then return v='null'::jsonb; end if;
  if v='null'::jsonb then return f->>'situacao'='a_confirmar'; end if;
@@ -92,10 +93,22 @@ begin
  if kind='metric' then
   if jsonb_typeof(v)<>'object' or v-array['tipo_valor','numero','minimo','maximo','texto_original','unidade','precisao','periodo','escopo','vinculo_id']<>'{}'::jsonb
    or coalesce(v->>'tipo_valor','') not in ('numero','faixa','texto') then return false; end if;
-  for k in select unnest(array['numero','minimo','maximo']) loop if v ? k and v->k<>'null'::jsonb and jsonb_typeof(v->k)<>'number' then return false; end if; end loop;
+  if coalesce(case when v ? 'precisao' then v->>'precisao' else 'nao_definida' end,'') not in ('exata','aproximada','faixa','nao_definida')
+   or coalesce(case when v ? 'escopo' then v->>'escopo' else 'nao_definido' end,'') not in ('geral_negocio','vinculo','nao_definido') then return false;end if;
+  for k in select unnest(array['numero','minimo','maximo']) loop
+   if v ? k and v->k<>'null'::jsonb then
+    if jsonb_typeof(v->k)<>'number' then return false;end if;
+    if abs((v->>k)::numeric)>1.7976931348623157e308::numeric then return false;end if;
+   end if;
+  end loop;
+  for k in select unnest(array['texto_original','unidade','vinculo_id']) loop
+   if v ? k and v->k<>'null'::jsonb and (jsonb_typeof(v->k)<>'string' or length(v->>k)>12000) then return false;end if;
+  end loop;
+  if v->>'escopo'='vinculo' and coalesce(v->>'vinculo_id','')='' then return false;end if;
+  if v ? 'periodo' and v->'periodo'<>'null'::jsonb and not coalesce(member_profile_private.valid_reference(v->'periodo'),false) then return false;end if;
   if v->>'tipo_valor'='numero' then return jsonb_typeof(v->'numero')='number'; end if;
   if v->>'tipo_valor'='faixa' then return jsonb_typeof(v->'minimo')='number' and jsonb_typeof(v->'maximo')='number' and (v->>'minimo')::numeric<=(v->>'maximo')::numeric; end if;
-  return jsonb_typeof(v->'texto_original')='string';
+  return jsonb_typeof(v->'texto_original')='string' and length(v->>'texto_original')>0;
  end if;
  if kind='record' then return member_profile_private.valid_record(v,d->>'item_type',c); end if;
  if kind='list' then
