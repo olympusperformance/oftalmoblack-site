@@ -10,3 +10,7 @@ verify_jwt = false
 # O mentorado usa token aleatório individual; ações de equipe validam JWT + app_admins.
 [functions.pre-diagnostico]
 verify_jwt = false
+
+# JWT validado no Auth + app_admins pelo handler; nenhum acesso anônimo.
+[functions.member-profile]
+verify_jwt = false
