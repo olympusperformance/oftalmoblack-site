@@ -3,6 +3,7 @@
 // mentorado andou conversando.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 import { profileTool, readProfile, listMemberProfiles } from "./profile.mjs";
+import { sdrTool, readSdrDocument } from "./sdr-document.mjs";
 import { authorized } from "./auth.mjs";
 
 const db = createClient(
@@ -30,6 +31,7 @@ const cors = {
 
 const TOOLS = [
   profileTool,
+  sdrTool,
   {
     name: "listar_mentorados",
     description:
@@ -128,6 +130,7 @@ function onde(b: any): string {
 
 async function executar(nome: string, args: any): Promise<string> {
   if (nome === "perfil_do_mentorado") return readProfile(db, args);
+  if (nome === "ficha_sdr_do_mentorado") return readSdrDocument(db, args);
   if (nome === "listar_mentorados") {
     return listMemberProfiles(db,args.incluir_inativos??false);
   }

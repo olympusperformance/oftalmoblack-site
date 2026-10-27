@@ -12,11 +12,13 @@ async function edge(body,endpoint='pre-diagnostico') {
 async function load() {
   const turn=++loadNumber, id=select.value;member=id;
   $('#new-link').hidden=true;$('#link').value='';$('#issue').disabled=true;
-  for(const s of ['#identity','#sources','#profile','#links'])$(s).replaceChildren();
+  for(const s of ['#identity','#sources','#profile','#links','#sdr-links','#sdr-sources'])$(s).replaceChildren();
   message('Carregando perfil…');
   try {
-    const [profile,links]=await Promise.all([edge({member_id:id},'member-profile'),C.sb.from('member_intake_links').select('id,created_at,expires_at,revoked_at').eq('member_id',id).order('created_at',{ascending:false})]);
+    const [profile,links,sdrLinks,sdrSources]=await Promise.all([edge({member_id:id},'member-profile'),C.sb.from('member_intake_links').select('id,created_at,expires_at,revoked_at').eq('member_id',id).order('created_at',{ascending:false}),C.sb.from('sdr_intake_links').select('id,created_at,expires_at,revoked_at').eq('member_id',id).order('created_at',{ascending:false}),C.sb.from('sdr_context_entries').select('id,source_at,data').eq('member_id',id).order('recorded_at',{ascending:false}).limit(10)]);
     if(turn!==loadNumber)return;if(links.error)throw links.error;
+    const sdrUnavailable=Boolean(sdrLinks.error||sdrSources.error);$('#issue-sdr').disabled=sdrUnavailable;
+    if(sdrUnavailable)$('#sdr-sources').append(el('p','Ficha SDR indisponível. O restante do perfil segue disponível.','meta'));
     if(profile.mentorado_id!==id || !profile.perfil_completo)throw Error('Resposta de perfil incompleta. Atualize a página.');
     const identity=el('section',null,'profile-card profile-heading');identity.append(el('h2',profile.nome));
     identity.append(el('p','Padrão '+profile.schema_version+' · '+Object.keys(profile.campos).length+' campos · '+profile.catalogo.sections.length+' áreas','meta'));
@@ -38,6 +40,8 @@ async function load() {
     if(!links.data.length)$('#links').append(el('p','Nenhum link preparado.','meta'));
     for(const link of links.data){const row=el('div',null,'link-row'),active=!link.revoked_at&&new Date(link.expires_at)>new Date();row.append(el('span',(link.revoked_at?'Encerrado · ':active?'Válido até ':'Expirado em ')+date(link.expires_at)));
       if(active){const b=el('button','Encerrar link');b.type='button';b.addEventListener('click',async()=>{b.disabled=true;try{await edge({action:'revoke',link_id:link.id});if(turn===loadNumber)await load();}catch(e){if(turn===loadNumber){message(e.message,true);b.disabled=false;}}});row.append(b);}$('#links').append(row);}
+    for(const link of sdrLinks.data||[]){const row=el('div',null,'link-row'),active=!link.revoked_at&&new Date(link.expires_at)>new Date();row.append(el('span',(link.revoked_at?'Encerrado · ':active?'Válido até ':'Expirado em ')+date(link.expires_at)));if(active){const b=el('button','Encerrar link da SDR');b.type='button';b.addEventListener('click',async()=>{b.disabled=true;try{await edge({action:'revoke',link_id:link.id},'sdr-onboarding');if(turn===loadNumber)await load()}catch(e){if(turn===loadNumber){message(e.message,true);b.disabled=false}}});row.append(b)}$('#sdr-links').append(row)}
+    for(const source of sdrSources.data||[]){const d=el('details',null,'profile-source');d.append(el('summary','Ficha SDR · '+date(source.source_at)),el('pre',JSON.stringify(source.data,null,2),'profile-source-raw'));$('#sdr-sources').append(d)}
     const answers=profile.fontes.filter(s=>s.source_type==='pre_diagnostico').length;
     message(answers ? answers+' envios do formulário incorporados ao perfil. Equipe e agentes consultam este mesmo padrão.' : 'Nenhuma resposta do formulário recebida. O perfil reúne o que já temos; os demais campos continuam visíveis.');
   }catch(e){if(turn===loadNumber)message('Não foi possível carregar o perfil. '+e.message,true);}
@@ -49,6 +53,7 @@ $('#issue').addEventListener('click',async()=>{
   catch(e){if(id===member&&loadNumber===turn)message(e.message,true);}
   finally{if(id===member&&loadNumber<=turn+1)$('#issue').disabled=false;}
 });
+$('#issue-sdr').addEventListener('click',async()=>{const id=member,turn=loadNumber,button=$('#issue-sdr');button.disabled=true;try{const data=await edge({action:'issue',member_id:id},'sdr-onboarding');if(id!==member||turn!==loadNumber)return;await load();if(id!==member||loadNumber!==turn+1)return;$('#link').value=location.origin+'/sdr-onboarding/#t='+data.token;$('#new-link').hidden=false;message('Link da SDR preparado. Nenhuma mensagem foi enviada.')}catch(e){if(id===member&&turn===loadNumber)message(e.message,true)}finally{button.disabled=false}});
 $('#copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('#link').value);message('Link copiado.');}catch{$('#link').select();message('Selecione e copie o link acima.');}});
 select.addEventListener('change',()=>{history.replaceState(null,'','?m='+encodeURIComponent(select.value));load();});
 $('#reload').addEventListener('click',load);
