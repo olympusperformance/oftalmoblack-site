@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="referrer" content="no-referrer" />
+    <title>Perfis dos mentorados · Cérebro Black</title>
+    <link rel="icon" href="/assets/favicon.png" />
+    <link rel="stylesheet" href="/assets/pre-diagnostico.css?v=1" />
+  </head>
+  <body>
+    <main class="profile-main">
+      <nav class="staff-nav">
+        <a href="/admin/">← Cérebro Black</a
+        ><button type="button" id="reload">Atualizar</button>
+      </nav>
+      <p class="eyebrow" style="margin-top: 36px">Onboarding</p>
+      <h1>Perfil do mentorado</h1>
+      <p class="intro">
+        Contexto já recuperado e respostas do pré-diagnóstico, com suas fontes e
+        datas.
+      </p>
+      <div id="message" class="message" role="status" aria-live="polite">
+        Verificando seu acesso…
+      </div>
+      <div id="workspace" hidden>
+        <div class="toolbar">
+          <label>Mentorado<select id="member"></select></label
+          ><button type="button" id="issue">Preparar link individual</button>
+        </div>
+        <section id="new-link" class="profile-card" hidden>
+          <h2>Link preparado</h2>
+          <p class="meta">
+            Válido por 30 dias. Compartilhe apenas com este mentorado. Nenhuma
+            mensagem foi enviada.
+          </p>
+          <input
+            id="link"
+            class="link-output"
+            readonly
+            aria-label="Link individual"
+          /><button id="copy" type="button">Copiar link</button>
+        </section>
+        <div id="identity"></div>
+        <section class="profile-card">
+          <h2>Links de pré-diagnóstico</h2>
+          <div id="links"></div>
+        </section>
+        <section id="answers"></section>
+        <section>
+          <h2>Fontes do contexto</h2>
+          <div id="sources"></div>
+        </section>
+      </div>
+    </main>
+    <script src="/assets/vendor/supabase.js"></script>
+    <script src="/config.js"></script>
+    <script src="/assets/club-ui.js"></script>
+    <script src="/assets/club-supabase.js"></script>
+    <script src="/assets/club-auth.js"></script>
+    <script type="module" src="/assets/admin-perfis.js?v=1"></script>
+  </body>
+</html>

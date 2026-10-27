@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="theme-color" content="#0A0A0A" />
+    <title>Pré-diagnóstico · OftalmoBlack</title>
+    <link rel="icon" href="/assets/favicon.png" />
+    <link rel="stylesheet" href="/assets/pre-diagnostico.css?v=1" />
+  </head>
+  <body>
+    <header class="brand">
+      <img src="/assets/logo-horizontal-w.png" alt="OftalmoBlack" />
+    </header>
+    <main class="intake">
+      <p class="eyebrow">Sua entrada no Club</p>
+      <h1>Vamos preparar<br />seu diagnóstico.</h1>
+      <p id="intro" class="intro">Carregando seu formulário…</p>
+      <div id="notice" role="status" aria-live="polite" tabindex="-1"></div>
+      <form id="intake" hidden>
+        <p class="note">
+          Responda sobre o negócio em geral. Se quiser, diferencie negócios ou
+          unidades nas respostas. Pode deixar em branco o que não souber.
+        </p>
+        <div id="areas"></div>
+        <footer class="submit-row">
+          <p>
+            São estimativas para começar.<br />Você pode complementar depois.
+          </p>
+          <button type="submit" id="submit">
+            Salvar respostas <span aria-hidden="true">→</span>
+          </button>
+        </footer>
+      </form>
+      <p class="signature">CLUB OFTALMOBLACK <span>·</span> PRÉ-DIAGNÓSTICO</p>
+    </main>
+    <script src="/config.js"></script>
+    <script type="module" src="/assets/pre-diagnostico.js?v=1"></script>
+  </body>
+</html>
