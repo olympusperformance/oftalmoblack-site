@@ -1,0 +1,12 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';
+import {emptyProfile} from '../supabase/functions/_shared/member-profile-model.mjs';
+import {readProfile} from '../supabase/functions/cerebro-mcp/profile.mjs';
+import {listMemberProfiles} from '../supabase/functions/cerebro-mcp/profile.mjs';
+const chat=await import('../supabase/functions/_shared/member-profile-chat.mjs').catch(()=>({}));
+const member={id:'00000000-0000-4000-8000-000000000001',nome:'Pessoa de teste',ativo:true},profile=emptyProfile(member);
+const db={from(){const q={select(){return q;},eq(){return q;},ilike(){return q;},limit:async()=>({data:[member]})};return q;}};
+test('MCP consulta o mesmo DTO2.0 da aba, inclusive campos vazios',async()=>{let loaded;const r=JSON.parse(await readProfile(db,{mentorado:member.nome},async(_db,id,sections)=>{loaded=[id,sections];return profile;}));assert.equal(r.schema_version,'2.0');assert.deepEqual(r.campos,profile.campos);assert.equal(loaded[0],member.id);});
+test('chat comum não anuncia a ferramenta interna da equipe',()=>{assert.equal(typeof chat.profileChatTools,'function');assert.deepEqual(chat.profileChatTools(false),[]);assert.equal(chat.profileChatTools(true)[0].name,'consultar_perfil');});
+test('executor do chat barra perfil interno mesmo que o modelo invente a chamada',async()=>{assert.equal(typeof chat.callProfileChatTool,'function');let called=false;await assert.rejects(chat.callProfileChatTool({}, {admin:false,memberId:member.id},{},async()=>{called=true;}));assert.equal(called,false);});
+test('chat de prévia usa somente o ID autorizado pelo handler e a mesma resposta',async()=>{assert.equal(typeof chat.callProfileChatTool,'function');let got;const r=JSON.parse(await chat.callProfileChatTool({}, {admin:true,memberId:member.id},{secoes:['equipe']},async(_db,id,sections)=>{got=[id,sections];return profile;}));assert.equal(r.schema_version,'2.0');assert.deepEqual(got,[member.id,['equipe']]);assert.deepEqual(r.campos,profile.campos);await assert.rejects(chat.callProfileChatTool({}, {admin:true,memberId:member.id},{member_id:'outro'},async()=>profile));});
+test('listagem MCP usa o cadastro mesmo quando não existe conversa capturada',async()=>{let method;const result=await listMemberProfiles({rpc:async(name,args)=>{method=name;assert.equal(args.p_incluir_inativos,false);return {data:[{...member,fontes:0,formularios:0,revision:0}]};}});assert.equal(method,'member_profile_directory');assert.ok(result.includes(member.id));assert.ok(result.includes('0 fontes'));});

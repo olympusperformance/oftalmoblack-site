@@ -2,7 +2,7 @@
 // Três ferramentas: listar quem existe, buscar por sentido, e ler o que um
 // mentorado andou conversando.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
-import { profileTool, readProfile } from "./profile.mjs";
+import { profileTool, readProfile, listMemberProfiles } from "./profile.mjs";
 import { authorized } from "./auth.mjs";
 
 const db = createClient(
@@ -33,8 +33,8 @@ const TOOLS = [
   {
     name: "listar_mentorados",
     description:
-      "Lista os mentorados com memória no cérebro: quantas mensagens de WhatsApp, quantas conversas, quantas reuniões gravadas e o período coberto. Use para saber sobre quem dá para perguntar.",
-    inputSchema: { type: "object", properties: {}, additionalProperties: false },
+      "Lista os mentorados pelo cadastro canônico, inclusive quem ainda não tem grupo/mensagens ou formulário. Informa ID, situação e cobertura de fontes do perfil. Use para escolher de quem consultar a ficha.",
+    inputSchema: { type: "object", properties: { incluir_inativos: {type:"boolean"} }, additionalProperties: false },
   },
   {
     name: "buscar_no_cerebro",
@@ -129,13 +129,7 @@ function onde(b: any): string {
 async function executar(nome: string, args: any): Promise<string> {
   if (nome === "perfil_do_mentorado") return readProfile(db, args);
   if (nome === "listar_mentorados") {
-    const { data, error } = await db.rpc("cerebro_mentorados_resumo");
-    if (error) throw error;
-    if (!data?.length) return "Nenhum mentorado com conversa no cérebro ainda.";
-    return data
-      .map((m: any) =>
-        `${m.mentorado} — ${m.mensagens} mensagens, ${m.conversas} conversas, ${m.reunioes} reuniões, de ${String(m.desde).slice(0, 10)} a ${String(m.ate).slice(0, 10)}`)
-      .join("\n");
+    return listMemberProfiles(db,args.incluir_inativos??false);
   }
 
   if (nome === "buscar_no_cerebro") {
