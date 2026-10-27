@@ -34,6 +34,9 @@ test("troca de mentorado durante recarga da emissão não exibe link do anterior
       "#sources",
       "#profile",
       "#links",
+      "#sdr-links",
+      "#sdr-sources",
+      "#issue-sdr",
       "#link",
       "#copy",
       "#reload",
@@ -59,6 +62,9 @@ test("troca de mentorado durante recarga da emissão não exibe link do anterior
         return q;
       },
       order() {
+        return q;
+      },
+      limit() {
         return q;
       },
       then(resolve, reject) {
