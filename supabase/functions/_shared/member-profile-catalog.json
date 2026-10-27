@@ -1,0 +1,1248 @@
+{
+  "schema_version": "2.0",
+  "sections": [
+    {
+      "id": "identidade",
+      "label": "Identidade e vínculo"
+    },
+    {
+      "id": "resumo",
+      "label": "Consulta rápida"
+    },
+    {
+      "id": "atuacao",
+      "label": "Atuação e negócios"
+    },
+    {
+      "id": "baseline",
+      "label": "Ponto de partida e números conhecidos"
+    },
+    {
+      "id": "tatame",
+      "label": "Tatames"
+    },
+    {
+      "id": "instagram",
+      "label": "Instagram"
+    },
+    {
+      "id": "objetivos",
+      "label": "Objetivos e prioridades"
+    },
+    {
+      "id": "equipe",
+      "label": "Estrutura comercial, equipe e parceiros"
+    },
+    {
+      "id": "solucoes",
+      "label": "Sistemas e soluções"
+    },
+    {
+      "id": "presenca",
+      "label": "Presença e canais"
+    },
+    {
+      "id": "comunicacao",
+      "label": "Como acompanhar"
+    },
+    {
+      "id": "relacionamento",
+      "label": "Relacionamento e experiência"
+    },
+    {
+      "id": "confirmacoes",
+      "label": "A confirmar"
+    },
+    {
+      "id": "evolucao",
+      "label": "Linha do tempo"
+    }
+  ],
+  "fields": {
+    "identidade.nome_completo": {
+      "section": "identidade",
+      "id": "nome_completo",
+      "label": "Nome completo",
+      "kind": "text",
+      "canonical": "nome"
+    },
+    "identidade.email": {
+      "section": "identidade",
+      "id": "email",
+      "label": "E-mail",
+      "kind": "text",
+      "canonical": "email"
+    },
+    "identidade.turma": {
+      "section": "identidade",
+      "id": "turma",
+      "label": "Turma",
+      "kind": "text",
+      "canonical": "turma"
+    },
+    "identidade.fase": {
+      "section": "identidade",
+      "id": "fase",
+      "label": "Fase",
+      "kind": "text",
+      "canonical": "fase"
+    },
+    "identidade.nome_tratamento": {
+      "section": "identidade",
+      "id": "nome_tratamento",
+      "label": "Nome de tratamento",
+      "kind": "text"
+    },
+    "identidade.crm_numero": {
+      "section": "identidade",
+      "id": "crm_numero",
+      "label": "CRM",
+      "kind": "text"
+    },
+    "identidade.crm_uf": {
+      "section": "identidade",
+      "id": "crm_uf",
+      "label": "UF do CRM",
+      "kind": "text"
+    },
+    "identidade.especialidades": {
+      "section": "identidade",
+      "id": "especialidades",
+      "label": "Especialidades",
+      "kind": "text_list"
+    },
+    "identidade.cidade_base": {
+      "section": "identidade",
+      "id": "cidade_base",
+      "label": "Cidade base",
+      "kind": "text"
+    },
+    "identidade.uf_base": {
+      "section": "identidade",
+      "id": "uf_base",
+      "label": "UF base",
+      "kind": "text"
+    },
+    "identidade.telefone_contato": {
+      "section": "identidade",
+      "id": "telefone_contato",
+      "label": "Telefone de contato",
+      "kind": "text"
+    },
+    "identidade.segunda_cadeira": {
+      "section": "identidade",
+      "id": "segunda_cadeira",
+      "label": "Segunda cadeira",
+      "kind": "list",
+      "item_type": "pessoa"
+    },
+    "identidade.data_entrada": {
+      "section": "identidade",
+      "id": "data_entrada",
+      "label": "Data de entrada",
+      "kind": "date"
+    },
+    "identidade.grupo": {
+      "section": "identidade",
+      "id": "grupo",
+      "label": "Grupo",
+      "kind": "text"
+    },
+    "identidade.situacao_cadastro": {
+      "section": "identidade",
+      "id": "situacao_cadastro",
+      "label": "Situação do cadastro",
+      "kind": "enum",
+      "choices": {
+        "ativo": "Ativo",
+        "inativo": "Inativo"
+      },
+      "canonical": "ativo"
+    },
+    "resumo.sintese": {
+      "section": "resumo",
+      "id": "sintese",
+      "label": "Síntese do mentorado",
+      "kind": "text"
+    },
+    "resumo.cenario_inicial": {
+      "section": "resumo",
+      "id": "cenario_inicial",
+      "label": "Cenário inicial",
+      "kind": "text"
+    },
+    "resumo.situacao_atual": {
+      "section": "resumo",
+      "id": "situacao_atual",
+      "label": "Situação atual",
+      "kind": "text"
+    },
+    "atuacao.modelo_atendimento": {
+      "section": "atuacao",
+      "id": "modelo_atendimento",
+      "label": "Modelo de atendimento",
+      "kind": "enum",
+      "choices": {
+        "particular": "Particular",
+        "convenio": "Convênio",
+        "misto": "Misto"
+      }
+    },
+    "atuacao.servicos_principais": {
+      "section": "atuacao",
+      "id": "servicos_principais",
+      "label": "Serviços principais",
+      "kind": "text_list"
+    },
+    "atuacao.agenda_semanal": {
+      "section": "atuacao",
+      "id": "agenda_semanal",
+      "label": "Agenda ao longo da semana",
+      "kind": "text"
+    },
+    "atuacao.estrutura_disponivel": {
+      "section": "atuacao",
+      "id": "estrutura_disponivel",
+      "label": "Estrutura disponível",
+      "kind": "text"
+    },
+    "atuacao.centro_cirurgico_proprio": {
+      "section": "atuacao",
+      "id": "centro_cirurgico_proprio",
+      "label": "Centro cirúrgico próprio",
+      "kind": "boolean"
+    },
+    "atuacao.projetos_estrutura": {
+      "section": "atuacao",
+      "id": "projetos_estrutura",
+      "label": "Projetos de estrutura e expansão",
+      "kind": "text"
+    },
+    "atuacao.contexto_tributario": {
+      "section": "atuacao",
+      "id": "contexto_tributario",
+      "label": "Contexto tributário",
+      "kind": "text"
+    },
+    "atuacao.historia_negocio": {
+      "section": "atuacao",
+      "id": "historia_negocio",
+      "label": "História do negócio",
+      "kind": "text"
+    },
+    "atuacao.equipamentos": {
+      "section": "atuacao",
+      "id": "equipamentos",
+      "label": "Equipamentos",
+      "kind": "list",
+      "item_type": "equipamento"
+    },
+    "atuacao.convenios": {
+      "section": "atuacao",
+      "id": "convenios",
+      "label": "Convênios",
+      "kind": "list",
+      "item_type": "convenio"
+    },
+    "atuacao.vinculos_negocios": {
+      "section": "atuacao",
+      "id": "vinculos_negocios",
+      "label": "Negócios e locais de atuação",
+      "kind": "list",
+      "item_type": "vinculo"
+    },
+    "baseline.data_entrada_referencia": {
+      "section": "baseline",
+      "id": "data_entrada_referencia",
+      "label": "Entrada na mentoria",
+      "kind": "date",
+      "reference": "identidade.data_entrada",
+      "readonly": true
+    },
+    "baseline.primeira_captura": {
+      "section": "baseline",
+      "id": "primeira_captura",
+      "label": "Primeira referência conhecida",
+      "kind": "record",
+      "item_type": "captura"
+    },
+    "baseline.indicadores.faturamento_mensal.referencia_inicial": {
+      "section": "baseline",
+      "id": "indicadores.faturamento_mensal.referencia_inicial",
+      "label": "Faturamento mensal · Referência inicial",
+      "kind": "metric",
+      "unit": "BRL/mes",
+      "metric": "faturamento_mensal",
+      "moment": "referencia_inicial"
+    },
+    "baseline.indicadores.faturamento_mensal.atual": {
+      "section": "baseline",
+      "id": "indicadores.faturamento_mensal.atual",
+      "label": "Faturamento mensal · Informação mais recente",
+      "kind": "metric",
+      "unit": "BRL/mes",
+      "metric": "faturamento_mensal",
+      "moment": "atual"
+    },
+    "baseline.indicadores.consultas_mensais.referencia_inicial": {
+      "section": "baseline",
+      "id": "indicadores.consultas_mensais.referencia_inicial",
+      "label": "Consultas mensais · Referência inicial",
+      "kind": "metric",
+      "unit": "consultas/mes",
+      "metric": "consultas_mensais",
+      "moment": "referencia_inicial"
+    },
+    "baseline.indicadores.consultas_mensais.atual": {
+      "section": "baseline",
+      "id": "indicadores.consultas_mensais.atual",
+      "label": "Consultas mensais · Informação mais recente",
+      "kind": "metric",
+      "unit": "consultas/mes",
+      "metric": "consultas_mensais",
+      "moment": "atual"
+    },
+    "baseline.indicadores.cirurgias_indicadas_mensais.referencia_inicial": {
+      "section": "baseline",
+      "id": "indicadores.cirurgias_indicadas_mensais.referencia_inicial",
+      "label": "Cirurgias indicadas por mês · Referência inicial",
+      "kind": "metric",
+      "unit": "indicacoes/mes",
+      "metric": "cirurgias_indicadas_mensais",
+      "moment": "referencia_inicial"
+    },
+    "baseline.indicadores.cirurgias_indicadas_mensais.atual": {
+      "section": "baseline",
+      "id": "indicadores.cirurgias_indicadas_mensais.atual",
+      "label": "Cirurgias indicadas por mês · Informação mais recente",
+      "kind": "metric",
+      "unit": "indicacoes/mes",
+      "metric": "cirurgias_indicadas_mensais",
+      "moment": "atual"
+    },
+    "baseline.indicadores.cirurgias_realizadas_mensais.referencia_inicial": {
+      "section": "baseline",
+      "id": "indicadores.cirurgias_realizadas_mensais.referencia_inicial",
+      "label": "Cirurgias realizadas por mês · Referência inicial",
+      "kind": "metric",
+      "unit": "cirurgias/mes",
+      "metric": "cirurgias_realizadas_mensais",
+      "moment": "referencia_inicial"
+    },
+    "baseline.indicadores.cirurgias_realizadas_mensais.atual": {
+      "section": "baseline",
+      "id": "indicadores.cirurgias_realizadas_mensais.atual",
+      "label": "Cirurgias realizadas por mês · Informação mais recente",
+      "kind": "metric",
+      "unit": "cirurgias/mes",
+      "metric": "cirurgias_realizadas_mensais",
+      "moment": "atual"
+    },
+    "baseline.indicadores.cirurgias_lentes_premium_mensais.referencia_inicial": {
+      "section": "baseline",
+      "id": "indicadores.cirurgias_lentes_premium_mensais.referencia_inicial",
+      "label": "Cirurgias com lentes premium por mês · Referência inicial",
+      "kind": "metric",
+      "unit": "cirurgias/mes",
+      "metric": "cirurgias_lentes_premium_mensais",
+      "moment": "referencia_inicial"
+    },
+    "baseline.indicadores.cirurgias_lentes_premium_mensais.atual": {
+      "section": "baseline",
+      "id": "indicadores.cirurgias_lentes_premium_mensais.atual",
+      "label": "Cirurgias com lentes premium por mês · Informação mais recente",
+      "kind": "metric",
+      "unit": "cirurgias/mes",
+      "metric": "cirurgias_lentes_premium_mensais",
+      "moment": "atual"
+    },
+    "baseline.indicadores.ticket_medio_cirurgia.referencia_inicial": {
+      "section": "baseline",
+      "id": "indicadores.ticket_medio_cirurgia.referencia_inicial",
+      "label": "Ticket médio de cirurgia · Referência inicial",
+      "kind": "metric",
+      "unit": "BRL/cirurgia",
+      "metric": "ticket_medio_cirurgia",
+      "moment": "referencia_inicial"
+    },
+    "baseline.indicadores.ticket_medio_cirurgia.atual": {
+      "section": "baseline",
+      "id": "indicadores.ticket_medio_cirurgia.atual",
+      "label": "Ticket médio de cirurgia · Informação mais recente",
+      "kind": "metric",
+      "unit": "BRL/cirurgia",
+      "metric": "ticket_medio_cirurgia",
+      "moment": "atual"
+    },
+    "baseline.indicadores.investimento_mensal_marketing.referencia_inicial": {
+      "section": "baseline",
+      "id": "indicadores.investimento_mensal_marketing.referencia_inicial",
+      "label": "Investimento mensal em marketing · Referência inicial",
+      "kind": "metric",
+      "unit": "BRL/mes",
+      "metric": "investimento_mensal_marketing",
+      "moment": "referencia_inicial"
+    },
+    "baseline.indicadores.investimento_mensal_marketing.atual": {
+      "section": "baseline",
+      "id": "indicadores.investimento_mensal_marketing.atual",
+      "label": "Investimento mensal em marketing · Informação mais recente",
+      "kind": "metric",
+      "unit": "BRL/mes",
+      "metric": "investimento_mensal_marketing",
+      "moment": "atual"
+    },
+    "baseline.indicadores.margem_operacional.referencia_inicial": {
+      "section": "baseline",
+      "id": "indicadores.margem_operacional.referencia_inicial",
+      "label": "Margem operacional · Referência inicial",
+      "kind": "metric",
+      "unit": "percentual",
+      "metric": "margem_operacional",
+      "moment": "referencia_inicial"
+    },
+    "baseline.indicadores.margem_operacional.atual": {
+      "section": "baseline",
+      "id": "indicadores.margem_operacional.atual",
+      "label": "Margem operacional · Informação mais recente",
+      "kind": "metric",
+      "unit": "percentual",
+      "metric": "margem_operacional",
+      "moment": "atual"
+    },
+    "baseline.indicadores.seguidores_instagram.referencia_inicial": {
+      "section": "baseline",
+      "id": "indicadores.seguidores_instagram.referencia_inicial",
+      "label": "Seguidores no Instagram · Referência inicial",
+      "kind": "metric",
+      "unit": "seguidores",
+      "metric": "seguidores_instagram",
+      "moment": "referencia_inicial"
+    },
+    "baseline.indicadores.seguidores_instagram.atual": {
+      "section": "baseline",
+      "id": "indicadores.seguidores_instagram.atual",
+      "label": "Seguidores no Instagram · Informação mais recente",
+      "kind": "metric",
+      "unit": "seguidores",
+      "metric": "seguidores_instagram",
+      "moment": "atual"
+    },
+    "baseline.indicadores.publicacoes_instagram.referencia_inicial": {
+      "section": "baseline",
+      "id": "indicadores.publicacoes_instagram.referencia_inicial",
+      "label": "Publicações no Instagram · Referência inicial",
+      "kind": "metric",
+      "unit": "publicacoes",
+      "metric": "publicacoes_instagram",
+      "moment": "referencia_inicial"
+    },
+    "baseline.indicadores.publicacoes_instagram.atual": {
+      "section": "baseline",
+      "id": "indicadores.publicacoes_instagram.atual",
+      "label": "Publicações no Instagram · Informação mais recente",
+      "kind": "metric",
+      "unit": "publicacoes",
+      "metric": "publicacoes_instagram",
+      "moment": "atual"
+    },
+    "tatame.ciclo_atual": {
+      "section": "tatame",
+      "id": "ciclo_atual",
+      "label": "Ciclo atual",
+      "kind": "text"
+    },
+    "tatame.cenario_ciclo": {
+      "section": "tatame",
+      "id": "cenario_ciclo",
+      "label": "Cenário do ciclo",
+      "kind": "text"
+    },
+    "tatame.prioridades_ciclo": {
+      "section": "tatame",
+      "id": "prioridades_ciclo",
+      "label": "Prioridades do ciclo",
+      "kind": "text_list"
+    },
+    "tatame.condutas_ciclo": {
+      "section": "tatame",
+      "id": "condutas_ciclo",
+      "label": "Condutas do ciclo",
+      "kind": "text_list"
+    },
+    "tatame.tatames": {
+      "section": "tatame",
+      "id": "tatames",
+      "label": "Histórico de Tatames",
+      "kind": "list",
+      "item_type": "tatame"
+    },
+    "instagram.primeira_leitura": {
+      "section": "instagram",
+      "id": "primeira_leitura",
+      "label": "Primeira leitura conhecida",
+      "kind": "metric",
+      "reference": "baseline.indicadores.seguidores_instagram.referencia_inicial",
+      "readonly": true
+    },
+    "instagram.ultima_leitura": {
+      "section": "instagram",
+      "id": "ultima_leitura",
+      "label": "Última leitura conhecida",
+      "kind": "metric",
+      "reference": "baseline.indicadores.seguidores_instagram.atual",
+      "readonly": true
+    },
+    "instagram.comparacao": {
+      "section": "instagram",
+      "id": "comparacao",
+      "label": "Comparação entre leituras",
+      "kind": "text",
+      "readonly": true
+    },
+    "instagram.situacao_coleta": {
+      "section": "instagram",
+      "id": "situacao_coleta",
+      "label": "Situação da coleta",
+      "kind": "enum",
+      "choices": {
+        "nao_vinculada": "Não vinculada",
+        "vinculada_sem_dados": "Vinculada, sem dados",
+        "com_dados": "Com dados",
+        "falha_coleta": "Falha de coleta",
+        "a_confirmar": "A confirmar"
+      },
+      "readonly": true
+    },
+    "instagram.limites_serie": {
+      "section": "instagram",
+      "id": "limites_serie",
+      "label": "Limites e observações da série",
+      "kind": "text"
+    },
+    "objetivos.objetivo_principal": {
+      "section": "objetivos",
+      "id": "objetivo_principal",
+      "label": "Objetivo principal",
+      "kind": "text"
+    },
+    "objetivos.prioridade_atual": {
+      "section": "objetivos",
+      "id": "prioridade_atual",
+      "label": "Prioridade atual",
+      "kind": "text"
+    },
+    "objetivos.gargalos": {
+      "section": "objetivos",
+      "id": "gargalos",
+      "label": "Gargalos conhecidos",
+      "kind": "text_list"
+    },
+    "objetivos.objetivos": {
+      "section": "objetivos",
+      "id": "objetivos",
+      "label": "Objetivos e metas",
+      "kind": "list",
+      "item_type": "objetivo"
+    },
+    "equipe.papel_sdr": {
+      "section": "equipe",
+      "id": "papel_sdr",
+      "label": "Papel de SDR",
+      "kind": "enum",
+      "choices": {
+        "dedicada": "Pessoa dedicada",
+        "acumula": "Função acumulada",
+        "eu": "Próprio mentorado",
+        "sem_responsavel": "Sem responsável"
+      }
+    },
+    "equipe.papel_closer": {
+      "section": "equipe",
+      "id": "papel_closer",
+      "label": "Papel de closer",
+      "kind": "enum",
+      "choices": {
+        "dedicada": "Pessoa dedicada",
+        "acumula": "Função acumulada",
+        "eu": "Próprio mentorado",
+        "sem_responsavel": "Sem responsável"
+      }
+    },
+    "equipe.organizacao_trafego": {
+      "section": "equipe",
+      "id": "organizacao_trafego",
+      "label": "Equipe de tráfego pago",
+      "kind": "enum",
+      "choices": {
+        "interna": "Equipe interna",
+        "externa": "Agência ou profissional externo",
+        "eu": "Próprio mentorado",
+        "nao": "Não possui"
+      }
+    },
+    "equipe.organizacao_social_media": {
+      "section": "equipe",
+      "id": "organizacao_social_media",
+      "label": "Equipe de social media",
+      "kind": "enum",
+      "choices": {
+        "interna": "Equipe interna",
+        "externa": "Agência ou profissional externo",
+        "eu": "Próprio mentorado",
+        "nao": "Não possui"
+      }
+    },
+    "equipe.responsaveis_sdr": {
+      "section": "equipe",
+      "id": "responsaveis_sdr",
+      "label": "Responsáveis por SDR",
+      "kind": "list",
+      "item_type": "pessoa"
+    },
+    "equipe.responsaveis_closer": {
+      "section": "equipe",
+      "id": "responsaveis_closer",
+      "label": "Responsáveis por fechamento",
+      "kind": "list",
+      "item_type": "pessoa"
+    },
+    "equipe.outras_pessoas_jornada": {
+      "section": "equipe",
+      "id": "outras_pessoas_jornada",
+      "label": "Outras pessoas na jornada do paciente",
+      "kind": "list",
+      "item_type": "pessoa"
+    },
+    "equipe.responsaveis_trafego": {
+      "section": "equipe",
+      "id": "responsaveis_trafego",
+      "label": "Responsáveis pelo tráfego",
+      "kind": "list",
+      "item_type": "pessoa"
+    },
+    "equipe.responsaveis_social_media": {
+      "section": "equipe",
+      "id": "responsaveis_social_media",
+      "label": "Responsáveis por social media",
+      "kind": "list",
+      "item_type": "pessoa"
+    },
+    "equipe.pessoas_parceiros": {
+      "section": "equipe",
+      "id": "pessoas_parceiros",
+      "label": "Equipe e parceiros",
+      "kind": "list",
+      "item_type": "pessoa"
+    },
+    "solucoes.agenda": {
+      "section": "solucoes",
+      "id": "agenda",
+      "label": "Sistemas de agenda",
+      "kind": "list",
+      "item_type": "solucao"
+    },
+    "solucoes.prontuario": {
+      "section": "solucoes",
+      "id": "prontuario",
+      "label": "Sistemas de prontuário",
+      "kind": "list",
+      "item_type": "solucao"
+    },
+    "solucoes.crm_comercial": {
+      "section": "solucoes",
+      "id": "crm_comercial",
+      "label": "CRM comercial",
+      "kind": "list",
+      "item_type": "solucao"
+    },
+    "solucoes.outras_ferramentas": {
+      "section": "solucoes",
+      "id": "outras_ferramentas",
+      "label": "Outras ferramentas",
+      "kind": "list",
+      "item_type": "solucao"
+    },
+    "solucoes.solucoes_olympus": {
+      "section": "solucoes",
+      "id": "solucoes_olympus",
+      "label": "Soluções Olympus",
+      "kind": "list",
+      "item_type": "solucao"
+    },
+    "solucoes.contexto_declarado": {
+      "section": "solucoes",
+      "id": "contexto_declarado",
+      "label": "Relato sobre os sistemas utilizados",
+      "kind": "text"
+    },
+    "presenca.canais": {
+      "section": "presenca",
+      "id": "canais",
+      "label": "Canais e perfis",
+      "kind": "list",
+      "item_type": "canal"
+    },
+    "presenca.whatsapp_comercial": {
+      "section": "presenca",
+      "id": "whatsapp_comercial",
+      "label": "WhatsApp comercial",
+      "kind": "text"
+    },
+    "presenca.grupo_operacional": {
+      "section": "presenca",
+      "id": "grupo_operacional",
+      "label": "Grupo operacional",
+      "kind": "text",
+      "canonical": "whatsapp_url"
+    },
+    "comunicacao.canal_preferencial": {
+      "section": "comunicacao",
+      "id": "canal_preferencial",
+      "label": "Canal preferencial",
+      "kind": "text"
+    },
+    "comunicacao.horarios_preferenciais": {
+      "section": "comunicacao",
+      "id": "horarios_preferenciais",
+      "label": "Horários preferenciais",
+      "kind": "text"
+    },
+    "comunicacao.preferencias_acompanhamento": {
+      "section": "comunicacao",
+      "id": "preferencias_acompanhamento",
+      "label": "Preferências de acompanhamento",
+      "kind": "text"
+    },
+    "comunicacao.feedbacks_relevantes": {
+      "section": "comunicacao",
+      "id": "feedbacks_relevantes",
+      "label": "Feedbacks relevantes",
+      "kind": "text"
+    },
+    "comunicacao.referencias_comportamentais": {
+      "section": "comunicacao",
+      "id": "referencias_comportamentais",
+      "label": "Referências comportamentais",
+      "kind": "list",
+      "item_type": "comportamento"
+    },
+    "comunicacao.responsaveis_acompanhamento": {
+      "section": "comunicacao",
+      "id": "responsaveis_acompanhamento",
+      "label": "Responsáveis pelo acompanhamento",
+      "kind": "list",
+      "item_type": "pessoa"
+    },
+    "relacionamento.pessoas_importantes": {
+      "section": "relacionamento",
+      "id": "pessoas_importantes",
+      "label": "Pessoas importantes",
+      "kind": "list",
+      "item_type": "pessoa_importante"
+    },
+    "relacionamento.datas_importantes": {
+      "section": "relacionamento",
+      "id": "datas_importantes",
+      "label": "Datas importantes",
+      "kind": "list",
+      "item_type": "data_importante"
+    },
+    "relacionamento.interesses": {
+      "section": "relacionamento",
+      "id": "interesses",
+      "label": "Interesses",
+      "kind": "list",
+      "item_type": "nota"
+    },
+    "relacionamento.preferencias_experiencias": {
+      "section": "relacionamento",
+      "id": "preferencias_experiencias",
+      "label": "Preferências de experiências",
+      "kind": "list",
+      "item_type": "nota"
+    },
+    "relacionamento.restricoes_informadas": {
+      "section": "relacionamento",
+      "id": "restricoes_informadas",
+      "label": "Restrições informadas",
+      "kind": "list",
+      "item_type": "nota"
+    },
+    "relacionamento.notas_cs": {
+      "section": "relacionamento",
+      "id": "notas_cs",
+      "label": "Notas da CS",
+      "kind": "list",
+      "item_type": "nota"
+    },
+    "confirmacoes.pontos": {
+      "section": "confirmacoes",
+      "id": "pontos",
+      "label": "Pontos a confirmar",
+      "kind": "list",
+      "item_type": "confirmacao"
+    },
+    "evolucao.eventos": {
+      "section": "evolucao",
+      "id": "eventos",
+      "label": "Linha do tempo",
+      "kind": "list",
+      "item_type": "evento"
+    }
+  },
+  "records": {
+    "pessoa": {
+      "fields": {
+        "nome": {
+          "label": "Nome",
+          "kind": "text"
+        },
+        "papel": {
+          "label": "Papel",
+          "kind": "text"
+        },
+        "funcao": {
+          "label": "Função",
+          "kind": "text"
+        },
+        "responsabilidades": {
+          "label": "Responsabilidades",
+          "kind": "text"
+        },
+        "vinculo_id": {
+          "label": "Vínculo",
+          "kind": "text"
+        },
+        "contexto": {
+          "label": "Contexto",
+          "kind": "text"
+        },
+        "contato": {
+          "label": "Contato",
+          "kind": "text"
+        }
+      }
+    },
+    "vinculo": {
+      "fields": {
+        "nome": {
+          "label": "Nome",
+          "kind": "text"
+        },
+        "tipo_vinculo": {
+          "label": "Tipo de vínculo",
+          "kind": "text"
+        },
+        "papel_mentorado": {
+          "label": "Papel do mentorado",
+          "kind": "text"
+        },
+        "cidades": {
+          "label": "Cidades",
+          "kind": "text_list"
+        },
+        "endereco": {
+          "label": "Endereço",
+          "kind": "text"
+        },
+        "modelo_atendimento": {
+          "label": "Modelo de atendimento",
+          "kind": "text"
+        },
+        "contexto": {
+          "label": "Contexto",
+          "kind": "text"
+        }
+      }
+    },
+    "convenio": {
+      "fields": {
+        "nome": {
+          "label": "Nome",
+          "kind": "text"
+        },
+        "contexto": {
+          "label": "Contexto",
+          "kind": "text"
+        }
+      }
+    },
+    "equipamento": {
+      "fields": {
+        "nome": {
+          "label": "Nome",
+          "kind": "text"
+        },
+        "tipo": {
+          "label": "Tipo",
+          "kind": "text"
+        },
+        "uso": {
+          "label": "Uso",
+          "kind": "text"
+        },
+        "vinculo_id": {
+          "label": "Vínculo",
+          "kind": "text"
+        },
+        "contexto": {
+          "label": "Contexto",
+          "kind": "text"
+        }
+      }
+    },
+    "solucao": {
+      "fields": {
+        "nome": {
+          "label": "Nome",
+          "kind": "text"
+        },
+        "categoria": {
+          "label": "Categoria",
+          "kind": "text"
+        },
+        "finalidade": {
+          "label": "Finalidade",
+          "kind": "text"
+        },
+        "fornecedor": {
+          "label": "Fornecedor",
+          "kind": "text"
+        },
+        "executor": {
+          "label": "Executor",
+          "kind": "text"
+        },
+        "estagio": {
+          "label": "Estágio",
+          "kind": "text"
+        },
+        "vinculo_id": {
+          "label": "Vínculo",
+          "kind": "text"
+        },
+        "contexto": {
+          "label": "Contexto",
+          "kind": "text"
+        }
+      }
+    },
+    "canal": {
+      "fields": {
+        "tipo": {
+          "label": "Tipo",
+          "kind": "text"
+        },
+        "nome": {
+          "label": "Nome",
+          "kind": "text"
+        },
+        "endereco": {
+          "label": "Endereço",
+          "kind": "text"
+        },
+        "pessoa_ref": {
+          "label": "Pessoa",
+          "kind": "text"
+        },
+        "vinculo_id": {
+          "label": "Vínculo",
+          "kind": "text"
+        },
+        "finalidade": {
+          "label": "Finalidade",
+          "kind": "text"
+        }
+      }
+    },
+    "objetivo": {
+      "fields": {
+        "descricao": {
+          "label": "Descrição",
+          "kind": "text"
+        },
+        "indicador_codigo": {
+          "label": "Indicador",
+          "kind": "text"
+        },
+        "alvo": {
+          "label": "Alvo",
+          "kind": "text"
+        },
+        "horizonte": {
+          "label": "Horizonte",
+          "kind": "text"
+        },
+        "prioridade": {
+          "label": "Prioridade",
+          "kind": "text"
+        },
+        "situacao": {
+          "label": "Situação",
+          "kind": "text"
+        },
+        "contexto": {
+          "label": "Contexto",
+          "kind": "text"
+        }
+      }
+    },
+    "tatame": {
+      "fields": {
+        "ciclo": {
+          "label": "Ciclo",
+          "kind": "text"
+        },
+        "data_referencia": {
+          "label": "Referência",
+          "kind": "text"
+        },
+        "cenario": {
+          "label": "Cenário",
+          "kind": "text"
+        },
+        "prioridades": {
+          "label": "Prioridades",
+          "kind": "text_list"
+        },
+        "condutas": {
+          "label": "Condutas",
+          "kind": "text_list"
+        },
+        "objetivos_refs": {
+          "label": "Objetivos",
+          "kind": "text_list"
+        },
+        "snapshots_refs": {
+          "label": "Indicadores",
+          "kind": "text_list"
+        },
+        "documento_ref": {
+          "label": "Documento",
+          "kind": "text"
+        }
+      }
+    },
+    "comportamento": {
+      "fields": {
+        "pessoa_ref": {
+          "label": "Pessoa",
+          "kind": "text"
+        },
+        "instrumento": {
+          "label": "Instrumento",
+          "kind": "text"
+        },
+        "resultado_declarado": {
+          "label": "Resultado declarado",
+          "kind": "text"
+        },
+        "natureza": {
+          "label": "Natureza",
+          "kind": "text"
+        },
+        "contexto": {
+          "label": "Contexto",
+          "kind": "text"
+        }
+      }
+    },
+    "pessoa_importante": {
+      "fields": {
+        "pessoa_ref": {
+          "label": "Pessoa",
+          "kind": "text"
+        },
+        "nome": {
+          "label": "Nome",
+          "kind": "text"
+        },
+        "relacao": {
+          "label": "Relação",
+          "kind": "text"
+        },
+        "contexto": {
+          "label": "Contexto",
+          "kind": "text"
+        }
+      }
+    },
+    "data_importante": {
+      "fields": {
+        "pessoa_ref": {
+          "label": "Pessoa",
+          "kind": "text"
+        },
+        "evento": {
+          "label": "Evento",
+          "kind": "text"
+        },
+        "data": {
+          "label": "Data",
+          "kind": "text"
+        },
+        "precisao": {
+          "label": "Precisão",
+          "kind": "text"
+        },
+        "contexto": {
+          "label": "Contexto",
+          "kind": "text"
+        }
+      }
+    },
+    "nota": {
+      "fields": {
+        "pessoa_ref": {
+          "label": "Pessoa",
+          "kind": "text"
+        },
+        "tema": {
+          "label": "Tema",
+          "kind": "text"
+        },
+        "descricao": {
+          "label": "Descrição",
+          "kind": "text"
+        },
+        "finalidade": {
+          "label": "Finalidade",
+          "kind": "text"
+        }
+      }
+    },
+    "confirmacao": {
+      "fields": {
+        "campo_ref": {
+          "label": "Campo relacionado",
+          "kind": "text"
+        },
+        "duvida": {
+          "label": "Dúvida",
+          "kind": "text"
+        },
+        "fontes_refs": {
+          "label": "Fontes",
+          "kind": "text_list"
+        },
+        "situacao": {
+          "label": "Situação",
+          "kind": "text"
+        },
+        "resolucao": {
+          "label": "Resolução",
+          "kind": "text"
+        }
+      }
+    },
+    "evento": {
+      "fields": {
+        "data_referencia": {
+          "label": "Referência",
+          "kind": "text"
+        },
+        "natureza": {
+          "label": "Natureza",
+          "kind": "text"
+        },
+        "tipo": {
+          "label": "Tipo",
+          "kind": "text"
+        },
+        "descricao": {
+          "label": "Descrição",
+          "kind": "text"
+        },
+        "campos_refs": {
+          "label": "Campos relacionados",
+          "kind": "text_list"
+        },
+        "fontes_refs": {
+          "label": "Fontes",
+          "kind": "text_list"
+        }
+      }
+    },
+    "captura": {
+      "fields": {
+        "entrada_data": {
+          "label": "Entrada na mentoria",
+          "kind": "text"
+        },
+        "entrada_precisao": {
+          "label": "Precisão da entrada",
+          "kind": "text"
+        },
+        "captura_data": {
+          "label": "Data da captura",
+          "kind": "text"
+        },
+        "captura_precisao": {
+          "label": "Precisão da captura",
+          "kind": "text"
+        },
+        "captura_tipo": {
+          "label": "Tipo de captura",
+          "kind": "text"
+        },
+        "limite": {
+          "label": "Limite",
+          "kind": "text"
+        }
+      }
+    }
+  },
+  "metrics": [
+    {
+      "id": "faturamento_mensal",
+      "label": "Faturamento mensal",
+      "unit": "BRL/mes"
+    },
+    {
+      "id": "consultas_mensais",
+      "label": "Consultas mensais",
+      "unit": "consultas/mes"
+    },
+    {
+      "id": "cirurgias_indicadas_mensais",
+      "label": "Cirurgias indicadas por mês",
+      "unit": "indicacoes/mes"
+    },
+    {
+      "id": "cirurgias_realizadas_mensais",
+      "label": "Cirurgias realizadas por mês",
+      "unit": "cirurgias/mes"
+    },
+    {
+      "id": "cirurgias_lentes_premium_mensais",
+      "label": "Cirurgias com lentes premium por mês",
+      "unit": "cirurgias/mes"
+    },
+    {
+      "id": "ticket_medio_cirurgia",
+      "label": "Ticket médio de cirurgia",
+      "unit": "BRL/cirurgia"
+    },
+    {
+      "id": "investimento_mensal_marketing",
+      "label": "Investimento mensal em marketing",
+      "unit": "BRL/mes"
+    },
+    {
+      "id": "margem_operacional",
+      "label": "Margem operacional",
+      "unit": "percentual"
+    },
+    {
+      "id": "seguidores_instagram",
+      "label": "Seguidores no Instagram",
+      "unit": "seguidores"
+    },
+    {
+      "id": "publicacoes_instagram",
+      "label": "Publicações no Instagram",
+      "unit": "publicacoes"
+    }
+  ]
+}

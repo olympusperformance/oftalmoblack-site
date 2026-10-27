@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import vm from "node:vm";
+import {emptyProfile} from '../supabase/functions/_shared/member-profile-model.mjs';
 test("troca de mentorado durante recarga da emissão não exibe link do anterior", async () => {
   const A = "00000000-0000-4000-8000-000000000001",
     B = "00000000-0000-4000-8000-000000000002";
@@ -31,7 +32,7 @@ test("troca de mentorado durante recarga da emissão não exibe link do anterior
       "#issue",
       "#identity",
       "#sources",
-      "#answers",
+      "#profile",
       "#links",
       "#link",
       "#copy",
@@ -114,10 +115,16 @@ test("troca de mentorado durante recarga da emissão não exibe link do anterior
         },
       },
     },
-    fetch: async () => ({
-      ok: true,
-      json: async () => ({ ok: true, token: "a".repeat(64) }),
-    }),
+    renderMemberProfile() {},
+    formatSourceDate:()=> 'Data fixture',
+    fetch: async (url,options) => {
+      const body=JSON.parse(options.body);
+      if(url.endsWith('/member-profile')) {
+        if(blockNextA && body.member_id===A){blockNextA=false;entered();await gate;}
+        return {ok:true,json:async()=>emptyProfile({id:body.member_id,nome:body.member_id===A?'Pessoa A':'Pessoa B',ativo:true})};
+      }
+      return {ok:true,json:async()=>({ok:true,token:'a'.repeat(64)})};
+    },
   };
   const code = (
     await readFile(
