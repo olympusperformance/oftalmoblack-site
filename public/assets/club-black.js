@@ -344,7 +344,7 @@
   function network(){
     if(!admin())return '';
     var members=state.options.members.filter(function(m){return m.ativo!==false;});
-    return '<div class="cb-head"><div><span class="cb-kicker">Administração</span><h1>A Rede</h1><p>'+members.length+' membros ativos · cadastros e implantação.</p></div><button class="btn" data-nav="members">Abrir Progressão</button></div><div class="cb-table-wrap"><table class="cb-table"><thead><tr><th>Membro</th><th>Turma</th><th>Fase</th><th></th></tr></thead><tbody>'+members.map(function(m){return '<tr><td>'+esc(m.nome)+'</td><td>'+esc(m.turma||'—')+'</td><td>'+esc(m.fase||'—')+'</td><td><a class="cb-link" href="/membros/?membro='+encodeURIComponent(m.id)+'">Ver como membro</a></td></tr>';}).join('')+'</tbody></table></div>';
+    return '<div class="cb-head"><div><span class="cb-kicker">Administração</span><h1>A Rede</h1><p>'+members.length+' membros ativos · cadastros e implantação.</p></div><button class="btn" data-nav="members">Abrir Progressão</button></div><div class="cb-table-wrap"><table class="cb-table"><thead><tr><th>Membro</th><th>Turma</th><th>Fase</th><th></th></tr></thead><tbody>'+members.map(function(m){return '<tr><td>'+esc(m.nome)+'</td><td>'+esc(m.turma||'—')+'</td><td>'+esc(m.fase||'—')+'</td><td><a class="cb-link" href="/admin/perfis/?m='+encodeURIComponent(m.id)+'">Ver perfil</a> · <a class="cb-link" href="/membros/?membro='+encodeURIComponent(m.id)+'">Ver como membro</a></td></tr>';}).join('')+'</tbody></table></div>';
   }
   var renderers={subida:subida,pendencias:pendencias,ranking:ranking,vitrine:vitrine,casos:cases,encontro:encontro,iris:iris,modulos:modulePage,rede:network,graduacao:placar};
   function render(){
