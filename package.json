@@ -1,0 +1,6 @@
+{
+  "name": "oftalmoblack-site-tests",
+  "private": true,
+  "scripts": { "test": "node --test tests/*.test.mjs tests/*.test.cjs" },
+  "devDependencies": { "@electric-sql/pglite": "0.5.12" }
+}
