@@ -6,7 +6,7 @@ import vm from 'node:vm';
 const dataSource = readFileSync(new URL('../public/assets/club-data.js', import.meta.url), 'utf8');
 const authSource = readFileSync(new URL('../public/assets/club-auth.js', import.meta.url), 'utf8');
 const session = (token, user = 'member-a') => ({ access_token: token, user: { id: user } });
-function setup({ current = session('old'), refresh = { data: { session: session('new') } }, status = 401 } = {}) {
+function setup({ current = session('old'), refresh = { data: { session: session('new') } }, status = 401, errorBody = { erro:'falha' } } = {}) {
   const calls = []; let refreshes = 0;
   const Club = { cfg: { supabaseUrl: 'https://example.test' }, sb: { auth: {
     getSession: async () => ({ data: { session: current } }),
@@ -14,7 +14,7 @@ function setup({ current = session('old'), refresh = { data: { session: session(
   } } };
   vm.runInNewContext(dataSource, { window: { Club }, fetch: async (_url, options) => {
     calls.push(options);
-    return calls.length === 1 ? Response.json({ erro: 'falha' }, { status })
+    return calls.length === 1 ? Response.json(errorBody, { status })
       : Response.json({ resposta: 'OK', historico: [] });
   } });
   return { Club, calls, refreshes: () => refreshes };
@@ -53,6 +53,12 @@ test('403 de permissão não renova sessão nem repete a pergunta', async () => 
   await assert.rejects(s.Club.data.cerebro.perguntar('Pergunta'), /falha/);
   assert.equal(s.refreshes(), 0);
   assert.equal(s.calls.length, 1);
+});
+
+test('falha recuperável preserva o código sem repetir a pergunta automaticamente', async () => {
+  const s = setup({status:502,errorBody:{erro:'Tente em instantes.',codigo:'MODEL_BUSY',tentar_novamente:true}});
+  await assert.rejects(s.Club.data.cerebro.perguntar('Pergunta'), e=>e.code === 'MODEL_BUSY' && e.retryable === true);
+  assert.equal(s.calls.length,1);assert.equal(s.refreshes(),0);
 });
 
 test('troca de conta durante a renovação não envia o histórico para outro usuário', async () => {

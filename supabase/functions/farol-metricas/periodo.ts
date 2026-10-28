@@ -5,6 +5,20 @@ export const PRESETS = [
 ] as const;
 export type Preset = typeof PRESETS[number];
 
+export function requestPreset(body: any): Preset | null {
+  if (body?.preset !== undefined) return PRESETS.includes(body.preset) ? body.preset : null;
+  if (!Number.isInteger(body?.days) || body.days < 1 || body.days > 366) return null;
+  return body.days === 7 ? 'last7days' : body.days === 30 ? 'last30days' : body.days === 90 ? 'last90days' : 'custom';
+}
+
+// Resolve dias no calendário da clínica, incluindo o dia atual como no painel.
+export function resolveRequestedPeriod(body: any, today: string) {
+  const preset = requestPreset(body);
+  if (!preset || !validDay(today)) return null;
+  const rolling = body.preset === undefined && preset === 'custom';
+  return resolvePeriod(preset,today,rolling ? move(today,1-body.days) : body.from,rolling ? today : body.to);
+}
+
 function move(day: string, offset: number): string {
   const date = new Date(`${day}T12:00:00Z`);
   date.setUTCDate(date.getUTCDate() + offset);

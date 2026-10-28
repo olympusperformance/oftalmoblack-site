@@ -101,33 +101,9 @@
      Guardar os dois separados evita reconstruir uma coisa a partir da outra. */
   var chat = { falas: [], historico: [], pensando: false };
 
-  /* O modelo responde em markdown — título, negrito, lista. Aqui vira HTML de
-     verdade, mas só depois de escapar: o texto vem de fora e nada dele pode
-     virar marcação por conta própria. Só três formas são reconhecidas, que são
-     as que ele usa; o resto continua texto. */
+  /* O renderizador permite links e tabelas, escapando todo HTML das fontes. */
   function formatar(txt) {
-    var html = '', lista = false;
-    esc(txt).split('\n').forEach(function (linha) {
-      /* Negrito primeiro: se o itálico rodasse antes, comeria um dos dois
-         asteriscos de **texto** e deixaria o outro na tela. */
-      var l = linha.trim()
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*([^*\n]+?)\*/g, '<em>$1</em>')
-        .replace(/`([^`\n]+?)`/g, '<code>$1</code>');
-      var item = l.match(/^[-–•]\s+(.*)$/);
-      var cab  = l.match(/^#{1,4}\s+(.*)$/);
-
-      if (item) {
-        if (!lista) { html += '<ul>'; lista = true; }
-        html += '<li>' + item[1] + '</li>';
-        return;
-      }
-      if (lista) { html += '</ul>'; lista = false; }
-      if (cab) { html += '<h4>' + cab[1] + '</h4>'; return; }
-      if (l) html += '<p>' + l + '</p>';
-    });
-    if (lista) html += '</ul>';
-    return html || '<p>' + esc(txt) + '</p>';
+    return Club.chatMarkdown ? Club.chatMarkdown(txt) : '<p>' + esc(txt) + '</p>';
   }
 
   function bolha(quem, texto) {
@@ -153,20 +129,26 @@
         '</div></div>';
       return;
     }
-    fluxo.innerHTML = chat.falas.map(function (f) {
+    fluxo.innerHTML = chat.falas.map(function (f, i) {
       return bolha(f.quem, f.texto) + (f.relogin
-        ? '<button class="btn btn-primary" type="button" data-sair>Entrar novamente</button>' : '');
+        ? '<button class="btn btn-primary" type="button" data-sair>Entrar novamente</button>' : '') +
+        (f.repetir && i === chat.falas.length-1 && !chat.pensando
+          ? '<button class="btn" type="button" data-chat-retry="' + i + '">Tentar novamente</button>' : '');
     }).join('') +
       (chat.pensando ? '<div class="fala ele"><span class="fala-de">CÉREBRO</span>' +
         '<div class="fala-tx pensando"><span class="pulso"><i></i><i></i><i></i></span>' +
-        'procurando nas conversas</div></div>' : '');
+        'consultando as fontes</div></div>' : '');
     fluxo.scrollTop = fluxo.scrollHeight;
   }
 
-  function perguntar(texto) {
+  function perguntar(texto, repetirIndice) {
     texto = (texto || '').trim();
     if (!texto || chat.pensando) return;
-    chat.falas.push({ quem:'eu', texto:texto });
+    if (repetirIndice !== undefined) {
+      var falha = chat.falas[repetirIndice];
+      if (repetirIndice !== chat.falas.length-1 || !falha || falha.repetir !== texto) return;
+      chat.falas.pop();
+    } else chat.falas.push({ quem:'eu', texto:texto });
     chat.pensando = true;
     $('chatInput').value = '';
     $('chatInput').disabled = true;
@@ -179,7 +161,7 @@
       /* O erro entra como fala do Cérebro: um toast desapareceria e a pessoa
          ficaria olhando a pergunta sem resposta, sem saber por quê. */
       chat.falas.push({ quem:'ele erro', texto: err.message || 'Não consegui responder agora.',
-        relogin: err.code === 'AUTH_REQUIRED' });
+        relogin: err.code === 'AUTH_REQUIRED', repetir: err.retryable ? texto : null });
     }).then(function () {
       chat.pensando = false;
       $('chatInput').disabled = false;
@@ -640,6 +622,12 @@
   });
 
   $('chatFluxo').addEventListener('click', function (e) {
+    var retry = e.target.closest('[data-chat-retry]');
+    if (retry) {
+      var i = Number(retry.dataset.chatRetry), f = chat.falas[i];
+      if (f && f.repetir) perguntar(f.repetir,i);
+      return;
+    }
     var ideia = e.target.closest('[data-pergunta]');
     if (ideia) perguntar(ideia.dataset.pergunta);
   });
