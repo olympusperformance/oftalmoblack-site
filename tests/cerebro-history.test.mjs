@@ -2,6 +2,29 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {setupChat,answer,tool} from './helpers/chat-handler.mjs';
 
+test('resposta final com blocos internos preserva contexto sem devolver raciocínio ou ferramentas',async()=>{
+  let round=0;
+  const app=await setupChat({model:body=>{
+    round++;
+    if(round===1)return tool('numeros_da_clinica',{dias:30});
+    if(round===2)return Response.json({stop_reason:'end_turn',content:[
+      {type:'thinking',thinking:'INTERNAL_NOT_FOR_HISTORY',signature:'fixture'},
+      {type:'text',text:'Há 100 leads; a causa não está demonstrada.'},
+    ]});
+    assert.deepEqual(body.messages.slice(0,2),[
+      {role:'user',content:'Consulte meus indicadores.'},
+      {role:'assistant',content:'Há 100 leads; a causa não está demonstrada.'},
+    ]);
+    return answer('A conclusão continua limitada aos registros.');
+  }});
+  const first=await app.ask([],'Consulte meus indicadores.');
+  assert.equal(first.status,200);
+  const data=await first.json();
+  assert.equal(data.historico.length,2,'a resposta visível precisa acompanhar a pergunta seguinte');
+  assert.doesNotMatch(JSON.stringify(data.historico),/INTERNAL_NOT_FOR_HISTORY|tool_use|tool_result/);
+  assert.equal((await app.ask(data.historico,'E qual conclusão posso levar?')).status,200);
+});
+
 function hasOrphan(messages){
   return messages.some((m,i)=>Array.isArray(m.content)&&m.content.some(b=>b.type==='tool_result' &&
     !messages[i-1]?.content?.some?.(p=>p.type==='tool_use'&&p.id===b.tool_use_id)));

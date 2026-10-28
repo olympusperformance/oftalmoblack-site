@@ -1,6 +1,22 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {setupChat,farolFixture,MEMBER,OTHER,answer,tool} from './helpers/chat-handler.mjs';
+import {consultarMetricas} from '../supabase/functions/cerebro-chat/metricas.mjs';
+
+test('hora de atualização já chega formatada no fuso da fonte, inclusive na virada de dia',async()=>{
+  for(const [iso,zone,want] of [
+    ['2026-10-28T19:18:00Z','America/Manaus','28/10/2026 às 15:18 (America/Manaus, UTC-04:00)'],
+    ['2026-10-29T02:10:00Z','America/Manaus','28/10/2026 às 22:10 (America/Manaus, UTC-04:00)'],
+    ['2026-10-29T03:30:00Z','America/Sao_Paulo','29/10/2026 às 00:30 (America/Sao_Paulo, UTC-03:00)'],
+    ['2026-07-01T15:00:00Z','America/New_York','01/07/2026 às 11:00 (America/New_York, UTC-04:00)'],
+    [null,'America/Manaus',null],['inválido','America/Manaus',null],
+    ['2026-10-28T19:18:00Z','Inválido/Zone',null],
+  ]) {
+    const fixture=farolFixture();fixture.updated_at=iso;fixture.clinic.timezone=zone;
+    const data=JSON.parse(await consultarMetricas({siteUrl:'https://site.test',token:'test',memberId:MEMBER,args:{dias:30},fetcher:async()=>Response.json(fixture)}));
+    assert.equal(data.atualizado_em_texto,want);
+  }
+});
 
 test('chat usa a fonte do painel com JWT do ator e escopo do membro autorizado',async()=>{
   let result;

@@ -10,6 +10,22 @@ const renderer=new URL('../public/assets/club-chat-markdown.js',import.meta.url)
 if(existsSync(renderer))vm.runInNewContext(readFileSync(renderer,'utf8'),context);
 vm.runInNewContext(source.slice(source.indexOf('  function formatar('),source.indexOf('  function bolha(')),context);
 const render=text=>context.formatar(text);
+
+test('URLs soltas viram links sem absorver pontuação ao redor',()=>{
+  const html=render('Confira (https://example.com/material_(v2)?a=1&b=2). Depois: https://example.com/fim, e https://example.com/outro!');
+  assert.match(html, /\(<a href="https:\/\/example.com\/material_\(v2\)\?a=1&amp;b=2"[^>]*>[^<]+<\/a>\)\./);
+  assert.match(html, /href="https:\/\/example.com\/fim"/);
+  assert.match(html, /href="https:\/\/example.com\/outro"/);
+  assert.equal((html.match(/<a\b/g)||[]).length,3);
+});
+
+test('autolinks preservam código e links existentes e escapam conteúdo externo',()=>{
+  const html=render('[https://example.com/a](https://example.com/b) `https://example.com/code`\n```\nhttps://example.com/block\n```\n<https://example.com/fonte> https://example.com/\"onclick=alert(1) javascript:alert(1)');
+  assert.equal((html.match(/<a\b/g)||[]).length,3);
+  assert.match(html, /<code>https:\/\/example.com\/code<\/code>/);
+  assert.match(html, /&lt;<a href="https:\/\/example.com\/fonte"/);
+  assert.doesNotMatch(html, /href="javascript:|href="[^"]*"onclick=|<a[^>]*<a/);
+});
 test('fontes em Markdown são links reais com atributos seguros',()=>{
   const html=render('[Fonte](https://example.com/call?q=1&x=2)');
   assert.match(html,/<a\b[^>]*href="https:\/\/example.com\/call\?q=1&amp;x=2"/);

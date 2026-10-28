@@ -50,6 +50,11 @@ Deno.test("Farol libera o próprio mentorado e bloqueia outro antes da service r
 
 Deno.test("Farol resolve período explícito e 60 dias no fuso da clínica", async () => {
   const oldFetch = globalThis.fetch;
+  const RealDate = globalThis.Date;
+  globalThis.Date = class extends RealDate {
+    constructor(value?: string | number) { super(value ?? "2026-10-29T03:30:00Z"); }
+  } as DateConstructor;
+  let zone = "America/Manaus";
   const keys = ["SUPABASE_URL", "SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY", "CRM_URL", "CRM_KEY"];
   const previous = keys.map((key) => Deno.env.get(key));
   const values = ["https://site.test", "anon-test", "service-test", "https://crm.test", "crm-test"];
@@ -63,7 +68,7 @@ Deno.test("Farol resolve período explícito e 60 dias no fuso da clínica", asy
     else if (url.pathname === "/rest/v1/rpc/is_admin") body = true;
     else if (url.pathname === "/rest/v1/members") body = [{id:OWN,ativo:true}];
     else if (url.pathname === "/rest/v1/rpc/cerebro_clinica_do_membro") body = [{clinic_id:OTHER}];
-    else if (url.pathname === "/rest/v1/clinics") body = [{id:OTHER,name:"Clínica exemplo",timezone:"America/Manaus"}];
+    else if (url.pathname === "/rest/v1/clinics") body = [{id:OTHER,name:"Clínica exemplo",timezone:zone}];
     else if (url.pathname === "/rest/v1/rpc/get_funil_metrics") {
       reads.push(JSON.parse(String(init?.body)));
       body = {periodo:stages,anterior:stages,trilha_desde:null,dados_desde:null};
@@ -84,8 +89,18 @@ Deno.test("Farol resolve período explícito e 60 dias no fuso da clínica", asy
     const rolling = await ask({days:60});const next = await rolling.json();
     if (rolling.status !== 200 || next.period.days !== 60 || !next.period.start.endsWith("T04:00:00.000Z")) throw new Error("Rolling period ignored clinic timezone");
     if ((await ask({days:-1})).status !== 400) throw new Error("Invalid period became default");
+    if ((await ask({preset:"custom",from:"2026-10-01",to:"2026-12-31"})).status !== 400) throw new Error("Future custom dates were accepted");
+    const quarter = await ask({preset:"quarter",quarter:"2026-T4"});const q = await quarter.json();
+    if (quarter.status !== 200 || q.period.date_start !== "2026-10-01" || q.period.date_end !== "2026-10-28" || q.period.end !== "2026-10-29T03:59:59.999Z") throw new Error("Current quarter did not stop at clinic today");
+    zone = "America/Sao_Paulo";
+    const otherZone = await ask({preset:"quarter",quarter:"2026-T4"});const z = await otherZone.json();
+    if (otherZone.status !== 200 || z.period.date_end !== "2026-10-29" || z.period.end !== "2026-10-30T02:59:59.999Z") throw new Error("Quarter used visitor timezone instead of clinic timezone");
+    const before = reads.length;
+    const future = await ask({preset:"quarter",quarter:"2027-T1"});const f = await future.json();
+    if (future.status !== 200 || f.status !== "not_started" || f.funnel.data !== null || reads.length !== before) throw new Error("Future quarter queried CRM or invented zeroes");
   } finally {
     globalThis.fetch = oldFetch;
+    globalThis.Date = RealDate;
     keys.forEach((key, i) => previous[i] === undefined ? Deno.env.delete(key) : Deno.env.set(key, previous[i]!));
   }
 });

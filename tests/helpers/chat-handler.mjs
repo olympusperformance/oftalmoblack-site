@@ -33,6 +33,7 @@ export async function setupChat({model,farol=farolFixture(),farolStatus=200}={})
     fetch:async(url,options)=>{
       const body=JSON.parse(options.body); calls.push({url,body,headers:options.headers});
       if(url==='https://api.anthropic.com/v1/messages') return model(body,calls);
+      if(url==='https://api.openai.com/v1/embeddings') return Response.json({data:[{embedding:Array(1536).fill(0)}]});
       if(url==='https://site.test/functions/v1/farol-metricas') return Response.json(farol,{status:farolStatus});
       if(url==='https://crm.test/rest/v1/rpc/cerebro_metricas') return Response.json([{leads:130,agendamentos:30,compareceram:25,faltaram:1,taxa_comparecimento:96.2}]);
       throw new Error('Unexpected network target: '+url);
