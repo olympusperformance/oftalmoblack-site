@@ -1,7 +1,7 @@
 /* Farol: agrega somente métricas de uma clínica vinculada a um membro ativo.
    O JWT autoriza o admin ou o próprio mentorado antes de qualquer leitura com service_role. */
 import { createClient } from "npm:@supabase/supabase-js@2.49.4";
-import { PRESETS, resolvePeriod, type Preset } from "./periodo.ts";
+import { requestPreset, resolveRequestedPeriod } from "./periodo.ts";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -104,8 +104,7 @@ export async function handleFarol(req: Request): Promise<Response> {
   if (userError || !userData.user) return json({ error:"unauthorized" }, 401);
   let body: any;
   try { body = await req.json(); } catch { return json({ error:"invalid_body" }, 400); }
-  const preset: Preset = body?.preset ?? (body?.days === 7 ? "last7days" : body?.days === 30 ? "last30days" : "" as Preset);
-  if (!body || typeof body !== "object" || !UUID.test(body.member_id) || !PRESETS.includes(preset)) {
+  if (!body || typeof body !== "object" || !UUID.test(body.member_id) || !requestPreset(body)) {
     return json({ error:"invalid_parameters" }, 400);
   }
 
@@ -140,7 +139,7 @@ export async function handleFarol(req: Request): Promise<Response> {
   let zone = clinicRow.timezone || "America/Sao_Paulo";
   try { new Intl.DateTimeFormat("en-US", { timeZone:zone }); } catch { zone = "America/Sao_Paulo"; }
   const today = dateInZone(new Date(), zone);
-  const period = resolvePeriod(preset, today, body.from, body.to);
+  const period = resolveRequestedPeriod(body, today);
   if (!period) return json({ error:"invalid_period" }, 400);
   const first = period.date_start;
   const start = zonedMidnight(first, zone).toISOString();

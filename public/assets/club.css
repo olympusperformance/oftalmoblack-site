@@ -785,11 +785,21 @@ input[type="file"].inp::file-selector-button:hover{background:var(--surface);bor
   background:var(--surface-hi);border:1px solid var(--border-soft);border-radius:5px;padding:1px 5px}
 /* Data e nome no começo do item ficam em ouro: é o que o olho procura. */
 .fala-tx li strong:first-child{color:var(--gold)}
-.fala-tx ul{margin:0 0 9px;padding-left:18px;display:flex;flex-direction:column;gap:5px}
+.fala-tx ul,.fala-tx ol{margin:0 0 9px;padding-left:18px;display:flex;flex-direction:column;gap:5px}
 .fala-tx li{padding-left:2px}
 .fala-tx ul:last-child{margin-bottom:0}
 .fala.eu .fala-tx{background:rgba(var(--gold-rgb),.1);border-color:var(--gold-deep);color:var(--text)}
 .fala.erro .fala-tx{border-color:var(--danger-bd);color:var(--danger)}
+.fala-tx{min-width:0;max-width:100%;overflow-wrap:anywhere}
+.fala-tx a{color:var(--gold-strong);text-decoration:underline;text-underline-offset:3px}
+.fala-tx pre{max-width:100%;overflow:auto;white-space:pre-wrap}
+.fala-tx pre code{display:block;padding:10px}
+.chat-table{max-width:100%;overflow-x:auto;margin:10px 0;border:1px solid var(--border);border-radius:var(--r-sm)}
+.chat-table:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.chat-table table{width:100%;border-collapse:collapse;font-size:13px}
+.chat-table th,.chat-table td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--border-soft);min-width:90px}
+.chat-table th{color:var(--gold);background:var(--surface-hi);font-weight:600}
+.chat-table tr:last-child td{border-bottom:0}
 .fala-tx.pensando{color:var(--faint);font-style:italic;display:flex;align-items:center;gap:10px}
 .pulso{display:inline-flex;gap:5px;flex-shrink:0}
 .pulso i{width:6px;height:6px;border-radius:4px;background:var(--gold);animation:ponto 1.1s ease-in-out infinite}

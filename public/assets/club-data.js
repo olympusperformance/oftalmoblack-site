@@ -594,7 +594,12 @@
           return resp.json().catch(function () {
             throw new Error('O Cérebro respondeu algo que não entendi.');
           }).then(function (d) {
-            if (!resp.ok || d.erro) throw new Error(d.erro || 'O Cérebro não respondeu.');
+            if (!resp.ok || d.erro) {
+              var erro = new Error(d.erro || 'O Cérebro não respondeu.');
+              erro.code = d.codigo || 'CHAT_FAILED';
+              erro.retryable = d.tentar_novamente === true;
+              throw erro;
+            }
             return d;
           });
         });

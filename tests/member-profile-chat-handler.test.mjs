@@ -1,12 +1,13 @@
 import {test} from 'node:test';import assert from 'node:assert/strict';import vm from 'node:vm';import {readFile} from 'node:fs/promises';import {stripTypeScriptTypes} from 'node:module';
 import {profileChatTools,callProfileChatTool} from '../supabase/functions/_shared/member-profile-chat.mjs';import {emptyProfile} from '../supabase/functions/_shared/member-profile-model.mjs';
+import {historicoSeguro} from '../supabase/functions/cerebro-chat/historico.mjs';
 const A='00000000-0000-4000-8000-000000000001',B='00000000-0000-4000-8000-000000000002';
 const raw=await readFile(new URL('../supabase/functions/cerebro-chat/index.ts',import.meta.url),'utf8');
 async function setup({admin=true,preview=true,toolArgs={secoes:['equipe']}}={}){
  let handler,round=0;const advertised=[],reads=[],models=[];
  const db={auth:{getUser:async()=>({data:{user:{id:'actor'}}})},from(table){const filters={};const q={select(){return q;},eq(k,v){filters[k]=v;return q;},maybeSingle:async()=>table==='app_admins'?{data:admin?{user_id:'actor'}:null}:{data:{id:filters.id||A,nome:'Pessoa'}}};return q;}};
  const sandbox={Request,Response,AbortController,AbortSignal,TextEncoder,TextDecoder,setTimeout,clearTimeout,setInterval,clearInterval,
- Deno:{env:{get:()=> 'fixture'},serve:f=>handler=f},createClient:()=>db,profileChatTools,
+ Deno:{env:{get:()=> 'fixture'},serve:f=>handler=f},createClient:()=>db,profileChatTools,historicoSeguro,
  callProfileChatTool:(database,scope,args)=>callProfileChatTool(database,scope,args,async(_db,id,sections)=>{reads.push([id,sections]);return emptyProfile({id,nome:'Pessoa',ativo:true});}),
  fetch:async(_url,options)=>{const body=JSON.parse(options.body);models.push(body);advertised.push(body.tools.map(t=>t.name));round++;return new Response(JSON.stringify(round===1?{stop_reason:'tool_use',content:[{type:'tool_use',name:'consultar_perfil',id:'tool1',input:toolArgs}]}:{stop_reason:'end_turn',content:[{type:'text',text:'Dados consultados.'}]}),{status:200,headers:{'content-type':'application/json'}});}};
  const code=stripTypeScriptTypes(raw.replace(/^import\b[\s\S]*?;\s*/gm,''),{mode:'transform'});vm.runInNewContext(code,sandbox);
