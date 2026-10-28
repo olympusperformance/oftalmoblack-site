@@ -560,6 +560,7 @@
         linha('Instagram', m.instagram) +
         linhaLink('Grupo de Operação', m.whatsapp_url, 'abrir no WhatsApp') +
         linha('No Club desde', Club.fmtMesAno(String(m.criado_em || '').slice(0, 10))) +
+        (!admin ? '<a class="btn btn-ghost btn-block" href="/recuperar-senha/" style="margin-top:20px">Alterar senha</a>' : '') +
         '<button class="btn btn-danger btn-block" id="sair" style="margin-top:20px">' +
           ico('log-out') + 'Sair da área</button>' +
       '</div>';
