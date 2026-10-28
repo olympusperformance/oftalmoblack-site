@@ -1,5 +1,16 @@
 // O Farol autoriza o mesmo JWT e resolve período/fuso e deduplicação no CRM.
 // Só o contrato agregado do funil entra no contexto do modelo.
+function horarioDaFonte(value,zone) {
+  if (typeof value !== 'string' || !/T.*(?:Z|[+-]\d{2}:\d{2})$/.test(value) || typeof zone !== 'string') return null;
+  try {
+    const parts = Object.fromEntries(new Intl.DateTimeFormat('pt-BR',{
+      timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',
+      hourCycle:'h23',timeZoneName:'longOffset',
+    }).formatToParts(new Date(value)).map(p=>[p.type,p.value]));
+    const offset = parts.timeZoneName === 'GMT' ? 'UTC+00:00' : parts.timeZoneName.replace('GMT','UTC');
+    return `${parts.day}/${parts.month}/${parts.year} às ${parts.hour}:${parts.minute} (${zone}, ${offset})`;
+  } catch (_) { return null; }
+}
 export async function consultarMetricas({siteUrl,token,memberId,args,signal,fetcher}) {
   const body = {member_id:memberId};
   if (args.inicio !== undefined || args.fim !== undefined) {
@@ -7,7 +18,7 @@ export async function consultarMetricas({siteUrl,token,memberId,args,signal,fetc
   } else if (args.periodo !== undefined) body.preset = args.periodo;
   else body.days = args.dias ?? 30;
   const base = {fonte:'Visão Geral / get_funil_metrics',status:'indisponivel',
-    periodo:null,fuso:null,metricas:null,anterior:null,coorte:false,
+    periodo:null,fuso:null,atualizado_em_texto:null,metricas:null,anterior:null,coorte:false,
     taxas_de_conversao:null,taxa_comparecimento:null,
     definicoes:{
       novos:{rotulo:'Novos leads',unidade:'pessoas'},
@@ -43,6 +54,7 @@ export async function consultarMetricas({siteUrl,token,memberId,args,signal,fetc
   return JSON.stringify({...base,status:metricas ? 'pronto' : 'indisponivel',
     clinica:data.clinic?.name ?? null,fuso:data.clinic?.timezone ?? null,
     periodo:data.period ?? null,atualizado_em:data.updated_at ?? null,
+    atualizado_em_texto:horarioDaFonte(data.updated_at,data.clinic?.timezone),
     metricas,anterior:metricas && data.period?.preset !== 'all' ? counts(funil?.anterior) : null,
     cobertura:{trilha_desde:funil?.trilha_desde ?? null,dados_desde:funil?.dados_desde ?? null,
       aviso:'Confira a cobertura antes de comparar períodos. Datas ausentes não comprovam histórico completo.'}});

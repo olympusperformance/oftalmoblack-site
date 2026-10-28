@@ -7,6 +7,24 @@
       return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
     });
   }
+  function link(url,label) {
+    try {
+      if (/[\s\x00-\x1f\x7f\\]/.test(url) || !(/^\/(?!\/)/.test(url) ||
+          /^https?:\/\//i.test(url) && ['https:','http:'].indexOf(new URL(url).protocol) !== -1)) return null;
+      return '<a href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">' + esc(label) + '</a>';
+    } catch (_) { return null; }
+  }
+  function bareUrl(tail) {
+    var match = tail.match(/^https?:\/\/[^\s<>"'`\\\x00-\x1f\x7f]+/i);
+    if (!match) return '';
+    var url = match[0], pairs = {')':'(',']':'[','}':'{'};
+    while (url) {
+      var last = url.slice(-1), open = pairs[last];
+      if (/[.,;:!?]/.test(last) || open && url.split(last).length > url.split(open).length) url = url.slice(0,-1);
+      else break;
+    }
+    return url;
+  }
   function inline(text,depth) {
     if (depth > 4) return esc(text);
     var out = '', i = 0;
@@ -24,10 +42,8 @@
           if (text[end] === ')') balance--;
         }
         if (!balance) {
-          var url = text.slice(start,end-1), safe = false;
-          try { safe = !/[\s\x00-\x1f\x7f\\]/.test(url) && (/^\/(?!\/)/.test(url) ||
-            /^https?:\/\//i.test(url) && ['https:','http:'].indexOf(new URL(url).protocol) !== -1); } catch (_) {}
-          out += safe ? '<a href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">' + esc(label[1]) + '</a>' : esc(text.slice(i,end));
+          var url = text.slice(start,end-1);
+          out += link(url,label[1]) || esc(text.slice(i,end));
           i = end; continue;
         }
       }
@@ -36,6 +52,10 @@
       }
       if ((m = tail.match(/^\*([^*\n]+?)\*/))) {
         out += '<em>' + inline(m[1],depth+1) + '</em>'; i += m[0].length; continue;
+      }
+      if (i === 0 || !/[a-z0-9_@/]/i.test(text[i-1])) {
+        var bare = bareUrl(tail), anchor = bare && link(bare,bare);
+        if (anchor) { out += anchor; i += bare.length; continue; }
       }
       out += esc(text[i++]);
     }

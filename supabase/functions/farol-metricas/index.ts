@@ -141,6 +141,12 @@ export async function handleFarol(req: Request): Promise<Response> {
   const today = dateInZone(new Date(), zone);
   const period = resolveRequestedPeriod(body, today);
   if (!period) return json({ error:"invalid_period" }, 400);
+  if ('not_started' in period && period.not_started) {
+    return json({status:"not_started",member_id:member.id,
+      clinic:{id:clinicRow.id,name:clinicRow.name,timezone:zone},period,updated_at:new Date().toISOString(),
+      funnel:{status:"not_started",data:null},commercial:{status:"not_started",data:null},
+      finance:{status:"not_started",billed:null,received:null}});
+  }
   const first = period.date_start;
   const start = zonedMidnight(first, zone).toISOString();
   const end = new Date(zonedMidnight(addDays(period.date_end, 1), zone).getTime() - 1).toISOString();

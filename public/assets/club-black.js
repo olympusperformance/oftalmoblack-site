@@ -187,9 +187,8 @@
     if(step==='D05'&&key==='crescimento'&&live){val=live.followers_growth;source=sourceLabel(live.followers_source);stamp=live.latest_date||(q&&q.updated_at);}
     var f=state.crm&&state.crm.funnel&&state.crm.funnel.data&&state.crm.funnel.data.periodo;
     if(f&&step==='D03'&&key==='novos'){val=f.novos;source='AUTO · CRM';stamp=state.crm.updated_at;}
-    if(f&&step==='D03'&&key==='comparecimento'){val=f.agendadas?f.realizadas/f.agendadas*100:null;source='AUTO · CRM';stamp=state.crm.updated_at;}
-    if(f&&step==='D10'&&key==='cirurgias'){val=f.cirurgias;source='AUTO · CRM';stamp=state.crm.updated_at;}
-    // Procedimentos e consultas têm unidades distintas; não dividir esses contadores.
+    // O Farol não fornece coorte de comparecimento nem separa exames de cirurgias.
+    // Preserve a apuração manual desses indicadores; ausência não significa zero.
     var last=state.ig[state.ig.length-1];
     if(last&&step==='D05'&&key==='seguidores'){val=last.seguidores;source='AUTO · Instagram';stamp=last.dia;}
     return {value:val==null||val===''?null:val,source:source,stamp:stamp};
@@ -375,7 +374,7 @@
     var others=await Promise.allSettled([
       C.sb.rpc('cb_ranking',{p_period:state.rankingPeriod}).then(ok),
       C.sb.from('member_graduations').select('member_id,source_date,is_demo,snapshot').eq('member_id',id).then(ok),
-      C.sb.functions.invoke('farol-metricas',{body:{member_id:id,preset:'custom',from:range.start,to:range.end}}).then(ok),
+      C.sb.functions.invoke('farol-metricas',{body:{member_id:id,preset:'quarter',quarter:period}}).then(ok),
       C.sb.from('instagram_serie').select('dia,seguidores').eq('member_id',id).gte('dia',range.start).lte('dia',range.end).order('dia').then(ok),
       C.sb.from('cb_scores').select('*').eq('member_id',id).order('period').then(ok),
       state.rankingPeriod===period?Promise.resolve(null):C.sb.rpc('cb_ranking',{p_period:period}).then(ok)
