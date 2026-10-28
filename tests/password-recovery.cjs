@@ -62,6 +62,16 @@ function stub(session, error = null) {
     assert.deepEqual(await recovery.evaluate(() => window.updated), {password: 'new-password-fixture'});
     assert.deepEqual(await recovery.evaluate(() => window.signedOut), {scope: 'local'});
 
+    const loggedIn = await pageWith({user: {id: 'fixture'}});
+    await loggedIn.goto(origin + '/recuperar-senha/');
+    await loggedIn.locator('#senhaForm').waitFor({state: 'visible'});
+    await loggedIn.locator('#senha').fill('new-password-fixture');
+    await loggedIn.locator('#confirmacao').fill('new-password-fixture');
+    await loggedIn.locator('#salvar').click();
+    await loggedIn.locator('#mensagem').waitFor({state: 'visible'});
+    assert.deepEqual(await loggedIn.evaluate(() => window.updated), {password: 'new-password-fixture'});
+    assert.deepEqual(await loggedIn.evaluate(() => window.signedOut), {scope: 'local'});
+
     const invalid = await pageWith({user: {id: 'existing-session'}});
     await invalid.goto(origin + '/recuperar-senha/#error=access_denied&error_code=otp_expired');
     await invalid.locator('#emailForm').waitFor({state: 'visible'});
@@ -85,6 +95,6 @@ function stub(session, error = null) {
     await redirect.locator('#senhaForm').waitFor({state: 'visible'});
     assert.equal(new URL(redirect.url()).pathname, '/recuperar-senha/');
     assert.deepEqual(errors, []);
-    console.log('6 cenários de recuperação passaram em Chromium.');
+    console.log('7 cenários de recuperação e alteração passaram em Chromium.');
   } finally { await browser.close(); server.close(); }
 })().catch(e => {console.error(e); server.close(); process.exitCode = 1;});
