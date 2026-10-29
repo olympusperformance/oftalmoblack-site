@@ -99,7 +99,7 @@
   /* O histórico que o modelo recebe vem dele mesmo (a função devolve a versão
      que ela quer na próxima volta); a lista de bolhas é só o que a pessoa vê.
      Guardar os dois separados evita reconstruir uma coisa a partir da outra. */
-  var chat = { falas: [], historico: [], pensando: false };
+  var chat = { falas: [], historico: [], pensando: false, ready:false, turn:0, notice:'' };
 
   /* O renderizador permite links e tabelas, escapando todo HTML das fontes. */
   function formatar(txt) {
@@ -116,6 +116,9 @@
 
   function renderChat() {
     var fluxo = $('chatFluxo');
+    var status = $('chatStatus'), reset = $('chatReset');
+    if (status) status.textContent = chat.notice || 'Últimos 6 pares de conversa, até 32 mil caracteres. Retomada neste navegador por 24h sem interação, no máximo 7 dias.';
+    if (reset) reset.disabled = chat.pensando || chat.ready === false;
     if (!chat.falas.length && !chat.pensando) {
       fluxo.innerHTML =
         '<div class="chat-vazio">' + ico('search') +
@@ -141,28 +144,74 @@
     fluxo.scrollTop = fluxo.scrollHeight;
   }
 
+  function restaurarChat(aviso, snapshot) {
+    if (!chat.cache) return;
+    var state = snapshot || chat.cache.restore();
+    chat.turn++;
+    chat.pensando = false;
+    chat.historico = state.historico;
+    chat.falas = state.historico.map(function (m) {
+      return {quem:m.role === 'user' ? 'eu' : 'ele', texto:m.content};
+    });
+    if (state.pending) {
+      chat.falas.push({quem:'eu',texto:state.pending});
+      chat.falas.push({quem:'ele erro',texto:'Esta pergunta ficou sem resposta. Você pode tentar novamente com o contexto mantido.',repetir:state.pending});
+    }
+    chat.notice = !state.persisted ? 'Este navegador não permitiu salvar. A conversa atual funciona, mas não será retomada após sair.' :
+      state.reason === 'expired' ? 'A conversa anterior expirou. Iniciamos uma nova conversa.' :
+      aviso || (state.historico.length || state.pending ? 'Conversa retomada neste navegador. Mantemos os últimos 6 pares e até 32 mil caracteres, por 24h sem interação e no máximo 7 dias.' : '');
+    $('chatInput').disabled = chat.ready === false;
+    renderChat();
+  }
+
   function perguntar(texto, repetirIndice) {
     texto = (texto || '').trim();
-    if (!texto || chat.pensando) return;
+    if (!texto || texto.length > 600 || chat.pensando || chat.ready === false) return;
     if (repetirIndice !== undefined) {
       var falha = chat.falas[repetirIndice];
       if (repetirIndice !== chat.falas.length-1 || !falha || falha.repetir !== texto) return;
-      chat.falas.pop();
-    } else chat.falas.push({ quem:'eu', texto:texto });
+    }
+    var ticket = chat.cache && chat.cache.begin(texto);
+    if (chat.cache && !ticket) {
+      restaurarChat('A conversa mudou em outra aba. Confira o contexto e envie sua pergunta novamente.');
+      $('chatInput').value = texto;
+      return;
+    }
+    if (repetirIndice !== undefined) chat.falas.pop();
+    else chat.falas.push({ quem:'eu', texto:texto });
+    var turn = chat.turn = (chat.turn || 0) + 1;
     chat.pensando = true;
     $('chatInput').value = '';
     $('chatInput').disabled = true;
     renderChat();
 
-    Club.data.cerebro.perguntar(texto, chat.historico, admin ? st.membro.id : undefined).then(function (d) {
+    Club.data.cerebro.perguntar(texto, chat.historico, admin ? st.membro.id : undefined, chat.userId).then(function (d) {
+      if (turn !== chat.turn) return;
+      if (chat.cache) {
+        if (!chat.cache.complete(ticket,d.historico)) {
+          restaurarChat('A conversa mudou. A resposta anterior não foi adicionada à nova conversa.');
+          return;
+        }
+        var state = chat.cache.state();
+        chat.historico = state.historico;
+        chat.falas = state.historico.map(function (m) { return {quem:m.role === 'user' ? 'eu' : 'ele',texto:m.content}; });
+        chat.notice = state.persisted ? '' : 'Não foi possível salvar neste navegador. Esta conversa está disponível só enquanto a página permanecer aberta.';
+        return;
+      }
       chat.historico = d.historico || [];
       chat.falas.push({ quem:'ele', texto:d.resposta || 'Não achei nada sobre isso.' });
     }).catch(function (err) {
+      if (turn !== chat.turn) return;
+      if (chat.cache && !chat.cache.accepts(ticket)) {
+        restaurarChat('A conversa mudou em outra aba.');
+        return;
+      }
       /* O erro entra como fala do Cérebro: um toast desapareceria e a pessoa
          ficaria olhando a pergunta sem resposta, sem saber por quê. */
       chat.falas.push({ quem:'ele erro', texto: err.message || 'Não consegui responder agora.',
         relogin: err.code === 'AUTH_REQUIRED', repetir: err.retryable ? texto : null });
     }).then(function () {
+      if (turn !== chat.turn) return;
       chat.pensando = false;
       $('chatInput').disabled = false;
       renderChat();
@@ -621,6 +670,22 @@
     perguntar($('chatInput').value);
   });
 
+  $('chatReset').addEventListener('click', function () {
+    if (!chat.cache || chat.pensando || !chat.ready) return;
+    chat.cache.reset();
+    $('chatInput').value = '';
+    restaurarChat('Nova conversa iniciada. O contexto anterior foi removido deste navegador.');
+  });
+
+  window.addEventListener('storage', function (e) {
+    if (chat.ready && chat.cache && (!e.key || e.key === Club.chatSessions.key) && !chat.cache.isCurrent()) {
+      restaurarChat('A conversa foi atualizada em outra aba.');
+    }
+  });
+  window.addEventListener('focus', function () {
+    if (chat.ready && chat.cache && !chat.pensando) restaurarChat();
+  });
+
   $('chatFluxo').addEventListener('click', function (e) {
     var retry = e.target.closest('[data-chat-retry]');
     if (retry) {
@@ -668,6 +733,19 @@
     sessao = s;
     admin = s.role === 'admin';
     return carregar().then(function () {
+      chat.userId = s.userId;
+      chat.cache = Club.chatSessions.open(s.userId,st.membro.id);
+      chat.ready = true;
+      restaurarChat(undefined,chat.cache.state());
+      Club.sb.auth.onAuthStateChange(function (_event, current) {
+        if (!current || !current.user || current.user.id !== chat.userId) {
+          chat.turn++; chat.ready = false; chat.pensando = false;
+          chat.historico = []; chat.falas = [];
+          chat.notice = 'Sua sessão mudou. Entre novamente para retomar sua conversa.';
+          $('chatInput').disabled = true;
+          renderChat();
+        }
+      });
       render();
       renderAvisoAdmin();
       var alvoInicial = location.hash.slice(1);

@@ -42,6 +42,12 @@ test('sem sessão pede login antes de chamar o chat', async () => {
   assert.equal(s.calls.length, 0);
 });
 
+test('conta trocada antes do envio não recebe o histórico restaurado de outra conta', async () => {
+  const s = setup({current:session('other', 'member-b')});
+  await assert.rejects(s.Club.data.cerebro.perguntar('Pergunta', [], undefined, 'member-a'), {code:'AUTH_REQUIRED'});
+  assert.equal(s.calls.length,0);
+});
+
 test('erro temporário na renovação não é tratado como revogação', async () => {
   const s = setup({ refresh: { error: { status: 503, message: 'Unavailable' } } });
   await assert.rejects(s.Club.data.cerebro.perguntar('Pergunta'), e => e.code !== 'AUTH_REQUIRED' && /Tente novamente/.test(e.message));
