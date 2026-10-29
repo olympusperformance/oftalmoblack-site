@@ -1,4 +1,4 @@
-/* Instagram: métricas e Turbina compartilham a navegação de admin e membro. */
+/* Instagram: métricas e Turbinar compartilham a navegação de admin e membro. */
 (function (C) {
   'use strict';
   var root, options, active = false, selected = 'metricas', revision = 0;
@@ -44,10 +44,10 @@
       dialog.className = 'ig-tutorial';
       dialog.setAttribute('aria-labelledby', 'igTutorialTitle');
       dialog.setAttribute('aria-describedby', 'igTutorialDescription');
-      dialog.innerHTML = '<div class="modal-h"><div><h2 id="igTutorialTitle">Como usar o Turbina</h2>' +
+      dialog.innerHTML = '<div class="modal-h"><div><h2 id="igTutorialTitle">Como usar o Turbinar</h2>' +
         '<p class="sub" id="igTutorialDescription">Um minuto para começar. Reveja quando quiser pelo botão Tutorial.</p></div>' +
         '<button class="btn btn-ghost btn-sm" type="button" data-tutorial-close aria-label="Fechar tutorial">' + C.icon('x') + '</button></div>' +
-        '<video controls playsinline preload="metadata" tabindex="0" aria-label="Tutorial do Turbina" poster="/assets/tutorials/turbina-v1.jpg"></video>' +
+        '<video controls playsinline preload="metadata" tabindex="0" aria-label="Tutorial do Turbinar" poster="/assets/tutorials/turbina-v1.jpg"></video>' +
         '<p class="ig-video-error" role="alert" hidden>Não foi possível carregar o vídeo. <a href="' + videoUrl + '" target="_blank" rel="noopener">Abrir o vídeo</a></p>';
       document.body.appendChild(dialog);
       dialog.querySelector('[data-tutorial-close]').onclick = closeTutorial;

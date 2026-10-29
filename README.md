@@ -47,16 +47,16 @@ fontes, formulários e painéis; `club-black.css` usa os temas existentes. Nenhu
 dado de demonstração é incluído nos arquivos públicos. Os números usados na QA
 ficam exclusivamente em `tests/`.
 
-### Instagram: Métricas e Turbina
+### Instagram: Métricas e Turbinar
 
-Instagram abre em **Métricas**. O controle no topo alterna para **Turbina**,
+Instagram abre em **Métricas**. O controle no topo alterna para **Turbinar**,
 que reúne os impulsionamentos antes apresentados como Campanha de Branding.
 A equipe escolhe o mentorado; o membro consulta apenas sua campanha. As rotas
 `#instagram/turbina` (membro) e `#igMetricas/turbina` (admin) preservam a subaba;
 `#branding` continua abrindo a campanha. A prévia conserva mentorado e subaba
 na ida e volta.
 
-Na primeira entrada em Turbina, `club-instagram-tabs.js` abre o tutorial de um
+Na primeira entrada em Turbinar, `club-instagram-tabs.js` abre o tutorial de um
 minuto. A exibição (não a conclusão do vídeo) fica registrada em
 `cb_instagram_turbina_tutorial_seen_at`, nos metadados da própria conta Auth,
 com cache local por usuário. `getUser()` reconhece a preferência em outro
