@@ -12,10 +12,10 @@ function setup({ current = session('old'), refresh = { data: { session: session(
     getSession: async () => ({ data: { session: current } }),
     refreshSession: async () => { refreshes++; return refresh; }
   } } };
-  vm.runInNewContext(dataSource, { window: { Club }, fetch: async (_url, options) => {
+  vm.runInNewContext(dataSource, { window: { Club, crypto: globalThis.crypto }, AbortController, setTimeout, clearTimeout, fetch: async (_url, options) => {
     calls.push(options);
     return calls.length === 1 ? Response.json(errorBody, { status })
-      : Response.json({ resposta: 'OK', historico: [] });
+      : Response.json({ resposta: 'OK', historico: [{role:'user',content:'Pergunta'},{role:'assistant',content:'OK'}] });
   } });
   return { Club, calls, refreshes: () => refreshes };
 }
@@ -73,7 +73,7 @@ test('um segundo 401 termina sem loop de renovação', async () => {
     getSession: async () => ({ data: { session: session('old') } }),
     refreshSession: async () => { refreshes++; return { data: { session: session('new') } }; }
   } } };
-  vm.runInNewContext(dataSource, { window: { Club }, fetch: async () => {
+  vm.runInNewContext(dataSource, { window: { Club, crypto: globalThis.crypto }, AbortController, setTimeout, clearTimeout, fetch: async () => {
     calls++; return Response.json({ erro: 'sessão inválida' }, { status: 401 });
   } });
   await assert.rejects(Club.data.cerebro.perguntar('Pergunta'), { code: 'AUTH_REQUIRED' });

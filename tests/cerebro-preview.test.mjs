@@ -10,14 +10,16 @@ test('chat envia alvo da pré-visualização e omite alvo no acesso normal', asy
   const Club = { cfg: { supabaseUrl: 'https://example.test' }, sb: {
     auth: { getSession: async () => ({ data: { session: { access_token: 'sessao' } } }) },
   } };
-  vm.runInNewContext(source, { window: { Club }, fetch: async (url, options) => {
+  vm.runInNewContext(source, { window: { Club, crypto: globalThis.crypto }, AbortController, setTimeout, clearTimeout, fetch: async (url, options) => {
     calls.push({ url, ...options });
-    return Response.json({ resposta: 'OK', historico: [] });
+    return Response.json({ resposta: 'OK', historico: [{role:'user',content:'pergunta'},{role:'assistant',content:'OK'}] });
   } });
   const history = [{ role: 'user', content: 'anterior' }];
   await Club.data.cerebro.perguntar('pergunta', history, 'mentorado-escolhido');
   await Club.data.cerebro.perguntar('pergunta');
-  assert.deepEqual(JSON.parse(calls[0].body), { pergunta: 'pergunta', historico: history, member_id: 'mentorado-escolhido' });
+  const bodies=calls.map(c=>JSON.parse(c.body));
+  bodies.forEach(b=>{assert.match(b.request_id,/^[0-9a-f-]{36}$/);delete b.request_id;});
+  assert.deepEqual(bodies[0], { pergunta: 'pergunta', historico: history, member_id: 'mentorado-escolhido' });
   assert.equal(calls[0].headers.Authorization, 'Bearer sessao');
-  assert.deepEqual(JSON.parse(calls[1].body), { pergunta: 'pergunta', historico: [] });
+  assert.deepEqual(bodies[1], { pergunta: 'pergunta', historico: [] });
 });

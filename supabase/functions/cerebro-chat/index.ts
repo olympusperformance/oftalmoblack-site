@@ -168,6 +168,8 @@ Deno.serve(async (req) => {
   const { pergunta, historico = [], member_id: previewMemberId } = body;
   if (typeof pergunta !== "string" || !pergunta.trim()) return json({ erro: "escreva uma pergunta" }, 400);
   if (!Array.isArray(historico)) return json({ erro: "histórico inválido" }, 400);
+  const requestId = typeof body.request_id === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(body.request_id)
+    ? body.request_id : crypto.randomUUID();
 
   const preview = previewMemberId !== undefined;
   if (preview) {
@@ -222,6 +224,12 @@ Cite a data quando referir algo que foi conversado.`;
   const cancelamento = new AbortController();
   const signal = AbortSignal.any([req.signal, cancelamento.signal]);
   const prazo = setTimeout(() => cancelamento.abort(), 120_000);
+  const inicio = Date.now();
+  const registrar = (estado: string, codigo?: string) => console.info(JSON.stringify({
+    evento: "cerebro_request", request_id: requestId, estado, codigo,
+    duracao_ms: Date.now() - inicio,
+  }));
+  registrar("started");
 
   async function responder(progresso: Progresso) {
     const mensagens: any[] = [...historicoSeguro(historico), { role: "user", content: pergunta }];
@@ -249,9 +257,9 @@ Cite a data quando referir algo que foi conversado.`;
       if (!r.ok) {
         // Metadados bastam para correlacionar falhas. Nunca registrar o corpo
         // do provedor: ele pode repetir perguntas, fontes ou credenciais.
-        const requestId = r.headers.get("request-id") ?? "";
-        console.error(JSON.stringify({evento:"cerebro_model_error",status:r.status,
-          request_id:/^[a-zA-Z0-9_-]{1,128}$/.test(requestId) ? requestId : null}));
+        const providerRequestId = r.headers.get("request-id") ?? "";
+        console.error(JSON.stringify({evento:"cerebro_model_error",status:r.status,chat_request_id:requestId,
+          request_id:/^[a-zA-Z0-9_-]{1,128}$/.test(providerRequestId) ? providerRequestId : null}));
         const busy = r.status === 429 || r.status >= 500;
         throw new ProviderError(busy ? "MODEL_BUSY" : "MODEL_REQUEST_FAILED",busy,
           busy ? "O Cérebro está temporariamente indisponível. Tente novamente em instantes."
@@ -281,7 +289,7 @@ Cite a data quando referir algo que foi conversado.`;
       const texto = resp.content.filter((c: any) => c.type === "text").map((c: any) => c.text).join("\n");
       // Persistir só a pergunta e o texto final: a resposta do provedor pode
       // conter blocos internos que não pertencem ao histórico do usuário.
-      return { resposta: texto, historico: historicoSeguro([
+      return { request_id: requestId, resposta: texto, historico: historicoSeguro([
         ...historicoSeguro(historico),{role:"user",content:pergunta},{role:"assistant",content:texto},
       ]) };
     }
@@ -292,13 +300,13 @@ Cite a data quando referir algo que foi conversado.`;
     const erro = signal.aborted ? "A consulta demorou mais que o esperado ou foi interrompida. Tente novamente."
       : err instanceof Error && /^(Não consegui|O Cérebro|A conversa)/.test(err.message)
         ? err.message : "Não consegui concluir a resposta. Tente novamente.";
-    return {erro,codigo:signal.aborted ? "CHAT_TIMEOUT" : err instanceof ProviderError ? err.codigo : "CHAT_FAILED",
+    return {erro,request_id:requestId,codigo:signal.aborted ? "CHAT_TIMEOUT" : err instanceof ProviderError ? err.codigo : "CHAT_FAILED",
       tentar_novamente:signal.aborted || !(err instanceof ProviderError) || err.tentarNovamente};
   }
 
   if (!streaming) {
-    try { return json(await responder(() => {})); }
-    catch (err) { return json(erroPublico(err), 502); }
+    try { const resposta = await responder(() => {}); registrar("completed"); return json(resposta); }
+    catch (err) { const erro = erroPublico(err); registrar("failed", erro.codigo); return json(erro, 502); }
     finally { clearTimeout(prazo); cancelamento.abort(); }
   }
 
@@ -315,8 +323,8 @@ Cite a data quando referir algo que foi conversado.`;
         if (!fechado) controller.enqueue(encoder.encode(": conectado\n\n"));
       }, 15_000);
       responder((etapa) => enviar("progresso", etapa))
-        .then((resposta) => enviar("resultado", resposta))
-        .catch((err) => enviar("erro", erroPublico(err)))
+        .then((resposta) => { registrar("completed"); enviar("resultado", resposta); })
+        .catch((err) => { const erro = erroPublico(err); registrar("failed", erro.codigo); enviar("erro", erro); })
         .finally(() => {
           clearTimeout(prazo);
           clearInterval(pulso);
