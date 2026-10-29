@@ -1,4 +1,4 @@
-import {QUESTIONS,UFS,createState,transition,reviewRows,formatWhatsAppForDisplay} from './model.mjs';
+import {QUESTIONS,UFS,createState,transition,reviewRows,formatWhatsAppForDisplay} from './model.js';
 
 const landing=document.getElementById('landing');
 const research=document.getElementById('application-screen');

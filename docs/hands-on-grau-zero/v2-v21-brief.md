@@ -39,3 +39,7 @@ Assets: marca/fotos existentes em `public/hands-on-grau-zero/assets/` e `public/
 Responsivo320/375/390/768/1440, paisagem, sem overflow. Alvos44px, labels reais, focus visível, radios nativos ou semântica equivalente, erros por campo, `prefers-reduced-motion`, contraste legível. Testes devem cobrir validação, zero, voltar/alterar, conclusão sem envios, igualdade funcional, ausência de PII em URL/storage e ausência de regressão na principal/v0/workshop. Artefatos de QA fora depublic. Revisão visual por screenshots e revisão de código antes da publicação das prévias.
 
 Não alterar backend, receptor, scripts de tracking da principal, CRM, filas, campanhas, condições comerciais ou arquivos das outras frentes. Código público não recebe este contexto privado nem dados de contatos.
+
+## Compatibilidade da publicação
+
+A conferência HTTP da PR50 encontrou os módulos `.mjs` servidos como `application/octet-stream` pelo nginx de produção, bloqueando sua execução no navegador. Controlador e modelo usam `.js` com `type="module"`, import relativo e teste ajustados. Conferir o MIME JavaScript dos dois arquivos publicados e percorrer a aplicação no domínio final antes de entregar os links. Essa correção não exige alterar o nginx ou o pacote raiz.

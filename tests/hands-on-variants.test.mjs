@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-const path = '../public/hands-on-grau-zero/v2/assets/model.mjs';
+const path = '../public/hands-on-grau-zero/v2/assets/model.js';
 let model;
 try { model = await import(path); } catch { model = {}; }
 
