@@ -2,7 +2,8 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createHandler,application,metaEvent,eventId} from '../supabase/functions/hands-on-capi/core.mjs';
 const id='ec797901-a4bb-439f-9f3b-259ea5aa7bd8';
-const candidate={schema_version:1,produto:'hands_on_grau_zero',request_id:id,nome:'Teste Privado',whatsapp:'5511999990000',crm:'12345',uf:'AM',experiencia_catarata:'ainda_nao_opero',cirurgias_mes:0,experiencia_lentes:'ainda_nao_implanto',oferta_premium:'nao',clinica:'nao',objetivo:'Texto privado nunca enviado a Meta',page:'https://oftalmoblack.com.br/hands-on-grau-zero/',utm_source:'ig',utm_medium:'stories'};
+// This harness exercises the preserved spreadsheet receiver, now limited to v0.
+const candidate={schema_version:1,produto:'hands_on_grau_zero',request_id:id,nome:'Teste Privado',whatsapp:'5511999990000',crm:'12345',uf:'AM',experiencia_catarata:'ainda_nao_opero',cirurgias_mes:0,experiencia_lentes:'ainda_nao_implanto',oferta_premium:'nao',clinica:'nao',objetivo:'Texto privado nunca enviado a Meta',page:'https://oftalmoblack.com.br/hands-on-grau-zero/v0/',utm_source:'ig',utm_medium:'stories'};
 function harness(){
  const rows=new Map(),traffic=[],pending=[];let sheets=0,metaCalls=0,metaMode='ok',sheetMode='ok';
  const env={metaToken:'private-meta-token',dispatchKey:'dispatch-secret',testKey:'test-secret',anonKey:'public-anon',sheetEndpoint:'https://sheet.test/',productionEnabled:true};

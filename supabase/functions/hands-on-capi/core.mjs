@@ -31,6 +31,7 @@ export function application(d) {
   n.oferta_premium=one(d.oferta_premium,['nao','alguns_casos','rotina']);
   n.clinica=one(d.clinica,['proprietario','socio','nao']);n.objetivo=text(d.objetivo,2000);
   for(const key of ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','aid','fbclid','gclid'])n[key]=text(d[key]);
+  for(const key of ['gbraid','wbraid'])if(d[key]!=null)n[key]=text(d[key]);
   for(const key of ['page','referrer']){
     n[key]=text(d[key],2048);
     if(n[key]&&!/^https?:\/\/[^\s/]+(?:\/[^\s]*)?$/i.test(n[key]))fail('invalid_input');
@@ -62,15 +63,18 @@ export async function metaEvent(name,id,context,req,now,phone='') {
     event_source_url:SOURCE,user_data:user,custom_data:{content_name:'Hands-on Grau Zero',content_category:'oftalmoblack_b2b'}};
 }
 export function createHandler(deps) {
-  const {db,env,fetcher=fetch,clock=()=>Date.now(),background=p=>p.catch(()=>{})}=deps;
+  const {db,env,captureCrm,fetcher=fetch,clock=()=>Date.now(),background=p=>p.catch(()=>{})}=deps;
   const cors=origin=>({'Access-Control-Allow-Origin':origins.has(origin)?origin:'https://oftalmoblack.com.br',
     'Access-Control-Allow-Headers':'content-type,apikey,authorization,x-hogz-test',
     'Access-Control-Allow-Methods':'GET,POST,OPTIONS','Vary':'Origin','Cache-Control':'no-store'});
   const json=(body,status,origin)=>new Response(JSON.stringify(body),{status,headers:{...cors(origin),'Content-Type':'application/json'}});
   const secretEq=(a,b)=>{if(!a||!b||a.length!==b.length)return false;let x=0;for(let i=0;i<a.length;i++)x|=a.charCodeAt(i)^b.charCodeAt(i);return x===0;};
-  async function enqueue(event,hash,mode,testCode,sheetConfirmed) {
+  async function enqueue(event,hash,mode,testCode,sheetConfirmed,captureStore=null,captureStatus=null) {
     const row={event_id:event.event_id,request_id:event.event_id.split(':')[1],event_name:event.event_name,payload_hash:hash,
       mode,sheet_confirmed:sheetConfirmed,event_payload:event,test_event_code:mode==='test'?testCode:null,status:mode==='qa'?'qa':'pending'};
+    row.capture_confirmed=sheetConfirmed||captureStore==='crm';
+    row.capture_store=captureStore||(sheetConfirmed?'sheet_legacy':null);
+    row.capture_status=captureStatus;
     const saved=await db.insert(row);
     if(saved.payload_hash!==hash||saved.mode!==mode)fail('request_conflict',409);
     return saved;
@@ -99,7 +103,7 @@ export function createHandler(deps) {
   return async function handler(req){
     const origin=req.headers.get('origin')||'';
     if(req.method==='OPTIONS')return new Response(null,{status:origins.has(origin)?204:403,headers:cors(origin)});
-    if(req.method==='GET')return json({ok:true,service:'hands-on-capi',version:1},200,origin);
+    if(req.method==='GET')return json({ok:true,service:'hands-on-capi',version:2,crm_enabled:env.crmEnabled===true},200,origin);
     if(req.method!=='POST')return json({ok:false,error:'method'},405,origin);
     try{
       const raw=await req.text();if(raw.length>30000)fail('invalid_input',413);
@@ -133,17 +137,29 @@ export function createHandler(deps) {
       const n=application(d),hash=await sha(JSON.stringify(n));
       const id=eventId(n.request_id,'Lead');let saved=await db.get(id);
       if(saved&&(saved.payload_hash!==hash||saved.mode!==mode))fail('request_conflict',409);
+      const principal=!new URL(n.page||SOURCE).pathname.includes('/v0/');
+      let crmStatus=saved?.capture_status||null;
       if(!saved){
-        const response=await fetcher(env.sheetEndpoint,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify(n),signal:AbortSignal.timeout(22000)});
-        let ack;try{ack=await response.json();}catch{fail('sheet_unconfirmed',502);}
-        if(!response.ok||ack.ok!==true||ack.request_id!==n.request_id)fail('sheet_unconfirmed',502);
+        if(principal){
+          if(env.crmEnabled!==true||typeof captureCrm!=='function')fail('unavailable',503);
+          const crmPayload={...n};
+          for(const key of ['fbp','fbc'])if(typeof d.tracking?.[key]==='string'&&d.tracking[key].length<=500&&/^fb\.\d+\.\d+\.[A-Za-z0-9_.-]+$/.test(d.tracking[key]))crmPayload[key]=d.tracking[key];
+          const ack=await captureCrm(crmPayload,mode==='production'?'production':'qa');
+          if(ack?.ok!==true||ack.request_id!==n.request_id||!['applied','review'].includes(ack.status))fail('crm_unconfirmed',502);
+          crmStatus=ack.status;
+        }else{
+          const response=await fetcher(env.sheetEndpoint,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify(n),signal:AbortSignal.timeout(22000)});
+          let ack;try{ack=await response.json();}catch{fail('sheet_unconfirmed',502);}
+          if(!response.ok||ack.ok!==true||ack.request_id!==n.request_id)fail('sheet_unconfirmed',502);
+        }
         const event=await metaEvent('Lead',n.request_id,d.tracking,req,clock(),n.whatsapp);
-        saved=await enqueue(event,hash,mode,testCode,true);
+        saved=await enqueue(event,hash,mode,testCode,!principal,principal?'crm':'sheet_legacy',crmStatus);
       }
       if(mode!=='qa'&&saved.status!=='accepted')background(dispatch());
-      return json({ok:true,request_id:n.request_id,tracking_mode:mode,event_id:id},200,origin);
+      return json({ok:true,request_id:n.request_id,tracking_mode:mode,event_id:id,
+        capture_store:saved.capture_store||(saved.sheet_confirmed?'sheet_legacy':null),...(crmStatus?{crm_status:crmStatus}:{})},200,origin);
     }catch(error){
-      const known=['invalid_input','invalid_page','invalid_json','missing_matching','request_conflict','test_unauthorized','invalid_test_code','unauthorized','invalid_operation','rate_limited','sheet_unconfirmed'];
+      const known=['invalid_input','invalid_page','invalid_json','missing_matching','request_conflict','test_unauthorized','invalid_test_code','unauthorized','invalid_operation','rate_limited','sheet_unconfirmed','crm_unconfirmed'];
       return json({ok:false,error:known.includes(error.message)?error.message:'unavailable'},error.status||503,origin);
     }
   };
