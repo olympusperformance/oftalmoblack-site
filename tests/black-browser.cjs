@@ -562,7 +562,7 @@ const methodCatalog=require('./fixtures/method-catalog.json');
    }
    await page.evaluate(()=>{for(const key of Object.keys(window.__fixtures))delete window.__fixtures[key];Object.assign(window.__fixtures,window.__savedGraduationFixtures);});
    await page.locator('#black-graduacao [data-cb-reload]').click();await page.locator('#black-graduacao .cb-score').waitFor();
-   await page.locator('#rail [data-nav="modulos"]').click();assert.equal(await page.locator('#black-modulos .cb-module').count(),2);await page.locator('#black-modulos [data-nav=iris]').click();assert.equal(await page.locator('[data-view=iris]').isVisible(),true);
+   await page.locator('#rail [data-nav="modulos"]').click();assert.equal(await page.locator('#black-modulos .cb-module').count(),3);assert.equal(await page.locator('#black-modulos .art-compact').count(),0,'Checklist dentro do card do módulo, sem segunda grade');await page.locator('#black-modulos [data-nav=iris]').click();assert.equal(await page.locator('[data-view=iris]').isVisible(),true);
    if(!isAdmin){for(const key of ['cerebro','profile']){await page.locator('header [data-nav='+key+']').click();assert.equal(await page.locator('[data-view='+key+']').isVisible(),true);}}
    await page.locator('#rail [data-nav="subida"]').click();await page.locator('#black-subida .cb-card[data-cb-step=D08]').click();await page.locator('.cb-drawer [data-nav=encontro]').click();assert.equal(await page.locator('[data-view=encontro]').isVisible(),true);assert.equal(await page.locator('.cb-drawer').count(),0);
    await page.locator('#rail [data-nav="subida"]').click();
