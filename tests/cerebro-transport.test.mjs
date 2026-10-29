@@ -101,4 +101,3 @@ test('erro do modelo mantém IDs distintos da tentativa e do provedor',async()=>
  const log=app.logs.map(x=>JSON.parse(x[0])).find(x=>x.evento==='cerebro_model_error');
  assert.equal(log.chat_request_id,id);assert.equal(log.request_id,'provider-attempt');
 });
-

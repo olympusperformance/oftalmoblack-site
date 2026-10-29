@@ -62,4 +62,3 @@ Rollback: restaurar os assets e versões de cache anteriores; restaurar cerebro-
 “completed” no log da função indica resposta preparada, não recebimento pelo navegador. O UUID de diagnóstico não é autorização nem mecanismo de idempotência de efeitos externos. As ferramentas atuais do chat são consultivas; uma futura ferramenta de escrita exigirá idempotência própria antes de permitir retries.
 
 A conversa continua limitada à sessão da página. Persistência após recarga/dispositivo e recuperação automática de respostas concluídas no servidor não fazem parte desta mudança.
-
