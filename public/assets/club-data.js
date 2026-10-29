@@ -561,7 +561,7 @@
      no banco se o usuário autenticado é administrador antes de aceitar esse
      alvo. Ver docs/cerebro/chat-function.ts no repositório do CRM. */
   C.data.cerebro = {
-    perguntar: function (pergunta, historico, memberId) {
+    perguntar: function (pergunta, historico, memberId, expectedUserId) {
       var requestId = window.crypto.randomUUID();
       var phase = 'session';
       function falha(code, message, retryable) {
@@ -647,7 +647,8 @@
       return C.sb.auth.getSession().then(function (r) {
         if (r.error) throw sessaoEncerrada(r.error) ? pedirLogin() : r.error;
         var session = r.data && r.data.session;
-        if (!session || !session.access_token) throw pedirLogin();
+        if (!session || !session.access_token ||
+            (expectedUserId && (!session.user || session.user.id !== expectedUserId))) throw pedirLogin();
         return enviar(session, false);
       }).catch(function (err) {
         if (err.requestId !== requestId) err = falha('AUTH_TEMPORARY',

@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#07060A">
 <title>Cérebro Black — Área do Mentorado</title>
 <link rel="icon" href="/assets/favicon.png">
-<link rel="stylesheet" href="/assets/club.css?v=20261028-chat">
+<link rel="stylesheet" href="/assets/club.css?v=20261028-chat-history">
 <link rel="stylesheet" href="/assets/club-graduacao.css?v=20260924">
 <link rel="stylesheet" href="/assets/club-farol.css?v=20260929">
 <link rel="stylesheet" href="/assets/club-black.css?v=20261008-vitrine-rodadas">
@@ -134,9 +134,13 @@
       <div class="hello"><h1>Cérebro</h1>
         <p>Pergunte em português sobre o que já foi conversado com a equipe — e sobre os números da sua clínica.</p></div>
       <div class="chat">
+        <div class="chat-controles">
+          <p id="chatStatus" role="status"></p>
+          <button class="btn btn-sm" id="chatReset" type="button" disabled>Nova conversa</button>
+        </div>
         <div class="chat-fluxo" id="chatFluxo" aria-live="polite"></div>
         <form class="chat-envio" id="chatForm">
-          <input id="chatInput" class="chat-inp" autocomplete="off" maxlength="600"
+          <input id="chatInput" class="chat-inp" autocomplete="off" maxlength="600" disabled
             placeholder="O que ficou combinado sobre o funil de agendamento?">
           <button class="btn btn-primary" id="chatBtn" type="submit">
             <svg class="ic"><use href="#i-chevron-right"/></svg><span class="hide-sm">Perguntar</span></button>
@@ -168,7 +172,7 @@
 <script src="/assets/club-ui.js?v=20260930-metodo"></script>
 <script src="/assets/club-supabase.js"></script>
 <script src="/assets/club-auth.js?v=20261024-sessao-local"></script>
-<script src="/assets/club-data.js?v=20261028-chat-recovery"></script>
+<script src="/assets/club-data.js?v=20261028-chat-history"></script>
 <script src="/assets/club-graduacao.js?v=20261001-graduacao-admin"></script>
 <script src="/assets/club-instagram.js"></script>
 <script src="/assets/club-farol.js?v=20260930-metodo"></script>
@@ -178,6 +182,7 @@
 <script src="/assets/club-black.js?v=20261028-confiabilidade"></script>
 <script src="/assets/club-branding.js?v=20261016-instagram-branding"></script>
 <script src="/assets/club-chat-markdown.js?v=20261028-confiabilidade"></script>
-<script src="/assets/membros.js?v=20261028-chat"></script>
+<script src="/assets/club-chat-session.js?v=20261028-chat-history"></script>
+<script src="/assets/membros.js?v=20261028-chat-history"></script>
 </body>
 </html>

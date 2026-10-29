@@ -1104,3 +1104,8 @@ input[type="file"].inp::file-selector-button:hover{background:var(--surface);bor
 .branding-view #impAtualizado{margin:0 0 18px;white-space:normal}
 
 .branding-embedded{margin-top:36px;padding-top:28px;border-top:1px solid var(--border-soft);min-width:0}
+
+.chat-controles{display:flex;align-items:center;gap:16px;justify-content:space-between;margin-bottom:12px}
+.chat-controles p{margin:0;color:var(--muted);font-size:12px;line-height:1.6;max-width:76ch}
+.chat-controles button{flex-shrink:0}
+@media(max-width:640px){.chat-controles{align-items:flex-start;flex-direction:column;gap:8px}}
