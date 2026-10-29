@@ -59,6 +59,23 @@ test('unauthorized origins/keys cannot submit or dispatch',async()=>{
 test('validation accepts non-surgeon and zero volume, rejects foreign page/invalid enums',()=>{
  assert.equal(application(candidate).cirurgias_mes,0);for(const change of [{uf:'ZZ'},{page:'https://evil.test/'},{crm:'abc'},{cirurgias_mes:-1}])assert.throws(()=>application({...candidate,...change}));
 });
+test('preserved v0 application receives one durable receipt and the same Lead on replay',async()=>{
+ for(const host of ['oftalmoblack.com.br','www.oftalmoblack.com.br'])for(const suffix of ['','index.html']){
+  const h=harness(),input={...candidate,page:`https://${host}/hands-on-grau-zero/v0/${suffix}`,utm_source:'qa'};
+  const first=await h.run(input);assert.equal(first.status,200,JSON.stringify(first.body));
+  const replay=await h.run(input);await h.drain();
+  assert.equal(first.body.request_id,id);assert.equal(replay.body.event_id,eventId(id,'Lead'));
+  assert.equal(h.sheets,1);assert.equal(h.rows.size,1);assert.equal(h.metaCalls,0);
+ }
+});
+test('v0 allowlist rejects lookalike hosts, subpaths, queries and foreign protocols before saving',async()=>{
+ for(const page of ['https://oftalmoblack.com.br.evil.test/hands-on-grau-zero/v0/',
+  'https://oftalmoblack.com.br/hands-on-grau-zero/v0/other/',
+  'https://oftalmoblack.com.br/hands-on-grau-zero/v0/?email=private@example.test',
+  'http://oftalmoblack.com.br/hands-on-grau-zero/v0/']){
+  const h=harness();assert.equal((await h.run({...candidate,page})).status,400);assert.equal(h.sheets,0);
+ }
+});
 test('matching uses only hash of phone plus actual browser identifiers',async()=>{
  const h=harness();const e=await metaEvent('Lead',id,{fbp:'fb.1.12345.45678',fbc:'fb.1.12345.real-click',objetivo:'private'},h.req({}),Date.now(),'11999990000');
  assert.equal(e.user_data.fbc,'fb.1.12345.real-click');assert.equal(e.user_data.client_ip_address,'192.0.2.10');assert(!JSON.stringify(e).includes('private'));assert(!e.user_data.external_id);
