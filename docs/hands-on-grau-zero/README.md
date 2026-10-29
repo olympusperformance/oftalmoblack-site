@@ -1,5 +1,7 @@
 # Hands-on Grau Zero
 
+**Decisão de28/10/2026:** retornar a aplicação à principal e remover checkout direto. Implementação e limites em [retorno da aplicação](aplicacao-2026-10-28.md). A seção de23/10 abaixo registra o estado anterior; publicação desta mudança exige conferência própria.
+
 Página B2B em `/hands-on-grau-zero/`, publicada a pedido de Felipe em 21/10/2026. Benefício central: segurança para indicar lentes de alta tecnologia, com Protocolo Grau Zero e vivência de três dias com o Dr. Alex Sá. Público: oftalmologistas, inclusive quem ainda não opera catarata e quer se habilitar a indicar essas lentes.
 
 Revisão do Dr. Alex incorporada com autorização de Felipe em 22/10/2026: uma cirurgia por participante, dez cirurgias ao todo; todos participam do planejamento premium de todos os casos. Experiência cirúrgica prévia e clínica própria não são requisitos. O formulário aceita `ainda_nao_opero` e volume cirúrgico zero, mantendo as perguntas para conhecer o perfil.
