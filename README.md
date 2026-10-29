@@ -47,23 +47,46 @@ fontes, formulários e painéis; `club-black.css` usa os temas existentes. Nenhu
 dado de demonstração é incluído nos arquivos públicos. Os números usados na QA
 ficam exclusivamente em `tests/`.
 
-### Campanha de Branding
+### Instagram: Métricas e Turbina
 
-A seção Campanha de Branding fica dentro de Instagram, em Admin e Membros.
-Os links antigos `#branding` abrem Instagram. A equipe escolhe o mentorado;
-o membro consulta apenas sua campanha. A pré-visualização preserva mentorado
-e aba na ida e volta.
+Instagram abre em **Métricas**. O controle no topo alterna para **Turbina**,
+que reúne os impulsionamentos antes apresentados como Campanha de Branding.
+A equipe escolhe o mentorado; o membro consulta apenas sua campanha. As rotas
+`#instagram/turbina` (membro) e `#igMetricas/turbina` (admin) preservam a subaba;
+`#branding` continua abrindo a campanha. A prévia conserva mentorado e subaba
+na ida e volta.
 
-`club-branding.js` compartilha tabela, indicadores, filtros de 90 dias/todo o
+Na primeira entrada em Turbina, `club-instagram-tabs.js` abre o tutorial de um
+minuto. A exibição (não a conclusão do vídeo) fica registrada em
+`cb_instagram_turbina_tutorial_seen_at`, nos metadados da própria conta Auth,
+com cache local por usuário. `getUser()` reconhece a preferência em outro
+dispositivo e `updateUser({data: ...})` envia apenas esse campo. Nenhum campo de
+autorização ou cadastro do mentorado é alterado; não requer migração.
+Se a gravação falhar, a próxima entrada tenta sincronizar o registro local.
+Se a consulta falhar, o botão **Tutorial** continua disponível; o popup
+aguarda uma próxima entrada com consulta bem-sucedida. Na prévia administrativa,
+o vídeo só abre pelo botão e não registra a primeira visita de ninguém.
+
+O vídeo `/assets/tutorials/turbina-v1.mp4` é o arquivo fornecido em 29/10,
+remultiplexado sem recodificação, com início rápido. Só carrega ao abrir o
+modal e para ao fechar ou sair da área. O navegador pode exigir Play para
+liberar áudio; os controles permanecem visíveis. Escape, botão de fechar e
+clique no fundo fecham o modal; teclado também alterna as abas.
+
+`club-branding.js` mantém tabela, indicadores, filtros de 90 dias/todo o
 histórico e estados de carregamento. Sem campanha/dados disponíveis, orienta
 sobre iniciar a campanha ou liberar acesso à conta Meta. Primeira coleta
 pendente e falha de consulta/coleta têm mensagens próprias. O botão Atualizar
 relê os dados já coletados; a rotina de coleta existente permanece.
 
 As views `instagram_impulsionamentos` e `instagram_impulsionamento_contas`
-já usam `security_invoker` e RLS de membro/equipe. Nenhuma migração nova é
-necessária. O histórico é lido em páginas de 500, mantendo o filtro por membro.
-Testes: `node --test tests/branding-data.test.cjs` e `tests/black-browser.cjs`.
+já usam `security_invoker` e RLS de membro/equipe. O histórico é lido em páginas
+de 500, mantendo o filtro por membro. Validação:
+`node --test tests/branding-data.test.cjs tests/instagram-alcance.test.cjs tests/instagram-seguidores.test.cjs`
+e `PLAYWRIGHT_MODULE=/caminho/playwright node tests/instagram-turbina.browser.cjs`
+(opcional `BLACK_BROWSER_EXECUTABLE` para Chrome local). O teste de navegador
+usa contas simuladas e cobre primeira visita, outra conta/dispositivo, replay,
+prévia, celular, falha de gravação e leitura lenta ao trocar de aba.
 
 ### Banco antes da interface
 

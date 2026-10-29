@@ -2,7 +2,6 @@
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),os=require('node:os');
 const assert=require('node:assert/strict');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'@playwright/test');
-const methodCatalog=require('./fixtures/method-catalog.json');
 const root=path.resolve(__dirname,'../public');
 const out=process.env.BLACK_QA_DIR||fs.mkdtempSync(path.join(os.tmpdir(),'black-qa-'));
 fs.mkdirSync(out,{recursive:true});
@@ -11,43 +10,9 @@ const server=http.createServer((req,res)=>{
   let file=path.join(root,name);if(!file.startsWith(root+path.sep)){res.writeHead(403).end();return;}
   fs.readFile(file,(err,data)=>{if(err){res.writeHead(404).end();return;}res.setHeader('Content-Type',({'.js':'text/javascript','.css':'text/css','.html':'text/html','.png':'image/png','.woff':'font/woff'})[path.extname(file)]||'application/octet-stream');res.end(data);});
 });
-function stub(isAdmin){return `
-window.Club.cfg={supabaseUrl:'http://local.test',supabaseAnonKey:'test'};
-const member={id:'10000000-0000-4000-8000-000000000001',nome:'Dra. Clínica de Teste',email:'test@example.test',iniciais:'CT',ativo:true,turma:'Black',fase:'Implantação',criado_em:'2026-04-01'};
-const period=new Date().getFullYear()+'-T'+(Math.floor(new Date().getMonth()/3)+1);
-const fixtures={members:[member],cb_quarters:[{member_id:member.id,period,attended:8,eligible:10,video_credits:8,weeks:10,followers_growth:2500,orphan_leads:0,sla_recorded:true,outcomes_percent:96,call_conversion:62,evidence:'Apuração de teste'}],cb_missions:[{id:'mission1',member_id:member.id,period,method_step:'D04',title:'Concluir a trilha Cultura Premium',weight:1,status:'requested',requested_on:'2026-09-01',due_on:'2026-09-10'}],cb_steps:[],cb_extras:[],cb_encontros:[],cb_grades:[],cb_cases:[],cb_case_files:[],cb_rewards:[],cb_redemptions:[],member_graduations:[]};
-fixtures.artifacts=[{id:'site-qa',nome:'Site Institucional',tipo:'artefato',method_steps:['D05'],status:'Em andamento',url:'https://example.test/entrega'},{id:'private-qa',nome:'Tracker privado',tipo:'artefato',somente_equipe:true,method_steps:['D05']},{id:'other-qa',nome:'Entrega de outro membro',tipo:'artefato',member_id:'10000000-0000-4000-8000-000000000002',method_steps:['D05']}];
-fixtures.artifacts.push({id:'archived-stage',nome:'Agrupador legado arquivado',tipo:'artefato',method_steps:['D04'],archived_at:'2026-10-01'},{id:'shared-training',nome:'Treinamento comercial',tipo:'artefato',method_steps:['D04','D09','D10','TREINO'],status:'Disponível'},{id:'quiz',nome:'Quiz',tipo:'artefato',method_steps:[],status:'Disponível'},{id:'iris',nome:'Íris Black',tipo:'artefato',method_steps:[],status:'Disponível'});
-fixtures.members.push({...member,id:'10000000-0000-4000-8000-000000000002',nome:'Outro mentorado'});
-fixtures.artifacts.push({id:'onboarding-qa',nome:'Onboarding',tipo:'artefato',method_steps:['D01'],status:'Em produção'});
-fixtures.artifact_steps=[{id:'onboarding-accept',artifact_id:'onboarding-qa',titulo:'Aceite',ordem:0,tipo:'aceite'},{id:'step-qa',artifact_id:'site-qa',titulo:'Site publicado',ordem:1,tipo:'entrega'}];
-fixtures.step_progress=[{member_id:member.id,step_id:'step-qa',feito:true,feito_em:'2026-09-01'}];
-fixtures.artifacts.push({id:'editorial-qa',nome:'Linha Editorial',subtitulo:'Feed e stories na voz do Mestre',meta:'Entrega em 2 dias',tipo:'artefato',method_steps:['D02'],status:'Disponível',url:'/materiais/'});
-fixtures.artifact_steps.push(...Array.from({length:18},(_,i)=>({id:'editorial-step-'+i,artifact_id:'editorial-qa',titulo:'Etapa de implantação '+(i+1),ordem:i,tipo:'entrega'})));
-fixtures.step_progress.push({member_id:member.id,step_id:'editorial-step-0',feito:true,feito_em:'2026-09-01'});
-const methodCatalog=${JSON.stringify(methodCatalog)};
-fixtures.cb_method_stages=methodCatalog.stages;fixtures.cb_deliveries=methodCatalog.deliveries;fixtures.cb_checklist_catalog=methodCatalog.items;
-fixtures.cb_delivery_artifacts=methodCatalog.bindings.flatMap(b=>fixtures.artifacts.filter(a=>a.nome===b.artifact_name&&a.method_steps.includes(b.stage_id)).map(a=>({...b,artifact_id:a.id})));
-if(${isAdmin})fixtures.cb_checklist_requests=[{id:'pedido-1',member_id:member.id,item_id:'D07-02',edition:'',requested_at:'2026-10-01T12:00:00Z',resolved_at:null}];
-fixtures.instagram_impulsionamento_contas=[{member_id:member.id,mentorado:member.nome,ativo:true,ultima_coleta:new Date().toISOString(),ultimo_erro:null}];
-fixtures.instagram_impulsionamentos=[{campaign_id:'brand-1',member_id:member.id,nome:'Post do Instagram: Branding de teste',post_url:'https://www.instagram.com/p/test/',inicio:new Date().toISOString(),termino:null,status:'ACTIVE',gasto:100,orcamento_total:200,seguidores:200,visitas_perfil:250},{campaign_id:'brand-other',member_id:fixtures.members[1].id,nome:'Privado outro mentorado',inicio:new Date().toISOString(),gasto:900,seguidores:10,visitas_perfil:10}];
-fixtures.cb_vouchers=[{id:'voucher-1',member_id:member.id,origin:'indicação convertida (Dra. M., Mentoria Grau Zero)',note:'Nota interna',status:'em_maos',granted_on:'2026-06-10'}];
-fixtures.cb_vitrine_rounds=[{id:'round-3',period:'2026-T3',status:'distributing',opens_on:'2026-10-01',offers:[...['Novembro','Dezembro','Janeiro'].map(label=>({benefit:'catarata',label,dates:'Datas da turma',venue:'Juruti',capacity:2,available:2})),{benefit:'grau_zero',label:'Edição de novembro',dates:'19 a 21/11/2026',venue:'Manaus',capacity:5,available:5},{benefit:'passagem',label:'Family Circle',dates:'11 a 13/12/2026',venue:'Lake Paradise',capacity:1,available:1}]},{id:'round-4',period:'2026-T4',status:'scheduled',opens_on:'2026-12-31',offers:[]}];
-fixtures.cb_vitrine_preferences=[{id:'choice-a',member_id:member.id,period:'2026-T3',response_status:'received',benefits:['catarata','grau_zero','passagem'],preferred_dates:['2027-01-13'],family_circle:'Não vai',pending_items:[],note:'Resposta de teste',source:'Planilha de teste',period_points:43.6,conferred_grade:0,quarter_vouchers:0},{id:'choice-b',member_id:fixtures.members[1].id,period:'2026-T3',response_status:'declined',benefits:[],preferred_dates:[],pending_items:[],source:'WhatsApp',note:'Privado do outro mentorado',period_points:50,conferred_grade:1,quarter_vouchers:2}];
-window.__writes=[];window.__fixtures=fixtures;window.__failTable=null;
-window.Club.sb={supabaseUrl:'http://local.test',auth:{getSession:async()=>({data:{session:{access_token:'test',user:{id:'user1',email:'test@example.test'}}}}),signOut:async()=>({}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})},
-rpc:async(name,args)=>name==='marcar_etapa'?(window.__writes.push({table:'marcar_etapa',row:args}),{data:{member_id:args.p_member_id,step_id:args.p_step_id,feito:args.p_feito,feito_em:args.p_feito?new Date().toISOString():null}}):({data:name==='me'?{is_admin:${isAdmin},email:member.email,member:${isAdmin?'null':'member'}}:name==='cb_ranking'?[{position:1,alias:member.nome,member_id:member.id,total:28.5,grade:1,movement:null}]:[]}),
-functions:{invoke:async()=>({data:{status:'unlinked'}})},
-from(table){let one=false,filters=[],write=null,conflict=null;let q={};
-for(const key of ['select','order','gte','lte','gt','lt','or','in','is','not','limit','range'])q[key]=()=>q;
-q.eq=(key,value)=>{filters.push([key,value]);return q;};q.maybeSingle=q.single=()=>{one=true;return q;};
-q.insert=q.upsert=q.update=(row,options)=>{write=row;conflict=options&&options.onConflict;window.__writes.push({table,row});return q;};
-q.then=(resolve,reject)=>{if(table==='cb_scores'&&window.__holdScores)return window.__holdScores.then(()=>{window.__holdScores=null;return q.then(resolve,reject);});if(window.__failTable===table)return Promise.resolve({data:null,error:{message:'Fonte indisponível'}}).then(resolve,reject);let data=fixtures[table]||[];if(write){const old=data.find(r=>write.id&&r.id===write.id||conflict&&conflict.split(',').every(k=>r[k]===write[k]));const merged={...old,...write,id:write.id||'new-id'};fixtures[table]=old?data.map(r=>r===old?merged:r):[...data,merged];data=[merged];}else for(const [k,v] of filters)data=data.filter(r=>r[k]===v);return Promise.resolve({data:one?(data[0]||null):data}).then(resolve,reject);};return q;}};
-const rpc=window.Club.sb.rpc;window.__failRanking=false;
-window.__rankingRequests=[];
-window.__ranking=[{position:1,alias:member.nome,member_id:member.id,total:63.9,grade:2,source:'graduacao',is_demo:true,source_date:'2026-09-20',complete:false,movement:null},...['Clínica Aurora','Clínica Horizonte','Clínica Novo Olhar','Consultório Central','Clínica Vista'].map((alias,i)=>({position:[2,2,3,4,5][i],alias:alias,member_id:${isAdmin}?'synthetic-'+i:null,total:[58,58,99,27,0][i],grade:[2,2,1,0,0][i],source:'graduacao',is_demo:false,source_date:'2026-09-30',movement:[2,-1,0,null,null][i]}))];
-window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRequests.push(args.p_period);if(window.__failRanking)return {data:null,error:{message:'Ranking indisponível'}};return {data:window.__ranking};}return rpc(name,args);};
-`;}
+const stub=require('./helpers/black-fixtures.cjs');
+const methodCatalog=require('./fixtures/method-catalog.json');
+
 (function testDirectStorageHost(){const source=fs.readFileSync(path.join(root,'assets/club-black.js'),'utf8');assert.match(source,/\.storage\.supabase\.co/,'Upload grande deve usar o host direto recomendado pelo Storage');})();
 (async()=>{
  await new Promise(r=>server.listen(0,'127.0.0.1',r));const url='http://127.0.0.1:'+server.address().port;
@@ -68,7 +33,7 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
    const menu=await page.locator('#rail .nav>span:not(.cb-badge)').allTextContents();
    assert.deepEqual(menu.slice(0,mentoria.length+1),[...mentoria,'Fábrica · Íris Black']);
    assert.deepEqual(await page.locator('#rail .rail-grupo').allTextContents(),isAdmin?['Mentoria','Módulos à parte','Administração','Operação da equipe']:['Mentoria','Módulos à parte']);
-   if(isAdmin)assert.deepEqual(menu.slice(mentoria.length+1,mentoria.length+3),['A Rede','Progressão']);
+   if(isAdmin)assert.deepEqual(menu.slice(mentoria.length+1,mentoria.length+4),['Perfis dos mentorados','A Rede','Progressão']);
    else assert.equal(await page.locator('[data-view=rede]').count(),0);
    for(const key of ['home','encontro','iris','cerebro','profile'])assert.equal(await page.locator('#rail [data-nav="'+key+'"]').count(),0);
    assert.deepEqual(await page.locator('#navm [data-nav]').evaluateAll(nodes=>nodes.map(n=>n.dataset.nav)),await page.locator('#rail [data-nav]').evaluateAll(nodes=>nodes.map(n=>n.dataset.nav)));
@@ -352,9 +317,10 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
    await page.locator('#rail [data-nav="agenda"]').click();await page.locator('[data-view=agenda] [data-nav=encontro]').click();assert.equal(await page.locator('[data-view=encontro]').isVisible(),true);
    assert.equal(await page.locator('#rail [data-nav=branding]').count(),0);
    await page.locator('#rail [data-nav='+ (isAdmin?'igMetricas':'instagram') +']').click();
+   await page.locator('[data-instagram-tab=turbina]').click();
    await page.locator('#brandingPanel .tbl').waitFor();
    await page.evaluate(()=>location.hash='branding');
-   await page.waitForFunction(admin=>location.hash===(admin?'#igMetricas':'#instagram'),isAdmin);
+   await page.waitForFunction(admin=>location.hash===(admin?'#igMetricas/turbina':'#instagram/turbina'),isAdmin);
    assert.match(await page.locator('#brandingPanel').innerText(),/Branding de teste/);
    assert.doesNotMatch(await page.locator('#brandingPanel').innerText(),/Privado outro mentorado/);
    assert.equal(await page.locator('#brandingPanel #filtroImpMembro').isVisible(),isAdmin);
@@ -370,7 +336,7 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
      await page.waitForFunction(()=>document.querySelector('#listaImp').innerText.includes('Privado outro mentorado'));
      assert.doesNotMatch(await page.locator('#listaImp').innerText(),/Branding de teste/);
      const href=await page.locator('#verComoMembro').evaluate(el=>{el.addEventListener('click',e=>e.preventDefault(),{once:true});el.click();return el.href;});
-     assert.match(href,/membro=10000000-0000-4000-8000-000000000002#instagram$/);
+     assert.match(href,/membro=10000000-0000-4000-8000-000000000002#instagram\/turbina$/);
      const brandingPreview=await context.newPage();
      brandingPreview.on('pageerror',e=>errors.push(e.message));
      await brandingPreview.route('**/assets/club-supabase.js',route=>route.fulfill({contentType:'text/javascript',body:stub(true)}));
@@ -382,7 +348,7 @@ window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRe
      assert.doesNotMatch(await brandingPreview.locator('#brandingPanel').innerText(),/Branding de teste/);
      assert.equal(await brandingPreview.locator('#filtroImpMembro').isVisible(),false);
      await brandingPreview.locator('#voltarPainel').waitFor();
-     assert.match(await brandingPreview.locator('#voltarPainel').getAttribute('href'),/membro=10000000-0000-4000-8000-000000000002#igMetricas$/);
+     assert.match(await brandingPreview.locator('#voltarPainel').getAttribute('href'),/membro=10000000-0000-4000-8000-000000000002#igMetricas\/turbina$/);
      await brandingPreview.locator('#voltarPainel').click();
      await brandingPreview.locator('#brandingPanel .tbl').waitFor();
      assert.equal(await brandingPreview.locator('[data-view=igMetricas]').isVisible(),true);
