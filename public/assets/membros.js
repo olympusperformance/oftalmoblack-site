@@ -421,8 +421,13 @@
     var ordenados = meus.slice();
 
     /* Cards compactos na capa e no catálogo; o checklist abre no pop-up. */
+    /* Processo ligado a um módulo do método mostra o checklist único; o resto, o card do processo. */
+    var ligados = Club.black.deliveriesFor(ordenados);
+    var soltos = ordenados.filter(function (a) {
+      return !(Club.methodDeliveries || []).some(function (d) { return (d.artifactIds || []).indexOf(a.id) >= 0; });
+    });
     $('artList').innerHTML = ordenados.length
-      ? ordenados.map(function (a) { return cartaoArtefato(a); }).join('') : vazio;
+      ? Club.black.deliveryCards(null, null, { list:ligados }) + soltos.map(function (a) { return cartaoArtefato(a); }).join('') : vazio;
     $('artListFull').innerHTML = secoes.length
       ? secoes.map(function (s) {
           return '<section class="art-area">' +
@@ -431,7 +436,7 @@
               '<h2 class="sec-t">' + esc(s.name) + '</h2>' +
             '</div>'+((s.kind==='step'||s.kind==='transversal')?'<a class="btn" href="#subida/'+esc(s.id)+'">Ver entregas</a>':'')+'</div>' +
             '<div class="artgrid">' +
-              Club.black.deliveryCards((s.kind==='step'||s.kind==='transversal')?s.id:null,(s.kind==='step'||s.kind==='transversal')?meus:s.items) +
+              (s.kind==='modules'?Club.black.deliveryCards('MODULOS'):Club.black.deliveryCards((s.kind==='step'||s.kind==='transversal')?s.id:null,(s.kind==='step'||s.kind==='transversal')?meus:s.items)) +
             '</div>' +
           '</section>';
         }).join('')

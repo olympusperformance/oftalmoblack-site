@@ -72,3 +72,13 @@ test('Falha ao ler catálogo não cria uma estrutura alternativa',async()=>{
  globalThis.Club.sb={from:()=>({select(){return this;},order(){return this;},range(){return Promise.resolve({error:{message:'Fonte indisponível'}});}})};
  await assert.rejects(globalThis.Club.loadMethodCatalog(),/carregar o catálogo de entregas/);
 });
+
+test('Módulo fundido some da lista e entrega itens e processo ao módulo que o absorveu',()=>{
+ const C=globalThis.Club,saved=C.methodDeliveries;
+ C.methodDeliveries=saved.map(d=>d.id==='D01/prioridades'?{...d,mergedInto:'D01/diagnostico'}:d);
+ try{
+  const ds=M.deliveries('D01',[]);
+  assert.deepEqual(ds.map(d=>d.id),['D01/diagnostico']);
+  assert.deepEqual(ds[0].items.map(i=>i.id).sort(),['D01-01','D01-02','D01-03','D01-04','D01-05']);
+ }finally{C.methodDeliveries=saved;}
+});

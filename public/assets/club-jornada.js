@@ -32,15 +32,19 @@
     var eds=(encontros||[]).map(function(e){return String(e.edition);}).sort().reverse();
     return eds.indexOf(escolhido)>=0?escolhido:eds[0]||null;
   }
-  function estado(progresso,memberId,stepId,edicao){
-    return (progresso||[]).find(function(p){return p.member_id===memberId&&p.step_id===stepId&&p.edition===(edicao||'');})||{status:'pendente'};
+  // derivar(step,edicao) pode responder por um marco a partir de outro registro (ex.: edição do encontro).
+  function estado(progresso,memberId,stepId,edicao,derivar,step){
+    var r=(progresso||[]).find(function(p){return p.member_id===memberId&&p.step_id===stepId&&p.edition===(edicao||'');});
+    if(r&&fechado(r.status))return r;
+    var d=derivar&&step&&derivar(step,edicao);
+    return d||r||{status:'pendente'};
   }
   // Andamento de um módulo para um mentorado num ciclo. Sem marcos = acompanhamento (indicador).
-  function andamento(lista,progresso,memberId,edicao){
+  function andamento(lista,progresso,memberId,edicao,derivar){
     var r={total:0,concluidos:0,naoAplica:0,aguardando:0,validacao:0,proximo:null,vez:null};
     if(edicao===null)return r;
     lista.forEach(function(s){
-      var e=estado(progresso,memberId,s.id,edicao);
+      var e=estado(progresso,memberId,s.id,edicao,derivar,s);
       if(e.status==='nao_aplica'){r.naoAplica++;return;}
       r.total++;
       if(e.status==='concluida'){r.concluidos++;return;}
@@ -54,13 +58,13 @@
   }
   // O mentorado só vê como pendência o que foi pedido a ele (ou devolvido para ajuste).
   // A equipe vê o que espera validação e os pedidos em aberto.
-  function pendencias(modulos,catalogo,steps,progresso,memberId,equipe,ciclos){
+  function pendencias(modulos,catalogo,steps,progresso,memberId,equipe,ciclos,derivar){
     var out=[];
     (modulos||[]).forEach(function(d){
       if(d.sharedWith)return;
       var ed=ciclos?ciclos(d):'';if(ed===null)return;
       marcos(d,catalogo,steps).forEach(function(s){
-        var e=estado(progresso,memberId,s.id,ed);
+        var e=estado(progresso,memberId,s.id,ed,derivar,s);
         var mine=equipe?e.status==='em_validacao':(e.status==='aguardando'||e.status==='ajuste');
         if(!mine&&!(equipe&&(e.status==='aguardando'||e.status==='ajuste')))return;
         out.push({delivery:d,step:s,estado:e,edicao:ed,vez:e.status==='em_validacao'?'equipe':'mentorado'});

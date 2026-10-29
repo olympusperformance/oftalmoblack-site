@@ -97,6 +97,18 @@
 
   /* ── dados ────────────────────────────────────────────────────────────── */
 
+  /* Marcos do checklist único de todos os mentorados (cb_delivery_progress). */
+  async function lerMarcos() {
+    var todos = [], de = 0;
+    for (;;) {
+      var r = await Club.sb.from('cb_delivery_progress').select('*').order('member_id').order('step_id').order('edition').range(de, de + 999);
+      if (r.error) throw new Error('Não foi possível carregar o checklist único: ' + r.error.message);
+      todos = todos.concat(r.data || []);
+      if (!r.data || r.data.length < 1000) return todos;
+      de += 1000;
+    }
+  }
+
   function carregar() {
     return Promise.all([
       Club.data.members.list(),
@@ -116,7 +128,8 @@
       Club.data.progressNotes.list(),
       Club.data.qrLinks.list(),
       Club.data.qrScans.list(),
-      Club.loadMethodCatalog()
+      Club.loadMethodCatalog(),
+      lerMarcos()
     ]).then(function (r) {
       st.members = r[0]; st.events = r[1];
       st.artifacts = r[2]; st.materials = r[3];
@@ -127,6 +140,7 @@
       st.groups = r[13];
       st.progressNotes = r[14];
       st.qrLinks = r[15]; st.qrScans = r[16];
+      st.marcos = r[18];
       indexar();
       descobrirEu();
     });
@@ -463,16 +477,33 @@
 
   /* Do mentorado: só os pares aceitos contam. Barra = soma das entregas de
      implantação; o percentual médio é dos processos, cada um pesando 1. */
+  /* Módulos do método (degraus, Treino e Módulos à parte), sem os fundidos. */
+  function modulosDoMetodo() {
+    return Club.metodo.steps.map(function (x) { return x.id; }).concat(['TREINO', 'MODULOS'])
+      .reduce(function (acc, id) { return acc.concat(Club.metodo.deliveries(id, [])); }, []);
+  }
+  /* Andamento de um módulo no checklist único. Mensal = mês corrente; por edição
+     depende do registro do encontro, que só a área do Método carrega. */
+  function andamentoModulo(memberId, d) {
+    var J = Club.jornada, o = J.origem(d, Club.methodDeliveries);
+    var ed = o.cycle === 'edicao' ? null : J.ciclo(o, null, [], Club.todayISO ? Club.todayISO() : null);
+    return J.andamento(J.marcos(d, Club.methodDeliveries, Club.deliverySteps), st.marcos || [], memberId, ed);
+  }
+  /* Do mentorado: um módulo conta como iniciado quando algum marco saiu de "a fazer".
+     Mesmo formato de antes (feitas/total/aceitos/travados/equipe/noar), agora em marcos. */
   function contaMembro(memberId) {
     var r = { feitas:0, total:0, aceitos:0, definir:0, travados:0, equipe:0, noar:0, pcts:[] };
-    artefatosDe(memberId).forEach(function (a) {
-      var p = contaPar(memberId, a);
-      if (p.estado === 'definir') { r.definir++; return; }
-      r.aceitos++; r.feitas += p.feitas; r.total += p.total;
-      if (p.estado === 'travado') r.travados++;
-      else if (Club.NO_AR[p.estado]) r.noar++;
+    modulosDoMetodo().forEach(function (d) {
+      if (d.sharedWith) return;
+      var p = andamentoModulo(memberId, d);
+      if (!p.total) return;
+      var iniciado = p.concluidos || p.aguardando || p.validacao;
+      if (!iniciado) { r.definir++; return; }
+      r.aceitos++; r.feitas += p.concluidos; r.total += p.total;
+      if (p.completo) r.noar++;
+      else if (p.vez === 'mentorado') r.travados++;
       else r.equipe++;
-      if (p.total || p.rotinas.length) r.pcts.push(p.completo ? 100 : p.pct);
+      r.pcts.push(Math.round(p.pct * 100));
     });
     r.pct = r.pcts.length
       ? Math.round(r.pcts.reduce(function (s, x) { return s + x; }, 0) / r.pcts.length) : 0;
@@ -509,6 +540,17 @@
   /* Par "A definir" só aparece em "Tudo"; em todos os outros filtros ele não
      é pendência de ninguém. Sem checklist conta como em aberto: falta definir
      as etapas, e escondê-lo em "No ar" seria dizer que está pronto. */
+  function passaModulo(p) {
+    var iniciado = p.concluidos || p.aguardando || p.validacao;
+    switch (st.arvFiltro) {
+      case 'open':    return p.total > 0 && !p.completo;
+      case 'equipe':  return p.total > 0 && !p.completo && p.vez !== 'mentorado';
+      case 'travado': return !p.completo && p.vez === 'mentorado' && iniciado;
+      case 'done':    return p.completo;
+      default:        return true;
+    }
+  }
+
   function passaFiltro(p) {
     switch (st.arvFiltro) {
       case 'open':    return p.estado === 'nao_iniciado' || p.estado === 'travado' ||
@@ -522,9 +564,9 @@
   }
 
   function ultimaMarcacao(memberId) {
-    var datas = st.progress
-      .filter(function (p) { return p.member_id === memberId && p.feito_em; })
-      .map(function (p) { return p.feito_em; })
+    var datas = (st.marcos || [])
+      .filter(function (p) { return p.member_id === memberId && p.status !== 'pendente' && p.updated_at; })
+      .map(function (p) { return p.updated_at; })
       .sort();
     return datas.length ? datas[datas.length - 1] : null;
   }
@@ -573,16 +615,16 @@
     });
 
     $('statsMembros').innerHTML =
-      cardStat('ENTREGAS', geral.feitas + '/' + geral.total,
-               geral.total ? Math.round((geral.feitas / geral.total) * 100) + '% da implantação'
-                           : 'nenhum processo aceito',
-               'Etapas de entrega e trava marcadas, sobre o total dos processos aceitos. Aceite e rotina ficam fora.') +
-      cardStat('COM A EQUIPE', geral.equipe, 'pares cuja próxima etapa é nossa',
-               'Processos Black aceitos em implantação em que a próxima etapa é ato da equipe.') +
-      cardStat('TRAVADO NO MENTORADO', geral.travados, 'esperando acesso, dado ou aprovação',
-               'Processos Black aceitos em que a próxima etapa depende do mentorado.') +
-      cardStat('NO AR', geral.noar, geral.aceitos + ' pares aceitos no total',
-               'Entregues (100% sem rotina) e ativos (100% com a rotina ligada).');
+      cardStat('MARCOS', geral.feitas + '/' + geral.total,
+               geral.total ? Math.round((geral.feitas / geral.total) * 100) + '% dos módulos iniciados'
+                           : 'nenhum módulo iniciado',
+               'Marcos concluídos no checklist único, sobre o total dos módulos já iniciados.') +
+      cardStat('COM A EQUIPE', geral.equipe, 'módulos cuja próxima ação é nossa',
+               'Módulos iniciados em que o próximo marco é da equipe ou aguarda validação.') +
+      cardStat('COM O MENTORADO', geral.travados, 'esperando acesso, dado ou aprovação',
+               'Módulos iniciados em que o próximo marco é do mentorado.') +
+      cardStat('CONCLUÍDOS', geral.noar, geral.aceitos + ' módulos iniciados no total',
+               'Módulos com todos os marcos concluídos ou marcados como não se aplica.');
 
     $('listaMembros').innerHTML = (Club.erroObservacoes
       ? '<div class="notice" role="status">' + ico('alert') + '<div>' + esc(Club.erroObservacoes) +
@@ -618,10 +660,10 @@
 
     var situacao = !m.ativo
       ? status('var(--faint)', 'Acesso inativo')
-      : !c.aceitos ? status('var(--faint)', 'Nada aceito')
-      : c.travados ? status('var(--orange)', 'Travado no mentorado')
+      : !c.aceitos ? status('var(--faint)', 'Nada iniciado')
+      : c.travados ? status('var(--orange)', 'Com o mentorado')
       : c.equipe ? status('var(--warning)', 'Em implantação')
-      : status('var(--success)', 'Tudo no ar');
+      : status('var(--success)', 'Tudo concluído');
 
     var linha = '<div class="tr lv0' + (m.ativo ? '' : ' off') + '">' +
       '<div class="td nm">' + toggleTree(chave, temFilho) +
@@ -639,9 +681,9 @@
         ? '<div class="td zap-cell"><input class="cell-date zap-inp" data-zap-inp="' + m.id +
           '" type="url" value="' + esc(m.whatsapp_url || '') +
           '" placeholder="Cole o convite do grupo — Enter salva, Esc fecha" autocomplete="off"></div>'
-        : td('<span class="tx-s">' + esc(c.aceitos + ' aceito' + (c.aceitos === 1 ? '' : 's') +
-            (c.travados ? ' · ' + c.travados + ' travado' + (c.travados === 1 ? '' : 's') : '') +
-            (c.noar ? ' · ' + c.noar + ' no ar' : '') +
+        : td('<span class="tx-s">' + esc(c.aceitos + ' iniciado' + (c.aceitos === 1 ? '' : 's') +
+            (c.travados ? ' · ' + c.travados + ' com o mentorado' : '') +
+            (c.noar ? ' · ' + c.noar + ' concluído' + (c.noar === 1 ? '' : 's') : '') +
             (ultima ? ' · ' + Club.fmtDate(ultima) : '')) + '</span>') +
           '<div class="td end"><div class="row-acts">' +
         /* O ícone aparece sempre: verde e clicável quando há grupo, apagado
@@ -665,18 +707,19 @@
     linha += linhaNota(m, 'mentorado', m.nome);
     if (!aberto || !temFilho) return linha;
 
-    var saida = Club.metodo.catalogGroups(arts, st.arvFiltro === 'all').map(function(g){
-      var method=g.kind==='step'||g.kind==='transversal';
-      var ds=method?Club.metodo.deliveries(g.id,g.items):g.items.map(function(a){return {name:a.nome,artifact:a,items:[]};});
-      if(st.arvFiltro!=='all')ds=ds.filter(function(d){return d.artifact;});
-      return faixaGrupo(m,{nome:(method?g.id+' · ':'')+g.name},g.items)+ds.map(function(d){
-        if(d.artifact)return linhaArtefato(m,d.artifact,d);
-        return '<div class="tr lv1" data-progress-delivery-row="'+esc(d.id)+'">'+
-          '<div class="td nm"><span class="tx tx-t">'+esc(d.name)+'</span></div>'+td('<span class="tx-s">Checklist do método</span>')+
-          td('—')+td('<span class="tx-s">'+d.items.length+' itens</span>')+
-          td('<span class="tx-s">Conferência por item'+(d.items.some(function(i){return i.monthly;})?' · por edição':'')+'</span>')+
-          td(botaoEntrega(m,d))+'</div>';
+    var grupos = (Club.methodStages || []).map(function (x) {
+      return { id:x.id, nome:x.kind === 'modulos' ? x.name : x.id + ' · ' + x.name };
+    });
+    var saida = grupos.map(function (g) {
+      var linhas = Club.metodo.deliveries(g.id, []).map(function (d) {
+        var p = andamentoModulo(m.id, d);
+        return passaModulo(p) ? linhaModulo(m, d, p) : '';
       }).join('');
+      return linhas ? '<div class="tr grp sub"><span class="grp-n">' + esc(g.nome) + '</span><span class="tx-s">Checklist único</span></div>' + linhas : '';
+    }).join('');
+    /* Processos sem degrau seguem aparecendo pelo checklist antigo, até ganharem módulo. */
+    saida += Club.metodo.catalogGroups(arts, false).filter(function (g) { return g.kind === 'unassigned'; }).map(function (g) {
+      return faixaGrupo(m, { nome:g.name }, g.items) + g.items.map(function (a) { return linhaArtefato(m, a); }).join('');
     }).join('');
     return linha + saida;
   }
@@ -718,6 +761,26 @@
     if (!u) return '';
     var n = -Club.diffDays(u);
     return n > 0 ? ' · há ' + n + ' d' : '';
+  }
+
+  function linhaModulo(m, d, p) {
+    var J = Club.jornada, o = J.origem(d, Club.methodDeliveries);
+    var situacao = d.sharedWith ? status('var(--faint)', 'Compartilhado')
+      : !p.total ? status('var(--faint)', o.cycle === 'edicao' ? 'Por edição' : 'Indicador')
+      : p.completo ? status('var(--success)', 'Concluído')
+      : p.validacao ? status('var(--warning)', 'Validar')
+      : p.vez === 'mentorado' && p.aguardando ? status('var(--orange)', 'Com o mentorado')
+      : p.concluidos ? status('var(--warning)', 'Em andamento')
+      : status('var(--faint)', 'A iniciar');
+    var detalhe = d.sharedWith ? 'Usa o checklist de ' + o.name
+      : p.proximo ? 'Próximo: ' + p.proximo.title + ' · ' + (p.vez === 'mentorado' ? 'mentorado' : 'equipe')
+      : p.total ? 'Todos os marcos concluídos' : (o.metricsHint ? 'Acompanhamento por indicador' : '—');
+    return '<div class="tr lv1" data-progress-delivery-row="' + esc(d.id) + '">' +
+      '<div class="td nm"><span class="tx tx-t" title="' + esc(o.checklistTitle || d.name) + '">' + esc(d.name) + '</span></div>' +
+      td(situacao) + td('<span class="tx-s">' + esc(o.checklistTitle || '') + '</span>') +
+      td(p.total ? barra(p.concluidos, p.total) : '<span class="tx-s">—</span>') +
+      td('<span class="tx-s" title="' + esc(detalhe) + '">' + esc(detalhe) + '</span>') +
+      td(botaoEntrega(m, d)) + '</div>';
   }
 
   function botaoEntrega(m,d){
@@ -2042,7 +2105,7 @@
     var groups=Club.metodo.catalogGroups(artifacts,true).filter(function(g){return !st.artGrupo||g.id===st.artGrupo;});
     $('cardsArtefatos').innerHTML=groups.map(function(g){
       var stage=g.kind==='step'||g.kind==='transversal';
-      return '<section class="art-area" data-catalog-stage="'+esc(g.id)+'"><div class="sec"><div class="sec-g"><div class="sec-eb"><span class="sec-dash"></span><span>'+esc(g.kind==='step'?g.id+' · DEGRAU':g.kind==='transversal'?'TRANSVERSAL':g.kind==='modules'?'MÓDULOS À PARTE':'A CONFERIR')+'</span></div><h2 class="sec-t">'+esc(g.name)+'</h2></div>'+(stage?'<button class="btn" data-cb-step="'+esc(g.id)+'">Ver entregas</button>':'')+'</div><div class="artgrid">'+Club.black.deliveryCards(stage?g.id:null,stage?artifacts:g.items,{adminActions:true})+'</div></section>';
+      return '<section class="art-area" data-catalog-stage="'+esc(g.id)+'"><div class="sec"><div class="sec-g"><div class="sec-eb"><span class="sec-dash"></span><span>'+esc(g.kind==='step'?g.id+' · DEGRAU':g.kind==='transversal'?'TRANSVERSAL':g.kind==='modules'?'MÓDULOS À PARTE':'A CONFERIR')+'</span></div><h2 class="sec-t">'+esc(g.name)+'</h2></div>'+(stage?'<button class="btn" data-cb-step="'+esc(g.id)+'">Ver entregas</button>':'')+'</div><div class="artgrid">'+(g.kind==='modules'?Club.black.deliveryCards('MODULOS'):Club.black.deliveryCards(stage?g.id:null,stage?artifacts:g.items,{adminActions:true}))+'</div></section>';
     }).join('');
   }
 
@@ -4564,7 +4627,12 @@
     Club.graduacao.mountAdmin($('graduacaoAdmin'), st.members);
     Club.black.install({ members:st.members, admin:true, artifacts:st.artifacts,
       steps:st.steps, progress:st.progress, onDeliveriesChange:renderDeliveryCards,
-      onProgressChange:function () { indexar(); renderMembers(); if (farolMontado) Club.farol.refresh(); } });
+      onProgressChange:function () { indexar(); renderMembers(); if (farolMontado) Club.farol.refresh(); },
+      /* O pop-up do Método recarrega os marcos do mentorado aberto; a Progressão troca só os dele. */
+      onMarcosChange:function (memberId, linhas) {
+        st.marcos = (st.marcos || []).filter(function (p) { return p.member_id !== memberId; }).concat(linhas);
+        renderMembers(); if (farolMontado) Club.farol.refresh();
+      } });
     renderQr();
   }
 
