@@ -27,7 +27,7 @@ export async function setupChat({model,farol=farolFixture(),farolStatus=200}={})
       ?[{clinic_id:'clinic',clinica:'Clínica exemplo'}]:[]})};}};
   const context={Request,Response,Headers,URL,AbortController,AbortSignal,TextEncoder,TextDecoder,
     ReadableStream,crypto:globalThis.crypto,setTimeout,clearTimeout,setInterval,clearInterval,
-    console:{error:(...args)=>logs.push(args),warn:(...args)=>logs.push(args)},
+    console:{error:(...args)=>logs.push(args),warn:(...args)=>logs.push(args),info:(...args)=>logs.push(args)},
     Deno:{env:{get:key=>({SUPABASE_URL:'https://site.test',CRM_URL:'https://crm.test'}[key]||'fixture-secret')},serve:fn=>handler=fn},
     createClient:()=>db,
     fetch:async(url,options)=>{

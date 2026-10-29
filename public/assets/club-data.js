@@ -562,28 +562,78 @@
      alvo. Ver docs/cerebro/chat-function.ts no repositório do CRM. */
   C.data.cerebro = {
     perguntar: function (pergunta, historico, memberId) {
-      function pedirLogin() {
-        var erro = new Error('Sua sessão foi encerrada. Entre novamente para conversar com o Cérebro.');
-        erro.code = 'AUTH_REQUIRED';
+      var requestId = window.crypto.randomUUID();
+      var phase = 'session';
+      function falha(code, message, retryable) {
+        var erro = new Error(message);
+        erro.code = code; erro.retryable = retryable; erro.requestId = requestId;
         return erro;
+      }
+      function pedirLogin() {
+        return falha('AUTH_REQUIRED', 'Sua sessão foi encerrada. Entre novamente para conversar com o Cérebro.', false);
       }
       function sessaoEncerrada(erro) {
         return erro && ([400, 401, 403].indexOf(erro.status) !== -1 ||
           /^(session_not_found|refresh_token_not_found|refresh_token_already_used)$/.test(erro.code || ''));
       }
-      var body = JSON.stringify({ pergunta: pergunta, historico: historico || [], member_id: memberId });
+      var body = JSON.stringify({ pergunta: pergunta, historico: historico || [], member_id: memberId, request_id: requestId });
+      function erroHttp(resp, d) {
+        var temporario = resp.status === 408 || resp.status === 429 || resp.status >= 500;
+        var permitido = resp.status !== 400 && resp.status !== 403 && resp.status !== 404;
+        return falha(d && d.codigo || 'CHAT_HTTP_ERROR',
+          d && typeof d.erro === 'string' ? d.erro : 'O Cérebro não conseguiu responder agora. Tente novamente.',
+          permitido && (d && typeof d.tentar_novamente === 'boolean' ? d.tentar_novamente : temporario));
+      }
+      function respostaValida(d) {
+        return d && typeof d.resposta === 'string' && d.resposta.trim() &&
+          Array.isArray(d.historico) && d.historico.length >= 2 && d.historico.length % 2 === 0 &&
+          d.historico.every(function (m, i) {
+            return m && m.role === (i % 2 ? 'assistant' : 'user') && typeof m.content === 'string' && m.content.trim();
+          });
+      }
+      async function requisitar(session) {
+        var controller = new AbortController();
+        // O servidor tem 120s; o cliente limita também a espera pelo corpo.
+        var prazo = setTimeout(function () { controller.abort(); }, 135000);
+        var resp;
+        try {
+          phase = 'request';
+          resp = await fetch(C.cfg.supabaseUrl + '/functions/v1/cerebro-chat', {
+            method: 'POST',
+            headers: { 'Content-Type':'application/json', Authorization: 'Bearer ' + session.access_token },
+            body: body, signal: controller.signal
+          });
+          if (resp.status === 401) return { resp: resp };
+          phase = 'response';
+          var d;
+          try { d = await resp.json(); }
+          catch (err) {
+            if (!resp.ok) throw erroHttp(resp);
+            if (err.name === 'SyntaxError') throw falha('CHAT_INVALID_RESPONSE',
+              'A resposta chegou incompleta. Tente novamente; o contexto da conversa foi mantido.', true);
+            throw err;
+          }
+          if (!resp.ok || (d && d.erro)) throw erroHttp(resp, d);
+          if (!respostaValida(d)) throw falha('CHAT_INVALID_RESPONSE',
+            'A resposta chegou incompleta. Tente novamente; o contexto da conversa foi mantido.', true);
+          return { resp: resp, data: d };
+        } catch (err) {
+          if (err.requestId === requestId) throw err;
+          throw controller.signal.aborted
+            ? falha('CHAT_TIMEOUT', 'A resposta demorou mais que o esperado. Tente novamente; o contexto da conversa foi mantido.', true)
+            : falha('CHAT_NETWORK', 'Não foi possível receber a resposta. Tente novamente; o contexto da conversa foi mantido.', true);
+        } finally { clearTimeout(prazo); }
+      }
       function enviar(session, repetiu) {
-        return fetch(C.cfg.supabaseUrl + '/functions/v1/cerebro-chat', {
-          method: 'POST',
-          headers: { 'Content-Type':'application/json', Authorization: 'Bearer ' + session.access_token },
-          body: body
-        }).then(function (resp) {
+        return requisitar(session).then(function (recebido) {
+          var resp = recebido.resp;
           if (resp.status === 401) {
             if (repetiu) throw pedirLogin();
+            phase = 'session';
             return C.sb.auth.refreshSession().then(function (r) {
               if (r.error) {
                 if (sessaoEncerrada(r.error)) throw pedirLogin();
-                throw new Error('Não consegui renovar sua sessão agora. Tente novamente.');
+                throw falha('AUTH_TEMPORARY', 'Não consegui renovar sua sessão agora. Tente novamente.', true);
               }
               var nova = r.data && r.data.session;
               if (!nova || !nova.access_token ||
@@ -591,17 +641,7 @@
               return enviar(nova, true);
             });
           }
-          return resp.json().catch(function () {
-            throw new Error('O Cérebro respondeu algo que não entendi.');
-          }).then(function (d) {
-            if (!resp.ok || d.erro) {
-              var erro = new Error(d.erro || 'O Cérebro não respondeu.');
-              erro.code = d.codigo || 'CHAT_FAILED';
-              erro.retryable = d.tentar_novamente === true;
-              throw erro;
-            }
-            return d;
-          });
+          return recebido.data;
         });
       }
       return C.sb.auth.getSession().then(function (r) {
@@ -609,6 +649,12 @@
         var session = r.data && r.data.session;
         if (!session || !session.access_token) throw pedirLogin();
         return enviar(session, false);
+      }).catch(function (err) {
+        if (err.requestId !== requestId) err = falha('AUTH_TEMPORARY',
+          'Não consegui consultar sua sessão agora. Tente novamente.', true);
+        // Somente metadados, nunca token, pergunta, resposta ou erro bruto.
+        console.warn(JSON.stringify({ evento:'cerebro_client_error', request_id:requestId, phase:phase, codigo:err.code }));
+        throw err;
       });
     }
   };
