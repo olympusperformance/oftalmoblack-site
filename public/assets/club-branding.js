@@ -165,7 +165,7 @@
     ++request;root=el;options=opts;
     options.members=opts.admin?(opts.members||[]):[opts.member];
     st={impPeriodo:'90',impMembro:opts.member&&opts.member.id||null,loading:true,loaded:false};
-    root.innerHTML='<div class="hello"><h2>Turbina</h2><p>Acompanhe seus posts turbinados no Instagram e os resultados atribuídos pela Meta.</p></div>'+
+    root.innerHTML='<div class="hello"><h2>Turbinar</h2><p>Acompanhe seus posts turbinados no Instagram e os resultados atribuídos pela Meta.</p></div>'+
       '<div class="toolbar branding-toolbar"><label'+(!opts.admin?' hidden':'')+'>Mentorado<select class="inp" id="filtroImpMembro" aria-label="Mentorado da campanha"></select></label>'+
       '<div class="seg" id="filtroImpPeriodo"><button data-imp="90" aria-pressed="true">Últimos 90 dias</button><button data-imp="todos" aria-pressed="false">Todos</button></div>'+
       '<button class="btn" data-branding-retry>Atualizar</button></div><p class="tx-s" id="impAtualizado" aria-live="polite"></p><div class="statgrid" id="statsImp"></div><div id="listaImp"></div>';

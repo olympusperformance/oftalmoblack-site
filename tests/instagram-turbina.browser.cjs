@@ -61,7 +61,7 @@ const server = http.createServer((req, res) => {
     assert.equal(await p.locator('#igPanelTurbina').isVisible(), false);
     assert.equal(first.writes.length, 0); assert.equal(first.reads.length, 0);
     await p.screenshot({path:path.join(out,'metricas-desktop.png')});
-    await p.getByRole('tab', {name:'Turbina',exact:true}).click();
+    await p.getByRole('tab', {name:'Turbinar',exact:true}).click();
     await p.locator('.ig-tutorial[open]').waitFor();
     await p.waitForFunction(() => document.querySelector('.ig-tutorial video').readyState >= 2);
     assert.equal(first.writes.length,1);
@@ -72,7 +72,7 @@ const server = http.createServer((req, res) => {
     assert.equal(await p.locator('.ig-tutorial video').evaluate(v=>v.paused && !v.hasAttribute('src')),true);
     assert.equal(await p.locator('[data-instagram-tutorial]').evaluate(b=>b===document.activeElement),true);
     await p.getByRole('tab',{name:'Métricas',exact:true}).click();
-    await p.getByRole('tab',{name:'Turbina',exact:true}).click();
+    await p.getByRole('tab',{name:'Turbinar',exact:true}).click();
     await settled(p);
     assert.equal(await p.locator('.ig-tutorial[open]').count(),0);
     await p.screenshot({path:path.join(out,'turbina-desktop.png')});
@@ -80,7 +80,7 @@ const server = http.createServer((req, res) => {
     assert.equal(await p.locator('.ig-tutorial[open]').count(),0);
     await p.getByRole('button',{name:'Tutorial',exact:true}).click();
     await p.locator('.ig-tutorial[open]').waitFor(); await close(p);
-    await p.getByRole('tab',{name:'Turbina',exact:true}).focus(); await p.keyboard.press('ArrowLeft');
+    await p.getByRole('tab',{name:'Turbinar',exact:true}).focus(); await p.keyboard.press('ArrowLeft');
     assert.equal(await p.locator('#igPanelMetricas').isVisible(),true);
     await first.context.close();
 
@@ -94,7 +94,7 @@ const server = http.createServer((req, res) => {
 
     // Primeira visita de outro usuário no celular; layout e reprodução reais.
     const mobile = await setup({id:'member-2',width:390});
-    await mobile.page.getByRole('tab',{name:'Turbina',exact:true}).click();
+    await mobile.page.getByRole('tab',{name:'Turbinar',exact:true}).click();
     await mobile.page.locator('.ig-tutorial[open]').waitFor();
     await mobile.page.waitForFunction(() => document.querySelector('.ig-tutorial video').readyState >= 2);
     const bounds = await mobile.page.locator('.ig-tutorial').boundingBox();
@@ -126,19 +126,19 @@ const server = http.createServer((req, res) => {
     await failed.page.locator('.ig-tutorial[open]').waitFor(); await close(failed.page);
     failed.state.failSave=false;
     await failed.page.getByRole('tab',{name:'Métricas',exact:true}).click();
-    await failed.page.getByRole('tab',{name:'Turbina',exact:true}).click();
+    await failed.page.getByRole('tab',{name:'Turbinar',exact:true}).click();
     await failed.page.waitForResponse(r=>r.url().endsWith('/__tutorial-account') && r.request().method()==='PUT');
     assert.equal(await failed.page.locator('.ig-tutorial[open]').count(),0);
     assert(accounts.get('member-offline')[field]); await failed.context.close();
 
-    // Leitura lenta não abre popup depois de sair de Turbina.
+    // Leitura lenta não abre popup depois de sair de Turbinar.
     const slow = await setup({id:'member-slow',delay:600});
-    await slow.page.getByRole('tab',{name:'Turbina',exact:true}).click();
+    await slow.page.getByRole('tab',{name:'Turbinar',exact:true}).click();
     await slow.page.getByRole('tab',{name:'Métricas',exact:true}).click();
     await slow.page.waitForResponse(r=>r.url().endsWith('/__tutorial-account'));
     assert.equal(await slow.page.locator('.ig-tutorial[open]').count(),0); assert.equal(slow.writes.length,0);
     slow.state.failRead=true;
-    await slow.page.getByRole('tab',{name:'Turbina',exact:true}).click();
+    await slow.page.getByRole('tab',{name:'Turbinar',exact:true}).click();
     await slow.page.waitForResponse(r=>r.url().endsWith('/__tutorial-account'));
     await slow.page.getByRole('button',{name:'Tutorial',exact:true}).click();
     await slow.page.locator('.ig-tutorial[open]').waitFor(); await close(slow.page);
