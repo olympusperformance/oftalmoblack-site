@@ -92,7 +92,7 @@
   $('sair').addEventListener('click', function () { Club.auth.logout(); });
   $('verComoMembro').addEventListener('click', function () {
     var id = st.view === 'igMetricas' ? Club.branding.selected() : st.view === 'farol' ? Club.farol.selected() : Club.black.selected();
-    if (id) this.href = '/membros/?membro=' + encodeURIComponent(id) + (st.view==='igMetricas'?'#instagram':st.view==='artifacts'?'#artifacts':'');
+    if (id) this.href = '/membros/?membro=' + encodeURIComponent(id) + (st.view==='igMetricas'?Club.instagramTabs.hashFor('instagram'):st.view==='artifacts'?'#artifacts':'');
   });
 
   /* ── dados ────────────────────────────────────────────────────────────── */
@@ -380,6 +380,8 @@
   }
 
   function go(key) {
+    var instagramHash = location.hash;
+    if (key !== 'igMetricas') Club.instagramTabs.leave();
     if (Club.black) Club.black.close();
     st.view = key;
     Array.prototype.forEach.call(document.querySelectorAll('.view'), function (v) {
@@ -402,7 +404,7 @@
     var painel = $('painelDemanda');
     if (painel) painel.hidden = key !== 'demands' || !st.painel;
     if (Club.black) Club.black.enter(key);
-    if (key === 'igMetricas') Club.branding.enter();
+    if (key === 'igMetricas') Club.instagramTabs.enter(instagramHash);
     if (key === 'livro' && Club.livro) Club.livro.enter();
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
@@ -4556,6 +4558,7 @@
     renderDemandas();
     renderIgMetricas();
     Club.branding.mount($('brandingPanel'), {admin:true,members:st.members,member:st.members.find(function(m){return m.id===new URLSearchParams(location.search).get('membro');})});
+    Club.instagramTabs.mount(document.querySelector('[data-view=igMetricas]'), {base:'igMetricas'});
     renderBotFila();
     renderBotExemplos();
     Club.graduacao.mountAdmin($('graduacaoAdmin'), st.members);

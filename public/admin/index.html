@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#07060A">
 <title>Cérebro Black — Administração</title>
 <link rel="icon" href="/assets/favicon.png">
-<link rel="stylesheet" href="/assets/club.css?v=20261016-instagram-branding">
+<link rel="stylesheet" href="/assets/club.css?v=20261029-turbina">
 <link rel="stylesheet" href="/assets/club-graduacao.css?v=20260924">
 <link rel="stylesheet" href="/assets/club-farol.css?v=20260929">
 <link rel="stylesheet" href="/assets/club-black.css?v=20261008-vitrine-rodadas">
@@ -154,17 +154,26 @@
       <div class="hello"><h1>Instagram dos mentorados</h1>
         <p>Um retrato por dia de cada conta. A variação aparece assim que houver
            retrato antigo o bastante para comparar.</p></div>
-      <div class="statgrid" id="statsIg"></div>
-      <div class="toolbar">
-        <div class="seg" id="filtroIg">
-          <button data-ig="seguidores" aria-selected="true">Mais seguidores</button>
-          <button data-ig="crescimento" aria-selected="false">Quem mais cresceu</button>
-          <button data-ig="views" aria-selected="false">Mais visualizações</button>
+      <div class="ig-navigation">
+        <div class="seg ig-segments" role="tablist" aria-label="Áreas do Instagram">
+          <button type="button" id="igTabMetricas" role="tab" aria-controls="igPanelMetricas" aria-selected="true" data-instagram-tab="metricas">Métricas</button>
+          <button type="button" id="igTabTurbina" role="tab" aria-controls="igPanelTurbina" aria-selected="false" tabindex="-1" data-instagram-tab="turbina">Turbina</button>
         </div>
-        <span class="sp"></span>
+        <button type="button" class="btn btn-sm" data-instagram-tutorial hidden><svg class="ic" aria-hidden="true"><use href="#i-play"/></svg>Tutorial</button>
       </div>
-      <div id="listaIg"></div>
-      <section class="branding-view branding-embedded" aria-label="Campanha de Branding"><div id="brandingPanel"></div></section>
+      <section id="igPanelMetricas" role="tabpanel" aria-labelledby="igTabMetricas" data-instagram-panel="metricas">
+        <div class="statgrid" id="statsIg"></div>
+        <div class="toolbar">
+          <div class="seg" id="filtroIg">
+            <button data-ig="seguidores" aria-selected="true">Mais seguidores</button>
+            <button data-ig="crescimento" aria-selected="false">Quem mais cresceu</button>
+            <button data-ig="views" aria-selected="false">Mais visualizações</button>
+          </div>
+          <span class="sp"></span>
+        </div>
+        <div id="listaIg"></div>
+      </section>
+      <section id="igPanelTurbina" class="branding-view" role="tabpanel" aria-labelledby="igTabTurbina" data-instagram-panel="turbina" hidden><div id="brandingPanel"></div></section>
 
     </div>
 
@@ -244,9 +253,10 @@
 <script src="/assets/club-checklist.js?v=20261001-catalog"></script>
 <script src="/assets/club-vitrine.js?v=20261008-rodadas"></script>
 <script src="/assets/club-black.js?v=20261028-confiabilidade"></script>
-<script src="/assets/club-branding.js?v=20261016-instagram-branding"></script>
+<script src="/assets/club-branding.js?v=20261029-turbina"></script>
+<script src="/assets/club-instagram-tabs.js?v=20261029-turbina"></script>
 <script src="/assets/club-livro-model.js?v=20261023-stories"></script>
 <script src="/assets/club-livro.js?v=20261023-stories"></script>
-<script src="/assets/admin.js?v=20261026-perfis"></script>
+<script src="/assets/admin.js?v=20261029-turbina"></script>
 </body>
 </html>

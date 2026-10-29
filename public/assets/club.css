@@ -1109,3 +1109,18 @@ input[type="file"].inp::file-selector-button:hover{background:var(--surface);bor
 .chat-controles p{margin:0;color:var(--muted);font-size:12px;line-height:1.6;max-width:76ch}
 .chat-controles button{flex-shrink:0}
 @media(max-width:640px){.chat-controles{align-items:flex-start;flex-direction:column;gap:8px}}
+
+/* Instagram: seletor de área e tutorial sob demanda. */
+.ig-navigation{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:24px}
+.ig-segments button{min-width:108px;min-height:42px;font-size:14px;font-weight:600}
+.ig-segments button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.ig-tutorial{width:min(440px,calc(100vw - 28px));max-height:calc(100dvh - 28px);box-sizing:border-box;
+  padding:20px;margin:auto;overflow-y:auto;color:var(--text);background:var(--elevated);
+  border:1px solid var(--border);border-radius:var(--r-lg)}
+.ig-tutorial::backdrop{background:var(--veil);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.ig-tutorial .modal-h{margin-bottom:14px;justify-content:space-between}
+.ig-tutorial .modal-h>div{flex:1}
+.ig-tutorial video{display:block;width:100%;max-height:calc(100dvh - 185px);aspect-ratio:9/16;
+  object-fit:contain;background:#000;border-radius:10px}
+.ig-video-error{font-size:13px;line-height:1.5;color:var(--muted)}
+@media(max-width:380px){.ig-segments button{min-width:86px;padding:7px 10px}}
