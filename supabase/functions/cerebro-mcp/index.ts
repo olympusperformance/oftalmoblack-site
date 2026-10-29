@@ -5,6 +5,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 import { profileTool, readProfile, listMemberProfiles } from "./profile.mjs";
 import { sdrTool, readSdrDocument } from "./sdr-document.mjs";
 import { authorized } from "./auth.mjs";
+import { funilDaClinica, textoDoFunil, textoDeTodas, pedidoDePeriodo } from "./funil.mjs";
+import { resolveRequestedPeriod } from "../farol-metricas/periodo.ts";
 
 const db = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -56,12 +58,14 @@ const TOOLS = [
   {
     name: "metricas_da_clinica",
     description:
-      "Números da clínica de um mentorado no CRM: leads, agendamentos, comparecimentos, cancelamentos, faltas, taxa de comparecimento e pacientes novos. Só agregados — nunca dado de paciente.",
+      "Funil da clínica de um mentorado pela mesma fonte da Visão Geral do painel (get_funil_metrics): novos leads, agendadas, realizadas, indicações, fechamentos e perdidos no período, mais o período anterior e a cobertura. Totais de janela, não coorte: não derive perda, comparecimento ou conversão. Só agregados — nunca dado de paciente.",
     inputSchema: {
       type: "object",
       properties: {
         mentorado: { type: "string", description: "nome, mesmo parcial" },
-        dias: { type: "number", description: "periodo em dias (padrao 30)" },
+        dias: { type: "number", description: "dias corridos até hoje no fuso da clínica (padrão 30, máximo 366)" },
+        inicio: { type: "string", description: "opcional: data inicial AAAA-MM-DD; com fim, substitui dias" },
+        fim: { type: "string", description: "opcional: data final AAAA-MM-DD, inclusiva, não futura" },
       },
       required: ["mentorado"],
       additionalProperties: false,
@@ -70,11 +74,13 @@ const TOOLS = [
   {
     name: "metricas_de_todas_as_clinicas",
     description:
-      "Painel do funil comercial das 16 clínicas de uma vez, uma linha por clínica: leads novos, consultas agendadas, comparecimentos, cirurgias indicadas e cirurgias fechadas, mais o que a agenda registrou. Use para 'como estão as clínicas', comparar entre elas ou somar o total da mentoria. Só agregados — nunca dado de paciente.",
+      "Funil de todas as clínicas vinculadas a mentorados ativos, uma linha por clínica, pela mesma fonte da Visão Geral (get_funil_metrics): novos leads, agendadas, realizadas, indicações, fechamentos e perdidos. Use para 'como estão as clínicas', comparar entre elas ou somar o total da mentoria. Totais de janela, não coorte. Só agregados — nunca dado de paciente.",
     inputSchema: {
       type: "object",
       properties: {
-        dias: { type: "number", description: "periodo em dias (padrao 30)" },
+        dias: { type: "number", description: "dias corridos até hoje no fuso de cada clínica (padrão 30, máximo 366)" },
+        inicio: { type: "string", description: "opcional: data inicial AAAA-MM-DD; com fim, substitui dias" },
+        fim: { type: "string", description: "opcional: data final AAAA-MM-DD, inclusiva, não futura" },
       },
       additionalProperties: false,
     },
@@ -110,6 +116,32 @@ async function rpcDoCrm(nome: string, corpo: unknown): Promise<any[]> {
   if (!r.ok) throw new Error(`CRM respondeu ${r.status} em ${nome}: ${await r.text()}`);
   return await r.json();
 }
+
+// Clínicas do CRM por id: nome e fuso, que definem o recorte do período como na Visão Geral.
+async function clinicasDoCrm(ids: string[]): Promise<any[]> {
+  if (!ids.length) return [];
+  const lista = ids.map((id) => `"${id}"`).join(",");
+  const r = await fetch(`${Deno.env.get("CRM_URL")}/rest/v1/clinics?select=id,name,timezone&id=in.(${lista})`, {
+    headers: { apikey: Deno.env.get("CRM_KEY")!, Authorization: `Bearer ${Deno.env.get("CRM_KEY")}` },
+  });
+  if (!r.ok) throw new Error(`CRM respondeu ${r.status} em clinics`);
+  return await r.json();
+}
+
+// Mesmo escopo do Farol: só clínicas vinculadas a mentorados ativos, sem repetir.
+async function clinicasVinculadas(): Promise<string[]> {
+  const { data: membros, error } = await db.from("members").select("id").eq("ativo", true);
+  if (error) throw error;
+  const vinculos = await Promise.all((membros ?? []).map(async (m: any) => {
+    const { data } = await db.rpc("cerebro_clinica_do_membro", { p_member: m.id });
+    return data?.[0]?.clinic_id ?? null;
+  }));
+  return [...new Set(vinculos.filter((id): id is string => typeof id === "string" && id.length > 0))];
+}
+
+const funilArgs = (args: any) => ({
+  dias: args.dias, inicio: args.inicio, fim: args.fim,
+});
 
 async function vetor(texto: string): Promise<number[]> {
   const r = await fetch("https://api.openai.com/v1/embeddings", {
@@ -162,80 +194,27 @@ async function executar(nome: string, args: any): Promise<string> {
       .join("\n\n");
   }
 
+  // As duas ferramentas de número usam a fonte da Visão Geral (get_funil_metrics),
+  // com período e fuso resolvidos como no Farol. A RPC legada cerebro_metricas
+  // divergia do painel (janela, critério de data, deduplicação) e saiu daqui.
   if (nome === "metricas_de_todas_as_clinicas") {
-    const dias = args.dias ?? 30;
-    const linhas = await rpcDoCrm("cerebro_metricas_todas", { p_dias: dias });
-    if (!linhas.length) return "O CRM nao devolveu clinica nenhuma.";
-
-    const soma = (c: string) => linhas.reduce((t: number, l: any) => t + Number(l[c] ?? 0), 0);
-    const n = (v: any) => String(v ?? 0);
-
-    // Tabela de largura fixa: o Claude le melhor coluna alinhada do que frase
-    // corrida, e o Dr. quer comparar clinica com clinica.
-    const cab = "clinica".padEnd(34) + ["leads", "agend", "compar", "indic", "fech"]
-      .map((c) => c.padStart(7)).join("");
-    const corpo = linhas.map((l: any) =>
-      String(l.clinica ?? "").trim().slice(0, 33).padEnd(34) +
-      [l.leads, l.agendadas, l.compareceram, l.indicadas, l.fechadas]
-        .map((v) => n(v).padStart(7)).join(""));
-    const total = "TOTAL".padEnd(34) +
-      ["leads", "agendadas", "compareceram", "indicadas", "fechadas"]
-        .map((c) => String(soma(c)).padStart(7)).join("");
-
-    // Onde a agenda tem movimento, ela é o registro mais fiel de comparecimento
-    // — e a divergência com o funil é justamente o que mostra quem registra.
-    const comAgenda = linhas
-      .filter((l: any) => Number(l.agenda_marcados) > 0)
-      .map((l: any) =>
-        `  ${String(l.clinica).trim()}: ${l.agenda_marcados} na agenda, ${l.agenda_realizados} realizados` +
-        (l.taxa_comparecimento ? ` (${l.taxa_comparecimento}% de comparecimento)` : ""));
-
-    return [
-      `Funil das clinicas — ultimos ${dias} dias`,
-      "",
-      cab, corpo.join("\n"), total,
-      "",
-      "Agenda, onde ha movimento:",
-      comAgenda.length ? comAgenda.join("\n") : "  nenhuma clinica com agenda no periodo",
-      "",
-      "agend/compar/indic/fech vem do marco do funil no Kanban, que existe nas 16",
-      "clinicas. Zero em indicadas quer dizer que a clinica ainda nao marca a",
-      "indicacao cirurgica — nao que nao houve indicacao.",
-      "",
-      "O periodo conta pela data em que o fato aconteceu. Onde nao havia como",
-      "recuperar essa data, vale a data em que o marco foi gravado" +
-        (soma("marcos_sem_data_do_fato") ? ` (${soma("marcos_sem_data_do_fato")} marcos)` : "") + ".",
-      "Indicacao e cirurgia fechada so tem historico a partir de 25/08/2026:",
-      "antes disso a informacao nunca foi registrada, entao comparar com meses",
-      "anteriores nao tem base.",
-    ].join("\n");
+    const ids = await clinicasVinculadas();
+    if (!ids.length) return "Nenhuma clínica vinculada a mentorado ativo.";
+    const clinicas = await clinicasDoCrm(ids);
+    if (!clinicas.length) return "O CRM não devolveu as clínicas vinculadas.";
+    const agora = new Date();
+    const resultados = await Promise.all(clinicas
+      .sort((a: any, b: any) => String(a.name).localeCompare(String(b.name), "pt-BR"))
+      .map((clinica: any) => funilDaClinica({ clinica, args: funilArgs(args), rpcDoCrm, resolverPeriodo: resolveRequestedPeriod, agora })));
+    return textoDeTodas(resultados, pedidoDePeriodo(funilArgs(args)));
   }
 
   if (nome === "metricas_da_clinica") {
     const { data } = await db.rpc("cerebro_clinica_por_mentorado", { p_nome: args.mentorado });
     const alvo = data?.[0];
     if (!alvo) return `Nao achei a clinica de "${args.mentorado}" ligada a um mentorado.`;
-    const m = (await rpcDoCrm("cerebro_metricas",
-      { p_clinic: alvo.clinic_id, p_dias: args.dias ?? 30 }))[0] ?? {};
-    return [
-      `Clinica: ${alvo.clinica} — ultimos ${args.dias ?? 30} dias`,
-      "",
-      "Funil comercial (marco do Kanban):",
-      `  consultas agendadas: ${m.funil_agendadas}`,
-      `  compareceram: ${m.funil_compareceram}`,
-      `  cirurgias indicadas: ${m.cirurgias_indicadas}`,
-      `  cirurgias fechadas: ${m.cirurgias_fechadas}`,
-      "",
-      "Agenda:",
-      `  agendamentos criados: ${m.agendamentos}`,
-      `  compareceram: ${m.compareceram}`,
-      `  cancelados: ${m.cancelados}`,
-      `  faltaram: ${m.faltaram}`,
-      `  taxa de comparecimento: ${m.taxa_comparecimento ?? "—"}%`,
-      "",
-      `leads novos: ${m.leads}`,
-      `pacientes novos: ${m.pacientes_novos}`,
-    ].join("\n");
+    const clinica = (await clinicasDoCrm([alvo.clinic_id]))[0] ?? { id: alvo.clinic_id, name: alvo.clinica, timezone: null };
+    return textoDoFunil(await funilDaClinica({ clinica, args: funilArgs(args), rpcDoCrm, resolverPeriodo: resolveRequestedPeriod }));
   }
 
   throw new Error(`ferramenta desconhecida: ${nome}`);
