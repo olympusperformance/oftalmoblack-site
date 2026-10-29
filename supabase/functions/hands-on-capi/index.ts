@@ -5,7 +5,8 @@ const env={
   testKey:Deno.env.get('HOGZ_TEST_KEY')||'',
   anonKey:Deno.env.get('HOGZ_PUBLIC_KEY')||'',
   sheetEndpoint:Deno.env.get('HOGZ_SHEET_ENDPOINT')||'',
-  productionEnabled:Deno.env.get('HOGZ_PRODUCTION_ENABLED')==='true'
+  productionEnabled:Deno.env.get('HOGZ_PRODUCTION_ENABLED')==='true',
+  crmEnabled:Deno.env.get('HOGZ_CRM_ENABLED')==='true'
 };
 const base=Deno.env.get('SUPABASE_URL')+'/rest/v1/';
 const headers={'apikey':Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,'Authorization':'Bearer '+Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'),'Content-Type':'application/json'};
@@ -24,5 +25,15 @@ const db={
   claim:(limit:number)=>rest('rpc/hogz_capi_claim','POST',{p_limit:limit}),
   finish:(id:string,attempts:number,update:unknown)=>rest('hogz_capi_outbox?event_id=eq.'+encodeURIComponent(id)+'&attempts=eq.'+attempts,'PATCH',update)
 };
-const handler=createHandler({env,db,background:(p:Promise<unknown>)=>EdgeRuntime.waitUntil(p.catch(()=>{}))});
+const captureCrm=async(application:Record<string,unknown>,mode:string)=>{
+  const key=Deno.env.get('HOGZ_CRM_INGEST_KEY')||'';
+  if(key.length<32)throw new Error('crm_unavailable');
+  const response=await fetch('https://nivzxddpiljajfjlpydj.supabase.co/functions/v1/b2b-application-intake',{
+    method:'POST',headers:{'Content-Type':'application/json','x-hogz-crm-key':key},
+    body:JSON.stringify({request_id:application.request_id,application,mode}),signal:AbortSignal.timeout(16000)
+  });
+  if(!response.ok)throw Object.assign(new Error('crm_unconfirmed'),{status:response.status===409?409:503});
+  return await response.json();
+};
+const handler=createHandler({env,db,captureCrm,background:(p:Promise<unknown>)=>EdgeRuntime.waitUntil(p.catch(()=>{}))});
 Deno.serve(handler);

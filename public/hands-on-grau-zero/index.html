@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR" data-analytics-enabled="true" data-page-version="hands-on-grau-zero-application-20261028" data-capi-endpoint="https://zpyxnkuvircukjlfexrv.supabase.co/functions/v1/hands-on-capi" data-capi-key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpweXhua3V2aXJjdWtqbGZleHJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0MTk4NzksImV4cCI6MjEwMTk5NTg3OX0.YojmkK9fHsJwY1_81JeYdLJkIlI20xSQwqG-WuEZOrk">
+<html lang="pt-BR" data-analytics-enabled="true" data-page-version="hands-on-grau-zero-apple-application-20261029" data-capi-endpoint="https://zpyxnkuvircukjlfexrv.supabase.co/functions/v1/hands-on-capi" data-capi-key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpweXhua3V2aXJjdWtqbGZleHJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0MTk4NzksImV4cCI6MjEwMTk5NTg3OX0.YojmkK9fHsJwY1_81JeYdLJkIlI20xSQwqG-WuEZOrk">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,10 +7,6 @@
   <meta name="theme-color" content="#0A0A0A">
   <title>Hands-on Grau Zero | Com o Dr. Alex Sá</title>
   <meta name="description" content="A cirurgia premium começa antes da lente. Aprenda a medir, indicar e planejar cada caso com o Protocolo Grau Zero em três dias com o Dr. Alex Sá.">
-  <link rel="stylesheet" href="assets/site.css?v=1972123061">
-  <script src="assets/capi.js?v=a66378a653" defer></script>
-  <script src="assets/tracking.js?v=40b328b02e" defer></script>
-  <script src="assets/site.js?v=edbbe4219c" defer></script>
   <link rel="canonical" href="https://oftalmoblack.com.br/hands-on-grau-zero/">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="pt_BR">
@@ -20,92 +16,93 @@
   <meta property="og:image" content="https://oftalmoblack.com.br/hands-on-grau-zero/assets/og.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="1500">
+  <link rel="icon" href="/workshop/assets/favicon.png" type="image/png">
+  <link rel="stylesheet" href="assets/application-base.css?v=1eaaf66115">
+  <link rel="stylesheet" href="assets/application-apple.css?v=9a71589612">
+  <script src="assets/capi.js?v=a66378a653" defer></script>
+  <script src="assets/v21-tracking.js?v=ac4beae941" defer></script>
+  <script type="module" src="assets/application-apple.js?v=53b4f9fc76"></script>
 </head>
-<body>
-  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
-  <header class="container header-inner">
-    <a class="brand" href="#inicio" aria-label="OftalmoBlack, início"><img src="assets/logo-oftalmoblack.webp" width="480" height="166" alt="OftalmoBlack"></a>
-    <p class="header-note">Com o Dr. Alex Sá</p>
+<body data-variant="apple" data-screen="landing">
+  <a class="skip-link" href="#candidatura">Ir para a aplicação</a>
+  <header class="topbar shell">
+    <a href="#inicio" id="brand-home" class="brand" aria-label="OftalmoBlack, início"><img src="/hands-on-grau-zero/assets/logo-oftalmoblack.webp" width="480" height="166" alt="OftalmoBlack"></a>
+    <p id="topnote" class="topnote">Exclusivo para oftalmologistas</p>
   </header>
-  <main id="conteudo">
-    <section class="hero container" id="inicio" aria-labelledby="hero-title">
-      <div class="hero-copy">
-        <p class="eyebrow">Hands-on Grau Zero</p>
-        <h1 id="hero-title">A cirurgia premium começa antes da lente.</h1>
-        <p class="hero-summary">Aprenda a medir, indicar e planejar cada caso com o Protocolo Grau Zero. Três dias presenciais com o Dr. Alex Sá, da avaliação ao centro cirúrgico.</p>
-        <p class="hero-audience">Para oftalmologistas, mesmo que ainda não operem catarata.</p>
-        <a class="button" data-cta-location="hero" href="#candidatura">Quero me candidatar</a>
-      </div>
-      <div class="application-card" id="candidatura" aria-labelledby="form-title">
-        <h2 id="form-title">Candidate-se ao Hands-on</h2>
-        <p class="form-intro" id="form-intro">Comece pelos seus dados.</p>
-      <form id="candidatura-form" class="application-form" novalidate data-form-endpoint="https://zpyxnkuvircukjlfexrv.supabase.co/functions/v1/hands-on-capi" method="post" aria-labelledby="form-title">
-        <div class="step-progress" id="step-progress" data-step="1" role="progressbar" aria-label="Progresso da candidatura" aria-valuemin="1" aria-valuemax="2" aria-valuenow="1" aria-valuetext="Etapa 1 de 2: Seus dados">
-          <p id="step-label" aria-live="polite">1 de 2 · Seus dados</p>
-          <div class="progress-track" aria-hidden="true"><span></span><span></span></div>
-        </div>
-        <div data-step-panel="1">
-        <div class="field"><label for="nome">Nome completo</label><input id="nome" name="nome" type="text" autocomplete="name" minlength="2" maxlength="140" required></div>
-        <div class="field"><label for="whatsapp">WhatsApp com DDD</label><input id="whatsapp" name="whatsapp" type="tel" autocomplete="tel" inputmode="tel" maxlength="35" aria-describedby="whatsapp-help" required><small id="whatsapp-help">Aceita código do país. Ex.: +55 92 99999-9999.</small></div>
-        <div class="field-row professional-fields">
-          <div class="field"><label for="crm">CRM</label><input id="crm" name="crm" type="text" inputmode="numeric" pattern="[0-9]{1,10}" maxlength="10" required></div>
-          <div class="field"><label for="uf">UF do CRM</label><select id="uf" name="uf" autocomplete="off" required><option value="">Selecione</option><option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option><option>SE</option><option>TO</option></select></div>
-        </div>
-          <button class="button continue-button" type="button" data-testid="continue-step" disabled>Continuar</button>
-        </div>
-        <div data-step-panel="2" hidden>
-        <div class="field"><label for="experiencia_catarata">Experiência em cirurgia de catarata</label><select id="experiencia_catarata" name="experiencia_catarata" required><option value="">Selecione sua experiência</option><option value="ainda_nao_opero">Ainda não opero</option><option value="iniciando_supervisao">Estou começando e preciso de supervisão frequente</option><option value="opero_autonomia">Já opero com autonomia</option></select></div>
-        <div class="field"><label for="cirurgias_mes">Cirurgias de catarata por mês, em média</label><input id="cirurgias_mes" name="cirurgias_mes" type="number" inputmode="numeric" min="0" max="10000" step="1" required></div>
-        <div class="field"><label for="experiencia_lentes">Experiência com lentes de alta tecnologia</label><select id="experiencia_lentes" name="experiencia_lentes" required><option value="">Selecione sua experiência</option><option value="ainda_nao_implanto">Ainda não implanto</option><option value="poucos_casos">Já implantei em poucos casos</option><option value="regularmente">Implanto regularmente</option></select></div>
-        <div class="field"><label for="oferta_premium">Já oferece lentes de alta tecnologia aos pacientes?</label><select id="oferta_premium" name="oferta_premium" required><option value="">Selecione uma opção</option><option value="nao">Não</option><option value="alguns_casos">Em alguns casos</option><option value="rotina">Faz parte da minha rotina</option></select></div>
-        <div class="field"><label for="clinica">Tem clínica ou consultório próprio?</label><select id="clinica" name="clinica" required><option value="">Selecione uma opção</option><option value="proprietario">Sim, sou proprietário</option><option value="socio">Sim, sou sócio</option><option value="nao">Não</option></select></div>
-        <div class="field"><label for="objetivo">O que deseja aprender? <span class="optional">(opcional)</span></label><textarea id="objetivo" name="objetivo" rows="4" maxlength="2000" aria-describedby="objetivo-help"></textarea><small id="objetivo-help">Conte seu objetivo sem incluir nomes, exames ou outros dados de pacientes.</small></div>
-          <div class="form-actions">
-            <button class="back-button" type="button" data-testid="back-step">Voltar aos meus dados</button>
-            <button class="button submit-button" type="submit" data-testid="final-submit" disabled>Enviar candidatura</button>
+  <main>
+    <div id="landing">
+      <section class="hero shell" id="inicio" aria-labelledby="headline">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="live-dot" aria-hidden="true"></span>Hands-on Grau Zero</p>
+          <h1 id="headline">A cirurgia premium começa <em>antes da lente.</em></h1>
+          <p class="hero-summary">Aprenda a medir, indicar e planejar cada caso com o <strong>Protocolo Grau Zero</strong>. Três dias presenciais com o Dr. Alex Sá, da avaliação ao centro cirúrgico.</p>
+          <div class="event-details">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 2v6m10-6v6M3 11h18"/></svg>
+            <div><strong>19 a 21 de novembro de 2026</strong><span>Com o Dr. Alex Sá</span></div>
           </div>
+          <p class="hero-audience">Para oftalmologistas, mesmo que ainda não operem catarata.</p>
         </div>
-        <p class="privacy-notice">Seus dados serão utilizados pela equipe Olympus para analisar sua candidatura e entrar em contato sobre o Hands-on Grau Zero. Consulte a <a href="https://oftalmoblack.com.br/politica-de-privacidade/" target="_blank" rel="noopener noreferrer">Política de Privacidade</a>.</p>
-        <p class="form-preview-note" id="form-preview-note" hidden>O envio de candidaturas não está configurado.</p>
-        <p class="application-note">A candidatura não confirma sua vaga.</p>
-        <noscript><p class="form-preview-note">Ative o JavaScript para preencher e enviar sua candidatura.</p></noscript>
-        <div id="form-status" class="form-status" role="status" aria-live="polite" aria-atomic="true" tabindex="-1" hidden></div>
+        <section class="form-card" id="candidatura" aria-labelledby="interest-title">
+          <h2 id="interest-title">Seu próximo passo<br>começa aqui.</h2>
+          <p class="form-intro">Comece pelos seus dados. Depois, conte um pouco sobre seu momento.</p>
+          <form id="interest-form" novalidate method="post">
+            <div class="fields">
+              <div class="field"><label for="nome">Nome completo</label><input id="nome" name="nome" type="text" autocomplete="name" placeholder="Seu nome completo" minlength="2" maxlength="140" aria-describedby="nome-error" required><p class="field-error" id="nome-error" hidden></p></div>
+              <div class="field"><label for="whatsapp">WhatsApp com DDD</label><input id="whatsapp" name="whatsapp" type="tel" autocomplete="tel" inputmode="tel" maxlength="35" placeholder="(92) 99999-9999" aria-describedby="whatsapp-error" required><p class="field-error" id="whatsapp-error" hidden></p></div>
+            </div>
+            <button class="cta" type="submit" id="interest-next" data-testid="continue-step" disabled>Continuar minha aplicação<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button>
+          </form>
+          <p class="application-note">A candidatura não confirma sua vaga.</p>
+
+          <p class="privacy">Seus dados serão utilizados pela equipe Olympus para analisar sua candidatura e entrar em contato sobre o Hands-on Grau Zero. Consulte a <a href="/politica-de-privacidade/" target="_blank" rel="noopener noreferrer">Política de Privacidade</a>.</p>
+          <noscript><p class="noscript">Ative o JavaScript para preencher e enviar sua candidatura.</p></noscript>
+        </section>
+      </section>
+      <section class="experience-section" aria-labelledby="experience-title">
+        <div class="shell">
+          <div class="section-heading"><p class="eyebrow">O Protocolo Grau Zero na prática</p><h2 id="experience-title">Primeiro, medir.<br><em>Depois, escolher.</em></h2></div>
+          <ol class="journey">
+            <li><span class="journey-number" aria-hidden="true">01</span><h3>Avaliação e medidas</h3><p>Acompanhe a avaliação dos pacientes e entenda como as medidas orientam a indicação.</p></li>
+            <li><span class="journey-number" aria-hidden="true">02</span><h3>Planejamento premium</h3><p>Discuta a escolha da lente dentro do planejamento de cada paciente.</p></li>
+            <li><span class="journey-number" aria-hidden="true">03</span><h3>Centro cirúrgico</h3><p>Conecte o planejamento à prática, com orientação do mentor.</p></li>
+          </ol>
+        </div>
+      </section>
+      <section class="presenter-section" aria-labelledby="presenter-title">
+        <div class="shell presenter">
+          <figure class="portrait"><img src="/workshop/assets/img/alex-hero-992.webp" srcset="/workshop/assets/img/alex-hero-800.webp 800w, /workshop/assets/img/alex-hero-992.webp 992w" sizes="(max-width: 760px) 90vw, 430px" width="992" height="1488" alt="Dr. Alex Sá, de terno e microfone, conduzindo uma aula" loading="lazy"></figure>
+          <div class="presenter-copy"><p class="eyebrow">Seu mentor</p><h2 id="presenter-title">Dr. Alex Sá.</h2><p class="registration">CRM-AM 7516 · RQE 3514</p><p class="bio">Mais de 30 mil cirurgias, mais de 15 anos de oftalmologia e seis anos como professor da UFAM.</p><p class="bio">Para quem quer conectar avaliação, medidas e escolha da lente, com um planejamento premium.</p><p class="profile-note">Não é preciso já operar catarata nem ter clínica própria.</p><a class="text-link" href="#candidatura">Quero conhecer o Hands-on<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></a></div>
+        </div>
+      </section>
+      <section class="faq-section shell" aria-labelledby="faq-title">
+        <h2 id="faq-title">Antes de<br><em>se candidatar.</em></h2>
+        <div class="faq-list">
+          <details><summary>Preciso já operar catarata?<span aria-hidden="true"></span></summary><p>Não. Você pode participar para se habilitar a indicar lentes de alta tecnologia, mesmo que ainda não seja cirurgião de catarata.</p></details>
+          <details><summary>Preciso ter clínica própria?<span aria-hidden="true"></span></summary><p>Não. Você pode participar mesmo sem ter clínica ou consultório próprio.</p></details>
+          <details><summary>O que acontece depois da candidatura?<span aria-hidden="true"></span></summary><p>A equipe Olympus conversa com você sobre seu perfil e apresenta as informações da turma. A candidatura não confirma sua vaga.</p></details>
+          <a class="cta faq-cta" href="#candidatura">Começar minha aplicação<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></a>
+        </div>
+      </section>
+      <footer><div class="shell footer-row"><p>Hands-on Grau Zero · Olympus · Dr. Alex Sá<br>CRM-AM 7516 · RQE 3514</p><a href="/politica-de-privacidade/" target="_blank" rel="noopener noreferrer">Política de Privacidade</a></div></footer>
+    </div>
+    <section class="application-screen shell" id="application-screen" aria-labelledby="application-title" hidden>
+      <div class="research-heading"><p class="eyebrow">Sua experiência com o Grau Zero</p><h2 id="application-title">Vamos conhecer<br><em>seu momento.</em></h2><p>Uma pergunta de cada vez. Responda com tranquilidade.</p></div>
+      <form id="candidatura-form" class="question-card" novalidate method="post">
+        <div class="question-meta"><span id="question-step" aria-live="polite">Pergunta 1 de 7</span><progress id="application-progress" value="1" max="7" aria-label="Progresso da aplicação">1 de 7</progress></div>
+        <h3 id="question-title" tabindex="-1"></h3><p id="question-description" class="question-description"></p>
+        <div id="question-fields"></div>
+        <p id="question-error" class="field-error question-error" role="alert" tabindex="-1" hidden></p>
+        <p id="form-status" class="form-status" role="status" aria-live="polite" aria-atomic="true" tabindex="-1" hidden></p>
+        <nav class="research-navigation" aria-label="Navegação das perguntas"><button type="button" id="question-back" class="secondary-button">Voltar aos meus dados</button><button type="submit" id="question-next" class="cta" data-testid="next-step">Continuar</button></nav>
       </form>
-      </div>
+      <div class="research-foot"><button class="text-button" type="button" id="edit-identity">Alterar meus dados</button><p>A candidatura não confirma sua vaga.</p></div>
     </section>
-    <section class="section experience-section" id="experiencia" aria-labelledby="experiencia-title">
-      <div class="container">
-        <p class="eyebrow">O Protocolo Grau Zero na prática</p>
-        <h2 id="experiencia-title">Primeiro, medir. Depois, escolher.</h2>
-        <ol class="journey">
-          <li><span class="step-number" aria-hidden="true">01</span><h3>Avaliação e medidas</h3><p>Acompanhe a avaliação dos pacientes e entenda como as medidas orientam a indicação.</p></li>
-          <li><span class="step-number" aria-hidden="true">02</span><h3>Planejamento premium</h3><p>Discuta a escolha da lente dentro do planejamento de cada paciente.</p></li>
-          <li><span class="step-number" aria-hidden="true">03</span><h3>Centro cirúrgico</h3><p>Conecte o planejamento à prática, com orientação do mentor.</p></li>
-        </ol>
-        <div class="format-note"><strong>3 dias presenciais · 10 cirurgias no total · Uma cirurgia por participante</strong><p>Todos participam do planejamento premium de todos os casos. Teoria e prática pela manhã e à tarde, com dois períodos de centro cirúrgico conforme a disponibilidade.</p></div>
-      </div>
+    <section id="review-screen" class="review-screen shell" aria-labelledby="review-title" hidden>
+      <div class="research-heading"><span class="completion-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m5 12 4 4L19 6"/></svg></span><p class="eyebrow">Hands-on Grau Zero</p><h2 id="review-title" tabindex="-1">Candidatura<br><em>recebida.</em></h2><p id="receipt-message">Nossa equipe entrará em contato pelo WhatsApp informado para conversar sobre seu perfil e apresentar as informações da turma.</p></div>
+      <dl id="review-list" class="review-list"></dl>
+      <p class="receipt-note">A candidatura não confirma sua vaga.</p>
     </section>
-    <section class="section profile-section" id="perfil" aria-labelledby="perfil-title">
-      <div class="container profile-grid">
-        <div class="profile-copy"><h2 id="perfil-title">Para decidir com mais critério.</h2><ul class="profile-list"><li>Quer se habilitar a indicar lentes de alta tecnologia.</li><li>Quer conectar avaliação, medidas e escolha da lente.</li><li>Busca conduzir cada caso com um planejamento premium.</li></ul><p class="profile-note">Não é preciso já operar catarata nem ter clínica própria.</p></div>
-        <aside class="mentor-card" aria-labelledby="mentor-title">
-          <img src="assets/mentor.webp" srcset="assets/mentor-800.webp 800w, assets/mentor.webp 1200w" sizes="(max-width: 767px) 90px, 140px" width="1200" height="1500" alt="Dr. Alex Sá" loading="lazy">
-          <div><p class="eyebrow">Seu mentor</p><h2 id="mentor-title">Dr. Alex Sá</h2><p class="credentials">CRM-AM 7516 · RQE 3514</p></div>
-          <p class="mentor-bio">Mais de 30 mil cirurgias, mais de 15 anos de oftalmologia e seis anos como professor da UFAM.</p>
-        </aside>
-      </div>
-    </section>
-    <section class="section faq-section" aria-labelledby="faq-title"><div class="container faq-grid">
-      <h2 id="faq-title">Antes de se candidatar.</h2>
-      <div><div class="faq-list">
-        <details><summary>Preciso já operar catarata?</summary><p>Não. Você pode participar para se habilitar a indicar lentes de alta tecnologia, mesmo que ainda não seja cirurgião de catarata.</p></details>
-        <details><summary>Preciso ter clínica própria?</summary><p>Não. Você pode participar mesmo sem ter clínica ou consultório próprio.</p></details>
-        <details><summary>Como funciona a participação nas cirurgias?</summary><p>É uma cirurgia por participante, dez cirurgias ao todo. Todos participam do planejamento premium de todos os casos.</p></details>
-        <details><summary>Como faço minha inscrição?</summary><p>Preencha a aplicação nesta página. A equipe Olympus entrará em contato para conversar sobre seu perfil e apresentar as informações da turma. A candidatura não confirma sua vaga.</p></details>
-      </div><a class="button closing-action" data-cta-location="faq" href="#candidatura">Quero me candidatar</a></div>
-    </div></section>
   </main>
-  <footer class="site-footer"><div class="container footer-inner"><p>Hands-on Grau Zero · Dr. Alex Sá<br>CRM-AM 7516 · RQE 3514</p><a href="https://oftalmoblack.com.br/politica-de-privacidade/" target="_blank" rel="noopener noreferrer">Política de Privacidade</a></div></footer>
   <a class="whatsapp-float" data-whatsapp href="https://wa.me/5511993436267?text=Ol%C3%A1%21%20Vim%20pela%20p%C3%A1gina%20do%20Hands-on%20Grau%20Zero%20e%20quero%20tirar%20uma%20d%C3%BAvida%20com%20o%20Jean." target="_blank" rel="noopener noreferrer" aria-label="Tirar dúvidas com o Jean pelo WhatsApp">
     <svg aria-hidden="true" viewBox="0 0 24 24" width="27" height="27" fill="currentColor"><path d="M20.52 3.48A11.91 11.91 0 0 0 12.05 0C5.47 0 .12 5.35.12 11.93c0 2.1.55 4.15 1.59 5.96L.02 24l6.26-1.64a11.9 11.9 0 0 0 5.77 1.47h.01c6.58 0 11.93-5.35 11.94-11.93a11.85 11.85 0 0 0-3.48-8.42ZM12.06 21.8a9.9 9.9 0 0 1-5.04-1.38l-.36-.21-3.73.98 1-3.64-.23-.37a9.86 9.86 0 0 1-1.51-5.25c0-5.47 4.45-9.92 9.93-9.92 2.65 0 5.14 1.04 7.01 2.91a9.83 9.83 0 0 1 2.9 7.02c0 5.47-4.45 9.92-9.97 9.86Zm5.45-7.43c-.3-.15-1.76-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.14-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.92-2.21-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.87 1.22 3.07c.15.2 2.1 3.2 5.1 4.48.71.3 1.27.48 1.7.62.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.42.25-.69.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35Z"/></svg>
     <span class="whatsapp-label">Dúvidas? Fale com o Jean</span>
