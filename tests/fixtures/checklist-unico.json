@@ -1,0 +1,1355 @@
+{
+ "deliveries": {
+  "D01/diagnostico": {
+   "name": "Diagnóstico e prioridades do Dia Zero",
+   "checklist_title": "Onboarding, diagnóstico e plano inicial",
+   "treatment": "unificar",
+   "cycle": "unica",
+   "accept": "Diagnóstico de funil, atração e entrega com fontes e data; plano com três prioridades, responsáveis e próxima ação. Entrada contratual confirmada e acessos testados fazem parte do critério operacional.",
+   "request_hint": "Pedir os dados ausentes em um formulário; depois solicitar aprovação das prioridades propostas.",
+   "metrics_hint": "Sem indicador permanente de implantação. Revisar o plano quando abrir um novo ciclo.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D02/identidade": {
+   "name": "Identidade e posicionamento",
+   "checklist_title": "Posicionamento aprovado",
+   "treatment": "implantar",
+   "cycle": "unica",
+   "accept": "Documento reúne mecanismo, arquétipo e identidade; canais previstos revisados.",
+   "request_hint": "Solicitar aprovação do posicionamento em um único pedido.",
+   "metrics_hint": "Revisão apenas quando houver mudança de posicionamento.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D02/conteudo": {
+   "name": "Linha editorial e scripts",
+   "checklist_title": "Linha editorial e roteiros",
+   "treatment": "hibrida",
+   "cycle": "unica",
+   "accept": "Documento final e primeira semana pronta; roteiro da VSL vinculado ao Funil VSL, sem segunda entrega do mesmo roteiro.",
+   "request_hint": "Solicitar referências ausentes e depois a aprovação do material.",
+   "metrics_hint": "Entrega do pacote mensal e execução semanal; publicações medidas em D05.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D03/sistema": {
+   "name": "CRM, prontuário e agenda",
+   "checklist_title": "Sistema Black",
+   "treatment": "hibrida",
+   "cycle": "unica",
+   "accept": "CRM, prontuário e agenda aplicáveis configurados; acessos e WhatsApp testados; equipe executou um fluxo real orientado. A mesma evidência de treinamento vale no Treino.",
+   "request_hint": "Um pedido de dados da clínica/equipe; depois conexão assistida do WhatsApp.",
+   "metrics_hint": "Mensagens enviadas pelo sistema em 7/30 dias; dias operacionais com uso; conexão; atendimentos sem resposta; SLA; desfechos elegíveis registrados. Separar envio humano e automático.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D03/rastreio": {
+   "name": "Integração de rastreamento",
+   "checklist_title": "Tracker Black",
+   "treatment": "unificar",
+   "cycle": "unica",
+   "accept": "Teste com evidência de origem no CRM e conversão no destino previsto.",
+   "request_hint": "Pedir os acessos que realmente faltam; registrar confirmação, nunca senha no pedido.",
+   "metrics_hint": "Último evento válido, falhas e cobertura de origem; fonte e janela explícitas.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D04/funcoes": {
+   "name": "Responsáveis pelas quatro funções",
+   "checklist_title": "Time com responsáveis definidos",
+   "treatment": "implantar",
+   "cycle": "unica",
+   "accept": "Cada função necessária tem pessoa ou solução responsável; uma pessoa pode acumular funções.",
+   "request_hint": "Pedir um formulário com Social Seller, SDR, Closer e equipe clínica.",
+   "metrics_hint": "Revalidar quando mudar a equipe.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D04/formacao": {
+   "name": "Formação da equipe premium",
+   "checklist_title": "Formação da equipe premium",
+   "treatment": "referencia",
+   "cycle": "unica",
+   "accept": null,
+   "request_hint": null,
+   "metrics_hint": null,
+   "shared_with": "TREINO/vendas",
+   "merged_into": null
+  },
+  "D04/atendimento": {
+   "name": "Padrões de atendimento",
+   "checklist_title": "Padrão de atendimento aplicado",
+   "treatment": "hibrida",
+   "cycle": "unica",
+   "accept": "Amostra real aprovada segundo o padrão, com dados pessoais protegidos.",
+   "request_hint": "Pedir uma evidência de aplicação após orientar a equipe.",
+   "metrics_hint": "Auditoria periódica de aderência e necessidade de reforço.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D05/canais": {
+   "name": "Canais de conteúdo",
+   "checklist_title": "Instagram, YouTube e TikTok",
+   "treatment": "monitorar",
+   "cycle": "unica",
+   "accept": "Canais escolhidos no plano; YouTube e TikTok só são exigidos quando fizerem parte do escopo.",
+   "request_hint": "Pedir a ação concreta do canal prioritário, por exemplo enviar o lote de vídeos combinado. Não criar pendência por canais fora do escopo.",
+   "metrics_hint": "Instagram: vídeos por semana e crescimento no trimestre. YouTube e TikTok: última publicação e frequência dos canais previstos no plano. Mostrar fonte e cobertura de cada canal.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D05/site": {
+   "name": "Site institucional e AEO",
+   "checklist_title": "Site Institucional e AEO",
+   "treatment": "hibrida",
+   "cycle": "unica",
+   "accept": "Site e melhorias de AEO do escopo publicados, contatos corretos, conteúdo aprovado e testes técnicos concluídos. Site e processo AEO compartilham esta entrega; critérios que extrapolem o site entram no mesmo escopo, sem segunda conferência.",
+   "request_hint": "Pedir apenas materiais ausentes e autorização de acesso; depois aprovação da prévia.",
+   "metrics_hint": "Disponibilidade, atualização de conteúdo e presença nas buscas por conjunto de consultas e período; resultados de busca não concluem a implantação.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D05/google": {
+   "name": "Presença no Google",
+   "checklist_title": "GBP / Google Meu Negócio",
+   "treatment": "hibrida",
+   "cycle": "unica",
+   "accept": "Ficha correta, publicada e verificável; link de avaliações entregue.",
+   "request_hint": "Pedir acesso, fotos e confirmação de serviços/horários sem repetir dados já recebidos.",
+   "metrics_hint": "Publicações, avaliações pendentes e interações por período; indicadores automáticos só após integração validada.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D05/blog": {
+   "name": "Rotina de artigos",
+   "checklist_title": "Publicação de artigos",
+   "treatment": "recorrente",
+   "cycle": "mensal",
+   "accept": "URL do artigo e data de publicação no ciclo correspondente.",
+   "request_hint": "Pedir revisão apenas do artigo pronto, com link e prazo.",
+   "metrics_hint": "Artigos publicados por mês e tempo desde a última publicação.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D06/vsl": {
+   "name": "Funil Expresso e VSL",
+   "checklist_title": "Funil VSL",
+   "treatment": "hibrida",
+   "cycle": "unica",
+   "accept": "Vídeo hospedado, página e WhatsApp corretos, qualificação e medição testadas.",
+   "request_hint": "Pedir gravação com roteiro já disponível e depois revisão/link da bio.",
+   "metrics_hint": "Visitas, reprodução/conclusão do vídeo e leads qualificados por período.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D06/olympus": {
+   "name": "Funil Olympus",
+   "checklist_title": "Funil Olympus e chamadas",
+   "treatment": "hibrida",
+   "cycle": "unica",
+   "accept": "Caminho da entrada até a chamada validado e vinculado ao resgate em D09.",
+   "request_hint": "Pedir somente oferta, agenda ou aprovação pendente.",
+   "metrics_hint": "Entradas, chamadas e avanço por período.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D06/meta": {
+   "name": "Campanhas Meta Ads",
+   "checklist_title": "Meta Ads",
+   "treatment": "hibrida",
+   "cycle": "unica",
+   "accept": "No escopo de gestão: campanha autorizada, ativa, com rastreamento validado e primeira leitura entregue. A estrutura técnica da campanha fica no procedimento da equipe.",
+   "request_hint": "Um pedido reúne permissões, verba e materiais; reutilizar o acesso já concedido a outras entregas.",
+   "metrics_hint": "Status de veiculação, gasto, leads e custo por resultado; orçamento pausado tem motivo registrado.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D06/google": {
+   "name": "Campanhas Google Ads",
+   "checklist_title": "Google Ads",
+   "treatment": "hibrida",
+   "cycle": "unica",
+   "accept": "Campanha no ar para os procedimentos contratados e teste de atribuição concluído.",
+   "request_hint": "Pedir vínculo da conta e verba; depois aprovação do material pronto.",
+   "metrics_hint": "Gasto, leads, termos de busca e custo por resultado por período.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D06/rastreio": {
+   "name": "Rastreamento anúncio → cirurgia",
+   "checklist_title": "Tracker Black",
+   "treatment": "referencia",
+   "cycle": "unica",
+   "accept": null,
+   "request_hint": null,
+   "metrics_hint": null,
+   "shared_with": "D03/rastreio",
+   "merged_into": null
+  },
+  "D06/gestao": {
+   "name": "Gestão mensal do tráfego",
+   "checklist_title": "Gestão do tráfego por ciclo",
+   "treatment": "recorrente",
+   "cycle": "mensal",
+   "accept": "Registro do orçamento e da análise mensal com próximos responsáveis.",
+   "request_hint": "Pedir verba somente no ciclo contratado; pedir decisão do médico quando houver ajuste de oferta ou orçamento.",
+   "metrics_hint": "CPV-Cirurgia, gasto e resultados com denominador e janela de atribuição.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D07/prospeccao": {
+   "name": "Prospecção pelo Social Seller",
+   "checklist_title": "Social Seller em atividade",
+   "treatment": "hibrida",
+   "cycle": "unica",
+   "accept": "Responsável, abordagem e registro de origem definidos.",
+   "request_hint": "Pedir responsável e uma primeira amostra de execução.",
+   "metrics_hint": "Contatos válidos e agendamentos por semana; metas ajustadas à operação.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D07/indicacao": {
+   "name": "Indicação ativa",
+   "checklist_title": "Indicação ativa nas altas",
+   "treatment": "hibrida",
+   "cycle": "unica",
+   "accept": "Momento, responsável e forma de registro definidos.",
+   "request_hint": "Pedir validação da primeira aplicação.",
+   "metrics_hint": "Altas elegíveis com pedido de indicação / altas elegíveis; indicações geradas.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D07/bonus": {
+   "name": "Leads Bônus",
+   "checklist_title": "Leads Bônus",
+   "treatment": "elegibilidade",
+   "cycle": "unica",
+   "accept": "Requisitos de elegibilidade explícitos, com fonte e data. A equivalência com a regra vigente de D03, D05 e D06 auditados precisa ser validada antes da implantação; a nova barra não libera o benefício sozinha.",
+   "request_hint": "Se inelegível, mostrar qual condição precisa de ação e o dono; solicitar só a ação cabível ao mentorado.",
+   "metrics_hint": "Elegibilidade; leads recebidos; percentual com desfecho no período.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D08/divulgacao": {
+   "name": "Divulgação, participação e leads da edição",
+   "checklist_title": "Encontro Grau Zero",
+   "treatment": "recorrente",
+   "cycle": "edicao",
+   "accept": "Divulgação e vídeos de grupo/tráfego conferidos; presença efetiva comprovada; distribuição registrada e carteira tratada quando houver leads. Sem distribuição, atendimento é não aplicável. Intenção de participar não comprova presença.",
+   "request_hint": "Pedir divulgação e vídeos com briefing e prazo. Depois da distribuição, solicitar atendimento com link para a carteira. Cada pedido referencia uma etapa deste mesmo checklist.",
+   "metrics_hint": "Prazo e situação da edição; presença; leads recebidos, sem resposta e com desfecho. Histórico separado por edição.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D09/preparo": {
+   "name": "Preparação da Closer e agenda",
+   "checklist_title": "Chamada consultiva preparada",
+   "treatment": "implantar",
+   "cycle": "unica",
+   "accept": "Responsável e horários ativos; competência de chamada validada no registro compartilhado de treinamento comercial, sem segunda marcação de presença.",
+   "request_hint": "Pedir responsável e horários; agendar formação apenas se ainda faltar.",
+   "metrics_hint": "Chamadas por semana; consultas geradas / chamadas elegíveis, com amostra e período. Meta atual de conversão: 60%. Sem chamadas, mostrar ausência de amostra.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D09/resgate": {
+   "name": "Funil de chamadas e resgate",
+   "checklist_title": "Resgate de leads em operação",
+   "treatment": "hibrida",
+   "cycle": "unica",
+   "accept": "Teste de oferta de chamada e primeiro ciclo registrado.",
+   "request_hint": "Pedir execução quando fluxo, carteira e orientação estiverem disponíveis.",
+   "metrics_hint": "Carteira elegível contatada e agendamentos por ciclo mensal.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D10/qualificacao": {
+   "name": "Qualificação pelo SDR",
+   "checklist_title": "Qualificação pelo SDR",
+   "treatment": "hibrida",
+   "cycle": "unica",
+   "accept": "SDR apta e critério de passagem aplicado em caso real.",
+   "request_hint": "Pedir escolha entre SDR humana e Íris, dados que faltam e validação.",
+   "metrics_hint": "Tempo de primeira resposta e qualidade da qualificação.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D10/consulta": {
+   "name": "Preparação da venda consultiva",
+   "checklist_title": "Venda consultiva preparada",
+   "treatment": "implantar",
+   "cycle": "unica",
+   "accept": "Critérios de agenda registrados e aplicação do In The Bag validada em amostra. Sessão e formação ficam no Treinamento comercial; este marco comprova a aplicação específica.",
+   "request_hint": "Solicitar participação e uma evidência de aplicação.",
+   "metrics_hint": "Aderência à qualificação e conversão por etapa.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D10/fechamento": {
+   "name": "Fechamento pós-consulta",
+   "checklist_title": "Acompanhamento pós-consulta",
+   "treatment": "hibrida",
+   "cycle": "unica",
+   "accept": "Fluxo testado, responsável e motivo de objeção registrados.",
+   "request_hint": "Pedir aplicação após disponibilizar a carteira e a orientação.",
+   "metrics_hint": "Cobertura de follow-up, atrasos e objeções por período.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D11/rituais": {
+   "name": "Rituais de encantamento",
+   "checklist_title": "Três rituais de encantamento aplicados",
+   "treatment": "implantar",
+   "cycle": "unica",
+   "accept": "Nome, momento, responsável e evidência dos três rituais; 4º a 7º permanecem opcionais.",
+   "request_hint": "Um pedido reúne os três rituais e suas evidências.",
+   "metrics_hint": "Revisão de aderência em amostra periódica.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D11/experiencia": {
+   "name": "Medição da experiência e indicações",
+   "checklist_title": "Experiência do paciente acompanhada",
+   "treatment": "hibrida",
+   "cycle": "unica",
+   "accept": "Canal, momento e responsável da coleta definidos; primeira resposta válida.",
+   "request_hint": "Pedir aplicação quando o instrumento estiver disponível.",
+   "metrics_hint": "NPS com amostra e período; indicações espontâneas identificadas.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D11/provas": {
+   "name": "Depoimentos e provas",
+   "checklist_title": "Depoimentos e provas do ciclo",
+   "treatment": "recorrente",
+   "cycle": "mensal",
+   "accept": "Material utilizável e autorização registrada; dados sensíveis fora do relatório de progresso.",
+   "request_hint": "Pedir o lote combinado, com orientação sobre autorização de uso.",
+   "metrics_hint": "Depoimentos válidos por mês conforme meta combinada.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D12/seguro": {
+   "name": "Seguro Premium",
+   "checklist_title": "Seguro Premium estruturado",
+   "treatment": "hibrida",
+   "cycle": "unica",
+   "accept": "Material e fluxo aprovados pelos responsáveis competentes; o plano não redefine cobertura ou condições.",
+   "request_hint": "Pedir aprovação das condições e confirmar responsável pela oferta.",
+   "metrics_hint": "Percentual de altas elegíveis com oferta e adesões por período.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D12/cuidado": {
+   "name": "Pacotes Cuidado Premium",
+   "checklist_title": "Pacotes Cuidado Premium",
+   "treatment": "hibrida",
+   "cycle": "unica",
+   "accept": "Oferta, regras e fluxo de agendamento registrados.",
+   "request_hint": "Pedir validação dos pacotes e responsáveis.",
+   "metrics_hint": "Ofertas, adesões e execução por período.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D12/retorno": {
+   "name": "Retorno de seis meses",
+   "checklist_title": "Retorno de seis meses",
+   "treatment": "hibrida",
+   "cycle": "unica",
+   "accept": "Teste de elegibilidade, envio e agendamento concluído.",
+   "request_hint": "Pedir regras/agenda que faltam, sem pedir à clínica para implementar automação.",
+   "metrics_hint": "Pacientes elegíveis, convites enviados e retornos agendados; janela de seis meses.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "TREINO/vendas": {
+   "name": "Formação compartilhada de vendas e atendimento",
+   "checklist_title": "Treinamento comercial",
+   "treatment": "unificar",
+   "cycle": "unica",
+   "accept": "Uma sessão/evidência com competências discriminadas: cultura e atendimento premium, chamada consultiva e venda consultiva. Cada competência é conferida; a mesma presença não é cobrada novamente em D04, D09 e D10.",
+   "request_hint": "Convite com participantes e objetivos; solicitar reposição só a quem faltou.",
+   "metrics_hint": "Reforços definidos por desempenho e mudanças no time.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "TREINO/sistema": {
+   "name": "Treinamento do Sistema Black",
+   "checklist_title": "Formação no Sistema Black",
+   "treatment": "referencia",
+   "cycle": "unica",
+   "accept": null,
+   "request_hint": null,
+   "metrics_hint": null,
+   "shared_with": "D03/sistema",
+   "merged_into": null
+  },
+  "TREINO/growth": {
+   "name": "Treinamento de Growth",
+   "checklist_title": "Alinhamento de Growth",
+   "treatment": "implantar",
+   "cycle": "unica",
+   "accept": "Registro da sessão, decisões e próximos passos.",
+   "request_hint": "Pedir participação e decisões necessárias na sessão.",
+   "metrics_hint": "Novas sessões por ciclo, quando contratadas.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "TREINO/conteudo": {
+   "name": "Treinamento de conteúdo",
+   "checklist_title": "Formação em conteúdo",
+   "treatment": "implantar",
+   "cycle": "unica",
+   "accept": "Primeiro conteúdo ou exercício revisado.",
+   "request_hint": "Pedir presença e primeira aplicação orientada.",
+   "metrics_hint": "Produção observada em D05; reciclagem quando necessário.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "TREINO/rotina": {
+   "name": "Rotina de formação da equipe",
+   "checklist_title": "Rotina de formação",
+   "treatment": "recorrente",
+   "cycle": "mensal",
+   "accept": "Uma ocorrência por atividade combinada: encontro, roleplay ou aulão. Cada ocorrência tem data, participantes e fonte de presença. Não exigir segunda confirmação do mesmo comparecimento.",
+   "request_hint": "Lembretes de encontros, roleplay e aulão combinados para o ciclo.",
+   "metrics_hint": "Presença, roleplay do mês e aulão da equipe; histórico por ciclo.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D05/quiz": {
+   "name": "Quiz",
+   "checklist_title": "Quiz",
+   "treatment": "hibrida",
+   "cycle": "unica",
+   "accept": "Página acessível, informações corretas, WhatsApp alinhado ao CRM e rastreamento testado. Domínio próprio, teleconsulta e campanha entram somente quando previstos no escopo.",
+   "request_hint": "Pedir dados ausentes de praça, procedimentos, valor da consulta, endereço e WhatsApp. Depois, aprovação da prévia e atualização do link da bio.",
+   "metrics_hint": "Disponibilidade, visitas, preenchimentos, cliques e leads atribuídos por período; fonte e cobertura identificadas.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D05/automacao": {
+   "name": "Automação Instagram",
+   "checklist_title": "Automação Instagram",
+   "treatment": "hibrida",
+   "cycle": "unica",
+   "accept": "Teste real ponta a ponta aprovado, destino correto e automação ativa. Token e webhook conferidos pela equipe.",
+   "request_hint": "Solicitar conexão, dados ausentes e aprovação do fluxo pronto. Configuração técnica pertence à equipe.",
+   "metrics_hint": "Saúde da conexão, execuções, falhas e conversas iniciadas.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "MODULOS/fabrica": {
+   "name": "Fábrica de Conteúdo",
+   "checklist_title": "Fábrica de Conteúdo",
+   "treatment": "hibrida",
+   "cycle": "unica",
+   "accept": "Contratação confirmada, acesso testado, onboarding realizado e primeiro lote publicado.",
+   "request_hint": "Pedir assinatura/pagamento e materiais no momento correspondente, com instrução e prazo.",
+   "metrics_hint": "Produção e publicação por ciclo. Suporte e renovação são operação, sem reabrir implantação.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "MODULOS/iris": {
+   "name": "Íris Black",
+   "checklist_title": "Íris Black",
+   "treatment": "hibrida",
+   "cycle": "unica",
+   "accept": "Testes internos concluídos, regras e agenda confirmadas, piloto aprovado e operação ativada com monitoramento.",
+   "request_hint": "Solicitar dados da clínica e regras de atendimento; depois, revisão do piloto pronto.",
+   "metrics_hint": "Atendimentos, tempo de resposta, falhas e agendamentos atribuídos. D10 referencia este registro quando usar SDR IA.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "MODULOS/comentarios": {
+   "name": "Agente de comentários",
+   "checklist_title": "Agente de comentários",
+   "treatment": "hibrida",
+   "cycle": "unica",
+   "accept": "Automação Instagram necessária disponível, exemplos aprovados e primeira execução válida. Curadoria posterior é acompanhamento.",
+   "request_hint": "Solicitar autorização/conexão e aprovação de exemplos em linguagem simples.",
+   "metrics_hint": "Execuções bem-sucedidas, respostas, falhas e tempo de resposta. Ausência de comentários recebidos não é falha.",
+   "shared_with": null,
+   "merged_into": null
+  },
+  "D01/prioridades": {
+   "merged_into": "D01/diagnostico",
+   "treatment": "fundida"
+  },
+  "D03/operacao": {
+   "merged_into": "D03/sistema",
+   "treatment": "fundida"
+  },
+  "D08/participacao": {
+   "merged_into": "D08/divulgacao",
+   "treatment": "fundida"
+  },
+  "D08/leads": {
+   "merged_into": "D08/divulgacao",
+   "treatment": "fundida"
+  },
+  "D09/resultado": {
+   "merged_into": "D09/preparo",
+   "treatment": "fundida"
+  },
+  "D05/comentarios": {
+   "shared_with": "MODULOS/comentarios",
+   "treatment": "referencia",
+   "checklist_title": "Agente de comentários"
+  }
+ },
+ "new": [
+  {
+   "id": "D05/quiz",
+   "stage_id": "D05",
+   "name": "Quiz",
+   "position": 45
+  },
+  {
+   "id": "D05/automacao",
+   "stage_id": "D05",
+   "name": "Automação Instagram",
+   "position": 46
+  },
+  {
+   "id": "MODULOS/fabrica",
+   "stage_id": "MODULOS",
+   "name": "Fábrica de Conteúdo",
+   "position": 47
+  },
+  {
+   "id": "MODULOS/iris",
+   "stage_id": "MODULOS",
+   "name": "Íris Black",
+   "position": 48
+  },
+  {
+   "id": "MODULOS/comentarios",
+   "stage_id": "MODULOS",
+   "name": "Agente de comentários",
+   "position": 49
+  }
+ ],
+ "steps": [
+  {
+   "id": "marco-D01-diagnostico-1",
+   "delivery_id": "D01/diagnostico",
+   "position": 1,
+   "title": "Informações da clínica confirmadas",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D01-diagnostico-2",
+   "delivery_id": "D01/diagnostico",
+   "position": 2,
+   "title": "Diagnóstico das três frentes consolidado",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D01-diagnostico-3",
+   "delivery_id": "D01/diagnostico",
+   "position": 3,
+   "title": "Plano inicial e acessos entregues",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D01-diagnostico-4",
+   "delivery_id": "D01/diagnostico",
+   "position": 4,
+   "title": "Prioridades do ciclo aprovadas",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D02-identidade-1",
+   "delivery_id": "D02/identidade",
+   "position": 1,
+   "title": "Proposta de posicionamento entregue",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D02-identidade-2",
+   "delivery_id": "D02/identidade",
+   "position": 2,
+   "title": "Posicionamento aprovado",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D02-identidade-3",
+   "delivery_id": "D02/identidade",
+   "position": 3,
+   "title": "Identidade aplicada nos canais combinados",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D02-conteudo-1",
+   "delivery_id": "D02/conteudo",
+   "position": 1,
+   "title": "Referências e direcionamento confirmados",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D02-conteudo-2",
+   "delivery_id": "D02/conteudo",
+   "position": 2,
+   "title": "Linha editorial e roteiros entregues",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D02-conteudo-3",
+   "delivery_id": "D02/conteudo",
+   "position": 3,
+   "title": "Material aprovado",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D03-sistema-1",
+   "delivery_id": "D03/sistema",
+   "position": 1,
+   "title": "Dados da clínica e equipe enviados",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D03-sistema-2",
+   "delivery_id": "D03/sistema",
+   "position": 2,
+   "title": "Clínica, equipe e módulos configurados",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D03-sistema-3",
+   "delivery_id": "D03/sistema",
+   "position": 3,
+   "title": "WhatsApp conectado",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D03-sistema-4",
+   "delivery_id": "D03/sistema",
+   "position": 4,
+   "title": "Equipe treinada e operação validada",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D03-rastreio-1",
+   "delivery_id": "D03/rastreio",
+   "position": 1,
+   "title": "Acessos necessários liberados",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D03-rastreio-2",
+   "delivery_id": "D03/rastreio",
+   "position": 2,
+   "title": "Rastreamento instalado",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D03-rastreio-3",
+   "delivery_id": "D03/rastreio",
+   "position": 3,
+   "title": "Origem e conversão testadas ponta a ponta",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D04-funcoes-1",
+   "delivery_id": "D04/funcoes",
+   "position": 1,
+   "title": "Responsáveis pelas funções informados",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D04-funcoes-2",
+   "delivery_id": "D04/funcoes",
+   "position": 2,
+   "title": "Cobertura das funções validada",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D04-atendimento-1",
+   "delivery_id": "D04/atendimento",
+   "position": 1,
+   "title": "Padrão de atendimento entregue",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D04-atendimento-2",
+   "delivery_id": "D04/atendimento",
+   "position": 2,
+   "title": "Padrão aplicado pela equipe",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D04-atendimento-3",
+   "delivery_id": "D04/atendimento",
+   "position": 3,
+   "title": "Atendimento amostral validado",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D05-site-1",
+   "delivery_id": "D05/site",
+   "position": 1,
+   "title": "Materiais e acesso ao domínio enviados",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D05-site-2",
+   "delivery_id": "D05/site",
+   "position": 2,
+   "title": "Prévia do site entregue",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D05-site-3",
+   "delivery_id": "D05/site",
+   "position": 3,
+   "title": "Prévia aprovada",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D05-site-4",
+   "delivery_id": "D05/site",
+   "position": 4,
+   "title": "Site publicado e validado",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D05-google-1",
+   "delivery_id": "D05/google",
+   "position": 1,
+   "title": "Acesso e informações da clínica confirmados",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D05-google-2",
+   "delivery_id": "D05/google",
+   "position": 2,
+   "title": "Perfil revisado e materiais publicados",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D05-google-3",
+   "delivery_id": "D05/google",
+   "position": 3,
+   "title": "Informações finais aprovadas",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D05-blog-1",
+   "delivery_id": "D05/blog",
+   "position": 1,
+   "title": "Artigo do ciclo preparado",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D05-blog-2",
+   "delivery_id": "D05/blog",
+   "position": 2,
+   "title": "Conteúdo aprovado quando necessário",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D05-blog-3",
+   "delivery_id": "D05/blog",
+   "position": 3,
+   "title": "Artigo publicado",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D06-vsl-1",
+   "delivery_id": "D06/vsl",
+   "position": 1,
+   "title": "Roteiro e orientação entregues",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D06-vsl-2",
+   "delivery_id": "D06/vsl",
+   "position": 2,
+   "title": "Vídeo e informações finais enviados",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D06-vsl-3",
+   "delivery_id": "D06/vsl",
+   "position": 3,
+   "title": "Funil pronto em link estável para revisão",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D06-vsl-4",
+   "delivery_id": "D06/vsl",
+   "position": 4,
+   "title": "Funil aprovado e link da bio atualizado",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D06-vsl-5",
+   "delivery_id": "D06/vsl",
+   "position": 5,
+   "title": "Operação liberada e fluxo final validado",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D06-olympus-1",
+   "delivery_id": "D06/olympus",
+   "position": 1,
+   "title": "Fluxo do funil definido",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D06-olympus-2",
+   "delivery_id": "D06/olympus",
+   "position": 2,
+   "title": "Oferta e agenda confirmadas",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D06-olympus-3",
+   "delivery_id": "D06/olympus",
+   "position": 3,
+   "title": "Fluxo publicado e testado",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D06-meta-1",
+   "delivery_id": "D06/meta",
+   "position": 1,
+   "title": "Acessos, verba e criativos confirmados",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D06-meta-2",
+   "delivery_id": "D06/meta",
+   "position": 2,
+   "title": "Campanha preparada",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D06-meta-3",
+   "delivery_id": "D06/meta",
+   "position": 3,
+   "title": "Veiculação aprovada",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D06-meta-4",
+   "delivery_id": "D06/meta",
+   "position": 4,
+   "title": "Campanha ativada e primeira leitura entregue",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D06-google-1",
+   "delivery_id": "D06/google",
+   "position": 1,
+   "title": "Acesso, verba e procedimentos confirmados",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D06-google-2",
+   "delivery_id": "D06/google",
+   "position": 2,
+   "title": "Campanha preparada",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D06-google-3",
+   "delivery_id": "D06/google",
+   "position": 3,
+   "title": "Veiculação aprovada",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D06-google-4",
+   "delivery_id": "D06/google",
+   "position": 4,
+   "title": "Campanha ativada e conversão validada",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D06-gestao-1",
+   "delivery_id": "D06/gestao",
+   "position": 1,
+   "title": "Verba do ciclo confirmada",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D06-gestao-2",
+   "delivery_id": "D06/gestao",
+   "position": 2,
+   "title": "Análise do funil e próximos ajustes entregues",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D07-prospeccao-1",
+   "delivery_id": "D07/prospeccao",
+   "position": 1,
+   "title": "Responsável indicado",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D07-prospeccao-2",
+   "delivery_id": "D07/prospeccao",
+   "position": 2,
+   "title": "Rotina de prospecção orientada",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D07-prospeccao-3",
+   "delivery_id": "D07/prospeccao",
+   "position": 3,
+   "title": "Primeira execução validada",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D07-indicacao-1",
+   "delivery_id": "D07/indicacao",
+   "position": 1,
+   "title": "Abordagem de indicação definida",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D07-indicacao-2",
+   "delivery_id": "D07/indicacao",
+   "position": 2,
+   "title": "Abordagem aplicada pela equipe",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D08-divulgacao-1",
+   "delivery_id": "D08/divulgacao",
+   "position": 1,
+   "title": "Divulgação e vídeos da edição enviados",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D08-divulgacao-2",
+   "delivery_id": "D08/divulgacao",
+   "position": 2,
+   "title": "Materiais conferidos e divulgação preparada",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D08-divulgacao-3",
+   "delivery_id": "D08/divulgacao",
+   "position": 3,
+   "title": "Presença efetiva na edição registrada",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D08-divulgacao-4",
+   "delivery_id": "D08/divulgacao",
+   "position": 4,
+   "title": "Leads da edição disponibilizados quando houver",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D08-divulgacao-5",
+   "delivery_id": "D08/divulgacao",
+   "position": 5,
+   "title": "Carteira recebida atendida",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D09-preparo-1",
+   "delivery_id": "D09/preparo",
+   "position": 1,
+   "title": "Closer e horários definidos",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D09-preparo-2",
+   "delivery_id": "D09/preparo",
+   "position": 2,
+   "title": "Agenda e competência de chamada validadas",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D09-resgate-1",
+   "delivery_id": "D09/resgate",
+   "position": 1,
+   "title": "Fluxo de resgate configurado",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D09-resgate-2",
+   "delivery_id": "D09/resgate",
+   "position": 2,
+   "title": "Equipe executou o primeiro ciclo",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D10-qualificacao-1",
+   "delivery_id": "D10/qualificacao",
+   "position": 1,
+   "title": "Solução SDR e responsável definidos",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D10-qualificacao-2",
+   "delivery_id": "D10/qualificacao",
+   "position": 2,
+   "title": "Regras de qualificação orientadas",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D10-qualificacao-3",
+   "delivery_id": "D10/qualificacao",
+   "position": 3,
+   "title": "Qualificação inicial validada",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D10-consulta-1",
+   "delivery_id": "D10/consulta",
+   "position": 1,
+   "title": "Critérios de agenda e aplicação do método definidos",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D10-consulta-2",
+   "delivery_id": "D10/consulta",
+   "position": 2,
+   "title": "Closer e médico aplicaram o fluxo",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D10-consulta-3",
+   "delivery_id": "D10/consulta",
+   "position": 3,
+   "title": "Aplicação inicial validada",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D10-fechamento-1",
+   "delivery_id": "D10/fechamento",
+   "position": 1,
+   "title": "Cadência e registro de objeções configurados",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D10-fechamento-2",
+   "delivery_id": "D10/fechamento",
+   "position": 2,
+   "title": "Primeira carteira acompanhada",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D11-rituais-1",
+   "delivery_id": "D11/rituais",
+   "position": 1,
+   "title": "Três rituais escolhidos e aplicados",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D11-rituais-2",
+   "delivery_id": "D11/rituais",
+   "position": 2,
+   "title": "Aplicação dos rituais validada",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D11-experiencia-1",
+   "delivery_id": "D11/experiencia",
+   "position": 1,
+   "title": "Coleta de satisfação configurada",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D11-experiencia-2",
+   "delivery_id": "D11/experiencia",
+   "position": 2,
+   "title": "Primeira coleta aplicada",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D11-provas-1",
+   "delivery_id": "D11/provas",
+   "position": 1,
+   "title": "Depoimentos autorizados enviados",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D11-provas-2",
+   "delivery_id": "D11/provas",
+   "position": 2,
+   "title": "Materiais organizados e disponibilizados",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D12-seguro-1",
+   "delivery_id": "D12/seguro",
+   "position": 1,
+   "title": "Estrutura da oferta preparada",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D12-seguro-2",
+   "delivery_id": "D12/seguro",
+   "position": 2,
+   "title": "Condições aprovadas",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D12-seguro-3",
+   "delivery_id": "D12/seguro",
+   "position": 3,
+   "title": "Oferta e orientação disponibilizadas",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D12-cuidado-1",
+   "delivery_id": "D12/cuidado",
+   "position": 1,
+   "title": "Pacotes e fluxo propostos",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D12-cuidado-2",
+   "delivery_id": "D12/cuidado",
+   "position": 2,
+   "title": "Condições aprovadas",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D12-cuidado-3",
+   "delivery_id": "D12/cuidado",
+   "position": 3,
+   "title": "Pacotes disponibilizados",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D12-retorno-1",
+   "delivery_id": "D12/retorno",
+   "position": 1,
+   "title": "Régua de retorno configurada",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D12-retorno-2",
+   "delivery_id": "D12/retorno",
+   "position": 2,
+   "title": "Regras e agenda confirmadas",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D12-retorno-3",
+   "delivery_id": "D12/retorno",
+   "position": 3,
+   "title": "Régua testada",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-TREINO-vendas-1",
+   "delivery_id": "TREINO/vendas",
+   "position": 1,
+   "title": "Participantes e competências definidos",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-TREINO-vendas-2",
+   "delivery_id": "TREINO/vendas",
+   "position": 2,
+   "title": "Time participou da formação",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-TREINO-vendas-3",
+   "delivery_id": "TREINO/vendas",
+   "position": 3,
+   "title": "Competências demonstradas e próximos reforços registrados",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-TREINO-growth-1",
+   "delivery_id": "TREINO/growth",
+   "position": 1,
+   "title": "Diagnóstico e pauta preparados",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-TREINO-growth-2",
+   "delivery_id": "TREINO/growth",
+   "position": 2,
+   "title": "Alinhamento realizado",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-TREINO-growth-3",
+   "delivery_id": "TREINO/growth",
+   "position": 3,
+   "title": "Ações e responsáveis registrados",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-TREINO-conteudo-1",
+   "delivery_id": "TREINO/conteudo",
+   "position": 1,
+   "title": "Orientação e exemplos disponibilizados",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-TREINO-conteudo-2",
+   "delivery_id": "TREINO/conteudo",
+   "position": 2,
+   "title": "Participação e aplicação inicial realizadas",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-TREINO-rotina-1",
+   "delivery_id": "TREINO/rotina",
+   "position": 1,
+   "title": "Participação na atividade do ciclo",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-TREINO-rotina-2",
+   "delivery_id": "TREINO/rotina",
+   "position": 2,
+   "title": "Presença e aplicação registradas",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D05-quiz-1",
+   "delivery_id": "D05/quiz",
+   "position": 1,
+   "title": "Informações e acessos confirmados",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D05-quiz-2",
+   "delivery_id": "D05/quiz",
+   "position": 2,
+   "title": "Quiz preparado em link estável para revisão",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D05-quiz-3",
+   "delivery_id": "D05/quiz",
+   "position": 3,
+   "title": "Quiz aprovado e link da bio atualizado",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D05-quiz-4",
+   "delivery_id": "D05/quiz",
+   "position": 4,
+   "title": "Publicação e fluxo validados",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D05-automacao-1",
+   "delivery_id": "D05/automacao",
+   "position": 1,
+   "title": "Conta e permissões conectadas",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D05-automacao-2",
+   "delivery_id": "D05/automacao",
+   "position": 2,
+   "title": "Fluxo configurado",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-D05-automacao-3",
+   "delivery_id": "D05/automacao",
+   "position": 3,
+   "title": "Fluxo aprovado",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-D05-automacao-4",
+   "delivery_id": "D05/automacao",
+   "position": 4,
+   "title": "Teste concluído e automação ativada",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-MODULOS-fabrica-1",
+   "delivery_id": "MODULOS/fabrica",
+   "position": 1,
+   "title": "Contratação concluída",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-MODULOS-fabrica-2",
+   "delivery_id": "MODULOS/fabrica",
+   "position": 2,
+   "title": "Acesso e onboarding entregues",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-MODULOS-fabrica-3",
+   "delivery_id": "MODULOS/fabrica",
+   "position": 3,
+   "title": "Primeiro material enviado",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-MODULOS-fabrica-4",
+   "delivery_id": "MODULOS/fabrica",
+   "position": 4,
+   "title": "Primeiro lote publicado",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-MODULOS-iris-1",
+   "delivery_id": "MODULOS/iris",
+   "position": 1,
+   "title": "Dados, número e agenda confirmados",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-MODULOS-iris-2",
+   "delivery_id": "MODULOS/iris",
+   "position": 2,
+   "title": "Agente configurado e testado",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-MODULOS-iris-3",
+   "delivery_id": "MODULOS/iris",
+   "position": 3,
+   "title": "Piloto aprovado",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-MODULOS-iris-4",
+   "delivery_id": "MODULOS/iris",
+   "position": 4,
+   "title": "Operação ativada",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-MODULOS-comentarios-1",
+   "delivery_id": "MODULOS/comentarios",
+   "position": 1,
+   "title": "Conexão e voz autorizadas",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-MODULOS-comentarios-2",
+   "delivery_id": "MODULOS/comentarios",
+   "position": 2,
+   "title": "Agente configurado e testado",
+   "owner": "equipe"
+  },
+  {
+   "id": "marco-MODULOS-comentarios-3",
+   "delivery_id": "MODULOS/comentarios",
+   "position": 3,
+   "title": "Exemplos de resposta aprovados",
+   "owner": "mentorado"
+  },
+  {
+   "id": "marco-MODULOS-comentarios-4",
+   "delivery_id": "MODULOS/comentarios",
+   "position": 4,
+   "title": "Agente ativado",
+   "owner": "equipe"
+  }
+ ]
+}

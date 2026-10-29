@@ -14,7 +14,14 @@ fixtures.artifacts.push({id:'editorial-qa',nome:'Linha Editorial',subtitulo:'Fee
 fixtures.artifact_steps.push(...Array.from({length:18},(_,i)=>({id:'editorial-step-'+i,artifact_id:'editorial-qa',titulo:'Etapa de implantação '+(i+1),ordem:i,tipo:'entrega'})));
 fixtures.step_progress.push({member_id:member.id,step_id:'editorial-step-0',feito:true,feito_em:'2026-09-01'});
 const methodCatalog=${JSON.stringify(methodCatalog)};
-fixtures.cb_method_stages=methodCatalog.stages;fixtures.cb_deliveries=methodCatalog.deliveries;fixtures.cb_checklist_catalog=methodCatalog.items;
+const unico=${JSON.stringify(require('../fixtures/checklist-unico.json'))};
+fixtures.cb_method_stages=[...methodCatalog.stages,{id:'MODULOS',name:'Módulos à parte',movement:null,position:14,kind:'modulos'}];
+fixtures.cb_deliveries=methodCatalog.deliveries.map(d=>({...d,...(unico.deliveries[d.id]||{})})).concat(unico.new.map(d=>({...d,...unico.deliveries[d.id]})));
+fixtures.cb_checklist_catalog=methodCatalog.items;
+fixtures.cb_delivery_steps=unico.steps;
+fixtures.cb_delivery_progress=[{member_id:member.id,step_id:'marco-D05-site-1',edition:'',status:'concluida',done_at:'2026-09-01T12:00:00Z',updated_at:'2026-09-01T12:00:00Z',actor_name:'Equipe Black'},
+ {member_id:member.id,step_id:'marco-D05-site-3',edition:'',status:'aguardando',requested_at:'2026-10-20T12:00:00Z',due_on:'2026-10-25',note:'Envie o logo em alta.',actor_name:'Equipe Black'},
+ {member_id:member.id,step_id:'marco-D07-prospeccao-1',edition:'',status:'em_validacao',responded_at:'2026-10-21T12:00:00Z',note:'Social Seller é a Ana.',actor_name:member.nome}];
 fixtures.cb_delivery_artifacts=methodCatalog.bindings.flatMap(b=>fixtures.artifacts.filter(a=>a.nome===b.artifact_name&&a.method_steps.includes(b.stage_id)).map(a=>({...b,artifact_id:a.id})));
 if(${isAdmin})fixtures.cb_checklist_requests=[{id:'pedido-1',member_id:member.id,item_id:'D07-02',edition:'',requested_at:'2026-10-01T12:00:00Z',resolved_at:null}];
 fixtures.instagram_impulsionamento_contas=[{member_id:member.id,mentorado:member.nome,ativo:true,ultima_coleta:new Date().toISOString(),ultimo_erro:null}];
@@ -34,6 +41,6 @@ q.then=(resolve,reject)=>{if(table==='cb_scores'&&window.__holdScores)return win
 const rpc=window.Club.sb.rpc;window.__failRanking=false;
 window.__rankingRequests=[];
 window.__ranking=[{position:1,alias:member.nome,member_id:member.id,total:63.9,grade:2,source:'graduacao',is_demo:true,source_date:'2026-09-20',complete:false,movement:null},...['Clínica Aurora','Clínica Horizonte','Clínica Novo Olhar','Consultório Central','Clínica Vista'].map((alias,i)=>({position:[2,2,3,4,5][i],alias:alias,member_id:${isAdmin}?'synthetic-'+i:null,total:[58,58,99,27,0][i],grade:[2,2,1,0,0][i],source:'graduacao',is_demo:false,source_date:'2026-09-30',movement:[2,-1,0,null,null][i]}))];
-window.Club.sb.rpc=async(name,args)=>{if(name==='cb_ranking'){window.__rankingRequests.push(args.p_period);if(window.__failRanking)return {data:null,error:{message:'Ranking indisponível'}};return {data:window.__ranking};}return rpc(name,args);};
+window.Club.sb.rpc=async(name,args)=>{if(name==='cb_registrar_marco'){window.__writes.push({table:'cb_registrar_marco',row:args});const list=window.__fixtures.cb_delivery_progress;const i=list.findIndex(r=>r.member_id===args.p_member&&r.step_id===args.p_step&&r.edition===args.p_edition);const row={member_id:args.p_member,step_id:args.p_step,edition:args.p_edition,status:args.p_status,note:args.p_note,due_on:args.p_due,updated_at:new Date().toISOString(),done_at:args.p_status==='concluida'?new Date().toISOString():null,actor_name:'Test'};if(i>=0)list[i]=row;else list.push(row);return {data:row,error:null};}if(name==='cb_ranking'){window.__rankingRequests.push(args.p_period);if(window.__failRanking)return {data:null,error:{message:'Ranking indisponível'}};return {data:window.__ranking};}return rpc(name,args);};
 `;}
 module.exports=stub;

@@ -128,7 +128,7 @@
     var active=(artifacts||[]).filter(function(a){return !a.archived_at&&a.tipo!=='interna';});
     var moduleName=function(a){return /f[aá]brica de conte[uú]do|[ií]ris black/i.test(a.nome||'');};
     var ordered=function(list){return list.slice().sort(function(a,b){return (Number(a.ordem)||0)-(Number(b.ordem)||0)||String(a.nome).localeCompare(String(b.nome),'pt-BR');});};
-    var groups=(C.methodStages||steps).filter(function(s){return s.kind!=='transversal';}).map(function(s){return {id:s.id,name:s.name,kind:'step',movement:s.movement,items:ordered(active.filter(function(a){return !moduleName(a)&&artifactSteps(a).includes(s.id);}))};});
+    var groups=(C.methodStages||steps).filter(function(s){return s.kind!=='transversal'&&s.kind!=='modulos';}).map(function(s){return {id:s.id,name:s.name,kind:'step',movement:s.movement,items:ordered(active.filter(function(a){return !moduleName(a)&&artifactSteps(a).includes(s.id);}))};});
     groups.push({id:'TREINO',name:((C.methodStages||[]).find(function(s){return s.id==='TREINO';})||{name:'Treino de Competição'}).name,kind:'transversal',items:ordered(active.filter(function(a){return artifactSteps(a).includes('TREINO');}))});
     groups.push({id:'MODULOS',name:'Módulos à parte · Fábrica e Íris Black',kind:'modules',items:ordered(active.filter(moduleName))});
     groups.push({id:'SEM_VINCULO',name:'Vínculo com degrau a confirmar',kind:'unassigned',items:ordered(active.filter(function(a){return !moduleName(a)&&!artifactSteps(a).length;}))});
@@ -150,10 +150,17 @@
   function deliveries(step,artifacts) {
     var available=(artifacts||[]).filter(function(a){return !a.archived_at&&a.tipo!=='interna'&&artifactSteps(a).includes(step);});
     var used=new Set();
-    var result=(C.methodDeliveries||[]).filter(function(d){return d.step===step;}).map(function(d){
-      var artifact=available.find(function(a){return !used.has(a.id)&&(d.artifactIds||[]).includes(a.id);});
-      if(artifact)used.add(artifact.id);
-      return {id:d.id,step:step,name:d.name,artifact:artifact||null,items:(C.stepChecklist||[]).filter(function(i){return d.items.includes(i.id);})};
+    var all=C.methodDeliveries||[];
+    // Módulos fundidos somem da lista; seus itens e processos passam ao módulo que os absorveu.
+    var result=all.filter(function(d){return d.step===step&&!d.mergedInto;}).map(function(d){
+      var family=[d].concat(all.filter(function(x){return x.mergedInto===d.id;}));
+      var ids=family.reduce(function(acc,x){return acc.concat(x.artifactIds||[]);},[]);
+      var artifact=available.find(function(a){return !used.has(a.id)&&ids.includes(a.id);});
+      available.forEach(function(a){if(ids.includes(a.id))used.add(a.id);});
+      var itemIds=family.reduce(function(acc,x){return acc.concat(x.items||[]);},[]);
+      return {id:d.id,step:step,name:d.name,artifact:artifact||null,items:(C.stepChecklist||[]).filter(function(i){return itemIds.includes(i.id);}),
+        checklistTitle:d.checklistTitle||d.name,treatment:d.treatment||'implantar',cycle:d.cycle||'unica',accept:d.accept||'',
+        requestHint:d.requestHint||'',metricsHint:d.metricsHint||'',sharedWith:d.sharedWith||null};
     });
     available.filter(function(a){return !used.has(a.id);}).forEach(function(a){result.push({id:step+'/processo/'+a.id,step:step,name:a.nome,artifact:a,items:[]});});
     return result;
