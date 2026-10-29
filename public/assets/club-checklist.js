@@ -2,7 +2,7 @@
 (function(root){
   'use strict';
   var C=root.Club=root.Club||{};
-  function hydrate(stages,deliveries,items,bindings){
+  function hydrate(stages,deliveries,items,bindings,steps){
     var stageIds=new Set(stages.map(function(s){return s.id;}));
     var byId=new Map(deliveries.map(function(d){return [d.id,d];}));
     if(!stages.length||!deliveries.length||!items.length||
@@ -16,10 +16,14 @@
         owner:i.owner,monthly:i.monthly,optional:i.optional,missionWeight:i.mission_weight,deliveryId:i.delivery_id};
     });
     C.methodDeliveries=deliveries.slice().sort(function(a,b){return a.position-b.position;}).map(function(d){
-      return {id:d.id,step:d.stage_id,name:d.name,
+      // Fundida: absorvida por outro módulo; referência: mostra os marcos de outro módulo.
+      return {id:d.id,step:d.stage_id,name:d.name,checklistTitle:d.checklist_title||d.name,treatment:d.treatment||'implantar',
+        cycle:d.cycle||'unica',accept:d.accept||'',requestHint:d.request_hint||'',metricsHint:d.metrics_hint||'',
+        sharedWith:d.shared_with||null,mergedInto:d.merged_into||null,
         artifactIds:bindings.filter(function(b){return b.delivery_id===d.id;}).map(function(b){return b.artifact_id;}),
         items:C.stepChecklist.filter(function(i){return i.deliveryId===d.id;}).map(function(i){return i.id;})};
     });
+    C.deliverySteps=(steps||[]).slice().sort(function(a,b){return a.delivery_id.localeCompare(b.delivery_id)||a.position-b.position;});
     if(C.metodo)C.metodo.steps.sort(function(a,b){return C.methodStages.findIndex(function(s){return s.id===a.id;})-C.methodStages.findIndex(function(s){return s.id===b.id;});}).forEach(function(s){var row=stages.find(function(x){return x.id===s.id;});if(row){s.name=row.name;s.movement=row.movement;}});
     return C.methodDeliveries;
   }
@@ -30,8 +34,8 @@
       all=all.concat(r.data||[]);if(!r.data||r.data.length<1000)return all;offset+=1000;}
   }
   C.loadMethodCatalog=async function(){
-    var r=await Promise.all(['cb_method_stages','cb_deliveries','cb_checklist_catalog','cb_delivery_artifacts'].map(read));
-    return hydrate(r[0],r[1],r[2],r[3]);
+    var r=await Promise.all(['cb_method_stages','cb_deliveries','cb_checklist_catalog','cb_delivery_artifacts','cb_delivery_steps'].map(read));
+    return hydrate(r[0],r[1],r[2],r[3],r[4]);
   };
   if(typeof module!=='undefined')module.exports={hydrate:hydrate};
 })(typeof window==='undefined'?globalThis:window);
