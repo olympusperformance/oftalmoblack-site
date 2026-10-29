@@ -2,6 +2,8 @@ export const SOURCE = 'https://oftalmoblack.com.br/hands-on-grau-zero/';
 export const PIXEL = '919253591198015';
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
 const origins = new Set(['https://oftalmoblack.com.br','https://www.oftalmoblack.com.br']);
+const applicationPages = new Set([...origins].flatMap(origin =>
+  ['', 'index.html', 'v0/', 'v0/index.html'].map(path => `${origin}/hands-on-grau-zero/${path}`)));
 export const eventId = (id, name) => `hands-on:${id}:${name}`;
 export async function sha(value) {
   const data = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
@@ -33,7 +35,7 @@ export function application(d) {
     n[key]=text(d[key],2048);
     if(n[key]&&!/^https?:\/\/[^\s/]+(?:\/[^\s]*)?$/i.test(n[key]))fail('invalid_input');
   }
-  if(n.page && ![SOURCE,SOURCE+'index.html',SOURCE.replace('https://','https://www.')].includes(n.page))fail('invalid_page');
+  if(n.page && !applicationPages.has(n.page))fail('invalid_page');
   return n;
 }
 export function matchingPhone(value) {
