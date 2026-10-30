@@ -7,6 +7,9 @@
 
   var ARCH = window.ARCH, Q = window.Q;
   var CHAVE = 'ob-teste-arquetipo-v1';
+  var API = '/api/arquetipo/respostas';
+  var VERSAO = '2026-10-30';
+  var TESTE = /[?&]teste=1(&|$)/.test(location.search); // conferência: vai para os testes do servidor
   var $ = function (id) { return document.getElementById(id); };
 
   var idx = 0;
@@ -14,11 +17,14 @@
   var usuario = { nome: '', cidade: '', data: '' };
   var concluido = false;
   var resultado = null;
+  var respostaId = null; // um por tentativa do teste: o servidor grava e avisa uma vez só
+  var enviado = false;
+  var enviando = false;
 
   /* ── progresso salvo no aparelho (só conveniência; o teste funciona sem) ── */
   function salvar() {
     try {
-      localStorage.setItem(CHAVE, JSON.stringify({ idx: idx, answers: answers, usuario: usuario, concluido: concluido }));
+      localStorage.setItem(CHAVE, JSON.stringify({ idx: idx, answers: answers, usuario: usuario, concluido: concluido, id: respostaId, enviado: enviado }));
     } catch (e) {}
   }
   function lerSalvo() {
@@ -61,6 +67,8 @@
     idx = 0;
     answers = new Array(Q.length).fill(null);
     concluido = false;
+    respostaId = novoId();
+    enviado = false;
     salvar();
     mostrar('tela-quiz');
     render();
@@ -229,6 +237,7 @@
     avisoPdf('');
     mostrar('tela-resultado');
     if (window.ArquetipoPDF) window.ArquetipoPDF.preparar();
+    enviarResultado();
   }
 
   function restart() {
@@ -241,6 +250,8 @@
     answers = new Array(Q.length).fill(null);
     concluido = false;
     resultado = null;
+    respostaId = null;
+    enviado = false;
     apagarSalvo();
     $('retomar').classList.remove('ativo');
     mostrar('tela-capa');
@@ -260,11 +271,65 @@
     avisoPdf('Gerando o PDF…');
     window.ArquetipoPDF.baixar(resultado).then(function () {
       avisoPdf('PDF gerado. Confira a pasta de downloads do seu aparelho.');
+      enviarResultado(); // se o envio automático falhou, aproveita a nova tentativa
     }).catch(function (e) {
       console.error(e);
       avisoPdf('Não foi possível gerar o PDF agora. Verifique a conexão e tente de novo.', true);
     }).then(function () {
       btns.forEach(function (b) { b.disabled = false; });
+    });
+  }
+
+  /* ── envio do resultado para a equipe: o membro não depende mais de mandar o PDF.
+     Vai uma vez por tentativa do teste; se falhar, tenta de novo quando o resultado
+     abrir outra vez neste aparelho ou quando o PDF for baixado. ── */
+  function novoId() {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return 'r' + Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
+  }
+  function avisoEnvio(txt, erro) {
+    var el = $('aviso-envio');
+    if (!el) return;
+    el.textContent = txt;
+    el.classList.toggle('erro', !!erro);
+  }
+  function enviarResultado() {
+    if (!resultado) return;
+    if (enviado) { avisoEnvio('Seu resultado já está com a equipe do Black.'); return; }
+    if (enviando) return;
+    enviando = true;
+    if (!respostaId) { respostaId = novoId(); salvar(); }
+    var r = resultado, id = respostaId;
+    avisoEnvio('Enviando o resultado para a equipe do Black…');
+    var pdf = window.ArquetipoPDF
+      ? window.ArquetipoPDF.base64(r).catch(function (e) { console.error(e); return null; })
+      : Promise.resolve(null);
+    pdf.then(function (b64) {
+      return fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          resposta_id: id, versao: VERSAO, teste: TESTE,
+          usuario: r.usuario, respostas: answers,
+          resultado: {
+            principal: { chave: r.principal.chave, variacao: r.principal.variacao ? r.principal.variacao.nome : null },
+            apoio: { chave: r.apoio.chave, variacao: r.apoio.variacao ? r.apoio.variacao.nome : null },
+            placar: r.ranking.map(function (x) { return [x.chave, x.total]; })
+          },
+          pdf: b64
+        })
+      });
+    }).then(function (res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      if (id !== respostaId) return; // refez o teste enquanto enviava
+      enviado = true;
+      salvar();
+      avisoEnvio('Seu resultado já foi enviado para a equipe do Black.');
+    }).catch(function (e) {
+      console.error(e);
+      avisoEnvio('Não conseguimos enviar o resultado agora. Baixe o PDF e envie para a equipe.', true);
+    }).then(function () {
+      enviando = false;
     });
   }
 
@@ -300,6 +365,8 @@
       usuario = s.usuario || usuario;
       idx = Math.min(Math.max(0, s.idx | 0), Q.length - 1);
       concluido = !!s.concluido && answers.every(function (a) { return a !== null; });
+      respostaId = s.id || null; // teste concluído antes do envio automático ganha id ao abrir o resultado
+      enviado = !!s.enviado;
       var feitas = answers.filter(function (a) { return a !== null; }).length;
       if (concluido || feitas > 0) {
         $('i-nome').value = usuario.nome || '';

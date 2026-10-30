@@ -176,6 +176,8 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02
 
 .aviso-pdf{min-height:20px;margin:14px 0 0;font-size:13.5px;color:var(--faint);text-align:center}
 .aviso-pdf.erro{color:#f0a58f}
+.aviso-envio{min-height:20px;margin:2px 0 0;font-size:13.5px;color:var(--faint);text-align:center}
+.aviso-envio.erro{color:#f0a58f}
 
 .rodape{margin:70px 0 0;padding:30px 0 0;border-top:1px solid var(--line);text-align:center;font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--faint);font-weight:600}
 
@@ -208,7 +210,7 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02
   .tela.ativa{animation:none}
 }
 @media print{
-  #ob-canvas,.vinheta,.topo,.acoes-res,.aviso-pdf,#tela-capa,#tela-quiz{display:none!important}
+  #ob-canvas,.vinheta,.topo,.acoes-res,.aviso-pdf,.aviso-envio,#tela-capa,#tela-quiz{display:none!important}
   body{background:#fff;color:#111}
   .res-hero .desc,.res-bloco .corpo,.cartao p,.linha .n{color:#333}
   .grifo{-webkit-text-fill-color:#8a5210;background:none}
@@ -236,7 +238,7 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02
       <p class="sub">Posicionamento de marca pessoal<span class="sep"> · </span><span class="nw">60 perguntas</span></p>
 
       <p class="chamada"><em>Antes de aparecer no Instagram,</em><br>descubra quem você é por dentro.</p>
-      <p class="lead">Este teste revela o seu arquétipo de comunicação. A partir dele, o coordenador de marketing do Black calibra o seu tom de voz, o conteúdo, os formatos e a estratégia de posicionamento. Confidencial e de uso interno.</p>
+      <p class="lead">Este teste revela o seu arquétipo de comunicação. A partir dele, o coordenador de marketing do Black calibra o seu tom de voz, o conteúdo, os formatos e a estratégia de posicionamento. Ao concluir, o resultado chega automaticamente à equipe do Black. Confidencial e de uso interno.</p>
 
       <div class="chips">
         <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="#d89d4d" stroke-width="1.5" stroke-linecap="round"><path d="M9 5h11M9 12h11M9 19h11"/><circle cx="4.5" cy="5" r="1.2" fill="#fdf3b5" stroke="none"/><circle cx="4.5" cy="12" r="1.2" fill="#fdf3b5" stroke="none"/><circle cx="4.5" cy="19" r="1.2" fill="#fdf3b5" stroke="none"/></svg>60 perguntas</span>
@@ -322,6 +324,7 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02
         <button type="button" class="btn btn-ouro js-pdf"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 20h16"/></svg>Baixar resultado em PDF</button>
       </div>
       <p class="aviso-pdf" aria-live="polite"></p>
+      <p class="aviso-envio" id="aviso-envio" aria-live="polite"></p>
     </div>
 
     <div class="res-bloco">
@@ -368,6 +371,6 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.02
 
 <script src="dados.js?v=2"></script>
 <script src="pdf.js?v=1"></script>
-<script src="teste.js?v=1"></script>
+<script src="teste.js?v=2"></script>
 </body>
 </html>

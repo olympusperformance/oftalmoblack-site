@@ -1,0 +1,18 @@
+{
+  "http": {
+    "routers": {
+      "teste-arquetipo": {
+        "rule": "(Host(`oftalmoblack.com.br`) || Host(`www.oftalmoblack.com.br`)) && PathPrefix(`/api/arquetipo/`)",
+        "priority": 150,
+        "service": "teste-arquetipo",
+        "entryPoints": ["https"],
+        "tls": {"certResolver": "letsencrypt"}
+      }
+    },
+    "services": {
+      "teste-arquetipo": {
+        "loadBalancer": {"servers": [{"url": "http://teste-arquetipo:8080"}]}
+      }
+    }
+  }
+}
