@@ -238,6 +238,16 @@ const methodCatalog=require('./fixtures/method-catalog.json');
     await page.locator('.cb-popup').waitFor();
     assert.match(await page.locator('.cb-popup').innerText(),/Site publicado e validado/);
     await page.keyboard.press('Escape');
+    // Os marcos abrem na própria árvore; concluir é um clique na linha.
+    await progression.locator('[data-abrir="x:10000000-0000-4000-8000-000000000002:D05/site"]').click();
+    const marcosSite=progression.locator('[data-marco-row^="marco-D05-site-"]');
+    await marcosSite.first().waitFor();
+    assert.equal(await marcosSite.count(),4,'Os quatro marcos do site aparecem embaixo da entrega');
+    await page.screenshot({path:path.join(out,'admin-marcos-na-arvore.png'),fullPage:false});
+    await marcosSite.first().locator('[data-marco]').click();
+    await page.waitForFunction(()=>window.__writes.some(w=>w.table==='cb_registrar_marco'&&w.row.p_step==='marco-D05-site-1'&&w.row.p_member==='10000000-0000-4000-8000-000000000002'&&w.row.p_status==='concluida'));
+    await progression.locator('[data-marco-row="marco-D05-site-1"] [data-marco][aria-pressed=true]').waitFor();
+    assert.match(await progression.locator('[data-progress-delivery-row="D05/site"]').innerText(),/1\/4/,'A barra da entrega acompanha o marco');
     await page.screenshot({path:path.join(out,'admin-progressao-catalogo.png'),fullPage:false});
     // Entrada do novo mentorado: faixa acima do quadro, checklist em modal, marcação pela RPC.
     assert.match(await progression.locator('[data-entrada-row="10000000-0000-4000-8000-000000000002"]').innerText(),/Checklist de entrada[\s\S]*2\/6[\s\S]*Ver checklist/,'Entrada aparece na árvore como as entregas');

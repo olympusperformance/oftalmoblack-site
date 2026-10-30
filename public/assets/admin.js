@@ -499,9 +499,13 @@
   }
   /* Andamento de um módulo no checklist único. Mensal = mês corrente; por edição
      depende do registro do encontro, que só a área do Método carrega. */
-  function andamentoModulo(memberId, d) {
+  function cicloModulo(d) {
     var J = Club.jornada, o = J.origem(d, Club.methodDeliveries);
-    var ed = o.cycle === 'edicao' ? null : J.ciclo(o, null, [], Club.todayISO ? Club.todayISO() : null);
+    return o.cycle === 'edicao' ? null : J.ciclo(o, null, [], Club.todayISO ? Club.todayISO() : null);
+  }
+
+  function andamentoModulo(memberId, d) {
+    var J = Club.jornada, ed = cicloModulo(d);
     return J.andamento(J.marcos(d, Club.methodDeliveries, Club.deliverySteps), st.marcos || [], memberId, ed);
   }
   /* Do mentorado: um módulo conta como iniciado quando algum marco saiu de "a fazer".
@@ -810,12 +814,60 @@
     var detalhe = d.sharedWith ? 'Usa o checklist de ' + o.name
       : p.proximo ? 'Próximo: ' + p.proximo.title + ' · ' + (p.vez === 'mentorado' ? 'mentorado' : 'equipe')
       : p.total ? 'Todos os marcos concluídos' : (o.metricsHint ? 'Acompanhamento por indicador' : '—');
+    var chave = 'x:' + m.id + ':' + d.id, aberto = !!st.abertos[chave] && p.total > 0;
     return '<div class="tr lv1" data-progress-delivery-row="' + esc(d.id) + '">' +
-      '<div class="td nm"><span class="tx tx-t" title="' + esc(o.checklistTitle || d.name) + '">' + esc(d.name) + '</span></div>' +
+      '<div class="td nm">' + toggleTree(chave, p.total > 0) +
+        '<span class="tx tx-t" title="' + esc(o.checklistTitle || d.name) + '">' + esc(d.name) + '</span></div>' +
       td(situacao) + td('<span class="tx-s">' + esc(o.checklistTitle || '') + '</span>') +
       td(p.total ? barra(p.concluidos, p.total) : '<span class="tx-s">—</span>') +
       td('<span class="tx-s" title="' + esc(detalhe) + '">' + esc(detalhe) + '</span>') +
-      td(botaoEntrega(m, d)) + '</div>';
+      td(botaoEntrega(m, d)) + '</div>' +
+      (aberto ? marcosNaArvore(m, d) : '');
+  }
+
+  /* Os marcos do módulo, abertos na própria árvore. Concluir é um clique; reabrir,
+     pedir ao mentorado ou "não se aplica" pedem motivo e seguem pelo pop-up. */
+  function marcosNaArvore(m, d) {
+    var J = Club.jornada, ed = cicloModulo(d);
+    if (ed === null) return '';
+    return J.marcos(d, Club.methodDeliveries, Club.deliverySteps).map(function (s) {
+      var e = J.estado(st.marcos || [], m.id, s.id, ed || '', null, s);
+      var info = J.STATUS[e.status] || J.STATUS.pendente;
+      var cor = { success:'var(--success)', orange:'var(--orange)', blue:'var(--warning)', muted:'var(--faint)' }[info.tone] || 'var(--faint)';
+      var feito = e.status === 'concluida', fechado = J.fechado(e.status);
+      var quando = e.done_at || e.updated_at;
+      var nota = [e.actor_name, quando ? Club.fmtDate(quando) : '', e.note].filter(Boolean).join(' · ');
+      return '<div class="tr lv2' + (feito ? ' feito' : '') + '" data-marco-row="' + esc(s.id) + '">' +
+        '<div class="td nm"><span class="tg void"></span>' +
+          '<button class="cbx" data-marco="' + esc(m.id) + '|' + esc(s.id) + '|' + esc(ed || '') + '|' + esc(d.id) + '" aria-pressed="' + feito +
+            '" aria-label="' + (fechado ? 'Reabrir marco' : 'Concluir marco') + '"' + (e.status === 'nao_aplica' ? ' disabled' : '') + '>' + ico('check') + '</button>' +
+          '<div class="tx"><div class="tx tx-t" title="' + esc(s.title) + '">' + esc(s.title) + '</div></div></div>' +
+        td(status(cor, info.label)) +
+        td('<span class="tx-s">' + esc(J.OWNER[s.owner] || s.owner || '') + '</span>') +
+        td('') +
+        td('<span class="tx-s" title="' + esc(nota) + '">' + esc(nota) + '</span>') +
+        td('') +
+      '</div>';
+    }).join('');
+  }
+
+  function marcarMarco(memberId, stepId, ed, deliveryId) {
+    var e = Club.jornada.estado(st.marcos || [], memberId, stepId, ed, null, null);
+    /* Desfazer um marco fechado pede motivo: o pop-up já sabe perguntar. */
+    if (Club.jornada.fechado(e.status)) {
+      Club.black.openForMember(memberId, deliveryId).catch(aviso);
+      return;
+    }
+    Club.sb.rpc('cb_registrar_marco', { p_member:memberId, p_step:stepId, p_edition:ed, p_status:'concluida', p_note:null, p_due:null })
+      .then(function (r) {
+        if (r.error) throw new Error(r.error.message);
+        return Club.sb.from('cb_delivery_progress').select('*').eq('member_id', memberId);
+      }).then(function (r) {
+        if (r.error) throw new Error(r.error.message);
+        st.marcos = (st.marcos || []).filter(function (p) { return p.member_id !== memberId; }).concat(r.data || []);
+        renderMembers();
+        Club.toast('Marco concluído.');
+      }).catch(aviso);
   }
 
   function botaoEntrega(m,d){
@@ -4554,6 +4606,9 @@
 
     var verDem = e.target.closest('[data-ver-demandas]');
     if (verDem) { var pv = verDem.dataset.verDemandas.split('|'); verDemandasDaEtapa(pv[0], pv[1]); return; }
+
+    var marco = e.target.closest('[data-marco]');
+    if (marco) { var mk = marco.dataset.marco.split('|'); marcarMarco(mk[0], mk[1], mk[2], mk[3]); return; }
 
     var entradaPasso = e.target.closest('[data-entrada-passo]');
     if (entradaPasso) { var ep = entradaPasso.dataset.entradaPasso.split('|'); marcarEntrada(ep[0], ep[1]); return; }
