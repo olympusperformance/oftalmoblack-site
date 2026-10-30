@@ -629,7 +629,7 @@ input[type="file"].inp::file-selector-button:hover{background:var(--surface);bor
 /* ---------- árvore de progresso ---------- */
 /* Observações curtas em todos os níveis; o texto completo abre sob a linha.
    Largura mínima mantém título e controles legíveis com rolagem no celular. */
-#listaMembros .tbl{min-width:1200px}
+#listaMembros .tbl{min-width:1000px}
 .progress-note{display:flex;align-items:center;gap:8px;width:100%;min-width:0;
   padding:6px 8px;border:1px dashed var(--border-soft);border-radius:6px;
   background:none;color:var(--faint);font:inherit;font-size:11.5px;text-align:left;cursor:pointer}
@@ -843,7 +843,7 @@ input[type="file"].inp::file-selector-button:hover{background:var(--surface);bor
 /* Enquanto o convite é colado, o campo toma a coluna de detalhe e a de ações —
    é o que dá largura para o link caber sem escrever por cima do vizinho. */
 .td.zap-cell{grid-column:4/-1}
-#listaMembros .td.zap-cell{grid-column:5/-1}
+#listaMembros .td.zap-cell{grid-column:4/-1}
 .zap-inp{width:100%}
 @media (max-width:560px){
   .hello-top{gap:14px}
@@ -942,6 +942,12 @@ input[type="file"].inp::file-selector-button:hover{background:var(--surface);bor
 .tr.grp.pai .grp-n{font-size:13.5px;color:var(--gold)}
 .tr.grp.sub{background:var(--surface);padding-left:34px}
 .tr.grp.sub .grp-n{font-weight:500}
+/* Na Progressão o degrau fica sob o mentorado: recuado até o nome, abaixo do avatar. */
+#listaMembros .tr.grp.sub{padding-left:62px}
+#listaMembros .tr.lv1 .nm{padding-left:52px}
+#listaMembros .tr.lv2 .nm{padding-left:80px}
+#listaMembros .tr.lv1::before{left:49px}
+#listaMembros .tr.lv2::before{left:77px}
 /* Progressão do Instagram: uma barra por dia, altura relativa ao maior ganho
    da própria conta. Não é gráfico de biblioteca — são divs, porque o painel
    não carrega nenhuma e 14 barras não justificam a primeira. */
