@@ -729,36 +729,27 @@
       return { id:x.id, nome:x.kind === 'modulos' ? x.name : x.id + ' · ' + x.name };
     });
     var saida = linhaEntradaArvore(m) + grupos.map(function (g) {
+      var feitos = 0, total = 0;
       var linhas = Club.metodo.deliveries(g.id, []).map(function (d) {
         var p = andamentoModulo(m.id, d);
-        return passaModulo(p) ? linhaModulo(m, d, p) : '';
+        if (!passaModulo(p)) return '';
+        if (!d.sharedWith) { feitos += p.concluidos; total += p.total; }
+        return linhaModulo(m, d, p);
       }).join('');
-      return linhas ? '<div class="tr grp sub"><span class="grp-n">' + esc(g.nome) + '</span><span class="tx-s">Checklist único</span></div>' + linhas : '';
+      if (!linhas) return '';
+      var chave = 'g:' + m.id + ':' + g.id;
+      return cabecalhoDegrau(chave, g.nome, total ? feitos + '/' + total + ' marcos' : 'Acompanhamento por indicador') +
+        (st.abertos[chave] ? linhas : '');
     }).join('');
     /* Processos sem degrau seguem aparecendo pelo checklist antigo, até ganharem módulo. */
     saida += Club.metodo.catalogGroups(arts, false).filter(function (g) { return g.kind === 'unassigned'; }).map(function (g) {
-      return faixaGrupo(m, { nome:g.name }, g.items) + g.items.map(function (a) { return linhaArtefato(m, a); }).join('');
+      var chave = 'g:' + m.id + ':legado:' + g.id;
+      return cabecalhoDegrau(chave, g.name, g.items.length + ' processo' + (g.items.length === 1 ? '' : 's') + ' no checklist antigo') +
+        (st.abertos[chave] ? g.items.map(function (a) { return linhaArtefato(m, a); }).join('') : '');
     }).join('');
     return linha + saida;
   }
 
-  var PESO_ESTADO = { travado:4, implantacao:3, nao_iniciado:3, sem_criterio:3, ativo_off:2, ativo:1, entregue:1, definir:0 };
-
-  function faixaGrupo(m, g, arts) {
-    var pcts = [], pior = 'definir';
-    arts.forEach(function (a) {
-      var p = contaPar(m.id, a);
-      if (p.estado === 'definir') return;
-      if (p.total || p.rotinas.length) pcts.push(p.completo ? 100 : p.pct);
-      if (PESO_ESTADO[p.estado] > PESO_ESTADO[pior]) pior = p.estado;
-    });
-    var pct = pcts.length ? Math.round(pcts.reduce(function (s, x) { return s + x; }, 0) / pcts.length) : null;
-    var s = Club.PAR_ST[pior];
-    return '<div class="tr grp sub">' +
-      '<span class="grp-n">' + esc(g ? g.nome : 'Sem área') + '</span>' +
-      '<span class="tx-s">' + (pct === null ? 'Conferência nas entregas' : 'Implantação: '+status(s.cor, s.label) + ' · ' + pct + '%') + '</span>' +
-    '</div>';
-  }
 
   function detalhePar(p, m) {
     switch (p.estado) {
@@ -782,6 +773,20 @@
   }
 
   /* A entrada aparece na árvore como qualquer entrega: grupo, linha e os passos abrindo na seta. */
+  function fecharDegraus(memberId) {
+    Object.keys(st.abertos).forEach(function (k) {
+      if (/^[gxe]:/.test(k) && k.indexOf(':' + memberId) === 1) delete st.abertos[k];
+    });
+  }
+
+  /* Degrau da árvore: abre e fecha como o mentorado. Ao abrir um médico, todos chegam fechados. */
+  function cabecalhoDegrau(chave, nome, resumo) {
+    var aberto = !!st.abertos[chave];
+    return '<div class="tr grp sub" data-abrir="' + esc(chave) + '" aria-expanded="' + aberto + '">' +
+      '<span class="grp-t">' + toggleTree(chave, true) + '<span class="grp-n">' + esc(nome) + '</span></span>' +
+      '<span class="tx-s">' + esc(resumo) + '</span></div>';
+  }
+
   function linhaEntradaArvore(m) {
     var a = entradaDe(m.id);
     if (!a.total) return '';
@@ -789,7 +794,10 @@
     var situacao = a.completo ? status('var(--success)', 'Concluída')
       : a.concluidos > 2 ? status('var(--warning)', 'Em andamento') : status('var(--faint)', 'A iniciar');
     var detalhe = a.completo ? 'Integração encerrada' : p ? 'Próximo: ' + p.titulo + ' · ' + p.dono : '—';
-    return '<div class="tr grp sub"><span class="grp-n">Entrada no Club</span><span class="tx-s">Do fechamento ao encerramento da integração</span></div>' +
+    var chave = 'g:' + m.id + ':entrada';
+    var cabecalho = cabecalhoDegrau(chave, 'Entrada no Club', a.completo ? 'Concluída' : a.concluidos + '/' + a.total + ' passos');
+    if (!st.abertos[chave]) return cabecalho;
+    return cabecalho +
       '<div class="tr lv1" data-entrada-row="' + esc(m.id) + '">' +
         '<div class="td nm">' + toggleTree('e:' + m.id, true) + '<span class="tx tx-t">Checklist de entrada</span></div>' +
         td(situacao) +
@@ -4603,6 +4611,8 @@
     if (galho) {
       var k = galho.dataset.abrir;
       st.abertos[k] = !st.abertos[k];
+      /* Abrir um médico mostra só os degraus, todos fechados. */
+      if (k.indexOf('m:') === 0 && st.abertos[k]) fecharDegraus(k.slice(2));
       if (k.charAt(0) === 'd') renderDemandas(); else renderMembers();
       return;
     }
