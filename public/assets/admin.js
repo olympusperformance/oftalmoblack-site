@@ -62,7 +62,6 @@
     ] },
     { grupo:'Administração', itens: [
       { href:'/admin/perfis/', label:'Perfis dos mentorados', icon:'users' },
-      { key:'rede', label:'A Rede', icon:'users' },
       { key:'members', label:'Progressão', icon:'trending-up' }
     ] },
     { grupo:'Operação da equipe', itens: [

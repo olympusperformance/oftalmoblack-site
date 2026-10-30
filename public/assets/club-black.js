@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   var C=window.Club, M=C.metodo, esc=C.esc;
-  var views=['subida','pendencias','ranking','vitrine','casos','encontro','iris','modulos','rede'];
+  var views=['subida','pendencias','ranking','vitrine','casos','encontro','iris','modulos'];
   var labels={subida:'Subida: Rumo ao Olympus',pendencias:'Pendências',ranking:'Ranking Black',vitrine:'Vitrine Black',casos:'Protocolo Grau Zero',encontro:'Encontro Grau Zero',iris:'Íris Black',modulos:'Fábrica · Íris Black'};
   var requestedPeriod=new URLSearchParams(location.search).get('trimestre');
   var state={options:null,member:null,period:/^20\d{2}-T[1-4]$/.test(requestedPeriod||'')?requestedPeriod:M.quarter(),rankingPeriod:M.quarter(),loading:true,error:null,data:{},crm:null,ig:[],request:0,active:'subida'};
@@ -436,12 +436,7 @@
     ['Superfície','Estável, sem ceratite','BUT reduzido; MGD','Medidas instáveis'],['Congruência','Δ ≤ 0,5 D; eixo ≤ 15°','Rever aquisição','Divergência persistente'],['Endotélio','≥ 2.000 cél/mm²','1.500 a < 2.000','< 1.500'],['Pupila mesópica','Contextualizar com tarefa','> 6–6,5 mm','Sem corte isolado'],['Chord µ','Contextualizar alinhamento','Repetir e contextualizar','Sem corte isolado'],['AE corneana','Até 0,40 µm','> 0,40 a 0,50','> 0,60 · intervalo 0,50–0,60 sem corte fornecido'],['RMS HOA · 4 mm','< 0,30 µm','0,30 a < 0,50','≥ 0,50'],['Coma / Trefoil · 4 mm','< 0,20 µm','0,20 a < 0,30','≥ 0,30'],['Mácula / NO','Grau / estágio 0','Grau / estágio 1','Graus / estágios 2–3']
   ].map(function(r){return '<tr>'+r.map(function(v){return '<td>'+esc(v)+'</td>';}).join('')+'</tr>';}).join('')+'</tbody></table></div>';}
   function modulePage(){return head('modulos','Módulos à parte · produtos separados dos 12 degraus.')+modules()+'<div class="cb-section"><button class="btn" data-nav="iris">Abrir painel da Íris Black</button></div>';}
-  function network(){
-    if(!admin())return '';
-    var members=state.options.members.filter(function(m){return m.ativo!==false;});
-    return '<div class="cb-head"><div><span class="cb-kicker">Administração</span><h1>A Rede</h1><p>'+members.length+' membros ativos · cadastros e implantação.</p></div><button class="btn" data-nav="members">Abrir Progressão</button></div><div class="cb-table-wrap"><table class="cb-table"><thead><tr><th>Membro</th><th>Turma</th><th>Fase</th><th></th></tr></thead><tbody>'+members.map(function(m){return '<tr><td>'+esc(m.nome)+'</td><td>'+esc(m.turma||'—')+'</td><td>'+esc(m.fase||'—')+'</td><td><a class="cb-link" href="/admin/perfis/?m='+encodeURIComponent(m.id)+'">Ver perfil</a> · <a class="cb-link" href="/membros/?membro='+encodeURIComponent(m.id)+'">Ver como membro</a></td></tr>';}).join('')+'</tbody></table></div>';
-  }
-  var renderers={subida:subida,pendencias:pendencias,ranking:ranking,vitrine:vitrine,casos:cases,encontro:encontro,iris:iris,modulos:modulePage,rede:network,graduacao:placar};
+  var renderers={subida:subida,pendencias:pendencias,ranking:ranking,vitrine:vitrine,casos:cases,encontro:encontro,iris:iris,modulos:modulePage,graduacao:placar};
   function render(){
     Object.keys(renderers).forEach(function(key){var el=document.getElementById('black-'+key);if(!el)return;
       el.innerHTML=key==='graduacao'&&(state.loading||state.scoreLoading)&&!state.error?head('Graduação','Pontos premiam o trimestre. Graus premiam a carreira.')+C.graduacao.loading(false):state.loading?'<div class="cb-loading" role="status">Carregando '+esc(labels[key]||'placar')+'…</div>':
@@ -630,7 +625,7 @@ if(alvo&&!alvo.isConnected&&alvo.dataset){var chave=['cbDelivery','cbArtifact','
   function install(options){
     var previous=state.member&&state.member.id||new URLSearchParams(location.search).get('membro');
     state.options=options;state.member=options.member||options.members.find(function(m){return m.id===previous&&m.ativo!==false;})||options.members.find(function(m){return m.ativo!==false;});if(!state.member)return;
-    views.forEach(function(k){if(k==='rede'&&!admin())return;if(document.getElementById('black-'+k))return;var el=document.createElement('section');el.className='view';el.dataset.view=k;el.hidden=true;el.innerHTML='<div class="cb" id="black-'+k+'"></div>';document.querySelector('.main').appendChild(el);});
+    views.forEach(function(k){if(document.getElementById('black-'+k))return;var el=document.createElement('section');el.className='view';el.dataset.view=k;el.hidden=true;el.innerHTML='<div class="cb" id="black-'+k+'"></div>';document.querySelector('.main').appendChild(el);});
     var agenda=document.querySelector('[data-view=agenda]');if(agenda&&!agenda.querySelector('[data-nav=encontro]')){var shortcut=document.createElement('div');shortcut.className='cb-section';shortcut.innerHTML='<button class="btn" data-nav="encontro">Edições e entregas · Encontro Grau Zero</button>';agenda.prepend(shortcut);}
     var grad=document.querySelector('[data-view=graduacao]');if(grad&&!document.getElementById('black-graduacao')){var el=document.createElement('div');el.id='black-graduacao';el.className='cb';grad.prepend(el);}
     load();

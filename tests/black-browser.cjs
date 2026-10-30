@@ -34,8 +34,8 @@ const methodCatalog=require('./fixtures/method-catalog.json');
    const menu=await page.locator('#rail .nav>span:not(.cb-badge)').allTextContents();
    assert.deepEqual(menu.slice(0,mentoria.length+1),[...mentoria,'Fábrica · Íris Black']);
    assert.deepEqual(await page.locator('#rail .rail-grupo').allTextContents(),isAdmin?['Mentoria','Módulos à parte','Administração','Operação da equipe']:['Mentoria','Módulos à parte']);
-   if(isAdmin)assert.deepEqual(menu.slice(mentoria.length+1,mentoria.length+4),['Perfis dos mentorados','A Rede','Progressão']);
-   else assert.equal(await page.locator('[data-view=rede]').count(),0);
+   if(isAdmin)assert.deepEqual(menu.slice(mentoria.length+1,mentoria.length+3),['Perfis dos mentorados','Progressão']);
+   assert.equal(await page.locator('[data-view=rede]').count(),0,'A Rede saiu do Cérebro');
    for(const key of ['home','encontro','iris','cerebro','profile'])assert.equal(await page.locator('#rail [data-nav="'+key+'"]').count(),0);
    assert.deepEqual(await page.locator('#navm [data-nav]').evaluateAll(nodes=>nodes.map(n=>n.dataset.nav)),await page.locator('#rail [data-nav]').evaluateAll(nodes=>nodes.map(n=>n.dataset.nav)));
    for(const nav of ['#rail','#navm'])assert.equal(await page.locator(nav+' a[href="/simuladores/"][target="_blank"]:not([data-nav])').count(),1,'Simuladores: link para /simuladores/ em outra aba nos menus do mentorado e do admin');
@@ -143,7 +143,7 @@ const methodCatalog=require('./fixtures/method-catalog.json');
    await page.keyboard.press('Escape');
    await page.evaluate(()=>window.__fixtures.cb_encontros=[]);
    await page.locator('#black-subida [data-cb-reload]').click();await page.locator('#black-subida .cb-card[data-cb-step=D08]').waitFor();
-   for(const key of ['ranking','vitrine','modulos','casos','graduacao','farol','artifacts','agenda',...(isAdmin?['rede','members']:[]),'subida']){await page.locator('#rail [data-nav="'+key+'"]').click();assert.equal(await page.locator('.view:not([hidden])').count(),1);}
+   for(const key of ['ranking','vitrine','modulos','casos','graduacao','farol','artifacts','agenda',...(isAdmin?['members']:[]),'subida']){await page.locator('#rail [data-nav="'+key+'"]').click();assert.equal(await page.locator('.view:not([hidden])').count(),1);}
    await page.locator('#rail [data-nav=subida]').click();
    for(const step of ['D07','D08','D09','D10','D11','D12']){
     await page.locator('#black-subida .cb-card[data-cb-step='+step+']').click();
