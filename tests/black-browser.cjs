@@ -248,6 +248,25 @@ const methodCatalog=require('./fixtures/method-catalog.json');
     assert.match(await page.locator('.cb-popup').innerText(),/Site publicado e validado/);
     await page.keyboard.press('Escape');
     await page.screenshot({path:path.join(out,'admin-progressao-catalogo.png'),fullPage:false});
+    // Entrada do novo mentorado: faixa acima do quadro, checklist em modal, marcação pela RPC.
+    const entradas=page.locator('#entradasMembros');
+    assert.match(await entradas.innerText(),/Entradas em andamento[\s\S]*Outro mentorado/,'Quem está entrando aparece antes do quadro');
+    assert.doesNotMatch(await entradas.innerText(),/Dra\. Clínica de Teste/,'Quem já entrou não aparece na faixa');
+    assert.match(await progression.innerText(),/Entrada 2\/6 · Integração/,'A linha do mentorado mostra a entrada em andamento');
+    await page.locator('[data-view=members] .hello').scrollIntoViewIfNeeded();
+    await page.screenshot({path:path.join(out,'admin-entrada-faixa.png'),fullPage:false});
+    await progression.locator('[data-entrada="10000000-0000-4000-8000-000000000002"]').first().click();
+    const entrada=page.locator('.modal-box');
+    await entrada.getByText('Entrada · Outro mentorado').waitFor();
+    assert.match(await entrada.innerText(),/2 de 6 passos/);
+    assert.match(await entrada.innerText(),/Campinas\/SP/,'Dados do fechamento aparecem no checklist');
+    assert.match(await entrada.innerText(),/Participou do onboarding em grupo[\s\S]*depois da etapa anterior/,'Encontros esperam a integração');
+    await page.screenshot({path:path.join(out,'admin-entrada-checklist.png'),fullPage:false});
+    await entrada.locator('[data-entrada-passo="10000000-0000-4000-8000-000000000002|grupo"]').click();
+    await page.waitForFunction(()=>window.__writes.some(w=>w.table==='cb_entrada_marcar'&&w.row.p_passo==='grupo'&&w.row.p_feito===true));
+    await page.locator('.modal-box').getByText('3 de 6 passos').waitFor();
+    assert.equal(await page.locator('.modal-box [data-entrada-passo$="|grupo"]').getAttribute('aria-pressed'),'true');
+    await page.keyboard.press('Escape');
     await page.locator('#rail [data-nav=artifacts]').click();
     await page.locator('#processosMembro').selectOption('10000000-0000-4000-8000-000000000001');
 
