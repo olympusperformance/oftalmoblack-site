@@ -38,3 +38,13 @@ test('A tela do membro filtra pelo próprio cadastro e não lista outros membros
  assert.match(js,/\.eq\('member_id',st\.member\.id\)/);
  assert.doesNotMatch(js,/members\(/);
 });
+test('Lançamento manual de vídeos no grupo aceita só inteiro de 0 a 60',()=>{
+ assert.equal(D.lancamento('3'),3);assert.equal(D.lancamento(' 0 '),0);assert.equal(D.lancamento(60),60);
+ for(const v of ['','-1','2.5','61','abc',null,'1e1'])assert.equal(D.lancamento(v),null,String(v));
+});
+test('Só o /admin/ abre o lançamento manual; a área do membro não',()=>{
+ const membros=fs.readFileSync(path.join(__dirname,'../public/assets/membros.js'),'utf8');
+ const admin=fs.readFileSync(path.join(__dirname,'../public/assets/admin.js'),'utf8');
+ assert.doesNotMatch(membros,/enterAdmin/);
+ assert.match(admin,/Club\.desafio\.enterAdmin\(\$\('desafioAdmin'\), st\.members\)/);
+});

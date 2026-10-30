@@ -29,7 +29,8 @@ const methodCatalog=require('./fixtures/method-catalog.json');
    assert.equal(await page.evaluate(()=>getComputedStyle(document.documentElement).getPropertyValue('--panel').trim()),'#0B0910');
    assert.equal(await page.evaluate(()=>getComputedStyle(document.documentElement).getPropertyValue('--gold').trim()),'#E8C07A');
    await page.screenshot({path:path.join(out,(isAdmin?'admin':'member')+'-farol-black-gold.png'),fullPage:true});
-   const mentoria=['Visão Geral','Subida: Rumo Olympus','Pendências','Protocolo Grau Zero','Graduação','Ranking Black','Vitrine Black','Instagram','Processos Black','Materiais','Simuladores',...(isAdmin?[]:['Máquina de Clientes']),'Agenda'];
+   // Desafio Black: a equipe sempre vê o lançamento; o membro só quando tem meta (a fixture não tem).
+   const mentoria=['Visão Geral','Subida: Rumo Olympus','Pendências',...(isAdmin?['Desafio Black']:[]),'Protocolo Grau Zero','Graduação','Ranking Black','Vitrine Black','Instagram','Processos Black','Materiais','Simuladores',...(isAdmin?[]:['Máquina de Clientes']),'Agenda'];
    const menu=await page.locator('#rail .nav>span:not(.cb-badge)').allTextContents();
    assert.deepEqual(menu.slice(0,mentoria.length+1),[...mentoria,'Fábrica · Íris Black']);
    assert.deepEqual(await page.locator('#rail .rail-grupo').allTextContents(),isAdmin?['Mentoria','Módulos à parte','Administração','Operação da equipe']:['Mentoria','Módulos à parte']);

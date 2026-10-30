@@ -58,9 +58,12 @@ tem meta. Falha de consulta fica restrita à tela, sem afetar o Método.
 Aplicar `20261030190000_desafio_black.sql` antes de alimentar. A equipe grava
 `cb_desafios` e `cb_desafio_metas` (RLS de admin); o membro lê a própria linha.
 `feitos` é calculado pelo banco como o maior entre Reels no Instagram pessoal e
-vídeos enviados no grupo individual, nunca a soma. A apuração diária roda fora
-do site, no controle do Thomas (`desafio.mjs --publicar`, workspace da Norte),
-que grava e relê as metas. Testes: `tests/desafio.test.cjs` e
+vídeos enviados no grupo individual, nunca a soma. Os Reels entram pela
+apuração diária fora do site, no controle do Thomas (`desafio.mjs --publicar`,
+workspace da Norte), que grava e relê metas e Reels sem tocar no lançamento
+manual. Vídeo enviado no grupo é lançado à mão pela equipe em /admin/ → Desafio
+Black (pedido do Felipe, 30/10: tem mentorado que não manda), em ordem
+alfabética e invisível aos membros. Testes: `tests/desafio.test.cjs` e
 `tests/desafio-db.test.mjs` (Postgres em memória).
 
 ### Instagram: Métricas e Turbinar

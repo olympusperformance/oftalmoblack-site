@@ -49,3 +49,9 @@ test('SQL: feito é calculado pelo banco e não aceita valor de fora',async()=>{
  await assert.rejects(equipe(tx=>tx.query(`update public.cb_desafio_metas set feitos=50 where member_id=$1`,[A])));
  await assert.rejects(equipe(tx=>tx.query(`update public.cb_desafio_metas set reels=$2::jsonb where member_id=$1`,[A,'{"x":1}'])));
 });
+test('SQL: lançamento manual da equipe atualiza o contado; o membro não lança o próprio',async()=>{
+ const r=await equipe(tx=>tx.query('update public.cb_desafio_metas set videos_grupo=3 where member_id=$1 returning feitos,updated_by',[B]));
+ assert.deepEqual(r.rows,[{feitos:3,updated_by:UE}]);
+ const m=await como('authenticated',UB,false,tx=>tx.query('update public.cb_desafio_metas set videos_grupo=9 where member_id=$1',[B]));
+ assert.equal(m.affectedRows,0);
+});

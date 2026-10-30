@@ -45,6 +45,7 @@
       { key:'farol', label:'Visão Geral', icon:'eye' },
       { key:'subida', label:'Subida: Rumo Olympus', icon:'home' },
       { key:'pendencias', label:'Pendências', icon:'check-square' },
+      { key:'desafio', label:'Desafio Black', icon:'video' },
       { key:'casos', label:'Protocolo Grau Zero', icon:'folder' },
       { key:'graduacao', label:'Graduação', icon:'award' },
       { key:'ranking', label:'Ranking Black', icon:'trophy' },
@@ -420,6 +421,7 @@
     if (Club.black) Club.black.enter(key);
     if (key === 'igMetricas') Club.instagramTabs.enter(instagramHash);
     if (key === 'livro' && Club.livro) Club.livro.enter();
+    if (key === 'desafio' && Club.desafio) Club.desafio.enterAdmin($('desafioAdmin'), st.members);
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
