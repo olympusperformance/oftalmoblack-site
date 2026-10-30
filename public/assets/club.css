@@ -943,7 +943,10 @@ input[type="file"].inp::file-selector-button:hover{background:var(--surface);bor
 .tr.grp.sub{background:var(--surface);padding-left:34px}
 .tr.grp.sub .grp-n{font-weight:500}
 /* Na Progressão o degrau fica sob o mentorado: recuado até o nome, abaixo do avatar. */
-#listaMembros .tr.grp.sub{padding-left:62px}
+#listaMembros .tr.grp.sub{padding-left:62px;position:relative;border-top-color:transparent;
+  background:linear-gradient(to right,transparent 49px,var(--surface) 49px)}
+#listaMembros .tr.grp.sub:hover{background:linear-gradient(to right,transparent 49px,var(--surface-hi) 49px)}
+#listaMembros .tr.grp.sub::after{content:"";position:absolute;left:49px;right:0;top:-1px;height:1px;background:var(--border-soft)}
 #listaMembros .tr.lv1 .nm{padding-left:52px}
 #listaMembros .tr.lv2 .nm{padding-left:80px}
 #listaMembros .tr.lv1::before{left:49px}
