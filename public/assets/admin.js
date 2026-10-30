@@ -469,9 +469,8 @@
      As etapas do processo são o modelo cadastrado na aba Processos Black; o que está
      marcado é deste mentorado. Ver supabase/progresso.sql. */
 
-  var ARV_COLS = 'minmax(300px,2.2fr) 148px 200px 120px 180px 150px';
-  var ARV_HEAD = ['Mentorado · degrau · entrega', 'Situação', 'Observação', 'Progresso',
-                  'Detalhe', '>Ações'];
+  var ARV_COLS = 'minmax(300px,2.2fr) 148px 120px minmax(180px,1.2fr) 150px';
+  var ARV_HEAD = ['Mentorado · degrau · entrega', 'Situação', 'Progresso', 'Detalhe', '>Ações'];
 
   /* Estado do par (mentorado, artefato): Club.par decide aceite, denominador,
      próxima etapa e estado. A mesma função roda na área do mentorado. */
@@ -692,7 +691,6 @@
         '<div class="tx"><div class="tx tx-t" title="' + esc(m.nome) + '">' + esc(m.nome) + '</div>' +
         '<div class="tx tx-s">' + esc(m.email) + '</div>' + seloEntrada(m) + '</div></div>' +
       td(situacao) +
-      celulaNota(m, 'mentorado', m.nome) +
       td(barra(c.feitas, c.total)) +
       (st.zapEdit === m.id
         /* Enquanto cola o convite, o campo toma as duas últimas colunas: um
@@ -725,7 +723,6 @@
       '</div></div>') +
     '</div>';
 
-    linha += linhaNota(m, 'mentorado', m.nome);
     if (!aberto || !temFilho) return linha;
 
     var grupos = (Club.methodStages || []).map(function (x) {
@@ -784,7 +781,7 @@
     return n > 0 ? ' · há ' + n + ' d' : '';
   }
 
-  /* A entrada aparece na árvore como qualquer entrega: grupo, linha e "Ver checklist". */
+  /* A entrada aparece na árvore como qualquer entrega: grupo, linha e os passos abrindo na seta. */
   function linhaEntradaArvore(m) {
     var a = entradaDe(m.id);
     if (!a.total) return '';
@@ -794,12 +791,32 @@
     var detalhe = a.completo ? 'Integração encerrada' : p ? 'Próximo: ' + p.titulo + ' · ' + p.dono : '—';
     return '<div class="tr grp sub"><span class="grp-n">Entrada no Club</span><span class="tx-s">Do fechamento ao encerramento da integração</span></div>' +
       '<div class="tr lv1" data-entrada-row="' + esc(m.id) + '">' +
-        '<div class="td nm"><span class="tx tx-t">Checklist de entrada</span></div>' +
-        td(situacao) + td('<span class="tx-s">' + esc(a.completo ? 'Concluída' : faseNome(a.fase)) + '</span>') +
+        '<div class="td nm">' + toggleTree('e:' + m.id, true) + '<span class="tx tx-t">Checklist de entrada</span></div>' +
+        td(situacao) +
         td(barra(a.concluidos, a.total)) +
         td('<span class="tx-s" title="' + esc(detalhe) + '">' + esc(detalhe) + '</span>') +
-        td('<button type="button" class="btn btn-sm" data-entrada="' + esc(m.id) + '">Ver checklist</button>') +
+        td('') +
+      '</div>' + (st.abertos['e:' + m.id] ? passosNaArvore(m, a) : '');
+  }
+
+  function passosNaArvore(m, a) {
+    return st.entradaPassos.map(function (p) {
+      var feito = a.feitos[p.id], liberado = feito || a.proximos.indexOf(p) !== -1;
+      var nota = [p.dono].concat(feito ? [feito.ator, Club.fmtDate(feito.feito_em)]
+        : [liberado ? faseNome(p.fase) : 'depois da etapa anterior']).filter(function (x, i, l) { return x && l.indexOf(x) === i; }).join(' · ');
+      return '<div class="tr lv2' + (feito ? ' feito' : '') + '" data-entrada-passo-row="' + esc(p.id) + '">' +
+        '<div class="td nm"><span class="tg void"></span>' +
+          '<button class="cbx" data-entrada-passo="' + esc(m.id) + '|' + esc(p.id) + '" aria-pressed="' + !!feito +
+            '" aria-label="Marcar passo">' + ico('check') + '</button>' +
+          '<div class="tx"><div class="tx tx-t" title="' + esc(p.titulo) + '"' + (liberado ? '' : ' style="color:var(--faint)"') + '>' +
+            esc(p.titulo) + '</div></div></div>' +
+        td(feito ? status('var(--success)', 'Feito') : status('var(--faint)', liberado ? 'A fazer' : 'Aguardando')) +
+        td('') +
+        td('<span class="tx-s" title="' + esc(nota) + '">' + esc(nota) + '</span>') +
+        td(p.acao && !feito ? '<button type="button" class="btn btn-sm btn-ghost" data-entrada-acao="' + esc(m.id) + '|' + esc(p.acao) + '">' +
+          esc(ENTRADA_ACAO[p.acao]) + '</button>' : '') +
       '</div>';
+    }).join('');
   }
 
   function linhaModulo(m, d, p) {
@@ -818,10 +835,10 @@
     return '<div class="tr lv1" data-progress-delivery-row="' + esc(d.id) + '">' +
       '<div class="td nm">' + toggleTree(chave, p.total > 0) +
         '<span class="tx tx-t" title="' + esc(o.checklistTitle || d.name) + '">' + esc(d.name) + '</span></div>' +
-      td(situacao) + td('<span class="tx-s">' + esc(o.checklistTitle || '') + '</span>') +
+      td(situacao) +
       td(p.total ? barra(p.concluidos, p.total) : '<span class="tx-s">—</span>') +
       td('<span class="tx-s" title="' + esc(detalhe) + '">' + esc(detalhe) + '</span>') +
-      td(botaoEntrega(m, d)) + '</div>' +
+      td('') + '</div>' +
       (aberto ? marcosNaArvore(m, d) : '');
   }
 
@@ -836,14 +853,13 @@
       var cor = { success:'var(--success)', orange:'var(--orange)', blue:'var(--warning)', muted:'var(--faint)' }[info.tone] || 'var(--faint)';
       var feito = e.status === 'concluida', fechado = J.fechado(e.status);
       var quando = e.done_at || e.updated_at;
-      var nota = [e.actor_name, quando ? Club.fmtDate(quando) : '', e.note].filter(Boolean).join(' · ');
+      var nota = [J.OWNER[s.owner] || s.owner, e.actor_name, quando ? Club.fmtDate(quando) : '', e.note].filter(Boolean).join(' · ');
       return '<div class="tr lv2' + (feito ? ' feito' : '') + '" data-marco-row="' + esc(s.id) + '">' +
         '<div class="td nm"><span class="tg void"></span>' +
           '<button class="cbx" data-marco="' + esc(m.id) + '|' + esc(s.id) + '|' + esc(ed || '') + '|' + esc(d.id) + '" aria-pressed="' + feito +
             '" aria-label="' + (fechado ? 'Reabrir marco' : 'Concluir marco') + '"' + (e.status === 'nao_aplica' ? ' disabled' : '') + '>' + ico('check') + '</button>' +
           '<div class="tx"><div class="tx tx-t" title="' + esc(s.title) + '">' + esc(s.title) + '</div></div></div>' +
         td(status(cor, info.label)) +
-        td('<span class="tx-s">' + esc(J.OWNER[s.owner] || s.owner || '') + '</span>') +
         td('') +
         td('<span class="tx-s" title="' + esc(nota) + '">' + esc(nota) + '</span>') +
         td('') +
@@ -870,9 +886,6 @@
       }).catch(aviso);
   }
 
-  function botaoEntrega(m,d){
-    return '<button type="button" class="btn btn-sm" data-progress-delivery="'+esc(d.id)+'" data-member="'+esc(m.id)+'">Ver checklist</button>';
-  }
 
   function linhaArtefato(m, a, delivery) {
     var chave = 'a:' + m.id + ':' + a.id;
@@ -890,7 +903,6 @@
           (p.rotinas.length ? ' · com rotina' : '') +
         '</div></div></div>' +
       td(status(s.cor, Club.rotuloPar(p))) +
-      celulaNota(m, 'artefato:' + a.id, a.nome) +
       td(p.total || p.temEtapas ? barra(p.feitas, p.total) : '<span class="tx tx-s">'+(delivery&&delivery.items.length?delivery.items.length+' itens de conferência':'sem checklist')+'</span>') +
       td(etapas.length
         ? '<span class="tx-s">' + esc(detalhePar(p, m)) + '</span>'
@@ -899,13 +911,11 @@
         : '<button class="btn btn-sm btn-ghost" data-edit="artifact" data-id="' + a.id +
           '" style="color:var(--gold)">' + ico('plus') + 'Definir etapas</button>') +
       '<div class="td end"><div class="row-acts">' +
-        (delivery&&delivery.id?botaoEntrega(m,delivery):'') +
         '<button class="btn btn-sm btn-ghost" data-edit="artifact" data-id="' + a.id +
           '" aria-label="Editar processo e checklist">' + ico('edit') + '</button>' +
       '</div></div>' +
     '</div>';
 
-    linha += linhaNota(m, 'artefato:' + a.id, a.nome);
     if (!aberto || !etapas.length) return linha;
     return linha + etapas.map(function (e) { return linhaEtapa(m, e, p); }).join('');
   }
@@ -984,7 +994,6 @@
         '<div class="tx"><div class="tx tx-t" title="' + esc(e.titulo) + '">' + esc(e.titulo) + '</div>' +
         (nota ? '<div class="tx tx-s">' + esc(nota) + '</div>' : '') + '</div></div>' +
       td(situacao) +
-      celulaNota(m, 'etapa:' + e.id, e.titulo) +
       td('') +
       td((abertas.length
         ? '<button type="button" class="btn btn-sm btn-ghost" data-ver-demandas="' + esc(m.id) + '|' + esc(e.artifact_id) +
@@ -997,7 +1006,7 @@
               '" aria-label="Abrir demanda desta etapa" title="Abrir demanda">' + ico('plus') + '</button>'
           : '') +
       '</div></div>' +
-    '</div>' + linhaNota(m, 'etapa:' + e.id, e.titulo);
+    '</div>';
   }
 
   /* Notas pertencem à linha DESTE mentorado, nunca ao checklist compartilhado.
@@ -1286,7 +1295,7 @@
     }).join('');
   }
 
-  function marcarEntrada(memberId, passoId) {
+  function marcarEntrada(memberId, passoId, naJanela) {
     var feito = !!entradaDe(memberId).feitos[passoId];
     Club.sb.rpc('cb_entrada_marcar', { p_member:memberId, p_passo:passoId, p_feito:!feito }).then(function (r) {
       if (r.error) throw new Error(r.error.message);
@@ -1294,7 +1303,7 @@
     }).then(function (e) {
       st.entradaPassos = e.passos; st.entradaProgresso = e.progresso; st.entradas = e.entradas;
       renderMembers();
-      abrirEntrada(memberId);
+      if (naJanela) abrirEntrada(memberId);
     }).catch(aviso);
   }
 
@@ -4500,9 +4509,6 @@
     var novo = e.target.closest('[data-new]');
     if (novo) { MODAIS[novo.dataset.new](); return; }
 
-    var entrega = e.target.closest('[data-progress-delivery]');
-    if(entrega){Club.black.openForMember(entrega.dataset.member,entrega.dataset.progressDelivery).catch(function(err){Club.toast(err.message,'alert');});return;}
-
     var editar = e.target.closest('[data-edit]');
     if (editar) { MODAIS[editar.dataset.edit](achar(editar.dataset.edit, editar.dataset.id)); return; }
 
@@ -4611,7 +4617,7 @@
     if (marco) { var mk = marco.dataset.marco.split('|'); marcarMarco(mk[0], mk[1], mk[2], mk[3]); return; }
 
     var entradaPasso = e.target.closest('[data-entrada-passo]');
-    if (entradaPasso) { var ep = entradaPasso.dataset.entradaPasso.split('|'); marcarEntrada(ep[0], ep[1]); return; }
+    if (entradaPasso) { var ep = entradaPasso.dataset.entradaPasso.split('|'); marcarEntrada(ep[0], ep[1], !!entradaPasso.closest('.modal-box')); return; }
 
     var entradaAcao = e.target.closest('[data-entrada-acao]');
     if (entradaAcao) { var ea = entradaAcao.dataset.entradaAcao.split('|'); acaoEntrada(ea[0], ea[1]); return; }
