@@ -12,7 +12,7 @@ async function pages(db,table,columns,memberId,order){
 }
 export async function loadMemberProfile(db,memberId,sections){
  if(!uuid.test(memberId||''))throw Error('Mentorado inválido');
- const [member,catalog]=await Promise.all([db.from('members').select('id,nome,email,ativo,instagram,whatsapp_url,turma,fase,criado_em').eq('id',memberId).maybeSingle(),db.from('member_profile_catalog').select('schema_version,definition').eq('schema_version',CATALOG.schema_version).maybeSingle()]);
+ const [member,catalog]=await Promise.all([db.from('members').select('id,nome,email,ativo,instagram,whatsapp_url,criado_em').eq('id',memberId).maybeSingle(),db.from('member_profile_catalog').select('schema_version,definition').eq('schema_version',CATALOG.schema_version).maybeSingle()]);
  if(member.error||catalog.error||!catalog.data)throw Error('O perfil padrão ainda não está disponível.');
  if(!member.data)return null;
  const a=Object.keys(CATALOG.fields).sort(),b=Object.keys(catalog.data.definition?.fields||{}).sort();

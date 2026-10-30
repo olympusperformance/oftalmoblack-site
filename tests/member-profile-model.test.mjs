@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 const M=await import('../supabase/functions/_shared/member-profile-model.mjs').catch(()=>({}));
 const use=n=>{assert.equal(typeof M[n],'function',n+' deve existir');return M[n];};
-const member={id:'00000000-0000-4000-8000-000000000001',nome:'Pessoa A',email:'a@example.invalid',ativo:true,instagram:'@teste',turma:null,fase:null};
+const member={id:'00000000-0000-4000-8000-000000000001',nome:'Pessoa A',email:'a@example.invalid',ativo:true,instagram:'@teste'};
 const s1={id:'10000000-0000-4000-8000-000000000001',member_id:member.id,source_type:'cadastro',source_at:'2026-10-20T00:00:00Z',recorded_at:'2026-10-27T00:00:00Z',source_precision:'day',data:{}};
 const s2={...s1,id:'10000000-0000-4000-8000-000000000002',source_at:'2026-10-25T00:00:00Z'};
 const info=(valor,src=s1.id)=>({valor,situacao:'informado',natureza:'declarado',fontes_refs:[src]});

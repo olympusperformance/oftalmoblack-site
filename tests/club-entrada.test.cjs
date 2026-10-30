@@ -46,3 +46,44 @@ test('convite usa o tratamento e leva o link de agendamento',()=>{
   assert.ok(t.includes(E.AGENDAMENTO));
   assert.ok(E.mensagem('grupo',{nome:'Dr. Rodrigo'}).includes(E.AGENDAMENTO));
 });
+
+test('lê a mensagem do grupo Fechamentos Olympus, com CEP quebrado e condições no fim',()=>{
+  const msg=`CLUB OFTALMOBLACK
+
+CONTRATANTE
+• Razão Social:
+• CNPJ:
+• Endereço:
+• E-mail:
+• Telefone:
+
+PARTICIPANTE
+• Nome: Fulano de Teste da Silva
+• CPF: 00000000000
+• RG: 1234 SSP
+• Nacionalidade: brasileiro
+• Estado civil: solteiro
+• Profissão: médico
+• E-mail: fulano@example.test
+• Telefone: 11900000000
+• Endereço: (com CEP) Rua Exemplo, 10, Centro, Cidade Teste
+00000000
+• Forma de pagamento: boleto
+
+Entrada de 1.000 + 10X de 500,00 .`;
+  const f=E.lerFechamento(msg);
+  assert.deepEqual(f.contratante,{},'Contratante em branco não vira campo');
+  assert.equal(f.participante.nome,'Fulano de Teste da Silva');
+  assert.equal(f.participante.email,'fulano@example.test');
+  assert.equal(f.participante.estado_civil,'solteiro');
+  assert.equal(f.participante.endereco,'Rua Exemplo, 10, Centro, Cidade Teste 00000000');
+  assert.equal(f.pagamento.forma,'boleto');
+  assert.equal(f.pagamento.condicoes,'Entrada de 1.000 + 10X de 500,00 .');
+});
+
+test('contratante preenchido fica separado do participante',()=>{
+  const f=E.lerFechamento('CONTRATANTE\n- Razão Social: Clínica Teste Ltda\n- E-mail: financeiro@example.test\nPARTICIPANTE\n- E-mail: medico@example.test');
+  assert.equal(f.contratante.razao_social,'Clínica Teste Ltda');
+  assert.equal(f.contratante.email,'financeiro@example.test');
+  assert.equal(f.participante.email,'medico@example.test');
+});

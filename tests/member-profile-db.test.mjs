@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 const db=await PGlite.create();after(()=>db.close());
 await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;
 create schema auth;create table auth.users(id uuid primary key);
-create table public.members(id uuid primary key,nome text,email text,ativo boolean,user_id uuid,turma text,fase text,instagram text,whatsapp_url text,criado_em timestamptz default now());
+create table public.members(id uuid primary key,nome text,email text,ativo boolean,user_id uuid,instagram text,whatsapp_url text,criado_em timestamptz default now());
 create table public.member_context_entries(id uuid primary key,member_id uuid references public.members(id),source_type text,source_at timestamptz);
 create function public.is_admin() returns boolean language sql stable as $$ select coalesce(current_setting('test.admin',true),'false')='true' $$;
 create schema cerebro;create table cerebro.grupos(jid text,member_id uuid,ativo boolean);create table cerebro.mensagens(id text,jid text,member_id uuid);create table cerebro.instagram_contas(ig_user_id text,member_id uuid,ativo boolean);create table cerebro.instagram_metricas(ig_user_id text,dia date);

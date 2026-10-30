@@ -21,8 +21,7 @@
      existem na tela (o seletor de vários membros, por exemplo); mandar um deles
      para o PostgREST devolve erro de coluna inexistente. */
   var COLUNAS = {
-    members:   ['nome', 'email', 'iniciais', 'turma', 'fase', 'tier', 'instagram',
-               'whatsapp_url', 'ativo'],
+    members:   ['nome', 'email', 'iniciais', 'instagram', 'whatsapp_url', 'ativo'],
     events:    ['member_id', 'titulo', 'mentor', 'inicia_em', 'formato', 'link'],
     /* tipo e interna chegam com supabase/areas.sql (fase 1 da taxonomia).
        pilar saiu da UI na fase 2 e do banco na fase 4 (limpeza.sql). */
