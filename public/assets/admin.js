@@ -13,6 +13,7 @@
              demands: [], staff: [], steps: [], progress: [], demandSteps: [],
              groups: [], artGrupo: '', catGrupo: '', progressNotes: [], notasEdit: {},
              qrLinks: [], qrScans: [],
+             entradaPassos: [], entradaProgresso: [], entradas: [],
              view: 'farol', igOrdem: 'seguidores',
              matCategoria: '', matMembro: '',
              demResp: '', demMembro: '', demFrente: '', demAbertas: 'open',
@@ -110,6 +111,17 @@
     }
   }
 
+  /* Checklist de entrada (do fechamento até a CS encerrar a integração). */
+  async function lerEntrada() {
+    var r = await Promise.all([
+      Club.sb.from('cb_entrada_passos').select('*').order('position'),
+      Club.sb.from('cb_entrada_progresso').select('*'),
+      Club.sb.from('cb_entradas').select('*')
+    ]);
+    r.forEach(function (x) { if (x.error) throw new Error('Não foi possível carregar a entrada dos mentorados: ' + x.error.message); });
+    return { passos:r[0].data || [], progresso:r[1].data || [], entradas:r[2].data || [] };
+  }
+
   function carregar() {
     return Promise.all([
       Club.data.members.list(),
@@ -130,7 +142,8 @@
       Club.data.qrLinks.list(),
       Club.data.qrScans.list(),
       Club.loadMethodCatalog(),
-      lerMarcos()
+      lerMarcos(),
+      lerEntrada()
     ]).then(function (r) {
       st.members = r[0]; st.events = r[1];
       st.artifacts = r[2]; st.materials = r[3];
@@ -142,6 +155,7 @@
       st.progressNotes = r[14];
       st.qrLinks = r[15]; st.qrScans = r[16];
       st.marcos = r[18];
+      st.entradaPassos = r[19].passos; st.entradaProgresso = r[19].progresso; st.entradas = r[19].entradas;
       indexar();
       descobrirEu();
     });
@@ -628,6 +642,7 @@
       cardStat('CONCLUÍDOS', geral.noar, geral.aceitos + ' módulos iniciados no total',
                'Módulos com todos os marcos concluídos ou marcados como não se aplica.');
 
+    $('entradasMembros').innerHTML = faixaEntradas();
     $('listaMembros').innerHTML = (Club.erroObservacoes
       ? '<div class="notice" role="status">' + ico('alert') + '<div>' + esc(Club.erroObservacoes) +
         ' Recarregue a página após resolver o problema.</div></div>' : '') + tabela(ARV_COLS, ARV_HEAD,
@@ -673,7 +688,7 @@
           esc(m.iniciais || Club.initials(m.nome)) + '</span>' +
         '<div class="tx"><div class="tx tx-t" title="' + esc(m.nome) + '">' + esc(m.nome) + '</div>' +
         '<div class="tx tx-s">' + esc([m.turma, m.fase].filter(Boolean).join(' · ') ||
-          m.email) + '</div></div></div>' +
+          m.email) + '</div>' + seloEntrada(m) + '</div></div>' +
       td(situacao) +
       celulaNota(m, 'mentorado', m.nome) +
       td(barra(c.feitas, c.total)) +
@@ -699,6 +714,8 @@
             ico('whatsapp') + '</button>') +
         '<a class="btn btn-sm btn-ghost" href="/membros/?membro=' + esc(m.id) +
           '" aria-label="Ver a área dele">' + ico('eye') + '</a>' +
+        '<button class="btn btn-sm btn-ghost" data-entrada="' + m.id +
+          '" title="Checklist de entrada" aria-label="Checklist de entrada">' + ico('check-square') + '</button>' +
         '<button class="btn btn-sm btn-ghost" data-edit="member" data-id="' + m.id +
           '" aria-label="Editar">' + ico('edit') + '</button>' +
         '<button class="btn btn-sm btn-ghost" data-del="member" data-id="' + m.id +
@@ -1073,6 +1090,110 @@
     '</div>';
   }
 
+  /* ── entrada do novo mentorado ────────────────────────────────────────── */
+
+  var ENTRADA_ACAO = {
+    grupo:'Copiar descrição do grupo', convite:'Copiar convite',
+    perfil:'Abrir o perfil', prediagnostico:'Gerar formulário no perfil', area:'Ver a área dele'
+  };
+
+  function entradaDe(memberId) {
+    return Club.entrada.andamento(st.entradaPassos, st.entradaProgresso, memberId);
+  }
+
+  function seloEntrada(m) {
+    var a = entradaDe(m.id);
+    if (!a.total || a.completo) return '';
+    return '<div class="tx tx-s"><a href="#members" data-entrada="' + m.id + '" style="color:var(--gold)"' +
+      ' title="Abrir o checklist de entrada">Entrada ' + a.concluidos + '/' + a.total + ' · ' + esc(faseNome(a.fase)) + '</a></div>';
+  }
+
+  /* Quem está entrando aparece antes do quadro, com o próximo passo e o dono. */
+  function faixaEntradas() {
+    var abertas = st.members.filter(function (m) {
+      var a = entradaDe(m.id); return a.total && !a.completo && (!st.arvMembro || m.id === st.arvMembro);
+    });
+    if (!abertas.length) return '';
+    return '<div class="cb-section"><h3>Entradas em andamento</h3><span class="cb-note">' + abertas.length +
+      ' mentorado' + (abertas.length === 1 ? '' : 's') + ' entre o fechamento e o encerramento da integração</span></div>' +
+      tabela('minmax(0,1.4fr) 150px minmax(0,2fr) 120px', ['Mentorado', 'Entrada', 'Próximo passo', '>Checklist'],
+        abertas.map(function (m) {
+          var a = entradaDe(m.id), p = a.proximos[0];
+          return '<div class="tr">' +
+            '<div class="td nm"><div class="tx"><div class="tx tx-t">' + esc(m.nome) + '</div>' +
+              '<div class="tx tx-s">' + esc(faseNome(a.fase)) + '</div></div></div>' +
+            td(barra(a.concluidos, a.total)) +
+            td(p ? esc(p.titulo) + ' <span class="tx-s">· ' + esc(p.dono) + '</span>' : '—') +
+            '<div class="td end"><button class="btn btn-sm" data-entrada="' + m.id + '">Abrir</button></div>' +
+          '</div>';
+        }).join(''), '') + '<div style="height:18px"></div>';
+  }
+
+  function faseNome(id) {
+    var f = Club.entrada.FASES.filter(function (x) { return x.id === id; })[0];
+    return f ? f.nome : 'Concluída';
+  }
+
+  function abrirEntrada(memberId) {
+    var m = st.members.filter(function (x) { return x.id === memberId; })[0];
+    if (!m) return;
+    var a = entradaDe(memberId);
+    var dados = st.entradas.filter(function (x) { return x.member_id === memberId; })[0];
+    var linhaPasso = function (p) {
+      var feito = a.feitos[p.id], liberado = feito || a.proximos.indexOf(p) !== -1;
+      return '<div class="check-line" style="align-items:flex-start;padding:9px 0;border-top:1px solid var(--border-soft)">' +
+        '<button type="button" class="cbx" data-entrada-passo="' + esc(memberId) + '|' + esc(p.id) + '" aria-pressed="' + !!feito +
+          '" aria-label="Marcar passo" style="margin-top:2px">' + ico('check') + '</button>' +
+        '<div style="flex:1;min-width:0"><div style="color:' + (feito ? 'var(--muted)' : liberado ? 'var(--text)' : 'var(--faint)') + '">' +
+          esc(p.titulo) + '</div>' +
+          '<div class="tx-s">' + esc(p.dono) + (feito ? ' · feito ' + esc(Club.fmtDate(feito.feito_em)) +
+            (feito.ator ? ' · ' + esc(feito.ator) : '') : liberado ? '' : ' · depois da etapa anterior') + '</div>' +
+          (p.acao && !feito ? '<button type="button" class="btn btn-sm btn-ghost" style="margin-top:6px" data-entrada-acao="' +
+            esc(memberId) + '|' + esc(p.acao) + '">' + esc(ENTRADA_ACAO[p.acao]) + '</button>' : '') +
+        '</div></div>';
+    };
+    Club.modal.open({
+      title: 'Entrada · ' + m.nome,
+      sub: a.concluidos + ' de ' + a.total + ' passos · ' + (a.completo ? 'integração encerrada' : faseNome(a.fase)),
+      leitura: true, largura: 640,
+      body: barra(a.concluidos, a.total) +
+        (dados ? '<p class="tx-s" style="margin:10px 0 0">' + esc([dados.whatsapp, dados.cpf && 'CPF ' + dados.cpf,
+          dados.cidade, dados.pagamento].filter(Boolean).join(' · ')) + '</p>' : '') +
+        Club.entrada.FASES.map(function (f) {
+          var passos = st.entradaPassos.filter(function (p) { return p.fase === f.id; });
+          return '<div class="cb-section"><h3>' + esc(f.nome) + '</h3>' +
+            (f.id === 'administrativo' || f.id === 'integracao' ? '<span class="cb-note">em paralelo</span>' : '') + '</div>' +
+            passos.map(linhaPasso).join('');
+        }).join('') +
+        '<p class="tx-s" style="margin-top:14px">Tudo o que a pesquisa e o formulário levantarem vai para o perfil do mentorado, preenchendo as lacunas.</p>'
+    });
+  }
+
+  function marcarEntrada(memberId, passoId) {
+    var feito = !!entradaDe(memberId).feitos[passoId];
+    Club.sb.rpc('cb_entrada_marcar', { p_member:memberId, p_passo:passoId, p_feito:!feito }).then(function (r) {
+      if (r.error) throw new Error(r.error.message);
+      return lerEntrada();
+    }).then(function (e) {
+      st.entradaPassos = e.passos; st.entradaProgresso = e.progresso; st.entradas = e.entradas;
+      renderMembers();
+      abrirEntrada(memberId);
+    }).catch(aviso);
+  }
+
+  function acaoEntrada(memberId, acao) {
+    var m = st.members.filter(function (x) { return x.id === memberId; })[0];
+    if (acao === 'grupo' || acao === 'convite') {
+      var texto = Club.entrada.mensagem(acao, m);
+      navigator.clipboard.writeText(texto).then(function () {
+        Club.toast(acao === 'grupo' ? 'Descrição do grupo copiada.' : 'Convite copiado. Cole no WhatsApp do médico.');
+      }, function () { Club.toast('Não consegui copiar. Texto: ' + texto, 'alert'); });
+      return;
+    }
+    if (acao === 'perfil' || acao === 'prediagnostico') { location.href = '/admin/perfis/?m=' + encodeURIComponent(memberId); return; }
+    if (acao === 'area') location.href = '/membros/?membro=' + encodeURIComponent(memberId);
+  }
+
   function modalMembro(m) {
     m = m || { nome:'', email:'', iniciais:'', turma:'Turma 03', fase:'Fase 1',
                tier:'BLACK', instagram:'', whatsapp_url:'', ativo:true };
@@ -1100,14 +1221,35 @@
         Club.field('Grupo no WhatsApp', 'whatsapp_url', { value:m.whatsapp_url,
           placeholder:'https://chat.whatsapp.com/…',
           hint:'Link de convite do grupo de Operação dele. Aparece na área do mentorado.' }) +
-        Club.checkbox('Acesso ativo', 'ativo', m.ativo),
+        Club.checkbox('Acesso ativo', 'ativo', m.ativo) +
+        /* Só no cadastro: os dados que o Jean manda no grupo Fechamentos Olympus.
+           Abrem o checklist de entrada com fechamento e dados já marcados. */
+        (m.id ? '' :
+          '<div class="cb-section"><h3>Dados do fechamento</h3><span class="cb-note">Abrem o checklist de entrada.</span></div>' +
+          '<div class="fld-row">' +
+            Club.field('WhatsApp do médico', 'entrada_whatsapp', { placeholder:'+55 11 99999-9999' }) +
+            Club.field('CPF', 'entrada_cpf', { placeholder:'000.000.000-00' }) +
+          '</div>' +
+          '<div class="fld-row">' +
+            Club.field('Cidade', 'entrada_cidade', { placeholder:'Campinas/SP' }) +
+            Club.select('Pagamento combinado', 'entrada_pagamento', ['Cartão (link)', 'Boleto', 'Pix e boletos', 'A definir'], 'A definir') +
+          '</div>'),
       onSubmit: function (d) {
         if (!d.nome || !d.email) { Club.toast('Nome e e-mail são obrigatórios.', 'alert'); return; }
         d.id = m.id;
         d.iniciais = d.iniciais || Club.initials(d.nome);
-        Club.data.members.save(d).then(function () {
+        Club.data.members.save(d).then(function (salvo) {
+          if (m.id) return null;
+          return Club.sb.rpc('cb_entrada_abrir', { p_member:salvo.id, p_cpf:d.entrada_cpf || null,
+            p_whatsapp:d.entrada_whatsapp || null, p_cidade:d.entrada_cidade || null,
+            p_pagamento:d.entrada_pagamento || null }).then(function (r) {
+            if (r.error) throw new Error('Membro cadastrado, mas a entrada não abriu: ' + r.error.message);
+            return salvo.id;
+          });
+        }).then(function (novoId) {
           Club.modal.close();
-          recarregar(m.id ? 'Membro atualizado.' : 'Membro cadastrado.');
+          return recarregar(m.id ? 'Membro atualizado.' : 'Membro cadastrado. Checklist de entrada aberto.')
+            .then(function () { if (novoId) abrirEntrada(novoId); });
         }).catch(aviso);
       }
     });
@@ -4421,6 +4563,15 @@
 
     var verDem = e.target.closest('[data-ver-demandas]');
     if (verDem) { var pv = verDem.dataset.verDemandas.split('|'); verDemandasDaEtapa(pv[0], pv[1]); return; }
+
+    var entradaPasso = e.target.closest('[data-entrada-passo]');
+    if (entradaPasso) { var ep = entradaPasso.dataset.entradaPasso.split('|'); marcarEntrada(ep[0], ep[1]); return; }
+
+    var entradaAcao = e.target.closest('[data-entrada-acao]');
+    if (entradaAcao) { var ea = entradaAcao.dataset.entradaAcao.split('|'); acaoEntrada(ea[0], ea[1]); return; }
+
+    var entradaAbrir = e.target.closest('[data-entrada]');
+    if (entradaAbrir) { e.preventDefault(); abrirEntrada(entradaAbrir.dataset.entrada); return; }
 
     var etapaBotao = e.target.closest('[data-etapa]');
     if (etapaBotao) {
