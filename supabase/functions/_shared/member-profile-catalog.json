@@ -73,20 +73,6 @@
       "kind": "text",
       "canonical": "email"
     },
-    "identidade.turma": {
-      "section": "identidade",
-      "id": "turma",
-      "label": "Turma",
-      "kind": "text",
-      "canonical": "turma"
-    },
-    "identidade.fase": {
-      "section": "identidade",
-      "id": "fase",
-      "label": "Fase",
-      "kind": "text",
-      "canonical": "fase"
-    },
     "identidade.nome_tratamento": {
       "section": "identidade",
       "id": "nome_tratamento",

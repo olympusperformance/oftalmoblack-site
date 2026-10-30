@@ -11,7 +11,7 @@
 
   var st = { members: [], events: [], artifacts: [], materials: [],
              demands: [], staff: [], steps: [], progress: [], demandSteps: [],
-             groups: [], artGrupo: '', catGrupo: '', progressNotes: [], notasEdit: {},
+             groups: [], artGrupo: '', progressNotes: [], notasEdit: {},
              qrLinks: [], qrScans: [],
              entradaPassos: [], entradaProgresso: [], entradas: [],
              view: 'farol', igOrdem: 'seguidores',
@@ -686,8 +686,7 @@
         '<span class="avatar" style="width:26px;height:26px;font-size:10.5px">' +
           esc(m.iniciais || Club.initials(m.nome)) + '</span>' +
         '<div class="tx"><div class="tx tx-t" title="' + esc(m.nome) + '">' + esc(m.nome) + '</div>' +
-        '<div class="tx tx-s">' + esc([m.turma, m.fase].filter(Boolean).join(' · ') ||
-          m.email) + '</div>' + seloEntrada(m) + '</div></div>' +
+        '<div class="tx tx-s">' + esc(m.email) + '</div>' + seloEntrada(m) + '</div></div>' +
       td(situacao) +
       celulaNota(m, 'mentorado', m.nome) +
       td(barra(c.feitas, c.total)) +
@@ -728,7 +727,7 @@
     var grupos = (Club.methodStages || []).map(function (x) {
       return { id:x.id, nome:x.kind === 'modulos' ? x.name : x.id + ' · ' + x.name };
     });
-    var saida = grupos.map(function (g) {
+    var saida = linhaEntradaArvore(m) + grupos.map(function (g) {
       var linhas = Club.metodo.deliveries(g.id, []).map(function (d) {
         var p = andamentoModulo(m.id, d);
         return passaModulo(p) ? linhaModulo(m, d, p) : '';
@@ -779,6 +778,24 @@
     if (!u) return '';
     var n = -Club.diffDays(u);
     return n > 0 ? ' · há ' + n + ' d' : '';
+  }
+
+  /* A entrada aparece na árvore como qualquer entrega: grupo, linha e "Ver checklist". */
+  function linhaEntradaArvore(m) {
+    var a = entradaDe(m.id);
+    if (!a.total) return '';
+    var p = a.proximos[0];
+    var situacao = a.completo ? status('var(--success)', 'Concluída')
+      : a.concluidos > 2 ? status('var(--warning)', 'Em andamento') : status('var(--faint)', 'A iniciar');
+    var detalhe = a.completo ? 'Integração encerrada' : p ? 'Próximo: ' + p.titulo + ' · ' + p.dono : '—';
+    return '<div class="tr grp sub"><span class="grp-n">Entrada no Club</span><span class="tx-s">Do fechamento ao encerramento da integração</span></div>' +
+      '<div class="tr lv1" data-entrada-row="' + esc(m.id) + '">' +
+        '<div class="td nm"><span class="tx tx-t">Checklist de entrada</span></div>' +
+        td(situacao) + td('<span class="tx-s">' + esc(a.completo ? 'Concluída' : faseNome(a.fase)) + '</span>') +
+        td(barra(a.concluidos, a.total)) +
+        td('<span class="tx-s" title="' + esc(detalhe) + '">' + esc(detalhe) + '</span>') +
+        td('<button type="button" class="btn btn-sm" data-entrada="' + esc(m.id) + '">Ver checklist</button>') +
+      '</div>';
   }
 
   function linhaModulo(m, d, p) {
@@ -1156,8 +1173,8 @@
       sub: a.concluidos + ' de ' + a.total + ' passos · ' + (a.completo ? 'integração encerrada' : faseNome(a.fase)),
       leitura: true, largura: 640,
       body: barra(a.concluidos, a.total) +
-        (dados ? '<p class="tx-s" style="margin:10px 0 0">' + esc([dados.whatsapp, dados.cpf && 'CPF ' + dados.cpf,
-          dados.cidade, dados.pagamento].filter(Boolean).join(' · ')) + '</p>' : '') +
+        (dados ? '<details style="margin-top:10px"><summary class="tx-s" style="cursor:pointer">Dados do fechamento</summary>' +
+          resumoFechamento(dados.fechamento) + '</details>' : '') +
         Club.entrada.FASES.map(function (f) {
           var passos = st.entradaPassos.filter(function (p) { return p.fase === f.id; });
           return '<div class="cb-section"><h3>' + esc(f.nome) + '</h3>' +
@@ -1166,6 +1183,55 @@
         }).join('') +
         '<p class="tx-s" style="margin-top:14px">Tudo o que a pesquisa e o formulário levantarem vai para o perfil do mentorado, preenchendo as lacunas.</p>'
     });
+  }
+
+  /* Nome e e-mail do participante já são os campos do membro; o resto vem com prefixo. */
+  function campoFechamento(g, c) { return 'f_' + g + '_' + c; }
+
+  function camposFechamento() {
+    return '<div class="cb-section"><h3>Fechamento</h3><span class="cb-note">Abre o checklist de entrada</span></div>' +
+      Club.field('Mensagem do grupo Fechamentos Olympus', 'fechamento_texto', { textarea:true,
+        placeholder:'Cole aqui a mensagem do Jean. Os campos abaixo se preenchem sozinhos.' }) +
+      Club.entrada.FECHAMENTO.map(function (g) {
+        var campos = g.campos.filter(function (c) { return !(g.grupo === 'participante' && (c[0] === 'nome' || c[0] === 'email')); });
+        return '<details class="fld"' + (g.grupo === 'contratante' ? '' : ' open') + '><summary class="tx-s" style="cursor:pointer;margin:8px 0">' +
+          esc(g.nome) + '</summary><div class="fld-row">' +
+          campos.map(function (c) { return Club.field(c[1], campoFechamento(g.grupo, c[0]), {}); }).join('') +
+          '</div></details>';
+      }).join('');
+  }
+
+  function preencherFechamento(texto) {
+    var form = $('modalForm'), f = Club.entrada.lerFechamento(texto);
+    var por = function (nome, valor) { var el = form && form.elements[nome]; if (el && valor) el.value = valor; };
+    por('nome', f.participante.nome); por('email', f.participante.email);
+    Club.entrada.FECHAMENTO.forEach(function (g) {
+      g.campos.forEach(function (c) { por(campoFechamento(g.grupo, c[0]), f[g.grupo][c[0]]); });
+    });
+    var contratante = form && form.querySelector('[name^="f_contratante_"]');
+    if (contratante && Object.keys(f.contratante).length) contratante.closest('details').open = true;
+  }
+
+  function fechamentoDo(d) {
+    var out = {};
+    Club.entrada.FECHAMENTO.forEach(function (g) {
+      var grupo = {};
+      g.campos.forEach(function (c) {
+        var v = g.grupo === 'participante' && (c[0] === 'nome' || c[0] === 'email') ? d[c[0]] : d[campoFechamento(g.grupo, c[0])];
+        if (v && String(v).trim()) grupo[c[0]] = String(v).trim();
+      });
+      if (Object.keys(grupo).length) out[g.grupo] = grupo;
+    });
+    return out;
+  }
+
+  function resumoFechamento(f) {
+    f = f || {};
+    return Club.entrada.FECHAMENTO.map(function (g) {
+      var v = f[g.grupo] || {};
+      var partes = g.campos.filter(function (c) { return v[c[0]]; }).map(function (c) { return c[1] + ': ' + v[c[0]]; });
+      return partes.length ? '<p class="tx-s" style="margin:6px 0 0"><b>' + esc(g.nome) + '</b> · ' + esc(partes.join(' · ')) + '</p>' : '';
+    }).join('');
   }
 
   function marcarEntrada(memberId, passoId) {
@@ -1194,8 +1260,7 @@
   }
 
   function modalMembro(m) {
-    m = m || { nome:'', email:'', iniciais:'', turma:'Turma 03', fase:'Fase 1',
-               tier:'BLACK', instagram:'', whatsapp_url:'', ativo:true };
+    m = m || { nome:'', email:'', instagram:'', whatsapp_url:'', ativo:true };
     Club.modal.open({
       title: m.id ? 'Editar membro' : 'Novo membro',
       sub: m.id ? m.nome : 'O e-mail é o login dele na área do mentorado.',
@@ -1204,15 +1269,6 @@
           placeholder:'Dra. Cintia Santini' }) +
         Club.field('E-mail', 'email', { value:m.email, type:'email', required:true,
           placeholder:'cintia@oftalmoblack.com.br' }) +
-        '<div class="fld-row">' +
-          Club.field('Turma', 'turma', { value:m.turma, placeholder:'Turma 03' }) +
-          Club.field('Fase', 'fase', { value:m.fase, placeholder:'Fase 1' }) +
-        '</div>' +
-        '<div class="fld-row">' +
-          Club.select('Tier', 'tier', ['BLACK', 'PRIME', 'START'], m.tier) +
-          Club.field('Iniciais do avatar', 'iniciais', { value:m.iniciais,
-            placeholder:'automático', hint:'Deixe em branco para calcular do nome.' }) +
-        '</div>' +
         Club.field('Instagram', 'instagram', { value:m.instagram, placeholder:'@perfil' }) +
         /* O convite do grupo de Operação. A Evolution só entrega o link dos
            grupos em que o número dela é administrador; nos outros, alguém
@@ -1221,27 +1277,17 @@
           placeholder:'https://chat.whatsapp.com/…',
           hint:'Link de convite do grupo de Operação dele. Aparece na área do mentorado.' }) +
         Club.checkbox('Acesso ativo', 'ativo', m.ativo) +
-        /* Só no cadastro: os dados que o Jean manda no grupo Fechamentos Olympus.
-           Abrem o checklist de entrada com fechamento e dados já marcados. */
-        (m.id ? '' :
-          '<div class="cb-section"><h3>Dados do fechamento</h3><span class="cb-note">Abrem o checklist de entrada.</span></div>' +
-          '<div class="fld-row">' +
-            Club.field('WhatsApp do médico', 'entrada_whatsapp', { placeholder:'+55 11 99999-9999' }) +
-            Club.field('CPF', 'entrada_cpf', { placeholder:'000.000.000-00' }) +
-          '</div>' +
-          '<div class="fld-row">' +
-            Club.field('Cidade', 'entrada_cidade', { placeholder:'Campinas/SP' }) +
-            Club.select('Pagamento combinado', 'entrada_pagamento', ['Cartão (link)', 'Boleto', 'Pix e boletos', 'A definir'], 'A definir') +
-          '</div>'),
+        /* Só no cadastro: a mensagem que o Jean manda no grupo Fechamentos Olympus.
+           Colada aqui, preenche os campos; abre o checklist de entrada. */
+        (m.id ? '' : camposFechamento()),
       onSubmit: function (d) {
         if (!d.nome || !d.email) { Club.toast('Nome e e-mail são obrigatórios.', 'alert'); return; }
         d.id = m.id;
-        d.iniciais = d.iniciais || Club.initials(d.nome);
+        /* Iniciais saem sempre do nome: mudou o nome, o avatar acompanha. */
+        d.iniciais = Club.initials(d.nome);
         Club.data.members.save(d).then(function (salvo) {
           if (m.id) return null;
-          return Club.sb.rpc('cb_entrada_abrir', { p_member:salvo.id, p_cpf:d.entrada_cpf || null,
-            p_whatsapp:d.entrada_whatsapp || null, p_cidade:d.entrada_cidade || null,
-            p_pagamento:d.entrada_pagamento || null }).then(function (r) {
+          return Club.sb.rpc('cb_entrada_abrir', { p_member:salvo.id, p_fechamento:fechamentoDo(d) }).then(function (r) {
             if (r.error) throw new Error('Membro cadastrado, mas a entrada não abriu: ' + r.error.message);
             return salvo.id;
           });
@@ -2205,41 +2251,6 @@
       '<div class="tx tx-s">' + esc(partes.slice(1).join(' · ') || '—') + '</div>';
   }
 
-  function linhaCatalogo(a) {
-    var s = Club.ART_ST[a.status] || Club.ART_ST['Bloqueado'];
-    var etapas = etapasDe(a.id);
-    var interna = a.tipo === 'interna';
-    return '<div class="tr' + (interna ? ' interna' : '') + '">' +
-      '<div class="td"><span class="art-i" style="width:28px;height:28px;border-radius:8px;' +
-        'font-size:14px;margin:0;flex-shrink:0">' + ico(a.icone || 'box') + '</span>' +
-        '<div class="tx"><div class="tx tx-t" title="' + esc(a.nome) + '">' + esc(a.nome) + '</div>' +
-        '<div class="tx tx-s">' + esc([Club.metodo.artifactSteps(a).length>1?'Entrega compartilhada · '+Club.metodo.artifactSteps(a).join(' / '):null, a.subtitulo, a.somente_equipe ? 'Somente equipe' : null, a.member_id ? 'só ' + escopo(a.member_id) : null,
-          siglas(a.responsaveis) ? 'dono ' + siglas(a.responsaveis) : null].filter(Boolean).join(' · ')) +
-        '</div></div></div>' +
-      '<div class="td"><div class="tx">' + (interna
-        ? '<span class="tx-s">frente interna · só agrupa demandas</span>' : criterioDe(etapas)) + '</div></div>' +
-      td('<span class="tx-s">' + esc(interna ? 'Interna' : tipoArtefato(etapas)) + '</span>') +
-      '<div class="td"><div class="tx">' + (interna ? '<span class="tx-s">—</span>' : adocaoDe(a)) + '</div></div>' +
-      td(status(s.color, a.status)) +
-      '<div class="td end">' + acoes('artifact', a.id) + '</div>' +
-    '</div>';
-  }
-
-  /* Cabeçalho de uma área na aba Processos Black. Área da equipe (interna) só
-     agrupa demandas: o rótulo "equipe" e a classe .interna dizem isso. */
-  function cabecalhoGrupo(g, n) {
-    var interna = !!(g && g.interna);
-    var qtd = n + (interna ? ' frente' : ' artefato') + (n === 1 ? '' : 's');
-    var sub = g
-      ? [interna ? 'equipe' : null, siglas(g.responsaveis), qtd].filter(Boolean).join(' · ')
-      : qtd + ' sem área';
-    return '<div class="tr grp pai' + (interna ? ' interna' : '') + '">' +
-      '<span class="grp-n">' + esc(g ? g.nome : 'Sem área') +
-        ' <span class="tx-s" style="font-weight:400">' + esc(sub) + '</span></span>' +
-      (g ? '<span>' + acoes('group', g.id) + '</span>' : '<span></span>') +
-    '</div>';
-  }
-
   function renderDeliveryCards(){
     var id=Club.black.selected(),members=st.members.filter(function(m){return m.ativo!==false;});
     $('processosMembro').innerHTML=members.map(function(m){return '<option value="'+esc(m.id)+'"'+(m.id===id?' selected':'')+'>'+esc(m.nome)+'</option>';}).join('');
@@ -2259,32 +2270,9 @@
     var choices=stages.map(function(s){return {id:s.id,name:(s.kind==='step'?s.id+' · ':'')+s.name};});
     function opcoes(atual){return '<option value="">Todos os degraus e entregas</option>'+choices.map(function(s){return '<option value="'+esc(s.id)+'"'+(s.id===atual?' selected':'')+'>'+esc(s.name)+'</option>';}).join('');}
     $('filtroArtGrupo').innerHTML=opcoes(st.artGrupo);
-    /* O catálogo mora na Progressão, com filtro próprio; só ele tem equipe e áreas. */
-    if(internal.length)choices.push({id:'EQUIPE',name:'Operação interna da equipe'});
-    choices.push({id:'AREAS',name:'Áreas operacionais · gestão'});
-    $('filtroCatalogo').innerHTML=opcoes(st.catGrupo);
     var deliveries=st.artifacts.filter(function(a){return a.tipo!=='interna'&&!a.archived_at;});
     $('artResumo').textContent=deliveries.length+' processos cadastrados · 12 degraus · '+internal.length+' frentes internas';
     $('avisoGrupos').innerHTML='<p class="tx-s">Degrau → entregas → checklist. Entregas compartilhadas aparecem nos degraus relacionados, mas mantêm um único cadastro e progresso. Áreas operacionais continuam separadas.</p>';
-    var sections=stages.filter(function(s){return !st.catGrupo||st.catGrupo===s.id;}).map(function(s){
-      var stage=s.kind==='step'||s.kind==='transversal', deliveries=stage?Club.metodo.deliveries(s.id,st.artifacts):[];
-      var heading='<div class="tr grp pai method-group" data-method-group="'+esc(s.id)+'"><span class="grp-n">'+esc((s.kind==='step'?s.id+' · ':'')+s.name)+' <span class="tx-s" style="font-weight:400">'+(stage?'Degrau · ':'')+(stage?deliveries.length:s.items.length)+' entrega(s)</span></span>'+(stage?'<a class="btn" href="#subida/'+esc(s.id)+'">Ver entregas</a>':'')+'</div>';
-      return heading+(stage?deliveries.map(function(d){
-        if(d.artifact)return linhaCatalogo(d.artifact);
-        return '<div class="tr method-delivery"><span><b>'+esc(d.name)+'</b></span><span class="tx-s">'+d.items.length+' itens no checklist</span><span class="tx-s">Entrega do método</span><span class="tx-s">Conferência por mentorado</span><span>—</span><span><button class="btn" data-cb-delivery="'+esc(d.id)+'">Ver checklist</button></span></div>';
-      }).join(''):s.items.map(linhaCatalogo).join(''));
-    }).join('');
-    if(!st.catGrupo||st.catGrupo==='EQUIPE'){
-      st.groups.concat([null]).forEach(function(g){
-        var arts=internal.filter(function(a){return g?a.group_id===g.id:!st.groups.some(function(x){return x.id===a.group_id;});}).sort(porGrupoOrdem);
-        if(arts.length)sections+=cabecalhoGrupo(g,arts.length)+arts.map(linhaCatalogo).join('');
-      });
-    }
-    if(st.catGrupo==='AREAS')sections=st.groups.concat([null]).map(function(g){
-      var arts=st.artifacts.filter(function(a){return !a.archived_at&&(g?a.group_id===g.id:!st.groups.some(function(x){return x.id===a.group_id;}));}).sort(porGrupoOrdem);
-      return !g&&!arts.length?'':cabecalhoGrupo(g,arts.length)+arts.map(linhaCatalogo).join('');
-    }).join('');
-    $('listaArtefatos').innerHTML=tabela('minmax(0,2fr) minmax(0,1.3fr) 128px minmax(0,1.3fr) 118px 88px',['Entrega / processo','Etapas e critério de 100%','Tipo','Adoção','Situação','>Ações'],sections,'Nenhuma entrega neste agrupador.');
   }
 
   function opcoesEquipe() {
@@ -4402,6 +4390,10 @@
 
   /* ── eventos ──────────────────────────────────────────────────────────── */
 
+  document.addEventListener('input', function (e) {
+    if (e.target.name === 'fechamento_texto') preencherFechamento(e.target.value);
+  });
+
   document.addEventListener('click', function (e) {
     var notaAbrir = e.target.closest('[data-nota-abrir]');
     if (notaAbrir) { abrirNota(notaAbrir.dataset.notaAbrir); return; }
@@ -4723,11 +4715,6 @@
 
   $('filtroArtGrupo').addEventListener('change', function () {
     st.artGrupo = this.value;
-    renderArtifacts();
-  });
-
-  $('filtroCatalogo').addEventListener('change', function () {
-    st.catGrupo = this.value;
     renderArtifacts();
   });
 

@@ -231,11 +231,9 @@
   function renderIdentidade() {
     var m = st.membro;
     $('quemNome').textContent = m.nome;
-    $('quemTier').textContent = 'MENTORADO ' + (m.tier || 'BLACK');
+    $('quemTier').textContent = 'MENTORADO BLACK';
     $('avatar').textContent = m.iniciais || Club.initials(m.nome);
-    /* Mentorado sem turma ou fase é caso comum (o cadastro entra antes da
-       matrícula na turma), então o rótulo se adapta em vez de escrever null. */
-    $('turmaFase').textContent = [m.turma, m.fase].filter(Boolean).join(' · ') || 'Mentoria';
+    $('turmaFase').textContent = 'Mentoria';
     $('greeting').innerHTML = Club.greeting() + ', <b>' +
       esc(m.nome.replace(/^(Dr|Dra)\.?\s+/i, '').split(' ')[0]) + '</b>';
     document.title = 'Cérebro Black — ' + m.nome;
@@ -591,9 +589,6 @@
             esc(m.nome) + '</div>' +
           '<div style="color:var(--muted);font-size:13px;margin-top:3px">' + esc(m.email) + '</div></div>' +
         '</div>' +
-        linha('Turma', m.turma) +
-        linha('Fase', m.fase) +
-        linha('Tier', m.tier) +
         linha('Instagram', m.instagram) +
         linhaLink('Grupo de Operação', m.whatsapp_url, 'abrir no WhatsApp') +
         linha('No Club desde', Club.fmtMesAno(String(m.criado_em || '').slice(0, 10))) +
@@ -632,8 +627,8 @@
           (n.key === ativo) + '">' + ico(n.icon) + '<span>' + n.label + '</span></button>');
       }).join('') +
       '<div class="rail-foot"><div class="k">' +
-      esc(([m.turma, m.fase].filter(Boolean).join(' · ') || 'Mentoria').toUpperCase()) + '</div>' +
-      '<div class="v">Mentorado ' + esc(m.tier || 'Black') + ' desde ' +
+      'MENTORIA</div>' +
+      '<div class="v">Mentorado Black desde ' +
       esc(Club.fmtMesAno(String(m.criado_em || '').slice(0, 10))) + '.</div></div>';
 
     $('navm').innerHTML = navVisivel().map(function (n) {

@@ -43,6 +43,35 @@
       'Aproveite e já agende sua Reunião de Diagnóstico: '+AGENDAMENTO;
     return '';
   }
-  C.entrada={FASES:FASES,AGENDAMENTO:AGENDAMENTO,feitos:feitos,aberta:aberta,andamento:andamento,mensagem:mensagem,primeiroNome:primeiroNome};
+  // Campos da mensagem que o Jean manda no grupo Fechamentos Olympus, na ordem dela.
+  var FECHAMENTO=[
+    {grupo:'participante',nome:'Participante',campos:[['nome','Nome'],['cpf','CPF'],['rg','RG'],['nacionalidade','Nacionalidade'],
+      ['estado_civil','Estado civil'],['profissao','Profissão'],['email','E-mail'],['telefone','Telefone'],['endereco','Endereço (com CEP)']]},
+    {grupo:'contratante',nome:'Contratante (pessoa jurídica)',campos:[['razao_social','Razão social'],['cnpj','CNPJ'],
+      ['endereco','Endereço'],['email','E-mail'],['telefone','Telefone']]},
+    {grupo:'pagamento',nome:'Pagamento',campos:[['forma','Forma de pagamento'],['condicoes','Condições']]}
+  ];
+  function chave(t){return String(t||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/\(.*?\)/g,'').replace(/[^a-z ]/g,' ').replace(/\s+/g,' ').trim();}
+  var ROTULOS={'razao social':'razao_social','cnpj':'cnpj','endereco':'endereco','e mail':'email','email':'email','telefone':'telefone',
+    'nome':'nome','cpf':'cpf','rg':'rg','nacionalidade':'nacionalidade','estado civil':'estado_civil','profissao':'profissao'};
+  // Lê a mensagem colada do grupo. Linha sem rótulo continua o campo anterior
+  // (o CEP costuma quebrar linha); depois da forma de pagamento, vira condição.
+  function lerFechamento(texto){
+    var out={participante:{},contratante:{},pagamento:{}},secao='participante',ultimo=null;
+    String(texto||'').split(/\r?\n/).forEach(function(bruta){
+      var linha=bruta.replace(/^[\s•*·\-–]+/,'').trim();if(!linha)return;
+      var k=chave(linha);
+      if(k==='contratante'){secao='contratante';ultimo=null;return;}
+      if(k==='participante'){secao='participante';ultimo=null;return;}
+      if(/^club oftalmoblack$/.test(k))return;
+      var m=/^([^:]{2,40}):\s*(.*)$/.exec(linha);
+      if(m&&chave(m[1])==='forma de pagamento'){out.pagamento.forma=m[2].trim();ultimo='pagamento';return;}
+      if(m&&ROTULOS[chave(m[1])]){var c=ROTULOS[chave(m[1])],v=m[2].replace(/^\(com cep\)\s*/i,'').trim();if(v)out[secao][c]=v;ultimo=v?[secao,c]:null;return;}
+      if(ultimo==='pagamento'){out.pagamento.condicoes=(out.pagamento.condicoes?out.pagamento.condicoes+' ':'')+linha;return;}
+      if(ultimo)out[ultimo[0]][ultimo[1]]+=' '+linha;
+    });
+    return out;
+  }
+  C.entrada={FASES:FASES,AGENDAMENTO:AGENDAMENTO,FECHAMENTO:FECHAMENTO,feitos:feitos,aberta:aberta,andamento:andamento,mensagem:mensagem,primeiroNome:primeiroNome,lerFechamento:lerFechamento};
   if(typeof module!=='undefined')module.exports=C.entrada;
 })(typeof window!=='undefined'?window:globalThis);
