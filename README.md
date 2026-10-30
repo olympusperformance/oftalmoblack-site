@@ -47,6 +47,22 @@ fontes, formulários e painéis; `club-black.css` usa os temas existentes. Nenhu
 dado de demonstração é incluído nos arquivos públicos. Os números usados na QA
 ficam exclusivamente em `tests/`.
 
+### Desafio Black
+
+Meta de Reels combinada num encontro de quinta (o primeiro é o Desafio Black
+29-10, de 29/10 a 05/11). `#desafio` mostra ao membro só a própria barra
+(feitos / meta), os Reels contados e a data da última conferência. Não é
+ranking: a tela não lista outros membros e o item do menu só aparece para quem
+tem meta. Falha de consulta fica restrita à tela, sem afetar o Método.
+
+Aplicar `20261030190000_desafio_black.sql` antes de alimentar. A equipe grava
+`cb_desafios` e `cb_desafio_metas` (RLS de admin); o membro lê a própria linha.
+`feitos` é calculado pelo banco como o maior entre Reels no Instagram pessoal e
+vídeos enviados no grupo individual, nunca a soma. A apuração diária roda fora
+do site, no controle do Thomas (`desafio.mjs --publicar`, workspace da Norte),
+que grava e relê as metas. Testes: `tests/desafio.test.cjs` e
+`tests/desafio-db.test.mjs` (Postgres em memória).
+
 ### Instagram: Métricas e Turbinar
 
 Instagram abre em **Métricas**. O controle no topo alterna para **Turbinar**,
