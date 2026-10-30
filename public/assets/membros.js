@@ -21,6 +21,7 @@
     { key:'farol', label:'Visão Geral', icon:'eye', group:'Mentoria' },
     { key:'subida', label:'Subida: Rumo Olympus', icon:'home' },
     { key:'pendencias', label:'Pendências', icon:'check-square' },
+    { key:'desafio', label:'Desafio Black', icon:'video' },
     { key:'casos', label:'Protocolo Grau Zero', icon:'folder' },
     { key:'graduacao', label:'Graduação', icon:'award' },
     { key:'ranking', label:'Ranking Black', icon:'trophy' },
@@ -617,10 +618,16 @@
       '<small aria-hidden="true" style="margin-left:auto;font-size:12px;opacity:.7">↗</small></a>';
   }
 
+  /* O Desafio Black só aparece para quem tem meta no desafio da vez. */
+  function navVisivel() {
+    return NAV.filter(function (n) { return n.key !== 'desafio' || st.desafio; });
+  }
+
   function renderNav(ativo) {
     var m = st.membro;
+    st.navAtivo = ativo;
     $('rail').innerHTML =
-      NAV.map(function (n) {
+      navVisivel().map(function (n) {
         return (n.group ? '<div class="rail-lbl rail-grupo">' + esc(n.group) + '</div>' : '') + (n.href ? linkFora(n, 'nav', '<span>' + esc(n.label) + '</span>') : '<button class="nav" role="tab" data-nav="' + n.key + '" aria-selected="' +
           (n.key === ativo) + '">' + ico(n.icon) + '<span>' + n.label + '</span></button>');
       }).join('') +
@@ -629,7 +636,7 @@
       '<div class="v">Mentorado ' + esc(m.tier || 'Black') + ' desde ' +
       esc(Club.fmtMesAno(String(m.criado_em || '').slice(0, 10))) + '.</div></div>';
 
-    $('navm').innerHTML = NAV.map(function (n) {
+    $('navm').innerHTML = navVisivel().map(function (n) {
       return (n.group ? '<span class="navm-group">' + esc(n.group) + '</span>' : '') + (n.href ? linkFora(n, 'chip', esc(n.label)) : '<button class="chip" role="tab" data-nav="' + n.key + '" aria-selected="' +
         (n.key === ativo) + '">' + ico(n.icon) + n.label + '</button>');
     }).join('');
@@ -719,6 +726,10 @@
     }});
     Club.black.install({ member:st.membro, members:[st.membro], admin:false,
       artifacts:st.artifacts, steps:st.steps, progress:st.progress, onDeliveriesChange:renderArtifacts });
+    Club.desafio.mount($('desafioMembro'), st.membro, { onChange:function (tem) {
+      st.desafio = tem;
+      if (st.navAtivo) renderNav(st.navAtivo);
+    }});
   }
 
   /* ── eventos ──────────────────────────────────────────────────────────── */
