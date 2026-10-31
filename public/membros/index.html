@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="/assets/club-graduacao.css?v=20260924">
 <link rel="stylesheet" href="/assets/club-farol.css?v=20260929">
 <link rel="stylesheet" href="/assets/club-black.css?v=20261029-checklist-unico">
+<link rel="stylesheet" href="/assets/club-materiais.css?v=20261031-materiais">
 <script src="/assets/club-tema.js"></script>
 <link rel="manifest" href="/manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
@@ -120,11 +121,15 @@
     </div>
 
     <div class="view" data-view="materials" hidden>
-      <div class="hello"><h1>Materiais</h1><p>Tudo que o Club já entregou para você, pronto para baixar.</p></div>
-      <div class="toolbar">
-        <div class="pick" id="filtroCategoriaMat" style="max-width:240px"></div>
+      <div id="materiaisLista">
+        <div class="hello"><h1>Materiais</h1><p>Tudo que o Club já entregou para você, pronto para baixar.</p></div>
+        <div class="toolbar">
+          <div class="pick" id="filtroCategoriaMat" style="max-width:240px"></div>
+        </div>
+        <div id="listaMateriais"></div>
       </div>
-      <div id="listaMateriais"></div>
+      <!-- Área nova (club-materiais.js): entra quando o catálogo de aulas está liberado. -->
+      <div id="materiaisNovo" hidden></div>
     </div>
 
     <div class="view" data-view="agenda" hidden>
@@ -198,6 +203,7 @@
 <script src="/assets/club-chat-markdown.js?v=20261028-confiabilidade"></script>
 <script src="/assets/club-chat-session.js?v=20261028-chat-history"></script>
 <script src="/assets/club-desafio.js?v=20261030-lancamento"></script>
-<script src="/assets/membros.js?v=20261030-fechamento"></script>
+<script src="/assets/club-materiais.js?v=20261031-materiais"></script>
+<script src="/assets/membros.js?v=20261031-materiais"></script>
 </body>
 </html>

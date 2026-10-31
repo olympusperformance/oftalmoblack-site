@@ -515,11 +515,29 @@
     '</button>';
   }
 
+  /* A área nova (club-materiais.js: Comece por aqui, Aulas, Materiais gerais e
+     Da sua clínica) entra quando o catálogo de aulas está no acervo e foi
+     liberado; o administrador já a vê antes, para conferir. Sem catálogo, ou se
+     ele não abrir, fica a lista de sempre. */
   function renderMateriais() {
+    renderMateriaisLista();
+    var linha = Club.materiais && Club.materiais.catalogoDe(st.materials);
+    if (!linha) return;
+    Club.materiais.carregar(linha).then(function (catalogo) {
+      if (!catalogo.liberado && !admin) return;
+      $('materiaisLista').hidden = true;
+      $('materiaisNovo').hidden = false;
+      Club.materiais.mount($('materiaisNovo'), { catalogo:catalogo, membro:st.membro, materiais:st.materials, admin:admin });
+    }).catch(function (err) {
+      if (window.console) console.warn('Catálogo de aulas indisponível; fica a lista de materiais.', err);
+    });
+  }
+
+  function renderMateriaisLista() {
     Club.pick('filtroCategoriaMat', Club.MAT_CATEGORIAS, st.matCategoria, {
       vazio: 'Todas as categorias',
       titulo: 'Categoria',
-      onPick: function (v) { st.matCategoria = v; renderMateriais(); }
+      onPick: function (v) { st.matCategoria = v; renderMateriaisLista(); }
     });
 
     var rows = st.matCategoria
@@ -643,13 +661,16 @@
     if (Club.black) {
       Club.black.close();
       if (key !== 'farol') history.replaceState(null, '', location.pathname + location.search + '#' + key +
-        (key === 'subida' && /^#subida\/(D\d{2}|p\d{2}|TREINO)$/.test(location.hash) ? '/' + Club.metodo.canonical(location.hash).split('/')[1] : ''));
+        (key === 'subida' && /^#subida\/(D\d{2}|p\d{2}|TREINO)$/.test(location.hash) ? '/' + Club.metodo.canonical(location.hash).split('/')[1] : '') +
+        /* a área Materiais guarda a seção, o curso ou a aula depois da barra */
+        (key === 'materials' && /^#materials\//.test(location.hash) ? location.hash.slice('#materials'.length) : ''));
       Club.black.enter(key);
     }
     Array.prototype.forEach.call(document.querySelectorAll('.view'), function (v) {
       v.hidden = v.dataset.view !== key;
     });
     renderNav(key);
+    if (Club.materiais) { if (key === 'materials') Club.materiais.route(); else Club.materiais.leave(); }
     if (key === 'instagram') Club.instagramTabs.enter(instagramHash);
     if(admin&&$('voltarPainel'))$('voltarPainel').href='/admin/?membro='+encodeURIComponent(st.membro.id)+'#'+(key==='instagram'?Club.instagramTabs.hashFor('igMetricas').slice(1):key);
     if (key === 'farol') {
@@ -766,6 +787,7 @@
       renderAvisoAdmin();
       var alvoInicial = location.hash.slice(1);
       if (/^(instagram|branding|igMetricas)(\/|$)/.test(alvoInicial)) alvoInicial='instagram';
+      if (/^materials\//.test(alvoInicial)) alvoInicial = 'materials';
       go(alvoInicial.indexOf('farol/') === 0 ? 'farol' : alvoInicial.indexOf('subida/') === 0 ? 'subida' : Array.from(document.querySelectorAll('.view')).some(function (v) { return v.dataset.view === alvoInicial; }) ? alvoInicial : 'farol');
     });
   }).catch(function (err) {
@@ -779,6 +801,12 @@
     if (!sessao) return;
     var h = location.hash.slice(1);
     if (/^(instagram|branding|igMetricas)(\/|$)/.test(h)) h='instagram';
+    /* dentro da área Materiais, a troca de seção, curso ou aula é dela */
+    if (/^materials(\/|$)/.test(h)) {
+      if (st.navAtivo !== 'materials') go('materials');
+      else if (Club.materiais) Club.materiais.route();
+      return;
+    }
     if (h.indexOf('farol/') === 0) { go('farol'); return; }
     if (h.indexOf('subida/') === 0) { go('subida'); return; }
     if (Array.from(document.querySelectorAll('.view')).some(function (v) { return v.dataset.view === h; })) go(h);
