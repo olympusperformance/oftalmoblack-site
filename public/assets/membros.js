@@ -523,13 +523,20 @@
     renderMateriaisLista();
     var linha = Club.materiais && Club.materiais.catalogoDe(st.materials);
     if (!linha) return;
+    /* Enquanto o catálogo chega, a lista antiga não aparece: vê-la piscar
+       passava a impressão de que o site não tinha atualizado. */
+    var novo = $('materiaisNovo'), lista = $('materiaisLista');
+    lista.hidden = true;
+    novo.hidden = false;
+    novo.innerHTML = '<div class="mx"><div class="mx-carregando" role="status">Abrindo os Materiais…</div></div>';
     Club.materiais.carregar(linha).then(function (catalogo) {
-      if (!catalogo.liberado && !admin) return;
-      $('materiaisLista').hidden = true;
-      $('materiaisNovo').hidden = false;
-      Club.materiais.mount($('materiaisNovo'), { catalogo:catalogo, membro:st.membro, materiais:st.materials, admin:admin });
+      if (!catalogo.liberado && !admin) throw new Error('catálogo ainda não liberado');
+      Club.materiais.mount(novo, { catalogo:catalogo, membro:st.membro, materiais:st.materials, admin:admin });
     }).catch(function (err) {
-      if (window.console) console.warn('Catálogo de aulas indisponível; fica a lista de materiais.', err);
+      novo.hidden = true;
+      novo.innerHTML = '';
+      lista.hidden = false;
+      if (window.console && !/não liberado/.test(err.message)) console.warn('Catálogo de aulas indisponível; fica a lista de materiais.', err);
     });
   }
 

@@ -93,7 +93,9 @@
   $('sair').addEventListener('click', function () { Club.auth.logout(); });
   $('verComoMembro').addEventListener('click', function () {
     var id = st.view === 'igMetricas' ? Club.branding.selected() : st.view === 'farol' ? Club.farol.selected() : Club.black.selected();
-    if (id) this.href = '/membros/?membro=' + encodeURIComponent(id) + (st.view==='igMetricas'?Club.instagramTabs.hashFor('instagram'):st.view==='artifacts'?'#artifacts':'');
+    /* Da tela de Materiais, a prévia abre direto na área Materiais do mestre. */
+    if (id) this.href = '/membros/?membro=' + encodeURIComponent(id) + (st.view==='igMetricas'?Club.instagramTabs.hashFor('instagram'):st.view==='artifacts'?'#artifacts':st.view==='materials'?'#materials':'');
+    else if (st.view === 'materials') this.href = '/membros/#materials';
   });
 
   /* ── dados ────────────────────────────────────────────────────────────── */
